@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.openmos</groupId>
+    <artifactId>openMOSMSB</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+	<repositories>
+        <repository>
+            <id>local-repo</id>
+            <name>Local repository</name>
+            <url>file:${project.basedir}/repo</url>
+        </repository> 
+		<repository>
+			<id>oss-sonatype</id>
+			<name>oss-sonatype</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		
+	</repositories>
+    <dependencies>
+<dependency>
+  <groupId>io.vertx</groupId>
+  <artifactId>vertx-core</artifactId>
+  <version>3.3.3</version>
+</dependency>        
+<dependency>
+  <groupId>io.vertx</groupId>
+  <artifactId>vertx-hazelcast</artifactId>
+  <version>3.3.3</version>
+</dependency>        
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <type>jar</type>
+        </dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.7</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.7.7</version>
+</dependency>
+<dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcpkix-jdk15on</artifactId>
+    <version>1.52</version>
+</dependency>
+<dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcprov-jdk15on</artifactId>
+    <version>1.52</version>
+</dependency>
+<dependency>
+    <groupId>org.xerial</groupId>
+    <artifactId>sqlite-jdbc</artifactId>
+    <version>3.14.2.1</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+<dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.2.12</version>
+</dependency>
+
+<!-- VaG - 13/12/2016 -->
+<dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>2.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+            <version>2.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.security</groupId>
+            <artifactId>wss4j</artifactId>
+            <version>1.5.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http-jetty</artifactId>
+            <version>2.2.6</version>
+        </dependency>
+<dependency>
+    <groupId>com.ximpleware</groupId>
+    <artifactId>vtd-xml</artifactId>
+    <version>2.12</version>
+</dependency>
+<!-- milo dependencies -->
+		<dependency>
+			<groupId>org.eclipse.milo</groupId>
+			<artifactId>stack-client</artifactId>
+			<version>0.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.milo</groupId>
+			<artifactId>stack-server</artifactId>
+			<version>0.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.milo</groupId>
+			<artifactId>sdk-client</artifactId>
+			<version>0.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.milo</groupId>
+			<artifactId>sdk-server</artifactId>
+			<version>0.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.milo</groupId>
+			<artifactId>stack-examples</artifactId>
+			<version>0.1.1</version>
+		</dependency>
+<!-- MSB custom libraries -->
+<dependency>
+    <groupId>eu.openmos.msb.opcua</groupId>
+    <artifactId>Opc.Ua.Stack</artifactId>
+    <version>1.02.337.8</version>
+</dependency>
+<dependency>
+    <groupId>eu.openmos.msb.prosys</groupId>
+    <artifactId>Prosys-OPC-UA-Java-SDK-Client-Server-Evaluation</artifactId>
+    <version>2.2.2-638</version>
+</dependency>
+<dependency>
+    <groupId>eu.openmos.msb.miloclient</groupId>
+    <artifactId>server-examples</artifactId>
+    <version>0.1.1.20170110.162012.1</version>
+</dependency>
+<dependency>
+    <groupId>eu.openmos.msb.pahoclient</groupId>
+    <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+    <version>1.1.0</version>
+</dependency>
+    </dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <tool.wsgen>${java.home}/../bin/wsgen.exe</tool.wsgen>
+        <tool.wsimport>${java.home}/../bin/wsimport.exe</tool.wsimport>        
+    </properties>
+        <!-- VaG - 03/10/2016 - begin -->
+        <build>            
+        <plugins>
+<plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <version>2.4.1</version>
+        <executions>
+          <!-- execution>
+            <id>wsgen-from-jdk</id>
+            <goals>
+              <goal>wsgen</goal>
+            </goals>
+            <configuration>
+              <executable>${tool.wsgen}</executable>
+              <sei>com.mycompany.MyService</sei>
+              ...
+            </configuration>
+          </execution -->
+          <execution>
+<!-- 
+"%JAVA_HOME%"\bin\wsimport 
+              -s src/main/java 
+              -p eu.openmos.agentcloud.ws.systemconfigurator.wsimport 
+              -b c:\temp\wsSystemConfigurator.xjb  
+              http://localhost:9999/wsSystemConfigurator?wsdl
+-->              
+            <id>wsimport-from-jdk-wsSystemConfigurator</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <executable>${tool.wsimport}</executable>
+              <encoding>${project.build.sourceEncoding}</encoding>
+              <args>
+                    <arg>-encoding UTF-8</arg>
+                </args>
+              <sourceDestDir>${basedir}/src/main/java</sourceDestDir>
+              <packageName>eu.openmos.agentcloud.ws.systemconfigurator.wsimport</packageName>
+              <bindingDirectory>${basedir}/src/main/jaxws</bindingDirectory>
+              <bindingFiles>
+                    <bindingFile>wsSystemConfigurator.xjb</bindingFile>
+              </bindingFiles>
+              <wsdlLocation>/wsdl/wsSystemConfigurator.wsdl</wsdlLocation>
+              <!-- wsdlDirectory>${basedir}/src/main/wsdl</wsdlDirectory -->
+              <wsdlFiles>
+                <wsdlFile>${basedir}/src/main/resources/wsdl/wsSystemConfigurator.wsdl</wsdlFile>
+              </wsdlFiles>
+            </configuration>
+          </execution>
+          <execution>
+<!-- 
+"%JAVA_HOME%"\bin\wsimport 
+              -s src/main/java 
+              -p eu.openmos.agentcloud.ws.productionoptimizer.wsimport 
+              -b c:\temp\wsProductionOptimizer.xjb  
+              http://localhost:9999/wsProductionOptimizer?wsdl
+-->              
+            <id>wsimport-from-jdk-wsProductionOptimizer</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <executable>${tool.wsimport}</executable>
+              <encoding>${project.build.sourceEncoding}</encoding>
+              <args>
+                    <arg>-encoding UTF-8</arg>
+                </args>
+              <sourceDestDir>${basedir}/src/main/java</sourceDestDir>
+              <packageName>eu.openmos.agentcloud.ws.productionoptimizer.wsimport</packageName>
+              <bindingDirectory>${basedir}/src/main/jaxws</bindingDirectory>
+              <bindingFiles>
+                    <bindingFile>wsProductionOptimizer.xjb</bindingFile>
+              </bindingFiles>
+              <wsdlLocation>/wsdl/wsProductionOptimizer.wsdl</wsdlLocation>
+              <!-- wsdlDirectory>${basedir}/src/main/wsdl</wsdlDirectory -->
+              <wsdlFiles>
+                <wsdlFile>${basedir}/src/main/resources/wsdl/wsProductionOptimizer.wsdl</wsdlFile>
+              </wsdlFiles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-jar-plugin</artifactId>
+  <version>2.3</version>
+  <configuration>
+    <excludes>
+      <exclude>**/*.properties</exclude>
+    </excludes>                    
+    <archive>
+      <manifest>
+        <addClasspath>true</addClasspath>
+        <classpathPrefix>lib/</classpathPrefix>
+        <!-- mainClass>eu.openmos.agentplatformstarter.Starter</mainClass -->
+      </manifest>
+      <manifestEntries>
+        <Class-Path>conf/</Class-Path>
+      </manifestEntries>
+    </archive>
+  </configuration>
+</plugin>
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-resources-plugin</artifactId>
+  <version>2.3</version>
+  <executions>
+    <execution>
+      <id>copy-resources</id>
+      <phase>install</phase>
+      <goals>
+        <goal>copy-resources</goal>
+      </goals>
+      <configuration>
+        <outputDirectory>${basedir}/target/conf</outputDirectory>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+              <include>**/*.properties</include>
+            </includes>
+          </resource>
+        </resources>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+<plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+            <outputDirectory>assembly</outputDirectory>
+          <!-- filters>
+            <filter>src/assembly/filter.properties</filter>
+          </filters -->
+          <descriptors>
+            <!-- descriptor>src/assembly/distribution.xml</descriptor -->
+            <descriptor>src/main/assembly/distribution.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>              
+      </plugins>
+        </build>
+        <!-- VaG - 03/10/2016 - end -->        
+</project>

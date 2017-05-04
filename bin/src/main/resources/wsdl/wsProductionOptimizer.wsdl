@@ -1,0 +1,266 @@
+<wsdl:definitions name="ProductionOptimizer" targetNamespace="http://productionoptimizer.optimizer.agentcloud.openmos.eu/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://productionoptimizer.optimizer.agentcloud.openmos.eu/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+<xs:schema elementFormDefault="unqualified" targetNamespace="http://productionoptimizer.optimizer.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://productionoptimizer.optimizer.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="initializeOptimizer" type="tns:initializeOptimizer" />
+<xs:element name="initializeOptimizerResponse" type="tns:initializeOptimizerResponse" />
+<xs:element name="isOptimizable" type="tns:isOptimizable" />
+<xs:element name="isOptimizableResponse" type="tns:isOptimizableResponse" />
+<xs:element name="optimize" type="tns:optimize" />
+<xs:element name="optimizeResponse" type="tns:optimizeResponse" />
+<xs:element name="reparametrizeOptimizer" type="tns:reparametrizeOptimizer" />
+<xs:element name="reparametrizeOptimizerResponse" type="tns:reparametrizeOptimizerResponse" />
+<xs:element name="resetOptimizer" type="tns:resetOptimizer" />
+<xs:element name="resetOptimizerResponse" type="tns:resetOptimizerResponse" />
+<xs:element name="stopOptimizer" type="tns:stopOptimizer" />
+<xs:element name="stopOptimizerResponse" type="tns:stopOptimizerResponse" />
+<xs:complexType name="resetOptimizer">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="resetOptimizerResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="productionOptimizerResponseBean" type="tns:productionOptimizerResponseBean" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="productionOptimizerResponseBean">
+<xs:sequence>
+<xs:element minOccurs="0" name="code" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="optimize">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="optimizeResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="optimizedRecipes" type="tns:recipe" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="recipe">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="kpisSetting" nillable="true" type="tns:kpiSetting" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="parametersSetting" nillable="true" type="tns:parameterSetting" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+<xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="kpiSetting">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="id" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="parameterSetting">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="id" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="skillRequirement">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element name="type" type="xs:int" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="stopOptimizer">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="stopOptimizerResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="productionOptimizerResponseBean" type="tns:productionOptimizerResponseBean" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="reparametrizeOptimizer">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="newParameters" type="tns:optimizationParameter" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="optimizationParameter">
+<xs:sequence>
+<xs:element minOccurs="0" name="defaultValue" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="unit" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="reparametrizeOptimizerResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="productionOptimizerResponseBean" type="tns:productionOptimizerResponseBean" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="initializeOptimizer">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="initializeOptimizerResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="productionOptimizerResponseBean" type="tns:productionOptimizerResponseBean" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="isOptimizable">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="isOptimizableResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="productionOptimizerResponseBean" type="tns:productionOptimizerResponseBean" />
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="stopOptimizerResponse">
+    <wsdl:part element="tns:stopOptimizerResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="resetOptimizerResponse">
+    <wsdl:part element="tns:resetOptimizerResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="optimizeResponse">
+    <wsdl:part element="tns:optimizeResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="resetOptimizer">
+    <wsdl:part element="tns:resetOptimizer" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="optimize">
+    <wsdl:part element="tns:optimize" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="stopOptimizer">
+    <wsdl:part element="tns:stopOptimizer" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="reparametrizeOptimizer">
+    <wsdl:part element="tns:reparametrizeOptimizer" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="reparametrizeOptimizerResponse">
+    <wsdl:part element="tns:reparametrizeOptimizerResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="isOptimizableResponse">
+    <wsdl:part element="tns:isOptimizableResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="initializeOptimizer">
+    <wsdl:part element="tns:initializeOptimizer" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="isOptimizable">
+    <wsdl:part element="tns:isOptimizable" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="initializeOptimizerResponse">
+    <wsdl:part element="tns:initializeOptimizerResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ProductionOptimizer">
+    <wsdl:operation name="resetOptimizer">
+      <wsdl:input message="tns:resetOptimizer" name="resetOptimizer">
+    </wsdl:input>
+      <wsdl:output message="tns:resetOptimizerResponse" name="resetOptimizerResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="optimize">
+      <wsdl:input message="tns:optimize" name="optimize">
+    </wsdl:input>
+      <wsdl:output message="tns:optimizeResponse" name="optimizeResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="stopOptimizer">
+      <wsdl:input message="tns:stopOptimizer" name="stopOptimizer">
+    </wsdl:input>
+      <wsdl:output message="tns:stopOptimizerResponse" name="stopOptimizerResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="reparametrizeOptimizer">
+      <wsdl:input message="tns:reparametrizeOptimizer" name="reparametrizeOptimizer">
+    </wsdl:input>
+      <wsdl:output message="tns:reparametrizeOptimizerResponse" name="reparametrizeOptimizerResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="initializeOptimizer">
+      <wsdl:input message="tns:initializeOptimizer" name="initializeOptimizer">
+    </wsdl:input>
+      <wsdl:output message="tns:initializeOptimizerResponse" name="initializeOptimizerResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="isOptimizable">
+      <wsdl:input message="tns:isOptimizable" name="isOptimizable">
+    </wsdl:input>
+      <wsdl:output message="tns:isOptimizableResponse" name="isOptimizableResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ProductionOptimizerSoapBinding" type="tns:ProductionOptimizer">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="resetOptimizer">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="resetOptimizer">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="resetOptimizerResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="optimize">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="optimize">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="optimizeResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="stopOptimizer">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="stopOptimizer">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="stopOptimizerResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="reparametrizeOptimizer">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="reparametrizeOptimizer">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="reparametrizeOptimizerResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="initializeOptimizer">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="initializeOptimizer">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="initializeOptimizerResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="isOptimizable">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="isOptimizable">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="isOptimizableResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ProductionOptimizer">
+    <wsdl:port binding="tns:ProductionOptimizerSoapBinding" name="ProductionOptimizerImplPort">
+      <soap:address location="http://localhost:9999/wsProductionOptimizer" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

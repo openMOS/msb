@@ -1,0 +1,251 @@
+<wsdl:definitions name="SystemConfigurator" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+<xs:schema elementFormDefault="unqualified" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="acceptNewOrder" type="tns:acceptNewOrder" />
+<xs:element name="acceptNewOrderResponse" type="tns:acceptNewOrderResponse" />
+<xs:element name="createNewAgent" type="tns:createNewAgent" />
+<xs:element name="createNewAgentResponse" type="tns:createNewAgentResponse" />
+<xs:element name="removeAgent" type="tns:removeAgent" />
+<xs:element name="removeAgentResponse" type="tns:removeAgentResponse" />
+<xs:complexType name="acceptNewOrder">
+<xs:sequence>
+<xs:element minOccurs="0" name="newOrder" type="tns:order" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="order">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="productDescriptions" nillable="true" type="tns:productDescription" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="productDescription">
+<xs:sequence>
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="skillRequirement">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element name="type" type="xs:int" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="acceptNewOrderResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="orderStatus" type="tns:orderStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="orderStatus">
+<xs:sequence>
+<xs:element minOccurs="0" name="code" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="createNewAgent">
+<xs:sequence>
+<xs:element minOccurs="0" name="cyberPhysicalAgentDescription" type="tns:cyberPhysicalAgentDescription" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="cyberPhysicalAgentDescription">
+<xs:sequence>
+<xs:element minOccurs="0" name="agentClass" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="agentParameters" nillable="true" type="xs:string" />
+<xs:element minOccurs="0" name="logicalLocation" type="tns:logicalLocation" />
+<xs:element minOccurs="0" name="physicalLocation" type="tns:physicalLocation" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" nillable="true" type="tns:recipe" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="skills" nillable="true" type="tns:skill" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueName" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="logicalLocation">
+<xs:complexContent>
+<xs:extension base="tns:location">
+<xs:sequence>
+<xs:element minOccurs="0" name="location" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType abstract="true" name="location">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="physicalLocation">
+<xs:complexContent>
+<xs:extension base="tns:location">
+<xs:sequence>
+<xs:element name="alpha" type="xs:long" />
+<xs:element name="beta" type="xs:long" />
+<xs:element name="gamma" type="xs:long" />
+<xs:element minOccurs="0" name="referenceFrameName" type="xs:string" />
+<xs:element name="x" type="xs:long" />
+<xs:element name="y" type="xs:long" />
+<xs:element name="z" type="xs:long" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="recipe">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="kpisSetting" nillable="true" type="tns:kpiSetting" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="parametersSetting" nillable="true" type="tns:parameterSetting" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+<xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="kpiSetting">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="id" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="parameterSetting">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="id" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="skill">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="kpis" nillable="true" type="tns:kpi" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="parameters" nillable="true" type="tns:parameter" />
+<xs:element name="type" type="xs:int" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="kpi">
+<xs:sequence>
+<xs:element minOccurs="0" name="currentValue" type="xs:string" />
+<xs:element minOccurs="0" name="defaultLowerBound" type="xs:string" />
+<xs:element minOccurs="0" name="defaultUpperBound" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="unit" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="parameter">
+<xs:sequence>
+<xs:element minOccurs="0" name="defaultValue" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="lowerBound" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="unit" type="xs:string" />
+<xs:element minOccurs="0" name="upperBound" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="createNewAgentResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="agentStatus" type="tns:agentStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="agentStatus">
+<xs:sequence>
+<xs:element minOccurs="0" name="code" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="removeAgent">
+<xs:sequence>
+<xs:element minOccurs="0" name="agentUniqueName" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="removeAgentResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="agentStatus" type="tns:agentStatus" />
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="acceptNewOrderResponse">
+    <wsdl:part element="tns:acceptNewOrderResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createNewAgent">
+    <wsdl:part element="tns:createNewAgent" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeAgentResponse">
+    <wsdl:part element="tns:removeAgentResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="acceptNewOrder">
+    <wsdl:part element="tns:acceptNewOrder" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createNewAgentResponse">
+    <wsdl:part element="tns:createNewAgentResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeAgent">
+    <wsdl:part element="tns:removeAgent" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="SystemConfigurator">
+    <wsdl:operation name="acceptNewOrder">
+      <wsdl:input message="tns:acceptNewOrder" name="acceptNewOrder">
+    </wsdl:input>
+      <wsdl:output message="tns:acceptNewOrderResponse" name="acceptNewOrderResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createNewAgent">
+      <wsdl:input message="tns:createNewAgent" name="createNewAgent">
+    </wsdl:input>
+      <wsdl:output message="tns:createNewAgentResponse" name="createNewAgentResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeAgent">
+      <wsdl:input message="tns:removeAgent" name="removeAgent">
+    </wsdl:input>
+      <wsdl:output message="tns:removeAgentResponse" name="removeAgentResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SystemConfiguratorSoapBinding" type="tns:SystemConfigurator">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="acceptNewOrder">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="acceptNewOrder">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="acceptNewOrderResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createNewAgent">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="createNewAgent">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="createNewAgentResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeAgent">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="removeAgent">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="removeAgentResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SystemConfigurator">
+    <wsdl:port binding="tns:SystemConfiguratorSoapBinding" name="SystemConfiguratorImplPort">
+      <soap:address location="http://localhost:9999/wsSystemConfigurator" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

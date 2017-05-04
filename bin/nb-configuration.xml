@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-shared-configuration>
+    <!--
+This file contains additional configuration written by modules in the NetBeans IDE.
+The configuration is intended to be shared among all the users of project and
+therefore it is assumed to be part of version control checkout.
+Without this configuration present, some functionality in the IDE may be limited or fail altogether.
+-->
+    <config-data xmlns="http://www.netbeans.org/ns/maven-config-data/1">
+        <configurations>
+            <configuration id="CI_newRESOURCEagent" profiles=""/>
+            <configuration id="CI_newTRANSPORTagent" profiles=""/>
+            <configuration id="CI_neworder" profiles=""/>
+            <configuration id="CI_removeagent" profiles=""/>
+            <configuration id="PO_initoptimizer" profiles=""/>
+            <configuration id="PO_isoptimizable" profiles=""/>
+            <configuration id="PO_optimize" profiles=""/>
+            <configuration id="PO_reparametrize" profiles=""/>
+            <configuration id="PO_resetoptimize" profiles=""/>
+            <configuration id="PO_stopoptimizer" profiles=""/>
+            <configuration id="RD_recipesdeployment_startwebservice" profiles=""/>
+            <configuration id="MSB_starting_point" profiles=""/>
+        </configurations>
+    </config-data>
+</project-shared-configuration>
