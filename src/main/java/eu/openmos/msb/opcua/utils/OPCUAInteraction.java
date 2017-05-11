@@ -7,18 +7,12 @@ package eu.openmos.msb.opcua.utils;
 
 import eu.openmos.msb.opcua.utils.DevicesDynamic;
 //import Connections.Manager;
-import com.prosysopc.ua.SecureIdentityException;
 import com.prosysopc.ua.ServiceException;
-import com.prosysopc.ua.client.MonitoredDataItem;
-import com.prosysopc.ua.client.Subscription;
-import com.prosysopc.ua.client.UaClient;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.msb.opcua.prosys.client.OPCUAClient;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.opcfoundation.ua.core.MonitoringMode;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
 
 /**

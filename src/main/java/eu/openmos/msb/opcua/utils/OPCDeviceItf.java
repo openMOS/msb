@@ -4,22 +4,10 @@
  * and open the template in the editor.
  */
 package eu.openmos.msb.opcua.utils;
-//import agentWebService.AgentStatus;
-//import agentWebService.CyberPhysicalAgentDescription;
-//import agentWebService.Recipe;
-import eu.openmos.msb.dummyclasses.XMLutils;
-/*import com.ximpleware.AutoPilot;
-import com.ximpleware.NavException;
-import com.ximpleware.VTDGen;
-import com.ximpleware.VTDNav;
-import com.ximpleware.XPathEvalException;
-import com.ximpleware.XPathParseException;*/
 
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-//import com.ximpleware.*;
-//import com.ximpleware.xpath.*;
 import eu.openmos.agentcloud.cloudinterface.AgentStatus;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
@@ -35,35 +23,28 @@ import eu.openmos.agentcloud.data.recipe.SkillRequirement;
 import eu.openmos.agentcloud.utilities.Constants;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
-import static eu.openmos.msb.cloudinterface.CloudInterface_NewResourceAgentTest.getTestObject;
 import eu.openmos.msb.cloudinterface.WebSocketsReceiver;
 import eu.openmos.msb.cloudinterface.WebSocketsSender;
 import eu.openmos.msb.cloudinterface.WebSocketsSenderDraft;
 import java.io.*;
-import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.database.stateless.DeviceRegistryBean;
 import eu.openmos.msb.dummyclasses.ChangedState;
 import eu.openmos.msb.dummyclasses.ExecuteData;
 import eu.openmos.msb.dummyclasses.RegFile;
 import eu.openmos.msb.dummyclasses.ServerStatus;
-import eu.openmos.msb.starter.DeviceInterface;
 import eu.openmos.msb.starter.MSB_MiloClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.starter.MyHashMaps;
 import io.vertx.core.Vertx;
-//import fabio_xml.Device;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -76,8 +57,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.BindingProvider;
-import org.apache.commons.lang.StringUtils;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -93,7 +72,7 @@ public class OPCDeviceItf implements DeviceInterface{
     
     
      Vertx vertx = Vertx.vertx(); 
-     Boolean withAGENTCloud=true;
+     Boolean withAGENTCloud=false;
      
     /*final private String function;
     final private String arguments;
@@ -107,6 +86,7 @@ public class OPCDeviceItf implements DeviceInterface{
     DeviceRegistryBean dbMSB = new DeviceRegistryBean();
     
     /**
+     * 
      *
      * @param Function
      * @param args
@@ -757,6 +737,7 @@ public class OPCDeviceItf implements DeviceInterface{
         //call RequestModuleDetails
     
     }
+    
     
     private String WorkStationRegistration(String args) throws JAXBException, FileNotFoundException, ParserConfigurationException, TransformerException {
         

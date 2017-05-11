@@ -378,6 +378,7 @@ public class OpcUaServersDiscoverySnippet extends Thread{
             if (addressProtocol.size() > 0) {
                 address = addressProtocol.get(0); //0->address 1->protocol
                 try {
+                    // OPCUA Client TODO - Add DDS and MQTT
                     endpointsFromServer = UaTcpStackClient.getEndpoints(address).get();
                 } catch (InterruptedException ex) {
                     Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
