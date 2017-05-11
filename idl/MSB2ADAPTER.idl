@@ -1,0 +1,15 @@
+
+module eu.openmos.msb.dds.topics {
+
+  struct GeneralMethodMessage {
+    short id;
+    string function;        // function to be called
+    string args;            // message body
+    string feedback;        // return message
+  };
+#pragma keylist GeneralMethodMessage id
+};
+
+
+
+
