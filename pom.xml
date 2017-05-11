@@ -173,6 +173,35 @@
             <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
             <version>1.1.0</version>
         </dependency>
+        
+        
+        <dependency>
+            <groupId>eu.openmos.msb.dds</groupId>
+            <artifactId>cmapi</artifactId>
+            <version>6.4.140407</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>eu.openmos.msb.dds</groupId>
+            <artifactId>dcpssaj</artifactId>
+            <version>6.4.140407</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>eu.openmos.msb.dds</groupId>
+            <artifactId>dcpssaj-osgi-bundle</artifactId>
+            <version>6.4.140407</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>eu.openmos.msb.dds</groupId>
+            <artifactId>tooling_common</artifactId>
+            <version>6.4.140407</version>
+        </dependency>
+        
+   
+        
+        
     </dependencies>
     
     
