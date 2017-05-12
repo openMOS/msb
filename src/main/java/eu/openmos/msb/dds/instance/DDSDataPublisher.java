@@ -9,6 +9,18 @@ package eu.openmos.msb.dds.instance;
  *
  * @author andre
  */
-public class DataSubscriber {
+public class DDSDataPublisher extends Thread{
   
+  
+  
+  
+  @Override
+  public void run(){
+    
+  }
+  
+  
+  
+  
+
 }

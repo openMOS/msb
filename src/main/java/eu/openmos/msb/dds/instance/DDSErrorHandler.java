@@ -20,7 +20,7 @@ package eu.openmos.msb.dds.instance;
  *********************************************************************** */
 import DDS.*;
 
-public class ErrorHandler 
+public class DDSErrorHandler 
 {
 
   public static final int NR_ERROR_CODES = 13;
@@ -44,19 +44,25 @@ public class ErrorHandler
     RetCodeName[12] = "DDS_RETCODE_ILLEGAL_OPERATION";
   }
 
+  
   /**
    * Returns the name of an error code.
-	 *
+   * @param status
+   * @return the error code
    */
-  public static String getErrorName(int status) {
+  public static String getErrorName(int status) 
+  {
     return RetCodeName[status];
   }
 
+  
   /**
    * Check the return status for errors. If there is an error, then terminate.
-	 *
+   * @param status
+   * @param info
    */
-  public static void checkStatus(int status, String info) {
+  public static void checkStatus(int status, String info) 
+  {
     if (status != RETCODE_OK.value && status != RETCODE_NO_DATA.value) {
       System.out
           .println("Error in " + info + ": " + getErrorName(status));
@@ -64,11 +70,14 @@ public class ErrorHandler
     }
   }
 
+  
   /**
    * Check whether a valid handle has been returned. If not, then terminate.
-	 *
+   * @param handle
+   * @param info
    */
-  public static void checkHandle(Object handle, String info) {
+  public static void checkHandle(Object handle, String info) 
+  {
     if (handle == null) {
       System.out.println("Error in " + info
           + ": Creation failed: invalid handle");
@@ -76,4 +85,6 @@ public class ErrorHandler
     }
   }
 
+  
+  
 }

@@ -1,10 +1,9 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * TODO - Add licence
  */
 package eu.openmos.msb.starter;
 
+// IMOPORTS
 import eu.openmos.msb.database.stateless.DeviceRegistryBean;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
@@ -47,38 +46,41 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+
 /**
+ * *********************************************************************************************************************
  *
  * @author fabio.miranda
  */
-public class MSB_gui extends javax.swing.JFrame {
+public class MSB_gui extends javax.swing.JFrame
+{
 
+  // GLOBAL VARIABLES
   private static final Map<String, Object> OPCclientIDMap = new HashMap<String, Object>();
   private static String MSB_OPCUA_SERVER_ADDRESS = null;
-
   private static eu.openmos.msb.opcua.milo.server.opcuaServerMSB opcuaServerInstanceMILO;
-
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
-
   private static DefaultTableModel TServersmodel;
   private static DefaultTableModel TProductsmodel;
   private static DefaultTableModel TDevicesmodel;
-
   private static ImageIcon redLight;
   private static ImageIcon greenLight;
   private static ImageIcon greyLight;
-
   private static ImageIcon iconPROD_A;
   private static ImageIcon iconPROD_B;
-
   private static JLabel labelLDS;
   private static JLabel labelServer;
   private static JLabel labelWS;
   private static JLabel labelRegister;
-
   private static OPCDeviceItf DeviceITF;
 
-  public MSB_gui() throws Exception {
+
+  /**
+   *
+   * @throws Exception
+   */
+  public MSB_gui() throws Exception
+  {
     initComponents();
 
     TServersmodel = (DefaultTableModel) TableServers.getModel();
@@ -114,12 +116,8 @@ public class MSB_gui extends javax.swing.JFrame {
 
     DeviceITF = new OPCDeviceItf(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
 
-    /*TableModelListener TML = null;
-        ProductsTable.getModel().addTableModelListener(TML);
-        TableColumn statusColumn = ProductsTable.getColumnModel().getColumn(1); //Status column ->activated/deactivated
-        JCheckBox recipeStatus = null;
-        statusColumn.setCellEditor(new DefaultCellEditor(recipeStatus));*/
   }
+
 
   /**
    * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The
@@ -127,7 +125,8 @@ public class MSB_gui extends javax.swing.JFrame {
    */
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+  private void initComponents()
+  {
 
     jScrollPane1 = new javax.swing.JScrollPane();
     opc_comms_log = new javax.swing.JTextArea();
@@ -179,6 +178,12 @@ public class MSB_gui extends javax.swing.JFrame {
     OnOffServerPanel = new javax.swing.JPanel();
     OnOffLDS = new javax.swing.JPanel();
     jPanel2 = new javax.swing.JPanel();
+    l_ddsDomain = new javax.swing.JLabel();
+    l_regTopic = new javax.swing.JLabel();
+    tf_ddsDomain = new javax.swing.JTextField();
+    tf_regTopic = new javax.swing.JTextField();
+    b_register = new javax.swing.JButton();
+    b_startDomain = new javax.swing.JButton();
     jPanel4 = new javax.swing.JPanel();
     jPanel5 = new javax.swing.JPanel();
     StartWebService = new javax.swing.JButton();
@@ -196,25 +201,32 @@ public class MSB_gui extends javax.swing.JFrame {
 
     TableServers.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
     TableServers.setModel(new javax.swing.table.DefaultTableModel(
-      new Object [][] {
+      new Object [][]
+      {
 
       },
-      new String [] {
+      new String []
+      {
         "Server Name", "Protocol", "URL"
       }
-    ) {
-      Class[] types = new Class [] {
+    )
+    {
+      Class[] types = new Class []
+      {
         java.lang.String.class, java.lang.String.class, java.lang.String.class
       };
-      boolean[] canEdit = new boolean [] {
+      boolean[] canEdit = new boolean []
+      {
         false, false, false
       };
 
-      public Class getColumnClass(int columnIndex) {
+      public Class getColumnClass(int columnIndex)
+      {
         return types [columnIndex];
       }
 
-      public boolean isCellEditable(int rowIndex, int columnIndex) {
+      public boolean isCellEditable(int rowIndex, int columnIndex)
+      {
         return canEdit [columnIndex];
       }
     });
@@ -222,25 +234,32 @@ public class MSB_gui extends javax.swing.JFrame {
 
     ProductsTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
     ProductsTable.setModel(new javax.swing.table.DefaultTableModel(
-      new Object [][] {
+      new Object [][]
+      {
 
       },
-      new String [] {
+      new String []
+      {
         "Product", "Recipe", "Status", "WorkStation"
       }
-    ) {
-      Class[] types = new Class [] {
+    )
+    {
+      Class[] types = new Class []
+      {
         java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.String.class
       };
-      boolean[] canEdit = new boolean [] {
+      boolean[] canEdit = new boolean []
+      {
         false, false, true, false
       };
 
-      public Class getColumnClass(int columnIndex) {
+      public Class getColumnClass(int columnIndex)
+      {
         return types [columnIndex];
       }
 
-      public boolean isCellEditable(int rowIndex, int columnIndex) {
+      public boolean isCellEditable(int rowIndex, int columnIndex)
+      {
         return canEdit [columnIndex];
       }
     });
@@ -251,7 +270,8 @@ public class MSB_gui extends javax.swing.JFrame {
     jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
     jLabel4.setText("Adapters Table");
 
-    jList1.setModel(new javax.swing.AbstractListModel<String>() {
+    jList1.setModel(new javax.swing.AbstractListModel<String>()
+    {
       String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
       public int getSize() { return strings.length; }
       public String getElementAt(int i) { return strings[i]; }
@@ -263,42 +283,54 @@ public class MSB_gui extends javax.swing.JFrame {
     jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
     btn_sendRecipe.setText("Call SendRecipe");
-    btn_sendRecipe.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_sendRecipe.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_sendRecipeActionPerformed(evt);
       }
     });
 
-    comboServers.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    comboServers.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         comboServersActionPerformed(evt);
       }
     });
 
     btn_RequestProduct.setText("Call RequestProduct");
-    btn_RequestProduct.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_RequestProduct.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_RequestProductActionPerformed(evt);
       }
     });
 
     btn_DeviceRegistration.setText("Call DeviceRegistration");
-    btn_DeviceRegistration.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_DeviceRegistration.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_DeviceRegistrationActionPerformed(evt);
       }
     });
 
     btn_SendURL.setText("Call SendURL");
-    btn_SendURL.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_SendURL.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_SendURLActionPerformed(evt);
       }
     });
 
     btn_ChangedState.setText("Call ChangedState");
-    btn_ChangedState.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_ChangedState.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_ChangedStateActionPerformed(evt);
       }
     });
@@ -306,41 +338,53 @@ public class MSB_gui extends javax.swing.JFrame {
     textToSend.setText("insert data to send");
 
     btn_RecipeExecutionDone.setText("Call RecipeExecutionDone");
-    btn_RecipeExecutionDone.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_RecipeExecutionDone.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_RecipeExecutionDoneActionPerformed(evt);
       }
     });
 
     btn_sendrecipe2.setText("Call SendRecipe");
-    btn_sendrecipe2.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_sendrecipe2.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_sendrecipe2ActionPerformed(evt);
       }
     });
 
     btn_updatestatus.setText("Call StatusUpdate");
-    btn_updatestatus.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_updatestatus.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_updatestatusActionPerformed(evt);
       }
     });
 
     btn_invoqueMethod.setText("Call InvoqueMethod");
-    btn_invoqueMethod.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_invoqueMethod.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_invoqueMethodActionPerformed(evt);
       }
     });
 
-    prodA.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    prodA.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         prodAActionPerformed(evt);
       }
     });
 
-    prodB.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    prodB.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         prodBActionPerformed(evt);
       }
     });
@@ -423,25 +467,32 @@ public class MSB_gui extends javax.swing.JFrame {
 
     DevicesTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
     DevicesTable.setModel(new javax.swing.table.DefaultTableModel(
-      new Object [][] {
+      new Object [][]
+      {
 
       },
-      new String [] {
+      new String []
+      {
         "Name", "Status", "Endpoint", "WorkStation"
       }
-    ) {
-      Class[] types = new Class [] {
+    )
+    {
+      Class[] types = new Class []
+      {
         java.lang.String.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class
       };
-      boolean[] canEdit = new boolean [] {
+      boolean[] canEdit = new boolean []
+      {
         false, false, false, false
       };
 
-      public Class getColumnClass(int columnIndex) {
+      public Class getColumnClass(int columnIndex)
+      {
         return types [columnIndex];
       }
 
-      public boolean isCellEditable(int rowIndex, int columnIndex) {
+      public boolean isCellEditable(int rowIndex, int columnIndex)
+      {
         return canEdit [columnIndex];
       }
     });
@@ -457,20 +508,26 @@ public class MSB_gui extends javax.swing.JFrame {
     jLabel1.setText("MSB OPCUA Server");
 
     msb_opcua_servername.setText("opc.tcp://172.18.2.131:12637/MSB-OPCUA-SERVER");
-    msb_opcua_servername.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    msb_opcua_servername.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         msb_opcua_servernameActionPerformed(evt);
       }
     });
 
     StartMSBServer.setText("Start");
-    StartMSBServer.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
+    StartMSBServer.addMouseListener(new java.awt.event.MouseAdapter()
+    {
+      public void mouseClicked(java.awt.event.MouseEvent evt)
+      {
         StartMSBServerMouseClicked(evt);
       }
     });
-    StartMSBServer.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    StartMSBServer.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         StartMSBServerActionPerformed(evt);
       }
     });
@@ -478,15 +535,19 @@ public class MSB_gui extends javax.swing.JFrame {
     jLabel7.setText("LDS Server");
 
     LDSserverAddress.setText("opc.tcp://localhost:4840");
-    LDSserverAddress.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    LDSserverAddress.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         LDSserverAddressActionPerformed(evt);
       }
     });
 
     LDSRegisterserver.setText("Register");
-    LDSRegisterserver.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    LDSRegisterserver.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         LDSRegisterserverActionPerformed(evt);
       }
     });
@@ -494,8 +555,10 @@ public class MSB_gui extends javax.swing.JFrame {
     jLabel6.setText("Discovery Service");
 
     btn_start_discovery.setText("Start");
-    btn_start_discovery.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btn_start_discovery.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btn_start_discoveryActionPerformed(evt);
       }
     });
@@ -543,76 +606,141 @@ public class MSB_gui extends javax.swing.JFrame {
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel1Layout.createSequentialGroup()
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-          .addComponent(jLabel1)
-          .addComponent(msb_opcua_servername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(StartMSBServer)
-          .addComponent(jLabel7)
-          .addComponent(jLabel6)
-          .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(btn_start_discovery)
-          .addComponent(LDSserverAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(LDSRegisterserver))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(16, Short.MAX_VALUE))
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(jSeparator1)
+          .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                  .addComponent(msb_opcua_servername)
+                  .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(LDSserverAddress)
+                  .addComponent(LDSRegisterserver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(btn_start_discovery, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                      .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.CENTER)
+                      .addComponent(jLabel1))
+                    .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                  .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+              .addComponent(jLabel7))
+            .addGap(135, 135, 135)))
+        .addContainerGap())
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel1Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jLabel1)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGap(25, 25, 25)
+            .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGap(12, 12, 12)
+            .addComponent(jLabel1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(msb_opcua_servername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(StartMSBServer)))
+        .addGap(12, 12, 12)
+        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGap(44, 44, 44)
+            .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGap(21, 21, 21)
+            .addComponent(jLabel7)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(LDSserverAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(LDSRegisterserver)))
+        .addGap(18, 18, 18)
+        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(18, 18, 18)
+        .addComponent(jLabel6)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGap(17, 17, 17)
+            .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addGroup(jPanel1Layout.createSequentialGroup()
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(msb_opcua_servername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addGap(4, 4, 4)
-            .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(StartMSBServer)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(jLabel7)
-        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addGap(18, 18, 18)
-            .addComponent(LDSserverAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addGap(8, 8, 8)
-            .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addGap(11, 11, 11)
-        .addComponent(LDSRegisterserver)
-        .addGap(18, 18, 18)
-        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addComponent(jLabel6)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(btn_start_discovery))
-          .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(258, 258, 258))
+            .addComponent(btn_start_discovery)))
+        .addGap(270, 270, 270))
     );
 
     jTabbedPane1.addTab("OPCUA", jPanel1);
+
+    l_ddsDomain.setText("DDS Domain");
+
+    l_regTopic.setText("DDS Registration Topic");
+
+    tf_ddsDomain.setText("openMosDomain");
+    tf_ddsDomain.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        tf_ddsDomainActionPerformed(evt);
+      }
+    });
+
+    tf_regTopic.setText("regist");
+    tf_regTopic.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        tf_regTopicActionPerformed(evt);
+      }
+    });
+
+    b_register.setText("Register");
+    b_register.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        b_registerActionPerformed(evt);
+      }
+    });
+
+    b_startDomain.setText("Start Domain");
 
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
       jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 402, Short.MAX_VALUE)
+      .addGroup(jPanel2Layout.createSequentialGroup()
+        .addGap(12, 12, 12)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(b_startDomain, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+          .addComponent(l_ddsDomain)
+          .addComponent(l_regTopic)
+          .addComponent(tf_regTopic, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+          .addComponent(tf_ddsDomain)
+          .addComponent(b_register, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(253, Short.MAX_VALUE))
     );
     jPanel2Layout.setVerticalGroup(
       jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 446, Short.MAX_VALUE)
+      .addGroup(jPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(l_ddsDomain)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(tf_ddsDomain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(b_startDomain)
+        .addGap(23, 23, 23)
+        .addComponent(l_regTopic)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(tf_regTopic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(b_register)
+        .addContainerGap(255, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("DDS", jPanel2);
@@ -621,7 +749,7 @@ public class MSB_gui extends javax.swing.JFrame {
     jPanel4.setLayout(jPanel4Layout);
     jPanel4Layout.setHorizontalGroup(
       jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 402, Short.MAX_VALUE)
+      .addGap(0, 527, Short.MAX_VALUE)
     );
     jPanel4Layout.setVerticalGroup(
       jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -631,15 +759,19 @@ public class MSB_gui extends javax.swing.JFrame {
     jTabbedPane1.addTab("MQTT", jPanel4);
 
     StartWebService.setText("Start");
-    StartWebService.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    StartWebService.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         StartWebServiceActionPerformed(evt);
       }
     });
 
     WebServiceAddress.setText("http://0.0.0.0:9997/wsRecipesDeployer");
-    WebServiceAddress.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    WebServiceAddress.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         WebServiceAddressActionPerformed(evt);
       }
     });
@@ -671,7 +803,7 @@ public class MSB_gui extends javax.swing.JFrame {
             .addComponent(WebServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(18, 18, 18)
             .addComponent(OnOffWSPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addContainerGap(17, Short.MAX_VALUE))
+        .addContainerGap(142, Short.MAX_VALUE))
     );
     jPanel5Layout.setVerticalGroup(
       jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -767,6 +899,11 @@ public class MSB_gui extends javax.swing.JFrame {
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
+
+  /**
+   *
+   * @param evt
+   */
     private void StartWebServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartWebServiceActionPerformed
       // TODO add your handling code here:
       String address = WebServiceAddress.getText();
@@ -774,18 +911,23 @@ public class MSB_gui extends javax.swing.JFrame {
       //myRecipeWS.publish(address, new RecipesDeployerImpl());
       //System.out.println("Listening: " + address);
       //opc_comms_log.setText("Starting WebServer...\n Listening on: "+ address);
-      Thread wsThread = new Thread() {
+      Thread wsThread = new Thread()
+      {
         @Override
-        public void run() {
+        public void run()
+        {
 
           Endpoint myRecipeWS = Endpoint.publish(address, new RecipesDeployerImpl());
           System.out.println("Listening: " + address);
           opc_comms_log.append("Starting WebServer...\nListening on: " + address + "\n");
           Boolean status = myRecipeWS.isPublished();
-          if (status) {
+          if (status)
+          {
             setConnectionColor(true, false, OnOffWSPanel, labelWS);
             opc_comms_log.append("Recipes WebServer successfully published\n");
-          } else {
+          }
+          else
+          {
             setConnectionColor(false, true, OnOffWSPanel, labelWS);
             opc_comms_log.append("Failed publishing Recipes WebServer\n");
           }
@@ -795,21 +937,34 @@ public class MSB_gui extends javax.swing.JFrame {
       wsThread.start();
     }//GEN-LAST:event_StartWebServiceActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void WebServiceAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_WebServiceAddressActionPerformed
       // TODO add your handling code here:
     }//GEN-LAST:event_WebServiceAddressActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_SendURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendURLActionPerformed
       String deviceName = String.valueOf(comboServers.getSelectedItem());
       //ver hashmap e chamar o metodo
       MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
       MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
 
-      MSBcs.SendServerURL(MSBcs.milo_client_instanceMSB, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex -> {
-        System.out.println("error invoking SendServerURL() for server: " + deviceName + "\n" + ex); //logger.error("error invoking SendServerURL()", ex);
+      MSBcs.SendServerURL(MSBcs.milo_client_instanceMSB, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
+      {
+        System.out.println("error invoking SendServerURL() for server: " + deviceName + "\n" + ex);
+        //logger.error("error invoking SendServerURL()", ex);
         opc_comms_log.append("error invoking SendServerURL() for server: " + deviceName + "\n" + ex + "\n");
         return "-1.0";
-      }).thenAccept(v -> {
+      }).thenAccept(v ->
+      {
         //logger.info("SendServerURL(cenas)={}", v);
         System.out.println("SendServerURL(uri)={}\n" + v);
         opc_comms_log.append("SendServerURL(uri)={}\n" + v);
@@ -818,17 +973,25 @@ public class MSB_gui extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btn_SendURLActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_sendRecipeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendRecipeActionPerformed
       String deviceName = String.valueOf(comboServers.getSelectedItem());
       //ver hashmap e chamar o metodo
       MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
       MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
 
-      MSBcs.SendRecipetoDevice(MSBcs.milo_client_instanceMSB, textToSend.getText()).exceptionally(ex -> {
-        System.out.println("error invoking SendRecipetoDevice() for server: " + deviceName + "\n" + ex); //logger.error("error invoking SendServerURL()", ex);
+      MSBcs.SendRecipetoDevice(MSBcs.milo_client_instanceMSB, textToSend.getText()).exceptionally(ex ->
+      {
+        System.out.println("error invoking SendRecipetoDevice() for server: " + deviceName + "\n" + ex);
+        //logger.error("error invoking SendServerURL()", ex);
         opc_comms_log.append("error invoking SendRecipetoDevice() for server: " + deviceName + "\n" + ex + "\n");
         return "-1.0";
-      }).thenAccept(v -> {
+      }).thenAccept(v ->
+      {
         //logger.info("SendServerURL(cenas)={}", v);
         System.out.println("SendRecipetoDevice(uri)={}\n" + v);
         opc_comms_log.append("SendRecipetoDevice(uri)={}\n" + v);
@@ -837,50 +1000,48 @@ public class MSB_gui extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btn_sendRecipeActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void comboServersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboServersActionPerformed
       // TODO add your handling code here:
     }//GEN-LAST:event_comboServersActionPerformed
 
-    private void btn_RequestProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RequestProductActionPerformed
-      //OLD REQUEST PRODUCT - handled by adapter
 
-      /*String deviceName = String.valueOf(comboServers.getSelectedItem());
-        //ver hashmap e chamar o metodo
-        MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access client objects in other classes
-        MSB_MiloClientSubscription MSBcs = myMaps.getOPCclientIDMaps().get(deviceName);
-        
-        MSBcs.RequestProduct(MSBcs.milo_client_instanceMSB, textToSend.getText()).exceptionally(ex -> {
-            System.out.println("error invoking RequestProduct() for server: " + deviceName + "\n" + ex); //logger.error("error invoking SendServerURL()", ex);
-            opc_comms_log.append("error invoking RequestProduct() for server: " + deviceName + "\n" + ex + "\n");
-            return "-1.0";
-        }).thenAccept(v -> {
-            //logger.info("SendServerURL(cenas)={}", v);
-            System.out.println("RequestProduct(uri)={}\n" + v);
-            opc_comms_log.append("RequestProduct(uri)={}\n" + v);
-            //future.complete(client);
-        });*/
-      //NEW REQUEST PRODUCT
+  /**
+   *
+   * @param evt
+   */
+    private void btn_RequestProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RequestProductActionPerformed
       MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access client objects in other classes
       String requestedProduct = textToSend.getText();
 
-      MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct); //get a clientObject that can produce ProductID
+      //get a clientObject that can produce ProductID
+      MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct);
       List<String> DeviceNames = new ArrayList<String>();
 
-      for (String key : myMaps.OPCclientIDMaps.keySet()) { //get workstation names capable of produce ProductID
+      for (String key : myMaps.OPCclientIDMaps.keySet())
+      { //get workstation names capable of produce ProductID
         MSB_MiloClientSubscription MCS = MyHashMaps.OPCclientIDMaps.get(key);
 
         String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
         String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
 
-        if (clientInstanceObject.equals(clientCapableOfProduct)) {
+        if (clientInstanceObject.equals(clientCapableOfProduct))
+        {
           DeviceNames.add(key);
         }
       }
 
-      if (DeviceNames.size() > 0) {
-        List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0)); //choose the first one - Warning: in the future, choose the most cost-effective workstation
+      if (DeviceNames.size() > 0)
+      {
+        //choose the first one - Warning: in the future, choose the most cost-effective workstation
+        List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0));
 
-        for (int i = 0; i < ExeData.size(); i++) {
+        for (int i = 0; i < ExeData.size(); i++)
+        {
           String prodID = ExeData.get(i).productID;
           String methodIdSTR = ExeData.get(i).methodID;
           String objectIdSTR = ExeData.get(i).objectID;
@@ -888,139 +1049,223 @@ public class MSB_gui extends javax.swing.JFrame {
           NodeId objectId = NodeId.parse("ns=2;s=" + objectIdSTR);
           NodeId methodId = NodeId.parse("ns=2;s=" + methodIdSTR);
 
-          if (prodID.equals(requestedProduct)) {
+          if (prodID.equals(requestedProduct))
+          {
             MSBcs2.InvoqueDeviceSkill(MSBcs2.milo_client_instanceMSB, objectId, methodId);
             break;
           }
         }
 
-      } else {
+      }
+      else
+      {
         opc_comms_log.append("There is no Workstation capable of making product: " + textToSend.getText() + "\n");
       }
-
-
     }//GEN-LAST:event_btn_RequestProductActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_DeviceRegistrationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeviceRegistrationActionPerformed
       String ret = "null";
       //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
-      try {
+      try
+      {
         ret = DeviceITF.AllCases("deviceregistration", textToSend.getText()); //simulate a device registration
 
-      } catch (ParserConfigurationException ex) {
+      }
+      catch (ParserConfigurationException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-      } catch (SAXException ex) {
+      }
+      catch (SAXException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-      } catch (IOException ex) {
+      }
+      catch (IOException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-      } catch (JAXBException ex) {
+      }
+      catch (JAXBException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-      } catch (TransformerException ex) {
+      }
+      catch (TransformerException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
       }
       opc_comms_log.append("Device registration method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_DeviceRegistrationActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_ChangedStateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ChangedStateActionPerformed
       String ret = "null";
-      //OPCDeviceItf DeviceITF = new OPCDeviceItf();
-
-      try {
+      try
+      {
         ret = DeviceITF.AllCases("changedstate", textToSend.getText()); //simulate a device registration
-      } catch (ParserConfigurationException ex) {
+      }
+      catch (ParserConfigurationException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-      } catch (SAXException ex) {
+      }
+      catch (SAXException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-      } catch (IOException ex) {
+      }
+      catch (IOException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-      } catch (JAXBException ex) {
+      }
+      catch (JAXBException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-      } catch (TransformerException ex) {
+      }
+      catch (TransformerException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
       }
       opc_comms_log.append("Changed State method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_ChangedStateActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_RecipeExecutionDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RecipeExecutionDoneActionPerformed
       String ret = "null";
       //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
-      try {
+      try
+      {
         ret = DeviceITF.AllCases("recipeexecutiondone", textToSend.getText()); //simulate a device registration
 
-      } catch (ParserConfigurationException ex) {
+      }
+      catch (ParserConfigurationException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-      } catch (SAXException ex) {
+      }
+      catch (SAXException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-      } catch (IOException ex) {
+      }
+      catch (IOException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-      } catch (JAXBException ex) {
+      }
+      catch (JAXBException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-      } catch (TransformerException ex) {
+      }
+      catch (TransformerException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
       }
       opc_comms_log.append("RecipeExecutionDone method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_RecipeExecutionDoneActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_sendrecipe2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendrecipe2ActionPerformed
       String ret = "null";
       //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
-      try {
+      try
+      {
         ret = DeviceITF.AllCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
 
-      } catch (ParserConfigurationException ex) {
+      }
+      catch (ParserConfigurationException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-      } catch (SAXException ex) {
+      }
+      catch (SAXException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-      } catch (IOException ex) {
+      }
+      catch (IOException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-      } catch (JAXBException ex) {
+      }
+      catch (JAXBException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-      } catch (TransformerException ex) {
+      }
+      catch (TransformerException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
       }
       opc_comms_log.append("sendRecipe method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_sendrecipe2ActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_updatestatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updatestatusActionPerformed
       String ret = "null";
       //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
-      try {
+      try
+      {
         ret = DeviceITF.AllCases("statusupdate", textToSend.getText()); //simulate a device registration
 
-      } catch (ParserConfigurationException ex) {
+      }
+      catch (ParserConfigurationException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-      } catch (SAXException ex) {
+      }
+      catch (SAXException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-      } catch (IOException ex) {
+      }
+      catch (IOException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-      } catch (JAXBException ex) {
+      }
+      catch (JAXBException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-      } catch (TransformerException ex) {
+      }
+      catch (TransformerException ex)
+      {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
       }
       opc_comms_log.append("statusupdate method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_updatestatusActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_invoqueMethodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_invoqueMethodActionPerformed
       String deviceName = String.valueOf(comboServers.getSelectedItem());
       //ver hashmap e chamar o metodo
@@ -1028,19 +1273,28 @@ public class MSB_gui extends javax.swing.JFrame {
       MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
 
       //TESTE INVOQUESKILL
-      NodeId objectId = NodeId.parse("ns=2;s=Pre-Demonstrator_InstanceHierarchy/AssemblySystem/WorkStation/SC1:Task_slow_Recipe");
+      NodeId objectId = NodeId.parse("ns=2;s=Pre-Demonstrator_InstanceHierarchy/"
+          + "AssemblySystem/WorkStation/SC1:Task_slow_Recipe");
       NodeId methodId = NodeId.parse("ns=2;s=InvokeSkill/SC1:Task_slow_Recipe");
 
-      MSBcs.InvoqueDeviceSkill(MSBcs.milo_client_instanceMSB, objectId, methodId).exceptionally(ex -> {
-        System.out.println("error invoking Call InvoqueMethod() for server: " + ex); //logger.error("error invoking SendServerURL()", ex);
+      MSBcs.InvoqueDeviceSkill(MSBcs.milo_client_instanceMSB, objectId, methodId).exceptionally(ex ->
+      {
+        System.out.println("error invoking Call InvoqueMethod() for server: " + ex);
+        //logger.error("error invoking SendServerURL()", ex);
         return "-1.0";
-      }).thenAccept(v -> {
+      }).thenAccept(v ->
+      {
         //logger.info("SendServerURL(cenas)={}", v);
         System.out.println("Call InvoqueMethod(uri)={}\n" + v);
         //future.complete(client);
       });
     }//GEN-LAST:event_btn_invoqueMethodActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void prodBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prodBActionPerformed
       // TODO add your handling code here:
       // TODO add your handling code here:
@@ -1048,24 +1302,30 @@ public class MSB_gui extends javax.swing.JFrame {
       MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access client objects in other classes
       String requestedProduct = "AGV_B";
 
-      MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct); //get a clientObject that can produce ProductID
+      //get a clientObject that can produce ProductID
+      MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct);
       List<String> DeviceNames = new ArrayList<String>();
 
-      for (String key : myMaps.OPCclientIDMaps.keySet()) { //get workstation names capable of produce ProductID
+      for (String key : myMaps.OPCclientIDMaps.keySet())
+      { //get workstation names capable of produce ProductID
         MSB_MiloClientSubscription MCS = MyHashMaps.OPCclientIDMaps.get(key);
 
         String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
         String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
 
-        if (clientInstanceObject.equals(clientCapableOfProduct)) {
+        if (clientInstanceObject.equals(clientCapableOfProduct))
+        {
           DeviceNames.add(key);
         }
       }
 
-      if (DeviceNames.size() > 0) {
-        List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0)); //choose the first one - Warning: in the future, choose the most cost-effective workstation
+      if (DeviceNames.size() > 0)
+      {
+        //choose the first one - Warning: in the future, choose the most cost-effective workstation
+        List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0));
 
-        for (int i = 0; i < ExeData.size(); i++) {
+        for (int i = 0; i < ExeData.size(); i++)
+        {
           String prodID = ExeData.get(i).productID;
           String methodIdSTR = ExeData.get(i).methodID;
           String objectIdSTR = ExeData.get(i).objectID;
@@ -1073,43 +1333,57 @@ public class MSB_gui extends javax.swing.JFrame {
           NodeId objectId = NodeId.parse("ns=2;s=" + objectIdSTR);
           NodeId methodId = NodeId.parse("ns=2;s=" + methodIdSTR);
 
-          if (prodID.equals(requestedProduct)) {
+          if (prodID.equals(requestedProduct))
+          {
             MSBcs2.InvoqueDeviceSkill(MSBcs2.milo_client_instanceMSB, objectId, methodId);
             opc_comms_log.append("Invoked prodB \n");
             break;
           }
         }
 
-      } else {
+      }
+      else
+      {
         opc_comms_log.append("There is no Workstation capable of making product: " + textToSend.getText() + "\n");
       }
 
     }//GEN-LAST:event_prodBActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
     private void prodAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prodAActionPerformed
       // TODO add your handling code here:
       //NEW REQUEST PRODUCT
       MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access client objects in other classes
       String requestedProduct = "AGV_A";
 
-      MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct); //get a clientObject that can produce ProductID
+      //get a clientObject that can produce ProductID
+      MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct);
       List<String> DeviceNames = new ArrayList<String>();
 
-      for (String key : myMaps.OPCclientIDMaps.keySet()) { //get workstation names capable of produce ProductID
+      for (String key : myMaps.OPCclientIDMaps.keySet())
+      { //get workstation names capable of produce ProductID
         MSB_MiloClientSubscription MCS = MyHashMaps.OPCclientIDMaps.get(key);
 
         String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
         String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
 
-        if (clientInstanceObject.equals(clientCapableOfProduct)) {
+        if (clientInstanceObject.equals(clientCapableOfProduct))
+        {
           DeviceNames.add(key);
         }
       }
 
-      if (DeviceNames.size() > 0) {
-        List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0)); //choose the first one - Warning: in the future, choose the most cost-effective workstation
+      if (DeviceNames.size() > 0)
+      {
+        //choose the first one - Warning: in the future, choose the most cost-effective workstation
+        List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0));
 
-        for (int i = 0; i < ExeData.size(); i++) {
+        for (int i = 0; i < ExeData.size(); i++)
+        {
           String prodID = ExeData.get(i).productID;
           String methodIdSTR = ExeData.get(i).methodID;
           String objectIdSTR = ExeData.get(i).objectID;
@@ -1117,30 +1391,36 @@ public class MSB_gui extends javax.swing.JFrame {
           NodeId objectId = NodeId.parse("ns=2;s=" + objectIdSTR);
           NodeId methodId = NodeId.parse("ns=2;s=" + methodIdSTR);
 
-          if (prodID.equals(requestedProduct)) {
+          if (prodID.equals(requestedProduct))
+          {
             MSBcs2.InvoqueDeviceSkill(MSBcs2.milo_client_instanceMSB, objectId, methodId);
             opc_comms_log.append("Invoked prodA \n");
             break;
           }
         }
 
-      } else {
+      }
+      else
+      {
         opc_comms_log.append("There is no Workstation capable of making product: " + textToSend.getText() + "\n");
       }
 
     }//GEN-LAST:event_prodAActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
   private void btn_start_discoveryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_start_discoveryActionPerformed
 
-    /*addToTableProduct("A", "PUDIM", true, "ME");
-    addToTableProduct("B", "FLAN", true, "ME");
-    DeviceRegistryBean dbMSBd = new DeviceRegistryBean();
-    dbMSBd.register_execution_info("workstattt", "pudim", "NO AGENT", "prod_id", "methodID", "objectID"); //DELETE*/
     //delete old msb servers in the DB at the startup - they could have the same address
     DeviceRegistryBean dbMSB = new DeviceRegistryBean();
     ArrayList ArrayData = dbMSB.list_all_devices();
-    for (int i = 0; i < ArrayData.size(); i++) {
-      if (ArrayData.get(i).toString().contains("MSB")) {
+    for (int i = 0; i < ArrayData.size(); i++)
+    {
+      if (ArrayData.get(i).toString().contains("MSB"))
+      {
         System.out.println("found old MSB instance on database: " + i);
         dbMSB.deregister_device(ArrayData.get(i).toString());
       }
@@ -1148,25 +1428,44 @@ public class MSB_gui extends javax.swing.JFrame {
 
     //launch Discovery Service to search for other devices (OPCUA servers from devices)
     OPCDeviceDiscoveryItf OPCdevDiscItf;
-    OPCdevDiscItf = new OPCDeviceDiscoveryItf() {
+    OPCdevDiscItf = new OPCDeviceDiscoveryItf()
+    {
+
+      /**
+       *
+       * @param name
+       * @param app_uri
+       */
       @Override
-      public void on_new_server(String name, String app_uri) {
+      public void on_new_server(String name, String app_uri)
+      {
         System.out.println("server found: " + app_uri);
 
         labelLDS.setIcon(greenLight); //blink status LED every polling cycle
-        try {
+        try
+        {
           Thread.sleep(1000);
-        } catch (InterruptedException ex) {
+        }
+        catch (InterruptedException ex)
+        {
           Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         }
         labelLDS.setIcon(greyLight);
       }
 
+
+      /**
+       *
+       * @param name
+       * @param app_uri
+       */
       @Override
-      public void on_new_endpoint(String name, String app_uri) {
+      public void on_new_endpoint(String name, String app_uri)
+      {
         //every time there is a "polling" cycle in discovery, check OPC client/server connections
         System.out.println("POLLING CYCLE********************************");
-        if (OPCclientIDMap.size() > 0) { //verify client connection status in the end of the polling cycle
+        if (OPCclientIDMap.size() > 0)
+        { //verify client connection status in the end of the polling cycle
 
         }
         System.out.println("NAME: " + name + " URL: " + app_uri);
@@ -1174,41 +1473,52 @@ public class MSB_gui extends javax.swing.JFrame {
         DeviceRegistryBean dbMSB = new DeviceRegistryBean();
         ArrayList ArrayData = dbMSB.read_device_info(name);
 
-        if (ArrayData.isEmpty()) { //if the device name doesn't exist in the database, register
+        if (ArrayData.isEmpty())
+        { //if the device name doesn't exist in the database, register
           registerServer(name, app_uri);
           addToTableServers(name, "opcua", app_uri);
           System.out.println("onNewServer Registered Server: " + name + " " + app_uri);
           opc_comms_log.append("New Server found and registered: " + name + " " + app_uri + "\n");
-          if (name.contains("MSB")) {
+          if (name.contains("MSB"))
+          {
             MSB_OPCUA_SERVER_ADDRESS = app_uri;
             ComboMSB.addItem(name);
           }
 
-          if (app_uri.contains("4840")) {
+          if (app_uri.contains("4840"))
+          {
             System.out.println("Don't create an opc client for LDS!");
-          } else {
-            try {
+          }
+          else
+          {
+            try
+            {
 
               MSB_MiloClientSubscription instance = new MSB_MiloClientSubscription();
 
               OPCclientIDMap.put(name, instance); //save the client objectID and the name of the device as hashmap
-              //MyHashMaps hash = null;
+              // MyHashMaps hash = null;
 
-              MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
+              // Singleton to access client objects in other classes
+              MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance();
               myOpcUaClientsMap.setOPCclientIDMaps(name, instance);
 
               //start connection after inserting on the hashmap!
               instance.startConnection(app_uri);
 
               // Iterate over all values, using the keySet method.
-              //call SendServerURL() method from device
+              // call SendServerURL() method from device
               OpcUaClient client = instance.getClientObject();
-              if (!name.contains("MSB")) {
+              if (!name.contains("MSB"))
+              {
                 comboServers.addItem(name);
-                instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex -> {
-                  System.out.println("error invoking SendServerURL() for server: " + name + "\n" + ex); //logger.error("error invoking SendServerURL()", ex);
+                instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
+                {
+                  System.out.println("error invoking SendServerURL() for server: " + name + "\n" + ex);
+                  //logger.error("error invoking SendServerURL()", ex);
                   return "-1.0";
-                }).thenAccept(v -> {
+                }).thenAccept(v ->
+                {
                   //logger.info("SendServerURL(cenas)={}", v);
                   System.out.println("SendServerURL(uri)={}\n" + v);
                   //future.complete(client);
@@ -1216,66 +1526,100 @@ public class MSB_gui extends javax.swing.JFrame {
 
               }
 
-              if (client == null) {
+              if (client == null)
+              {
                 System.out.println("Client = null?");
               }
 
-              for (String key : OPCclientIDMap.keySet()) {
+              for (String key : OPCclientIDMap.keySet())
+              {
                 System.out.println(key + " ->hashmap<- - " + OPCclientIDMap.get(key));
               }
 
-              for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet()) {
+              for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet())
+              {
                 System.out.println(key + " ->singleton hashmap<- - " + myOpcUaClientsMap.getOPCclientIDMaps().get(key));
               }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
               Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
             }
           }
 
-        } else {  //if the device name exist in the database, check if it is still available
+        }
+        else
+        {  //if the device name exist in the database, check if it is still available
           System.out.println("Server : " + name + " " + app_uri + " Already registered in the Database!");
         }
       }
 
+
+      /**
+       *
+       */
       @Override
-      public void on_endpoint_dissapeared() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      public void on_endpoint_dissapeared()
+      {
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
       }
 
+
+      /**
+       *
+       */
       @Override
-      public void reset_tables() {
+      public void reset_tables()
+      {
         // dropServersAndEndpoints(); //ver
         System.out.println("reset endpoint and servers tables...");
       }
 
+
+      /**
+       *
+       * @param name
+       * @param app_uri
+       */
       @Override
-      public void on_server_dissapeared(String name, String app_uri) {
+      public void on_server_dissapeared(String name, String app_uri)
+      {
         System.out.println("This server has disapeared: " + name);
-        if (RemoveDownServer(name) == 1) {
+        if (RemoveDownServer(name) == 1)
+        {
           opc_comms_log.append("The server: " + name + " has disapeared and has been successfully removed from database.\n");
           //deleteFromTableServers(name, "", app_uri);
           CleanTablesFromWorkstation(name);
           //wait for completion? warning
-          try {
+          try
+          {
             Thread.sleep(1000);
-          } catch (InterruptedException ex) {
+          }
+          catch (InterruptedException ex)
+          {
             Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
           }
           CleanHashMapsFromWorkstation(name);
 
-        } else {
+        }
+        else
+        {
           opc_comms_log.append("The server: " + name + " has disapeared and has NOT been removed from database.\n");
         }
-        for (String key : OPCclientIDMap.keySet()) {
+        for (String key : OPCclientIDMap.keySet())
+        {
           System.out.println(key + " ->new local hashmap<- - " + OPCclientIDMap.get(key));
         }
         MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
-        for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet()) {
+        for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet())
+        {
           System.out.println(key + " ->new singleton hashmap<- - " + myOpcUaClientsMap.getOPCclientIDMaps().get(key));
         }
       }
 
     };
+
     // String LDS_uri="opc.tcp://localhost:4840";
     String LDS_uri = LDSserverAddress.getText();
 
@@ -1286,76 +1630,140 @@ public class MSB_gui extends javax.swing.JFrame {
     //create a new OPCDevice with structure methods - common to all OPCcommunication?
   }//GEN-LAST:event_btn_start_discoveryActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
   private void LDSRegisterserverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LDSRegisterserverActionPerformed
     int ret = 0;
-    try {
+    try
+    {
       ret = opcuaServerInstanceMILO.register(LDSserverAddress.getText());
       opc_comms_log.append("Registering MSB OPCUA Milo Server on the LDS server...\n");
-      if (ret == 1) {
+      if (ret == 1)
+      {
         opc_comms_log.append("Success\n");
         setConnectionColor(true, false, OnOffRegister, labelRegister);
-      } else {
+      }
+      else
+      {
         opc_comms_log.append("Failed to register MSB OPCUA Milo Server on the LDS server!\n");
         setConnectionColor(false, true, OnOffRegister, labelRegister);
       }
-    } catch (Exception ex) {
+    }
+    catch (Exception ex)
+    {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
   }//GEN-LAST:event_LDSRegisterserverActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
   private void LDSserverAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LDSserverAddressActionPerformed
     // TODO add your handling code here:
   }//GEN-LAST:event_LDSserverAddressActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
   private void StartMSBServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartMSBServerActionPerformed
-    try {
+    try
+    {
       // TODO add your handling code here:
       // TODO add your handling code here:
       opc_comms_log.append("Starting MSB OPCUA Milo Server...\n");
 
       opcuaServerInstanceMILO = new opcuaServerMSB(msb_opcua_servername.getText()); //new MSB Milo server
       //launch MILO MSB OPCUA Server endpoint
-      if (opcuaServerInstanceMILO.control == false) {
-        try {
+      if (opcuaServerInstanceMILO.control == false)
+      {
+        try
+        {
           opcuaServerInstanceMILO.startup().get();
           opc_comms_log.append("Server created. \n");
           setConnectionColor(true, false, OnOffServerPanel, labelServer);
-          /*final CompletableFuture<Void> future = new CompletableFuture<>();
-          Runtime.getRuntime().addShutdownHook(new Thread(() -> future.complete(null)));
-          future.get();*/
-        } catch (Exception ex) {
+          /*
+           * final CompletableFuture<Void> future = new CompletableFuture<>(); Runtime.getRuntime().addShutdownHook(new
+           * Thread(() -> future.complete(null))); future.get();
+           */
+        }
+        catch (Exception ex)
+        {
           Logger.getLogger(FabioMSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
           opc_comms_log.append("Exception: " + ex);
           setConnectionColor(false, true, OnOffServerPanel, labelServer);
         }
-      } else {
+      }
+      else
+      {
         System.out.println("MSB Server already created!\n");
         opc_comms_log.append("MSB Server already created!\n");
       }
 
-      try {//test to see if the server is running at the first discovery
+      try
+      {//test to see if the server is running at the first discovery
         Thread.sleep(500);
-      } catch (InterruptedException ex) {
+      }
+      catch (InterruptedException ex)
+      {
         Thread.currentThread().interrupt();
       }
 
-    } catch (Exception ex) {
+    }
+    catch (Exception ex)
+    {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
   }//GEN-LAST:event_StartMSBServerActionPerformed
 
+
+  /**
+   *
+   * @param evt
+   */
   private void StartMSBServerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_StartMSBServerMouseClicked
 
   }//GEN-LAST:event_StartMSBServerMouseClicked
 
+
+  /**
+   *
+   * @param evt
+   */
   private void msb_opcua_servernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msb_opcua_servernameActionPerformed
     // TODO add your handling code here:
   }//GEN-LAST:event_msb_opcua_servernameActionPerformed
 
-  private static String registerServer(java.lang.String serverName, java.lang.String serverUri) {
-    //msbweb.RegisterDevice_Service service = new msbweb.RegisterDevice_Service();
-    //msbweb.DBInteraction port = service.getDBInteractionPort();
-    //return port.registerServer(serverName, serverUri);*/
+  private void tf_ddsDomainActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_ddsDomainActionPerformed
+  {//GEN-HEADEREND:event_tf_ddsDomainActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_tf_ddsDomainActionPerformed
+
+  private void tf_regTopicActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_regTopicActionPerformed
+  {//GEN-HEADEREND:event_tf_regTopicActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_tf_regTopicActionPerformed
+
+  private void b_registerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_registerActionPerformed
+  {//GEN-HEADEREND:event_b_registerActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_b_registerActionPerformed
+
+
+  /**
+   *
+   * @param serverName
+   * @param serverUri
+   * @return
+   */
+  private static String registerServer(java.lang.String serverName, java.lang.String serverUri)
+  {
     DeviceRegistryBean dbMSB = new DeviceRegistryBean();
     String res = dbMSB.register_device(serverName, "null", "null", serverUri, "opcua");
     System.out.println(res);
@@ -1363,7 +1771,14 @@ public class MSB_gui extends javax.swing.JFrame {
     return res;
   }
 
-  public static int RemoveDownServer(String ServerName) {
+
+  /**
+   *
+   * @param ServerName
+   * @return
+   */
+  public static int RemoveDownServer(String ServerName)
+  {
 
     MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
     myOpcUaClientsMap.deleteOPCclientIDMaps(ServerName); //remove server from singleton Hashmap
@@ -1372,40 +1787,63 @@ public class MSB_gui extends javax.swing.JFrame {
     DeviceRegistryBean dbMSB = new DeviceRegistryBean();
     int res = dbMSB.deregister_device(ServerName);
 
-    if (res != -999) {
+    if (res != -999)
+    {
       System.out.println("DownServer successfully deleted from DB!");
       return 1;
-    } else {
+    }
+    else
+    {
       System.out.println("ERROR deleting DownServer from DB!");
       return -1;
     }
 
   }
 
-  private void addToTableServers(String serverName, String protocol, String serverUri) {
-    TServersmodel.addRow(new Object[]{serverName, protocol, serverUri});
+
+  /**
+   *
+   * @param serverName
+   * @param protocol
+   * @param serverUri
+   */
+  private void addToTableServers(String serverName, String protocol, String serverUri)
+  {
+    TServersmodel.addRow(new Object[]
+    {
+      serverName, protocol, serverUri
+    });
 
     Object[] rowData = new Object[TServersmodel.getColumnCount()];
-    for (int i = 0; i < TServersmodel.getColumnCount(); i++) {
+    for (int i = 0; i < TServersmodel.getColumnCount(); i++)
+    {
       rowData[i] = TServersmodel.getValueAt(0, i);
-      System.out.println("SERVER NA TABELA: " + rowData.toString());
+      System.out.println("Server successfully added to table. Name: " + rowData.toString());
     }
     opc_comms_log.append("Server successfully added to table. Name: " + serverName + "URL: " + serverUri + "\n");
 
     //warning - demo purposes
-    if (serverName.contains("Adapter")) {
+    if (serverName.contains("Adapter"))
+    {
       CreateProductButtons();
     }
 
   }
 
-  public static void FillProductsTable() {
+
+  /**
+   *
+   */
+  public static void FillProductsTable()
+  {
     MyHashMaps myOpcMap = MyHashMaps.getInstance(); //singleton to access hashmaps in other classes
     int index = 0;
-    for (String key : myOpcMap.ExecutiontTableMaps.keySet()) {
+    for (String key : myOpcMap.ExecutiontTableMaps.keySet())
+    {
       System.out.println(key + " ->MAPA de execução MSBGUI<- - " + MyHashMaps.ExecutiontTableMaps.get(key));
       List<ExecuteData> ETD = myOpcMap.ExecutiontTableMaps.get(key); //get product list for each workstatio 
-      for (int i = 0; i < ETD.size(); i++) {
+      for (int i = 0; i < ETD.size(); i++)
+      {
         addToTableProduct(ETD.get(i).productID, ETD.get(i).recipeID, ETD.get(i).status, key); //add each product from the list for each workstation
       }
       index++;
@@ -1413,9 +1851,15 @@ public class MSB_gui extends javax.swing.JFrame {
 
   }
 
-  public void CreateProductButtons() {
+
+  /**
+   *
+   */
+  public void CreateProductButtons()
+  {
     //DRAFT 
-    try {
+    try
+    {
       prodA.show();
       prodB.show();
       Image imgA = ImageIO.read(new File("images\\prodA.png"));
@@ -1423,13 +1867,21 @@ public class MSB_gui extends javax.swing.JFrame {
 
       prodA.setIcon(new ImageIcon(imgA));
       prodB.setIcon(new ImageIcon(imgB));
-    } catch (Exception ex) {
+    }
+    catch (Exception ex)
+    {
       System.out.println(ex);
     }
   }
 
-  public static void FillDevicesTable() {
-    for (String key : MyHashMaps.ServerTableMaps.keySet()) {
+
+  /**
+   *
+   */
+  public static void FillDevicesTable()
+  {
+    for (String key : MyHashMaps.ServerTableMaps.keySet())
+    {
       System.out.println(key + " ->MAPA de execução MSBGUI<- - " + MyHashMaps.ServerTableMaps.get(key));
       ServerStatus SStat = MyHashMaps.ServerTableMaps.get(key);
       //call mainwindow filltables
@@ -1438,41 +1890,81 @@ public class MSB_gui extends javax.swing.JFrame {
     }
   }
 
-  //add a row to tableProduct
-  public static void addToTableProduct(String productID, String RecipeID, Boolean Status, String Workstation) {
-    TProductsmodel.addRow(new Object[]{productID, RecipeID, Status, Workstation});
+
+  /**
+   * add a row to tableProduct
+   *
+   * @param productID
+   * @param RecipeID
+   * @param Status
+   * @param Workstation
+   */
+  public static void addToTableProduct(String productID, String RecipeID, Boolean Status, String Workstation)
+  {
+    TProductsmodel.addRow(new Object[]
+    {
+      productID, RecipeID, Status, Workstation
+    });
 
     Object[] rowData = new Object[TProductsmodel.getColumnCount()];
-    for (int i = 0; i < TProductsmodel.getColumnCount(); i++) {
+    for (int i = 0; i < TProductsmodel.getColumnCount(); i++)
+    {
       rowData[i] = TProductsmodel.getValueAt(0, i);
       System.out.println("Product NA TABELA: " + rowData[i].toString());
     }
     opc_comms_log.append("Product successfully added to table. Name: " + productID + "\n");
   }
 
-  //add a row to DeviceTable
-  public static void addToTableDevice(String DeviceName, Boolean Status, String Endpoint, String WorkStation) {
-    TDevicesmodel.addRow(new Object[]{DeviceName, Status, Endpoint, WorkStation});
-    try {
+
+  /**
+   * add a row to DeviceTable
+   *
+   * @param DeviceName
+   * @param Status
+   * @param Endpoint
+   * @param WorkStation
+   */
+  public static void addToTableDevice(String DeviceName, Boolean Status, String Endpoint, String WorkStation)
+  {
+    TDevicesmodel.addRow(new Object[]
+    {
+      DeviceName, Status, Endpoint, WorkStation
+    });
+    try
+    {
       Thread.sleep(1000);
-    } catch (InterruptedException ex) {
+    }
+    catch (InterruptedException ex)
+    {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
     Object[] rowData = new Object[TDevicesmodel.getColumnCount()];
-    for (int i = 0; i < TDevicesmodel.getColumnCount(); i++) {
+    for (int i = 0; i < TDevicesmodel.getColumnCount(); i++)
+    {
       rowData[i] = TDevicesmodel.getValueAt(0, i);
       System.out.println("Devices NA TABELA: " + rowData[i].toString());
     }
     opc_comms_log.append("Devices successfully added to table. Name: " + DeviceName + "\n");
   }
 
-  private void deleteFromTableServers(String serverName, String protocol, String serverUri) {
+
+  /**
+   *
+   * @param serverName
+   * @param protocol
+   * @param serverUri
+   */
+  private void deleteFromTableServers(String serverName, String protocol, String serverUri)
+  {
 
     int rowcont = TServersmodel.getRowCount();
     int indexToRemove = -1;
-    for (int i = 0; i < TServersmodel.getRowCount(); i++) {//For each row
-      for (int j = 0; j < TServersmodel.getColumnCount(); j++) {//For each column in that row
-        if (TServersmodel.getValueAt(i, j).equals(serverName)) {//Search the model
+    for (int i = 0; i < TServersmodel.getRowCount(); i++)
+    {//For each row
+      for (int j = 0; j < TServersmodel.getColumnCount(); j++)
+      {//For each column in that row
+        if (TServersmodel.getValueAt(i, j).equals(serverName))
+        {//Search the model
           System.out.println("FOUND SERVER TO DELETE from table: " + TServersmodel.getValueAt(i, j));//Print if found string
           indexToRemove = i;
           TServersmodel.removeRow(indexToRemove);
@@ -1481,11 +1973,14 @@ public class MSB_gui extends javax.swing.JFrame {
       }//For inner loop 
     }//For outer loop 
 
-    if (indexToRemove != -1) {
+    if (indexToRemove != -1)
+    {
 
       System.out.println("SERVER DELETED from table: " + serverName);//Print if server found 
       opc_comms_log.append("SERVER DELETED from table: " + serverName + "\n");
-    } else {
+    }
+    else
+    {
       System.out.println("SERVER TO DELETE NOT FOUND from table: " + serverName);//Print if server not found 
       //opc_comms_log.append("SERVER TO DELETE NOT FOUND from table: " + serverName + "\n");
     }
@@ -1494,15 +1989,28 @@ public class MSB_gui extends javax.swing.JFrame {
 
   }
 
-  private static void deleteFromTableProducts(String productID, String recipeID, String workstationName) {
+
+  /**
+   *
+   * @param productID
+   * @param recipeID
+   * @param workstationName
+   */
+  private static void deleteFromTableProducts(String productID, String recipeID, String workstationName)
+  {
     //delete from product ID? recipeID? or workstationName? or all?
     //TODO
 
     int rowcont = TProductsmodel.getRowCount();
     int indexToRemove = -1;
-    for (int i = 0; i < TProductsmodel.getRowCount(); i++) {//For each row
-      for (int j = 0; j < TProductsmodel.getColumnCount(); j++) {//For each column in that row
-        if (/*TProductsmodel.getValueAt(i, j).equals(productID) || TProductsmodel.getValueAt(i, j).equals(recipeID) || */TProductsmodel.getValueAt(i, j).equals(workstationName)) {//Search the model
+    for (int i = 0; i < TProductsmodel.getRowCount(); i++)
+    {//For each row
+      for (int j = 0; j < TProductsmodel.getColumnCount(); j++)
+      {//For each column in that row
+        if (/*
+             * TProductsmodel.getValueAt(i, j).equals(productID) || TProductsmodel.getValueAt(i, j).equals(recipeID) ||
+             */TProductsmodel.getValueAt(i, j).equals(workstationName))
+        {//Search the model
           System.out.println("FOUND PRODUCT TO DELETE from table: " + TProductsmodel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
           indexToRemove = i;
           TProductsmodel.removeRow(indexToRemove);
@@ -1511,26 +2019,43 @@ public class MSB_gui extends javax.swing.JFrame {
       }//For inner loop 
     }//For outer loop 
 
-    if (indexToRemove != -1) {
+    if (indexToRemove != -1)
+    {
       System.out.println("PRODUCT DELETED from table: " + productID);//Print if server found 
       opc_comms_log.append("PRODUCT DELETED from table: " + productID + "\n");
-    } else {
+    }
+    else
+    {
       System.out.println("PRODUCT TO DELETE NOT FOUND from table: " + productID);//Print if server not found 
       //opc_comms_log.append("PRODUCT TO DELETE NOT FOUND from table: " + productID + "\n");
     }
 
   }
 
-  private static void deleteFromTableDevices(String DeviceName, Boolean status, String endpoint, String workstationName) {
+
+  /**
+   *
+   * @param DeviceName
+   * @param status
+   * @param endpoint
+   * @param workstationName
+   */
+  private static void deleteFromTableDevices(String DeviceName, Boolean status, String endpoint, String workstationName)
+  {
     //delete from DeviceName? status? or endpoint? or all?
     //TODO
 
     int rowcount = TDevicesmodel.getRowCount();
 
     int indexToRemove = -1;
-    for (int i = 0; i < TDevicesmodel.getRowCount(); i++) {//For each row
-      for (int j = 0; j < TDevicesmodel.getColumnCount(); j++) {//For each column in that row
-        if (/*TDevicesmodel.getValueAt(i, j).equals(DeviceName) || TDevicesmodel.getValueAt(i, j).equals(endpoint) || */TDevicesmodel.getValueAt(i, j).equals(workstationName)) {//Search the model
+    for (int i = 0; i < TDevicesmodel.getRowCount(); i++)
+    {//For each row
+      for (int j = 0; j < TDevicesmodel.getColumnCount(); j++)
+      {//For each column in that row
+        if (/*
+             * TDevicesmodel.getValueAt(i, j).equals(DeviceName) || TDevicesmodel.getValueAt(i, j).equals(endpoint) ||
+             */TDevicesmodel.getValueAt(i, j).equals(workstationName))
+        {//Search the model
           System.out.println("FOUND PRODUCT TO DELETE from table: " + TDevicesmodel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
           indexToRemove = i;
           TDevicesmodel.removeRow(indexToRemove);
@@ -1539,26 +2064,37 @@ public class MSB_gui extends javax.swing.JFrame {
       }//For inner loop 
     }//For outer loop 
 
-    if (indexToRemove != -1) {
+    if (indexToRemove != -1)
+    {
       System.out.println("DEVICE DELETED from table: " + workstationName);//Print if server found 
       opc_comms_log.append("DEVICE DELETED from table: " + workstationName + "\n");
-    } else {
+    }
+    else
+    {
       System.out.println("DEVICE TO DELETE NOT FOUND from table: " + workstationName);//Print if server not found 
       //opc_comms_log.append("DEVICE TO DELETE NOT FOUND from table: " + DeviceName + "\n");
     }
 
   }
 
-  private void setImage() {
+
+  /**
+   *
+   */
+  private void setImage()
+  {
     //faz o set das images e dimensiona se acordo com o tamanho do panel
     BufferedImage img = null;
     BufferedImage img1 = null;
     BufferedImage img2 = null;
-    try {
+    try
+    {
       img = ImageIO.read(new File("images/green-circle.png"));
       img1 = ImageIO.read(new File("images/red.png"));
       img2 = ImageIO.read(new File("images/glossy-gray.png"));
-    } catch (IOException e) {
+    }
+    catch (IOException e)
+    {
       e.printStackTrace();
     }
 
@@ -1570,18 +2106,32 @@ public class MSB_gui extends javax.swing.JFrame {
     greyLight = new ImageIcon(dimg3);
   }
 
-  private boolean setConnectionColor(boolean con, boolean lastState, JPanel panel, JLabel label) {
-    // verifica o estado da ligaçao ao servidor e altera a imagem de acordo com a mesma
-    if (con != lastState) {
 
-      if (con == true) {
+  /**
+   *
+   * @param con
+   * @param lastState
+   * @param panel
+   * @param label
+   * @return
+   */
+  private boolean setConnectionColor(boolean con, boolean lastState, JPanel panel, JLabel label)
+  {
+    // verifica o estado da ligaçao ao servidor e altera a imagem de acordo com a mesma
+    if (con != lastState)
+    {
+
+      if (con == true)
+      {
 
         panel.removeAll();
         label.setIcon(greenLight);
         panel.add(label);
         panel.revalidate();
         panel.repaint();
-      } else if (con == false) {
+      }
+      else if (con == false)
+      {
 
         panel.removeAll();
         label.setIcon(redLight);
@@ -1594,35 +2144,51 @@ public class MSB_gui extends javax.swing.JFrame {
     return lastState;
   }
 
-  private void threadCheckServersConnection() {
+
+  /**
+   *
+   */
+  private void threadCheckServersConnection()
+  {
     //thread da verificaçao da ligaçao ao servidor do plc
     ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-    exec.scheduleAtFixedRate(new Runnable() {
+    exec.scheduleAtFixedRate(new Runnable()
+    {
       @Override
-      public void run() {
-        /*boolean aux1 = setConnectionColor(SubscriptionPLC.Connection, SubscriptionPLC.lastState, OnOffPLCPanel, labelPLC);
-                if (aux1 == SubscriptionPLC.Connection) {
-                    SubscriptionPLC.lastState = aux1;
-                }*/
+      public void run()
+      {
+        /*
+         * boolean aux1 = setConnectionColor(SubscriptionPLC.Connection, SubscriptionPLC.lastState, OnOffPLCPanel,
+         * labelPLC); if (aux1 == SubscriptionPLC.Connection) { SubscriptionPLC.lastState = aux1; }
+         */
       }
     }, 0, 100, TimeUnit.MILLISECONDS);
   }
 
-  //reimplementation of modellistener for checkbox value checking
-  public class CheckBoxModelListener implements TableModelListener {
 
-    public void tableChanged(TableModelEvent e) {
+  /**
+   * reimplementation of modellistener for checkbox value checking
+   */
+  public class CheckBoxModelListener implements TableModelListener
+  {
+
+    public void tableChanged(TableModelEvent e)
+    {
       int row = e.getFirstRow();
       int column = e.getColumn();
-      if (column == 2) { //column of the checkbox
+      if (column == 2)
+      { //column of the checkbox
         TableModel model = (TableModel) e.getSource();
         String columnName = model.getColumnName(column);
         Boolean checked = (Boolean) model.getValueAt(row, column);
         String recipeID = (String) model.getValueAt(row, 1);
-        if (checked) {
+        if (checked)
+        {
           System.out.println(columnName + ": " + true);
           opc_comms_log.append("SendChanges:" + columnName + " of " + recipeID + " " + true + "\n");
-        } else {
+        }
+        else
+        {
           System.out.println(columnName + ": " + false);
           opc_comms_log.append("SendChanges:" + columnName + " of " + recipeID + " " + false + "\n");
         }
@@ -1630,11 +2196,24 @@ public class MSB_gui extends javax.swing.JFrame {
     }
   }
 
-  public void setLogText(String text) {
+
+  /**
+   *
+   * @param text
+   */
+  public void setLogText(String text)
+  {
     opc_comms_log.append(text + '\n');
   }
 
-  public String CleanTablesFromWorkstation(String WorkstationName) {
+
+  /**
+   *
+   * @param WorkstationName
+   * @return
+   */
+  public String CleanTablesFromWorkstation(String WorkstationName)
+  {
     deleteFromTableDevices(null, null, null, WorkstationName);
     deleteFromTableProducts(null, null, WorkstationName);
     deleteFromTableServers(WorkstationName, null, null);
@@ -1642,7 +2221,14 @@ public class MSB_gui extends javax.swing.JFrame {
     return "OK";
   }
 
-  public String CleanHashMapsFromWorkstation(String WorkstationName) {
+
+  /**
+   *
+   * @param WorkstationName
+   * @return
+   */
+  public String CleanHashMapsFromWorkstation(String WorkstationName)
+  {
     MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access hashmaps in other classes
 
     MSB_MiloClientSubscription ret = null;
@@ -1651,12 +2237,14 @@ public class MSB_gui extends javax.swing.JFrame {
     MSB_MiloClientSubscription ClientToRemove = OpcuaDeviceHashMap.get(WorkstationName);
 
     //remove every trace related to the opc client object name on the productIDAdapterMaps
-    for (String key : myMaps.ProductIDAdapterMaps.keySet()) {
+    for (String key : myMaps.ProductIDAdapterMaps.keySet())
+    {
       MSB_MiloClientSubscription MCS = myMaps.ProductIDAdapterMaps.get(key);
 
       String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
 
-      if (clientInstanceObject.equals(ClientToRemove)) {
+      if (clientInstanceObject.equals(ClientToRemove))
+      {
         ret = myMaps.ProductIDAdapterMaps.remove(key);
         cpadRET = myMaps.AgentDeviceMaps.remove(clientInstanceObject);
       }
@@ -1676,58 +2264,77 @@ public class MSB_gui extends javax.swing.JFrame {
       opc_comms_log.append("Successfully removed " + WorkstationName + " from the Maps" + "\n");
     }
 
-    /*AgentStatus status = DeviceITF.RemoveAgent(cpadRET.getUniqueName());
-        opc_comms_log.append("Removing agent: "+cpadRET.getUniqueName());
-        if(status.equals("OK")){
-            opc_comms_log.append("Agent successfully deleted");
-        }else{
-            opc_comms_log.append("Problem deleting agent!");
-        }*/
+    /*
+     * AgentStatus status = DeviceITF.RemoveAgent(cpadRET.getUniqueName()); opc_comms_log.append("Removing agent:
+     * "+cpadRET.getUniqueName()); if(status.equals("OK")){ opc_comms_log.append("Agent successfully deleted"); }else{
+     * opc_comms_log.append("Problem deleting agent!"); }
+     */
     return "OK";
   }
+
 
   /**
    * @param args the command line arguments
    */
-  public static void main(String args[]) {
-    /* Set the Nimbus look and feel */
+  public static void main(String args[])
+  {
+
+    //Set the Nimbus look and feel
     //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-     */
-    try {
-      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
+    try
+    {
+      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
+      {
+        if ("Nimbus".equals(info.getName()))
+        {
           javax.swing.UIManager.setLookAndFeel(info.getClassName());
           break;
         }
       }
-    } catch (ClassNotFoundException ex) {
+    }
+    catch (ClassNotFoundException ex)
+    {
       java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
+    }
+    catch (InstantiationException ex)
+    {
       java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
+    }
+    catch (IllegalAccessException ex)
+    {
       java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+    }
+    catch (javax.swing.UnsupportedLookAndFeelException ex)
+    {
       java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
     //</editor-fold>
     //</editor-fold>
 
-    /* Create and display the form */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() {
+    /*
+     * Create and display the form
+     */
+    java.awt.EventQueue.invokeLater(new Runnable()
+    {
+      /**
+       *
+       */
+      public void run()
+      {
 
-        try {
+        try
+        {
           new MSB_gui().setVisible(true);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
           Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         ImageIcon imageIcon;
         imageIcon = new ImageIcon(new ImageIcon("./main/resources/eu/openmos/msb/icons/OpenMos-logo-RGB-colours.png").getImage().getScaledInstance(l_openmosLogo.getWidth(), l_openmosLogo.getHeight(), Image.SCALE_DEFAULT));
         l_openmosLogo.setIcon(imageIcon);
-        
+
         jScrollPane1.getVerticalScrollBar().setAutoscrolls(true);
 
         DefaultCaret caret = (DefaultCaret) opc_comms_log.getCaret();
@@ -1752,6 +2359,8 @@ public class MSB_gui extends javax.swing.JFrame {
   private javax.swing.JButton StartWebService;
   private javax.swing.JTable TableServers;
   private javax.swing.JTextField WebServiceAddress;
+  private javax.swing.JButton b_register;
+  private javax.swing.JButton b_startDomain;
   private javax.swing.JButton btn_ChangedState;
   private javax.swing.JButton btn_DeviceRegistration;
   private javax.swing.JButton btn_RecipeExecutionDone;
@@ -1789,11 +2398,16 @@ public class MSB_gui extends javax.swing.JFrame {
   private javax.swing.JSeparator jSeparator2;
   private javax.swing.JSeparator jSeparator4;
   private javax.swing.JTabbedPane jTabbedPane1;
+  private javax.swing.JLabel l_ddsDomain;
   private static javax.swing.JLabel l_openmosLogo;
+  private javax.swing.JLabel l_regTopic;
   private javax.swing.JTextField msb_opcua_servername;
   private static javax.swing.JTextArea opc_comms_log;
   private static javax.swing.JButton prodA;
   private static javax.swing.JButton prodB;
   private javax.swing.JTextField textToSend;
+  private javax.swing.JTextField tf_ddsDomain;
+  private javax.swing.JTextField tf_regTopic;
   // End of variables declaration//GEN-END:variables
 }
+//EOF

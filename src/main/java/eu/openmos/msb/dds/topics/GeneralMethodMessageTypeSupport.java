@@ -4,17 +4,17 @@ import org.opensplice.dds.dcps.Utilities;
 
 public class GeneralMethodMessageTypeSupport extends org.opensplice.dds.dcps.TypeSupportImpl implements DDS.TypeSupportOperations
 {
-    private static java.lang.String idl_type_name = "MSB2Adapter::GeneralMethodMessage";
-    private static java.lang.String idl_key_list = "id";
+    private static java.lang.String idl_type_name = "eu.openmos.msb.dds.topics::GeneralMethodMessage";
+    private static java.lang.String idl_key_list = "function";
 
     private long copyCache;
 
     public GeneralMethodMessageTypeSupport()
     {
-        super("MSB2Adapter/GeneralMethodMessageDataReaderImpl",
-            "MSB2Adapter/GeneralMethodMessageDataReaderViewImpl",
-            "MSB2Adapter/GeneralMethodMessageDataWriterImpl",
-            "(LMSB2Adapter/GeneralMethodMessageTypeSupport;)V",
+        super("eu.openmos.msb.dds.topics/GeneralMethodMessageDataReaderImpl",
+            "eu.openmos.msb.dds.topics/GeneralMethodMessageDataReaderViewImpl",
+            "eu.openmos.msb.dds.topics/GeneralMethodMessageDataWriterImpl",
+            "(Leu.openmos.msb.dds.topics/GeneralMethodMessageTypeSupport;)V",
             "null",
             "null");
 

@@ -11,7 +11,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
         copyCache = typeSupport.get_copyCache ();
     }
 
-    @Override
     public int read(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -32,7 +31,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     instance_states);
     }
 
-    @Override
     public int take(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -53,7 +51,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     instance_states);
     }
 
-    @Override
     public int read_w_condition(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -70,7 +67,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     a_condition);
     }
 
-    @Override
     public int take_w_condition(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -87,7 +83,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     a_condition);
     }
 
-    @Override
     public int read_next_sample(
             eu.openmos.msb.dds.topics.GeneralMethodMessageHolder received_data,
             DDS.SampleInfoHolder sample_info)
@@ -100,7 +95,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     sample_info);
     }
 
-    @Override
     public int take_next_sample(
             eu.openmos.msb.dds.topics.GeneralMethodMessageHolder received_data,
             DDS.SampleInfoHolder sample_info)
@@ -113,7 +107,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     sample_info);
     }
 
-    @Override
     public int read_instance(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -136,7 +129,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     instance_states);
     }
 
-    @Override
     public int take_instance(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -159,7 +151,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     instance_states);
     }
 
-    @Override
     public int read_next_instance(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -182,7 +173,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     instance_states);
     }
 
-    @Override
     public int take_next_instance(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -205,7 +195,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     instance_states);
     }
 
-    @Override
     public int read_next_instance_w_condition(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -224,7 +213,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     a_condition);
     }
 
-    @Override
     public int take_next_instance_w_condition(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
@@ -243,7 +231,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     a_condition);
     }
 
-    @Override
     public int return_loan(
             eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq)
@@ -272,7 +259,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
         return result;
     }
 
-    @Override
     public int get_key_value(
             eu.openmos.msb.dds.topics.GeneralMethodMessageHolder key_holder,
             long handle)
@@ -285,7 +271,6 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     handle);
     }
 
-    @Override
     public long lookup_instance(
         eu.openmos.msb.dds.topics.GeneralMethodMessage instance)
     {
@@ -295,6 +280,4 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
                     copyCache,
                     instance);
     }
-
-
 }
