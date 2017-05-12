@@ -185,6 +185,7 @@
             <groupId>eu.openmos.msb.dds</groupId>
             <artifactId>dcpssaj</artifactId>
             <version>6.4.140407</version>
+            <type>jar</type>
         </dependency>
         
         <dependency>
