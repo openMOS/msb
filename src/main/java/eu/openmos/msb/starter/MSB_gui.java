@@ -1699,7 +1699,7 @@ public class MSB_gui extends javax.swing.JFrame
         }
         catch (Exception ex)
         {
-          Logger.getLogger(FabioMSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(MSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
           opc_comms_log.append("Exception: " + ex);
           setConnectionColor(false, true, OnOffServerPanel, labelServer);
         }

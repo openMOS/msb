@@ -17,6 +17,8 @@ import DDS.Subscriber;
 import DDS.SubscriberQosHolder;
 import DDS.Topic;
 import DDS.TopicQosHolder;
+import eu.openmos.msb.dds.topics.GeneralMethodMessageTypeSupport;
+import eu.openmos.msb.dds.topics.StringMessageTypeSupport;
 import java.util.HashMap;
 
 
@@ -24,7 +26,7 @@ import java.util.HashMap;
  *
  * @author andre
  */
-public class DDSDevice
+public class DDSMSBDevice
 {
 
   private Subscriber subscriber;
@@ -32,18 +34,24 @@ public class DDSDevice
   private HashMap<String, DataWriter> dataWriters;
   private HashMap<String, DataReader> datareaders;
   private HashMap<String, Topic> topics;
-  private DomainParticipant domain;
-  private String name;
+  private final DomainParticipant domain;
+  private final String name;
 
 
-  public DDSDevice(String name, DomainParticipant dp)
+  /**
+   * DDSDevice constructor. Receives the name and the domain to which will belong
+   *
+   * @param name Name of the device (identifier)
+   * @param dp Domain to join the device
+   */
+  public DDSMSBDevice(String name, DomainParticipant dp)
   {
     this.domain = dp;
     this.name = name;
 
     int status;
 
-    // Create the publisher for this device
+    // Create the Publisher for this device
     PublisherQosHolder pubQos = new PublisherQosHolder();
     status = this.domain.get_default_publisher_qos(pubQos);
     DDSErrorHandler.checkStatus(status, "DomainParticipant.get_default_publisher_qos");
@@ -60,13 +68,25 @@ public class DDSDevice
     subQos.value.partition.name[0] = name;
     Subscriber sub = this.domain.create_subscriber(subQos.value, null, STATUS_MASK_NONE.value);
     DDSErrorHandler.checkHandle(sub, "DomainParticipant.create_subscriber");
+
+    // Register the message type to the domain, this is specific to this network device
+    GeneralMethodMessageTypeSupport gmmType = new GeneralMethodMessageTypeSupport();
+    status = gmmType.register_type(domain, gmmType.get_type_name());
+    DDSErrorHandler.checkStatus(status, "register_type");
+
+    // Register the message type to the domain, this is specific to this network device
+    StringMessageTypeSupport smType = new StringMessageTypeSupport();
+    status = smType.register_type(domain, smType.get_type_name());
+    DDSErrorHandler.checkStatus(status, "register_type");
+
   }
 
 
   /**
+   * Create a topic with a know type and with the given name
    *
-   * @param topicName
-   * @param topicType
+   * @param topicName Topic name
+   * @param topicType Topic type
    */
   public void createTopic(String topicName, String topicType)
   {
@@ -130,10 +150,11 @@ public class DDSDevice
     if (!datareaders.containsKey(topicName) && topics.containsKey(topicName))
     {
       Topic topic = topics.get(topicName);
+      int mask = DDS.DATA_AVAILABLE_STATUS.value | DDS.REQUESTED_DEADLINE_MISSED_STATUS.value;
       DataReader reader = subscriber.create_datareader(topic,
         DATAREADER_QOS_USE_TOPIC_QOS.value,
         new DDSDataReaderListener(),
-        STATUS_MASK_NONE.value);
+        mask);
       DDSErrorHandler.checkHandle(reader, "Subscriber.create_datareader");
       this.datareaders.put(topicName, reader);
     }

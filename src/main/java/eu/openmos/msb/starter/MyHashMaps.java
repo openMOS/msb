@@ -8,7 +8,6 @@ package eu.openmos.msb.starter;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.dummyclasses.ExecuteData;
 import eu.openmos.msb.dummyclasses.ServerStatus;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -11,7 +11,6 @@ import DDS.DomainParticipantFactory;
 import DDS.PARTICIPANT_QOS_DEFAULT;
 import DDS.STATUS_MASK_NONE;
 import java.util.HashMap;
-import org.opensplice.dds.dcps.TypeSupportImpl;
 
 
 /**
@@ -21,7 +20,7 @@ import org.opensplice.dds.dcps.TypeSupportImpl;
 public class DDSDomainsManager
 {
 
-  private HashMap<String, DomainParticipant> domainsMap;
+  private final HashMap<String, DomainParticipant> domainsMap;
 
 
   /**
@@ -29,7 +28,7 @@ public class DDSDomainsManager
    */
   public DDSDomainsManager()
   {
-
+    this.domainsMap = new HashMap<String, DomainParticipant>();
   }
 
 
@@ -40,8 +39,9 @@ public class DDSDomainsManager
    *
    * @param domainName Name of the domain to add
    * @param id Id of the domain
+   * @return
    */
-  public void createDomainParticipant(String domainName, int id)
+  public DomainParticipant createDomainParticipant(String domainName, int id)
   {
     if (id < 0)
     {
@@ -56,6 +56,8 @@ public class DDSDomainsManager
       STATUS_MASK_NONE.value);
     DDSErrorHandler.checkHandle(participant, "DomainParticipantFactory.create_participant");
     this.domainsMap.put(domainName, participant);
+
+    return participant;
   }
 
 
@@ -73,27 +75,27 @@ public class DDSDomainsManager
 
 
   /**
-   * Register the data type to the specified domain
+   * Get's the domain by the given name
    *
-   * @param ts
-   * @param domainName
-   */
-  public void registerType(TypeSupportImpl ts, String domainName)
-  {
-    String typeName = ts.get_type_name();
-    int status = ts.register_type(this.domainsMap.get(domainName), typeName);
-    DDSErrorHandler.checkStatus(status, "register_type");
-  }
-
-
-  /**
-   *
-   * @param domainName
-   * @return
+   * @param domainName The domain name to obtain
+   * @return DomainParticipant
    */
   public DomainParticipant getDomain(String domainName)
   {
     return this.domainsMap.get(domainName);
   }
 
+
+  /**
+   * Returns a array with all the domain names available
+   *
+   * @return array of strings
+   */
+  public String[] getDomainNames()
+  {
+    return (String[]) this.domainsMap.keySet().toArray();
+  }
+
 }
+
+//EOF

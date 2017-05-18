@@ -26,7 +26,6 @@ import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_S
 import eu.openmos.msb.cloudinterface.WebSocketsReceiver;
 import eu.openmos.msb.cloudinterface.WebSocketsSender;
 import eu.openmos.msb.cloudinterface.WebSocketsSenderDraft;
-import java.io.*;
 import eu.openmos.msb.database.stateless.DeviceRegistryBean;
 import eu.openmos.msb.dummyclasses.ChangedState;
 import eu.openmos.msb.dummyclasses.ExecuteData;
@@ -36,6 +35,11 @@ import eu.openmos.msb.starter.MSB_MiloClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.starter.MyHashMaps;
 import io.vertx.core.Vertx;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -57,6 +61,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.BindingProvider;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -76,8 +81,7 @@ public class OPCDeviceItf implements DeviceInterface
   /*
    * final private String function; final private String arguments;
    *
-   * public OPCDeviceItf(String func, String args) { //super(); this.function = func; this.arguments = args;
-	}
+   * public OPCDeviceItf(String func, String args) { //super(); this.function = func; this.arguments = args; }
    */
   DeviceRegistryBean dbMSB = new DeviceRegistryBean();
 
@@ -92,6 +96,8 @@ public class OPCDeviceItf implements DeviceInterface
    * @throws SAXException
    * @throws IOException
    * @throws JAXBException
+   * @throws java.io.FileNotFoundException
+   * @throws javax.xml.transform.TransformerException
    */
   public String AllCases(String Function, String args) throws ParserConfigurationException, SAXException, IOException, JAXBException, FileNotFoundException, TransformerException
   {
@@ -219,7 +225,7 @@ public class OPCDeviceItf implements DeviceInterface
         return SendRecipe(args);
 
       //from workstation to msb. from msb to equipment module, deployment agent and data listener
-      case "deviceregistration": 
+      case "deviceregistration":
         //params: ID, EquipmentType, SelfDescriptionServiceCall
 
         //active for the 1st demonstrator
@@ -235,6 +241,11 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param Function
+   * @param args
+   */
   @Override
   public void ExecutionData(String Function, List args)
   {
@@ -320,6 +331,11 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param Function
+   * @param args
+   */
   @Override
   public void EquipmentData(String Function, List args)
   {
@@ -354,50 +370,17 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param Function
+   * @param args
+   */
   @Override
   public void EquipmentCommunication(String Function, List args)
   {
     //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 
     int productID;
-
-    //teste parse xml file
-    /*
-     * VTDGen vg = new VTDGen(); AutoPilot ap = new AutoPilot(); int i; try { ap.selectXPath("/catalog/book"); } catch
-     * (XPathParseException ex) { Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex); }
-     *
-     * if (vg.parseFile("C:\\Users\\fabio.miranda\\Documents\\NetBeansProjects\\FabioMSB_Struct\\xml_sample.xml",true)){
-     * VTDNav vn = vg.getNav(); ap.bind(vn); // apply XPath to the VTDNav instance try { // AutoPilot moves the cursor
-     * for you while((i=ap.evalXPath())!=-1){ try { System.out.println("the attribute index val is "+ i +" the attribute
-     * string ==>"+vn.toString(vn.getAttrVal("attribute"))); } catch (NavException ex) {
-     * Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex); } } } catch (XPathEvalException |
-     * NavException ex) { Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex); }
-    }
-     */
-    //teste2
-    /*
-     * try { // open a file and read the content into a byte array File f = new
-     * File("C:\\Users\\fabio.miranda\\Documents\\NetBeansProjects\\FabioMSB_Struct\\xml_sample.xml"); FileInputStream
-     * fis = new FileInputStream(f); byte[] b = new byte[(int) f.length()]; fis.read(b); //instantiate VTDGen //and call
-     * parse VTDGen vg = new VTDGen(); vg.setDoc(b); vg.parse(true); // set namespace awareness to true VTDNav vn =
-     * vg.getNav(); AutoPilot ap = new AutoPilot(vn);
-     * //ap.declareXPathNameSpace("ns1","http://purl.org/dc/elements/1.1/"); ap.selectXPath("/catalog/book"); int result
-     * = -1; int count = 0; while((result = ap.evalXPath())!=-1){ System.out.print(""+result+" ");
-     * System.out.print("Element name ==> "+vn.toString(result)); int t = vn.getText(); // get the index of the text
-     * (char data or CDATA) if (t!=-1) System.out.println(" Text ==> "+vn.toNormalizedString(t)); System.out.println("\n
-     * ============================== "); count++; } System.out.println("Total # of element "+count);
-     *
-     * }
-     * catch (ParseException e){ System.out.println(" XML file parsing error \n"+e); } catch (NavException e){
-     * System.out.println(" Exception during navigation "+e); } catch (XPathParseException e){
-     *
-     * }
-     * catch (XPathEvalException e){
-     *
-     * }
-     * catch (java.io.IOException e) { System.out.println(" IO exception condition"+e);
-     }
-     */
     switch (Function.toLowerCase())
     {
       case "requestproduct": //from agents to msb. from msb to launch. from launch to msb
@@ -434,11 +417,15 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param Function
+   * @param args
+   */
   @Override
   public void EquipmentRegistration(String Function, List args)
   {
 
-    //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     String productID;
 
     switch (Function.toLowerCase())
@@ -447,7 +434,9 @@ public class OPCDeviceItf implements DeviceInterface
         //do wtv
 
         break;
-      case "broadcastpresence": //from workstation to msb. from msb to equipment module, deployment agent and data listener
+
+      //from workstation to msb. from msb to equipment module, deployment agent and data listener
+      case "broadcastpresence":
         //params: ID, EquipmentType, SelfDescriptionServiceCall
         int ID = (int) args.get(0);
         String EquipmentType = (String) args.get(1);
@@ -471,11 +460,12 @@ public class OPCDeviceItf implements DeviceInterface
    * @param Recipe
    */
   public void DeployRecipe(String WorkstationID, String Recipe)
-  { //send to workstation
+  {
+    //send to workstation
     //DeployRecipe(Recipe) //send to workstation opc
-
     //wait for ConfirmRecipeDeployment(Recipe)
     //return Recipe //send back to Resource Agent
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
@@ -484,51 +474,71 @@ public class OPCDeviceItf implements DeviceInterface
    * @param WorkstationID
    */
   public void RequestWorkstationInformation(String WorkstationID)
-  { //send to workstation
+  {
+    //send to workstation
     //RequestWorkstationInformation() //send to workstation opc
-
     //wait for ProvideSelfDescription(SelfDescriptionInformation)
-    //ProvideSelfDescription(SelfDescriptionInformation) //send to Skill Aggregator
+    //ProvideSelfDescription(SelfDescriptionInformation) //send to Skill Aggregator3.
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
+  /**
+   *
+   * @param EntityID
+   * @param NewRecipe
+   */
   private void UpdateRecipe(String EntityID, String NewRecipe)
   {
     //From SkillAggregator OR Resourceagent OR TransportAgent
-
     //1-ver para quem é o EntityID e enviar -> pode ser workstationID ou TransportID. É transparente para o MSB
     //2-retornar resposta
     //UpdateRecipe(String OldRecipeID, String NewRecipe) //enviar para o EntityID
     //wait for ConfirmRecipeDeployment(RecipeID)
     //return RecipeID para EntityID
-    /*
-     * if(from SkillAggregator){ }else if(From Resourceagent){ }else if(From TransportAgent){ } //indiferente
-     */
+
+    //  if(from SkillAggregator){ }else if(From Resourceagent){ }else if(From TransportAgent){ } //indiferente
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
+  /**
+   *
+   * @param WorkstationID
+   * @param RecipeID
+   */
   private void ExecuteRecipeRampUpMode(String WorkstationID, String RecipeID)
   {
     //from skill aggregator
     //call ExecuteRecipeRampUpMode(RecipeID) //to workstation
     //wait for ExecuteSkill(ModuleID,RecipeID)
-
     //change this??
     //call ExecuteSkill(RecipeID)
     //wait for CompletedSkillExecution(RecipeID)
     //call CompletedSkillExecution(RecipeID)
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
+  /**
+   *
+   * @param ModuleID
+   * @param Data
+   */
   private void UploadExecutionData(String ModuleID, String Data)
   {
     //from EquipmentModule or Workstation
     //leitura de nós especificos, do cliente msb para o servidor do device
     //call UploadExecutionData(ModuleID, Data) //colocar na Base De Dados
-
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
+  /**
+   *
+   * @param State
+   * @return
+   */
   private String StatusUpdate(String State)
   {
 
@@ -536,21 +546,31 @@ public class OPCDeviceItf implements DeviceInterface
     //from workstation
     //call StatusUpdate(State,...) //send to ResourceAgent
     //what to send?
-    return "Chegou";
-
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
+  /**
+   *
+   * @param WorkstationID
+   * @param RecipeID
+   * @param State
+   */
   private void ChangeRecipeState(String WorkstationID, String RecipeID, String State)
   {
     //from skill aggregator
-
     //call ChangeRecipeState(RecipeID, state) //send to workstation
     //wait for ConfirmRecipestate(RecipeID, State)
     //return ConfirmRecipestate(RecipeID, State) //to skillaggregator
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
+  /**
+   *
+   * @param ProductID
+   * @return
+   */
   private String RequestProduct(String ProductID)
   {
 
@@ -620,15 +640,9 @@ public class OPCDeviceItf implements DeviceInterface
     {
 
       docres = bldr.parse(insrc);
-
-      //stringToDom(args); //convert xml string to FILE
       System.out.println("\n\nThis is the XML received: " + docres.getDocumentElement().getTextContent() + "\n\n");
     }
-    catch (SAXException ex)
-    {
-      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    catch (IOException ex)
+    catch (SAXException | IOException ex)
     {
       Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -637,12 +651,6 @@ public class OPCDeviceItf implements DeviceInterface
     {
       JAXBContext jaxbContext = JAXBContext.newInstance(ChangedState.class);
       Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-//ou
-      //StringReader boda = new StringReader(args);
-      //RegFile dudie = JAXB.unmarshal(boda.toString(), RegFile.class);
-      //File file = new File("museums.xml");
-      //StringReader reader = new StringReader(args);
       parsedClass = (ChangedState) unmarshaller.unmarshal(docres);
     }
     catch (Exception ex)
@@ -662,7 +670,6 @@ public class OPCDeviceItf implements DeviceInterface
 
       //already deployed when agent is created ?
       Vertx.vertx().deployVerticle(new WebSocketsSender("5555")); //test! delete
-      //vertx.deployVerticle(new WebSocketsSender(agentObj.getUniqueName()));
       List<String> ReplyMsg = new ArrayList<String>();
 
       //Send message on the respective AgentID topic/websocket
@@ -691,16 +698,28 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param EntityID
+   * @param Recipe
+   * @param ProductID
+   */
   private void DeployNewRecipe(String EntityID, String Recipe, String ProductID)
   {
     //from resource Agent or transport  Agent
-
     // call DeployNewRecipe(Recipe,ProductID) //to EntityID - workstation or transport equipment
     //wait for return RecipeDeployed(Recipe,ProductID)
-    //return RecipeDeployed(WorkstationID, Recipe,ProductID) //back to sender
+    //return RecipeDeployed(WorkstationID, Recipe,ProductID) //back to sender.
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
+  /**
+   *
+   * @param ID
+   * @param EquipmentType
+   * @param SelfDescriptionServiceCall
+   */
   private void BroadcastPresence(String ID, String EquipmentType, String SelfDescriptionServiceCall)
   {
     //from workstation to msb. from msb to equipment module, deployment agent and data listener
@@ -711,18 +730,30 @@ public class OPCDeviceItf implements DeviceInterface
     //dbMSB.register_device(DevName, ShortInfo, LongInfo, Ip_addr, Protocol);
     //ArrayList Arrays= dbMSB.get_device_address_protocol(ID); //get device address and protocol
     //System.out.println(Arrays.toString());
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
+  /**
+   *
+   */
   private void RequestModuleDetails()
   {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
+    throw new UnsupportedOperationException("Not supported yet.");
     //from Resource Agent or Data Listener (DB)
     //call RequestModuleDetails
   }
 
 
+  /**
+   *
+   * @param args
+   * @return
+   * @throws JAXBException
+   * @throws FileNotFoundException
+   * @throws ParserConfigurationException
+   * @throws TransformerException
+   */
   private String WorkStationRegistration(String args) throws JAXBException, FileNotFoundException, ParserConfigurationException, TransformerException
   {
 
@@ -733,9 +764,6 @@ public class OPCDeviceItf implements DeviceInterface
 
     DeviceRegistryBean dbMSB = new DeviceRegistryBean(); //TODO: save execution data on executionTable DB
 
-    //or
-    //String senderName2 = StringUtils.substringBefore(args, ":"); // returns the first string before character :
-    //String allData = StringUtils.substringAfter(args, ":"); // returns the first string after character :
     try
     {
       FiletoXMLtoObject("RegFile.xml");
@@ -746,16 +774,6 @@ public class OPCDeviceItf implements DeviceInterface
       Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-    //StringtoXML(XMLtoString("RegFile.xml"));
-    /*
-     * try { stringToDom(args); //convert xml string to FILE } catch (SAXException ex) {
-     * Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex); } catch (IOException ex) {
-     * Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex); } catch
-     * (TransformerConfigurationException ex) { Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null,
-     * ex);
-         }
-     */
-    //STRING TO XML
     DocumentBuilderFactory dfctr = DocumentBuilderFactory.newInstance();
     DocumentBuilder bldr = null;
     try
@@ -774,8 +792,6 @@ public class OPCDeviceItf implements DeviceInterface
     {
 
       docres = bldr.parse(insrc);
-
-      //stringToDom(args); //convert xml string to FILE
       System.out.println("\n\nThis is the XML received: " + docres.getDocumentElement().getTextContent() + "\n\n");
     }
     catch (SAXException ex)
@@ -792,11 +808,6 @@ public class OPCDeviceItf implements DeviceInterface
       JAXBContext jaxbContext = JAXBContext.newInstance(RegFile.class);
       Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-//ou
-      //StringReader boda = new StringReader(args);
-      //RegFile dudie = JAXB.unmarshal(boda.toString(), RegFile.class);
-      //File file = new File("museums.xml");
-      //StringReader reader = new StringReader(args);
       parsedClass = (RegFile) unmarshaller.unmarshal(docres);
 
       //populate hashmaps
@@ -809,7 +820,6 @@ public class OPCDeviceItf implements DeviceInterface
         System.out.println(key + " ->MAPA de execução deviceitf<- - " + parsedClass.ExecuteTable.get(key));
         ETD.add(parsedClass.ExecuteTable.get(key));
 
-        //dbMSB.register_execution_info(senderName, ETD.recipeID, "NO AGENT", ETD.productID, ETD.methodID, ETD.objectID); //DO THIS AFTER AGENT CREATION
         myOpcUaMap.setProductIDAdapterMaps(ETD.get(index).productID, ThisOPCServerTemp); //put productID vs miloclient
         index++;
       }
@@ -832,35 +842,7 @@ public class OPCDeviceItf implements DeviceInterface
       System.out.println("\n Problem parsing class: " + ex.toString());
     }
 
-    //unmarshall from a xmlfile++++++++++++++++++++++++++++++++++++
-    /*
-     * InputStream is2 = new FileInputStream( "nosferatu.xml" ); JAXBContext jc2 = JAXBContext.newInstance(
-     * "com.acme.foo" ); Unmarshaller u = jc2.createUnmarshaller(); RegFile o = (RegFile) u.unmarshal( is2 );
-     */
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    /*
-     * JAXBContext jc = JAXBContext.newInstance(Device.class);
-     *
-     * Unmarshaller unmarshaller = jc.createUnmarshaller(); Device root = (Device) unmarshaller.unmarshal(docres);
-     *
-     * Marshaller marshaller = jc.createMarshaller(); marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-     * marshaller.marshal(root, System.out);
-     */
-    //String message = docres.getDocumentElement().getTagName();
-    //String message2 = docres.getDocumentElement().getElementsByTagName("Session").item(0).getChildNodes().item(0).getTextContent();
-    //System.out.println(message);
     System.out.println("\n\n WorkStationRegistration message has arrived \n\n");
-    //System.out.println(message2);
-    //CreateNewAgent(workstation)
-    //from Resource Agent or Data Listener (DB)
-    //call RequestModuleDetails
-
-    //CyberPhysicalAgentDescription cpad=null;
-    //cpad.getRecipes().add(root.getRecipes());
-    //cpad.getRecipes().addAll((Collection<? extends Recipe>) root.getRecipes());
-    //cenas.setRecipes();
-    //AgentStatus AStatus=null;
-    //AStatus=createNewAgent(cpad);
     long start = System.currentTimeMillis();
 
     //SACAR RecipeID, NodeID, ProductID, Workstation e fazer uma tabela de execução
@@ -871,24 +853,17 @@ public class OPCDeviceItf implements DeviceInterface
         SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
         SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
 
-/////////////////////////////
         String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
 
         BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
         bindingProvider.getRequestContext().put(
-          // BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://192.168.15.5:9999/wsSystemConfigurator");
           BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-//////////////////////////////
 
-        // CyberPhysicalAgentDescription cpad = new CyberPhysicalAgentDescription();
-        //String myAgentId = "Resource_" + Calendar.getInstance().getTimeInMillis(); //or Transport_...
-        //CyberPhysicalAgentDescription cpad = getTestObject(myAgentId);
-        CyberPhysicalAgentDescription cpad = DummyCPADgeneration(parsedClass); // WorkStationDataToCPAD(parsedClass);  or DummyCPADgeneration(parsedClass); 
-        //CyberPhysicalAgentDescription cpad = getTestObject("lolol");
+        CyberPhysicalAgentDescription cpad = DummyCPADgeneration(parsedClass);
 
         MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access client objects in other classes
         List<ExecuteData> ETD = new ArrayList<>();
-        //Update execute table data with agentID**************
+
         for (String key : parsedClass.ExecuteTable.keySet())
         {
           System.out.println(key + " ->MAPA de execução deviceitf<- - " + parsedClass.ExecuteTable.get(key));
@@ -899,35 +874,14 @@ public class OPCDeviceItf implements DeviceInterface
         //call mainwindow filltables
         MSB_gui.FillProductsTable();
 
-        //VECTOR TODO: 10/04/17
-        //dbMSB.edit_execute_info(senderName, ETD.recipeID, myAgentId, ETD.productID, "", ""); //DO THIS AFTER AGENT CREATION
-        //end**************
-        //testObject e fazer um**********************************************************************05-04-17
-        //fim do testObject**********************************************************************05-04-17
         AgentStatus agentStatus = systemConfigurator.createNewAgent(cpad);
         System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
-
-        //create websocket to the agentcloud
-        //Vertx.vertx().deployVerticle(new WebSocketsSender(myAgentId)); //b4 24-3-17
-        //vertx.deployVerticle(new WebSocketsSender(cpad.getUniqueName()));
-        //Send message on the respective AgentID topic/websocket
         String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
-
         Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName()));
-
-        /*
-         * List<String> ReplyMsg = new ArrayList<String>(); Vertx vertx2 = Vertx.vertx();
-         * vertx2.eventBus().send(cpad.getUniqueName(), msgToSend, reply -> { if (reply.succeeded()) {
-         * System.out.println("vertX Received reply: " + reply.result().body());
-         * ReplyMsg.add(reply.result().body().toString()); } else { System.out.println("vertX No reply");
-         * ReplyMsg.add("vertX No reply"); }
-                    });
-         */
-        //ReplyMsg.get(0); //ADD VERTX MESSAGE REPLY
-        //check the sender opcClient object from its Name
         MyHashMaps myOpcUaClientsAgentsMap = MyHashMaps.getInstance(); //singleton to access hashmaps in other classes
         Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps();
         MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(senderName);
+
         //add the sender client object to the respective agentID
         myOpcUaClientsAgentsMap.setAgentDeviceIDMaps(MiloClientID, cpad);
 
@@ -947,7 +901,6 @@ public class OPCDeviceItf implements DeviceInterface
     {
       //call mainwindow filltables
       MSB_gui.FillProductsTable();
-      //draft 24-3-17 internal verteX check
       vertx.deployVerticle(new WebSocketsReceiver("R1"));
       vertx.deployVerticle(new WebSocketsReceiver("R2"));
       try
@@ -959,7 +912,6 @@ public class OPCDeviceItf implements DeviceInterface
         Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
       }
       vertx.deployVerticle(new WebSocketsSenderDraft());
-      //*******end draft
 
       return "OK - No AgentPlatform";
     }
@@ -967,12 +919,16 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param datafromWorkStation
+   * @return
+   */
   private CyberPhysicalAgentDescription DummyCPADgeneration(RegFile datafromWorkStation)
   {
 
     CyberPhysicalAgentDescription cpad = new CyberPhysicalAgentDescription();
     String myAgentId = "Resource_" + Calendar.getInstance().getTimeInMillis(); //or Transport_...
-
     String cpadUniqueName = myAgentId;
     String cpadAgentClass = "asdsa";
     String cpadType = "resource_df_service";  //or transport_df_service
@@ -1009,7 +965,7 @@ public class OPCDeviceItf implements DeviceInterface
     String parameterUpperBound = "SkillParameterUpperBound";
     String parameterName = "SkillParameterName";
     String parameterUnit = "SkillParameterUnit";
-    // p = new Parameter(parameterDefaultValue, parameterDescription, parameterUniqueId,                             parameterLowerBound, parameterUpperBound, parameterName, parameterUnit);
+    // p = new Parameter(parameterDefaultValue, parameterDescription, parameterUniqueId, parameterLowerBound, parameterUpperBound, parameterName, parameterUnit);
     p = new Parameter();
     p.setDefaultValue(parameterDefaultValue);
     p.setDescription(parameterDescription);
@@ -1149,190 +1105,14 @@ public class OPCDeviceItf implements DeviceInterface
 
     return cpad;
 
-    //        String cpadUniqueName = myAgentId;
-//        String cpadAgentClass = "asdsa";
-//        String cpadType = "resource_df_service";  //or transport_df_service
-//        List<String> cpadParameters = new LinkedList<>(Arrays.asList("asdsad"));
-//            Skill s;
-//                String skillDescription = "SkillDescription";
-//                String skillUniqueId = "SkillUniqueId";
-//                    KPI kpi;
-//                    String kpiDescription = "SkillKpiDescription";
-//                    String kpiUniqueId = "SkillKpiUniqueId";
-//                    String kpiName = "SkillKpiName";
-//                    String kpiDefaultUpperBound = "SkillKpiDefaultUpperBound";
-//                    String kpiDefaultLowerBound = "SkillKpiDefaultLowerBound";
-//                    String kpiCurrentValue = "SkillKpiCurrentValue";
-//                    String kpiUnit = "SkillKpiUnit";
-//                    // kpi = new Kpi(kpiDescription, kpiUniqueId, kpiName, kpiDefaultUpperBound, kpiDefaultLowerBound, kpiCurrentValue, kpiUnit);
-//                    // kpi = new Kpi(kpiDescription, kpiUniqueId, kpiName, kpiDefaultUpperBound, kpiDefaultLowerBound, kpiCurrentValue, kpiUnit);
-//                    kpi = new KPI();
-//                    kpi.setDescription(kpiDescription);
-//                    kpi.setUniqueId(kpiUniqueId);
-//                    kpi.setName(kpiName);
-//                    kpi.setDefaultUpperBound(kpiDefaultUpperBound);
-//                    kpi.setDefaultLowerBound(kpiDefaultLowerBound);
-//                    kpi.setCurrentValue(kpiCurrentValue);
-//                    kpi.setUnit(kpiUnit);
-//                    
-//                    
-//                List<KPI> skillKpis = new LinkedList<>(Arrays.asList(kpi));
-//                String skillName = "SkillName";
-//                    Parameter p;
-//                    String parameterDefaultValue = "SkillParameterDefaultValue";
-//                    String parameterDescription = "SkillParameterDescription";
-//                    String parameterUniqueId = "SkillParameterUniqueId";
-//                    String parameterLowerBound = "SkillParameterLowerBound";
-//                    String parameterUpperBound = "SkillParameterUpperBound";
-//                    String parameterName = "SkillParameterName";
-//                    String parameterUnit = "SkillParameterUnit";
-//                    // p = new Parameter(parameterDefaultValue, parameterDescription, parameterUniqueId,                             parameterLowerBound, parameterUpperBound, parameterName, parameterUnit);
-//                    p = new Parameter();
-//                    p.setDefaultValue(parameterDefaultValue);
-//                    p.setDescription(parameterDescription);
-//                    p.setUniqueId(parameterUniqueId);
-//                    p.setLowerBound(parameterLowerBound);
-//                    p.setUpperBound(parameterUpperBound);
-//                    p.setName(parameterName);
-//                    p.setUnit(parameterUnit);
-//                    
-//                    
-//                    
-//                List<Parameter> skillParameters = new LinkedList<>(Arrays.asList(p));
-//                int skillType = 0;
-//            // s = new Skill(skillDescription, skillUniqueId, skillKpis, skillName, skillParameters, skillType);
-//            s = new Skill();
-//            s.setDescription(skillDescription);
-//            s.setUniqueId(skillUniqueId);
-//            // s.getKpis().addAll(skillKpis);
-//            s.setKpis(skillKpis);
-//            s.setName(skillName);
-//            // s.getParameters().addAll(skillParameters);
-//            s.setParameters(skillParameters);
-//            s.setType(skillType);
-//            
-//            
-//            
-//            
-//        List<Skill> cpadSkills = new LinkedList<>(Arrays.asList(s));
-//            Recipe r;
-//                String recipeDescription = "asdsad";
-//                String recipeUniqueId = "asda";
-//                    KPISetting recipeKpiSetting;
-//                    String kpiSettingDescription = "asdsad";
-//                    String kpiSettingId = "asda";
-//                    String kpiSettingName = "asdsa";
-//                    String kpiSettingValue = "asds";
-//                    // recipeKpiSetting = new KPISetting(kpiSettingDescription, 
-//                    // kpiSettingId, kpiSettingName, kpiSettingValue);
-//                    recipeKpiSetting = new KPISetting();
-//                    recipeKpiSetting.setDescription(kpiSettingDescription);
-//                    recipeKpiSetting.setId(kpiSettingId);
-//                    recipeKpiSetting.setName(kpiSettingName);
-//                    recipeKpiSetting.setValue(kpiSettingValue);
-//                    
-//                List<KPISetting> recipeKpiSettings = new LinkedList<>(Arrays.asList(recipeKpiSetting));
-//                String recipeName = "asda";
-//                    ParameterSetting recipePS;
-//                    String parameterSettingDescription = "asdsad";
-//                    String parameterSettingId = "asda";
-//                    String parameterSettingName = "asdsa";
-//                    String parameterSettingValue = "asds";
-//                    // recipePS = new ParameterSetting(parameterSettingDescription, parameterSettingId, parameterSettingName, parameterSettingValue);
-//                    recipePS = new ParameterSetting();
-//                    recipePS.setDescription(parameterSettingDescription);
-//                    recipePS.setId(parameterSettingId);
-//                    recipePS.setName(parameterSettingName);
-//                    recipePS.setValue(parameterSettingValue);
-//                    
-//                List<ParameterSetting> recipeParameterSettings = new LinkedList<>(Arrays.asList(recipePS));
-//                String recipeUniqueAgentName = "asdsad";
-//                    SkillRequirement recipeSR;
-//                    String skillRequirementDescription = "asdsad";
-//                    String skillRequirementUniqueId = "asda";
-//                    String skillRequirementName = "asdsa";
-//                    int skillRequirementType = 0;
-//                    // recipeSR = new SkillRequirement(skillRequirementDescription, skillRequirementUniqueId, skillRequirementName, skillRequirementType);
-//                    recipeSR = new SkillRequirement();
-//                    recipeSR.setDescription(skillRequirementDescription);
-//                    recipeSR.setUniqueId(skillRequirementUniqueId);
-//                    recipeSR.setName(skillRequirementName);
-//                    recipeSR.setType(skillRequirementType);
-//                    
-//                List<SkillRequirement> recipeSkillRequirements = new LinkedList<>(Arrays.asList(recipeSR));
-//            // r = new Recipe(recipeDescription, recipeUniqueId, recipeKpiSettings, recipeName, recipeParameterSettings, recipeUniqueAgentName, recipeSkillRequirements);
-//            r = new Recipe();
-//            r.setDescription(recipeDescription);
-//            r.setName(recipeName);
-//            r.setUniqueAgentName(recipeUniqueAgentName);
-//            r.setUniqueId(recipeUniqueId);
-//            // r.getKpisSetting().addAll(recipeKpiSettings);
-//            r.setKpisSetting(recipeKpiSettings);
-//            // r.getParametersSetting().addAll(recipeParameterSettings);
-//            r.setParametersSetting(recipeParameterSettings);
-//            // r.getSkillRequirements().addAll(recipeSkillRequirements);
-//            r.setSkillRequirements(recipeSkillRequirements);
-//            
-//        List<Recipe> cpadRecipes = new LinkedList<>(Arrays.asList(r));
-//        PhysicalLocation cpadPl;
-//           String physicalLocationReferenceFrameName = "asdas"; 
-//           long physicalLocationX = 0;
-//           long physicalLocationY = 0;
-//           long physicalLocationZ = 0;
-//           long physicalLocationAlpha = 0;
-//           long physicalLocationBeta = 0;
-//           long physicalLocationGamma = 0;
-//        // cpadPl = new PhysicalLocation(physicalLocationReferenceFrameName, physicalLocationX, physicalLocationY, physicalLocationZ, physicalLocationAlpha, physicalLocationBeta, physicalLocationGamma);
-//        cpadPl = new PhysicalLocation();
-//        cpadPl.setAlpha(physicalLocationAlpha);
-//        cpadPl.setBeta(physicalLocationBeta);
-//        cpadPl.setGamma(physicalLocationGamma);
-//        cpadPl.setReferenceFrameName(physicalLocationReferenceFrameName);
-//        cpadPl.setX(physicalLocationX);
-//        cpadPl.setY(physicalLocationY);
-//        cpadPl.setZ(physicalLocationZ);
-//        
-//        // LogicalLocation cpadLl = new LogicalLocation("asdad");
-//        LogicalLocation cpadLl = new LogicalLocation();
-//        cpadLl.setLocation("asdad");
-//        
-//            SkillRequirement cpadSR;
-//                String cpadSkillRequirementDescription = "asdsad";
-//                String cpadSkillRequirementUniqueId = "asda";
-//                String cpadSkillRequirementName = "asdsa";
-//                int cpadSkillRequirementType = 0;
-//            // cpadSR = new SkillRequirement(cpadSkillRequirementDescription, cpadSkillRequirementUniqueId, cpadSkillRequirementName, cpadSkillRequirementType);
-//            cpadSR = new SkillRequirement();
-//            cpadSR.setDescription(cpadSkillRequirementDescription);
-//            cpadSR.setName(cpadSkillRequirementName);
-//            cpadSR.setType(cpadSkillRequirementType);
-//            cpadSR.setUniqueId(cpadSkillRequirementUniqueId);
-//            
-//        List<SkillRequirement> cpadSkillRequirements = new LinkedList<>(Arrays.asList(recipeSR));
-//        // cpad = new CyberPhysicalAgentDescription(cpadUniqueName, cpadAgentClass,
-//        // cpadType, cpadParameters, cpadSkills, cpadRecipes, cpadPl, cpadLl, cpadSkillRequirements);
-//
-//        cpad = new CyberPhysicalAgentDescription();
-//        cpad.setAgentClass(cpadAgentClass);
-//        cpad.setLogicalLocation(cpadLl);
-//        cpad.setPhysicalLocation(cpadPl);
-//        cpad.setType(cpadType);
-//        cpad.setUniqueName(cpadUniqueName);
-//        // cpad.getRecipes().addAll(cpadRecipes);
-//        cpad.setRecipes(cpadRecipes);
-//        // cpad.getSkillRequirements().addAll(cpadSkillRequirements);
-//        cpad.setSkillRequirements(cpadSkillRequirements);        
-//        // cpad.getSkills().addAll(cpadSkills);
-//        cpad.setSkills(cpadSkills);
-//        // cpad.getRecipes().addAll(cpadRecipes);
-//        cpad.setRecipes(cpadRecipes);
-//        // cpad.getAgentParameters().addAll(cpadParameters);
-//        cpad.setAgentParameters(cpadParameters);
-// cpad.setType("resource_df_service"); //or transport_df_service
-//                cpad.setUniqueName(myAgentId);
   }
 
 
+  /**
+   *
+   * @param agentID
+   * @return
+   */
   public AgentStatus RemoveAgent(String agentID)
   {
 
@@ -1343,7 +1123,6 @@ public class OPCDeviceItf implements DeviceInterface
 
     BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
     bindingProvider.getRequestContext().put(
-      // BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://192.168.15.5:9999/wsSystemConfigurator");
       BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
 
     AgentStatus agentStatus = systemConfigurator.removeAgent(agentID);
@@ -1353,6 +1132,11 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param datafromWorkStation
+   * @return
+   */
   private CyberPhysicalAgentDescription WorkStationDataToCPAD(RegFile datafromWorkStation)
   {
 
@@ -1427,43 +1211,7 @@ public class OPCDeviceItf implements DeviceInterface
     s.setParameters(skillParameters);
     s.setType(skillType);
 
-    //TODO! 12/04/17
     List<Skill> cpadSkills = new LinkedList<>(Arrays.asList(s));
-
-    //Recipe data is already given by Workstation
-    /*
-     * Recipe r; String recipeDescription = "asdsad"; String recipeUniqueId = "asda"; KPISetting recipeKpiSetting;
-     * String kpiSettingDescription = "asdsad"; String kpiSettingId = "asda"; String kpiSettingName = "asdsa"; String
-     * kpiSettingValue = "asds"; // recipeKpiSetting = new KPISetting(kpiSettingDescription, // kpiSettingId,
-     * kpiSettingName, kpiSettingValue); recipeKpiSetting = new KPISetting();
-     * recipeKpiSetting.setDescription(kpiSettingDescription); recipeKpiSetting.setId(kpiSettingId);
-     * recipeKpiSetting.setName(kpiSettingName); recipeKpiSetting.setValue(kpiSettingValue);
-     *
-     * List<KPISetting> recipeKpiSettings = new LinkedList<>(Arrays.asList(recipeKpiSetting)); String recipeName =
-     * "asda"; ParameterSetting recipePS; String parameterSettingDescription = "asdsad"; String parameterSettingId =
-     * "asda"; String parameterSettingName = "asdsa"; String parameterSettingValue = "asds"; // recipePS = new
-     * ParameterSetting(parameterSettingDescription, parameterSettingId, parameterSettingName, parameterSettingValue);
-     * recipePS = new ParameterSetting(); recipePS.setDescription(parameterSettingDescription);
-     * recipePS.setId(parameterSettingId); recipePS.setName(parameterSettingName);
-     * recipePS.setValue(parameterSettingValue);
-     *
-     * List<ParameterSetting> recipeParameterSettings = new LinkedList<>(Arrays.asList(recipePS)); String
-     * recipeUniqueAgentName = "asdsad"; SkillRequirement recipeSR; String skillRequirementDescription = "asdsad";
-     * String skillRequirementUniqueId = "asda"; String skillRequirementName = "asdsa"; int skillRequirementType = 0; //
-     * recipeSR = new SkillRequirement(skillRequirementDescription, skillRequirementUniqueId, skillRequirementName,
-     * skillRequirementType); recipeSR = new SkillRequirement(); recipeSR.setDescription(skillRequirementDescription);
-     * recipeSR.setUniqueId(skillRequirementUniqueId); recipeSR.setName(skillRequirementName);
-     * recipeSR.setType(skillRequirementType);
-     *
-     * List<SkillRequirement> recipeSkillRequirements = new LinkedList<>(Arrays.asList(recipeSR)); // r = new
-     * Recipe(recipeDescription, recipeUniqueId, recipeKpiSettings, recipeName, recipeParameterSettings,
-     * recipeUniqueAgentName, recipeSkillRequirements); r = new Recipe(); r.setDescription(recipeDescription);
-     * r.setName(recipeName); r.setUniqueAgentName(recipeUniqueAgentName); r.setUniqueId(recipeUniqueId); //
-     * r.getKpisSetting().addAll(recipeKpiSettings); r.setKpisSetting(recipeKpiSettings); //
-     * r.getParametersSetting().addAll(recipeParameterSettings); r.setParametersSetting(recipeParameterSettings); //
-     * r.getSkillRequirements().addAll(recipeSkillRequirements);
-        r.setSkillRequirements(recipeSkillRequirements);
-     */
     List<Recipe> cpadRecipes = new LinkedList<>();//(Arrays.asList(r));
     List<SkillRequirement> cpadSkillRequirements = new LinkedList<>();//(Arrays.asList(recipeSR));
 
@@ -1474,7 +1222,8 @@ public class OPCDeviceItf implements DeviceInterface
       if (recipe_inst.getSkillRequirements() != null)
       {
         for (int i = 0; i < recipe_inst.getSkillRequirements().size(); i++)
-        { //PROBLEM! TO SOLVE
+        {
+          //PROBLEM! TO SOLVE
           cpadSkillRequirements.add(recipe_inst.getSkillRequirements().get(i));
         }
       }
@@ -1510,16 +1259,6 @@ public class OPCDeviceItf implements DeviceInterface
 
       recipe_inst.setKpisSetting(recipeKpiSettings);
       recipe_inst.setParametersSetting(recipeParameterSettings);
-      /*
-       * String recipeUniqueAgentName = "asdsad"; SkillRequirement recipeSR; String skillRequirementDescription =
-       * "asdsad"; String skillRequirementUniqueId = "asda"; String skillRequirementName = "asdsa"; int
-       * skillRequirementType = 0; // recipeSR = new SkillRequirement(skillRequirementDescription,
-       * skillRequirementUniqueId, skillRequirementName, skillRequirementType); recipeSR = new SkillRequirement();
-       * recipeSR.setDescription(skillRequirementDescription); recipeSR.setUniqueId(skillRequirementUniqueId);
-       * recipeSR.setName(skillRequirementName);
-        recipeSR.setType(skillRequirementType);
-       */
-
       cpadRecipes.add(recipe_inst); //add the received recipe to the list
 
     }
@@ -1579,30 +1318,11 @@ public class OPCDeviceItf implements DeviceInterface
     //set received recipes on the cpad info
     /*
      * List<Recipe> recipes = null; for (String key : parsedClass.Recipes.keySet()) {
-     * recipes.add(parsedClass.Recipes.get(key)); }
-                cpad.setRecipes(recipes);
+     * recipes.add(parsedClass.Recipes.get(key)); } cpad.setRecipes(recipes);
      */
     return cpad;
   }
 
-
-  /*
-   * private static AgentStatus createNewAgent(agentWebService.CyberPhysicalAgentDescription
-   * cyberPhysicalAgentDescription) { agentWebService.SystemConfigurator_Service service = new
-   * agentWebService.SystemConfigurator_Service(); agentWebService.SystemConfigurator port =
-   * service.getSystemConfiguratorImplPort(); return port.createNewAgent(cyberPhysicalAgentDescription); }
-   *
-   * private static AgentStatus removeAgent(java.lang.String agentUniqueName) {
-   * agentWebService.SystemConfigurator_Service service = new agentWebService.SystemConfigurator_Service();
-   * agentWebService.SystemConfigurator port = service.getSystemConfiguratorImplPort(); return
-   * port.removeAgent(agentUniqueName); }
-   *
-   * private static AgentStatus removeAgent_1(java.lang.String agentUniqueName) {
-   * agentWebService.SystemConfigurator_Service service = new agentWebService.SystemConfigurator_Service();
-   * agentWebService.SystemConfigurator port = service.getSystemConfiguratorImplPort(); return
-   * port.removeAgent(agentUniqueName);
-    }
-   */
 
   /**
    * Send RecipeExecutionDone message with the ProductID to the AgentCloud using the respective VertX topic
@@ -1661,6 +1381,15 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param filepath
+   * @return
+   * @throws ParserConfigurationException
+   * @throws SAXException
+   * @throws IOException
+   * @throws JAXBException
+   */
   public static String FiletoXMLtoObject(String filepath) throws ParserConfigurationException, SAXException, IOException, JAXBException
   {
 
@@ -1680,24 +1409,15 @@ public class OPCDeviceItf implements DeviceInterface
     Unmarshaller unmar = jc.createUnmarshaller();
     RegFile aux = (RegFile) unmar.unmarshal(doc);
 
-    //not working renaxo
-    /*
-     * DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); DocumentBuilder db = null;
-     *
-     * try { db = dbf.newDocumentBuilder(); InputSource is = new InputSource(); is.setCharacterStream(new
-     * StringReader(filepath)); //is.setCharacterStream(new StringReader(filepath)); try { org.w3c.dom.Document doc =
-     * db.parse(is); String message = doc.getDocumentElement().getTextContent(); System.out.println(message);
-     * JAXBContext jc = JAXBContext.newInstance(RegFile.class); Unmarshaller unmar = jc.createUnmarshaller(); RegFile
-     * aux = (RegFile) unmar.unmarshal(doc); int i = 0; } catch (IOException | JAXBException | DOMException |
-     * SAXException e) { System.out.println("prob1: "+e); } } catch (ParserConfigurationException e1) {
-     * System.out.println("prob2: "+e1);
-       }
-     */
     return "";
 
   }
 
 
+  /**
+   *
+   * @param regFilexml
+   */
   public static void FileToStringToObject(String regFilexml)
   {
     /*
@@ -1710,19 +1430,23 @@ public class OPCDeviceItf implements DeviceInterface
      * transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8"); transformer.transform(new DOMSource((Node) doc), new
      * StreamResult(sw)); return sw.toString();
      */
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 
+  /**
+   *
+   * @param path
+   * @return
+   */
   public static String XMLtoString(String path)
   {
     try
     {
-
       File fXmlFile = new File(path);
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       Document doc = dBuilder.parse(fXmlFile);
-
       StringWriter sw = new StringWriter();
       TransformerFactory tf = TransformerFactory.newInstance();
       Transformer transformer = tf.newTransformer();
@@ -1740,6 +1464,11 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param stringFile
+   * @return
+   */
   public static String StringtoXML(String stringFile)
   {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -1762,19 +1491,29 @@ public class OPCDeviceItf implements DeviceInterface
         RegFile aux = (RegFile) unmar.unmarshal(doc);
         int i = 0;
       }
-      catch (Exception e)
+      catch (IOException | JAXBException | DOMException | SAXException ex)
       {
-        // handle SAXException
+        // TODO handle SAXException
       }
     }
-    catch (Exception e1)
+    catch (ParserConfigurationException ex)
     {
-      // handle ParserConfigurationException
+      // TODO handle ParserConfigurationException
     }
     return "";
   }
 
 
+  /**
+   *
+   * @param xmlSource
+   * @throws SAXException
+   * @throws ParserConfigurationException
+   * @throws IOException
+   * @throws TransformerConfigurationException
+   * @throws TransformerException
+   * @throws JAXBException
+   */
   public static void stringToDom(String xmlSource)
     throws SAXException, ParserConfigurationException, IOException, TransformerConfigurationException, TransformerException, JAXBException
   {
@@ -1795,6 +1534,11 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 
+  /**
+   *
+   * @param args
+   * @return
+   */
   private String SendRecipe(String args)
   {
 
@@ -1849,3 +1593,5 @@ public class OPCDeviceItf implements DeviceInterface
   }
 
 }
+
+//EOF

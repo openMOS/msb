@@ -73,7 +73,7 @@ import org.opcfoundation.ua.utils.MultiDimensionArrayUtils;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.msb.database.stateless.DeviceRegistryBean;
 import eu.openmos.msb.opcua.milo.client.X509IdentityProvider;
-import eu.openmos.msb.starter.FabioMSB_Struct;
+import eu.openmos.msb.starter.MSB_Struct;
 import eu.openmos.msb.starter.MSB_MiloClientSubscription;
 import eu.openmos.msb.starter.MyHashMaps;
 import java.net.URI;
@@ -304,7 +304,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
           {
             //DELETE SERVER FROM DATABASE, HASHMAP AND TABLE
             servers_dynamic.on_server_dissapeared(device, address);
-            retMsg = FabioMSB_Struct.RemoveDownServer(device);
+            retMsg = MSB_Struct.RemoveDownServer(device);
             if (DevicetoRemove != null && Protocol != null)
             {
               DevicetoRemove = device;
@@ -319,7 +319,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
       {
         System.out.println("This server doens't have Endpoints available:  " + device);
         //delete it from db and hashmap
-        retMsg = FabioMSB_Struct.RemoveDownServer(device);
+        retMsg = MSB_Struct.RemoveDownServer(device);
         if (DevicetoRemove != null && Protocol != null)
         {
           DevicetoRemove = device;
@@ -331,7 +331,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
       {
         System.out.println("This server doens't have Endpoints available: " + device);
         //delete it from db and hashmap
-        retMsg = FabioMSB_Struct.RemoveDownServer(device);
+        retMsg = MSB_Struct.RemoveDownServer(device);
         if (DevicetoRemove != null && Protocol != null)
         {
           DevicetoRemove = device;

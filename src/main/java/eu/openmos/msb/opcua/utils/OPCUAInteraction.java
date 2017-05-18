@@ -5,12 +5,10 @@
  */
 package eu.openmos.msb.opcua.utils;
 
-//import Connections.Manager;
-import com.prosysopc.ua.ServiceException;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
+
 
 
 /**

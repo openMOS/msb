@@ -6,8 +6,7 @@
 package eu.openmos.msb.dds.instance;
 
 import DDS.DomainParticipant;
-import java.util.ArrayList;
-
+import java.util.HashMap;
 
 
 /**
@@ -19,8 +18,8 @@ import java.util.ArrayList;
 public class DDSDeviceManager
 {
 
-  private DomainParticipant domain;
-  private ArrayList<DDSDevice> devices;
+  private final DomainParticipant domain;
+  private final HashMap<String, DDSMSBDevice> devices;
 
 
   /**
@@ -31,17 +30,37 @@ public class DDSDeviceManager
   public DDSDeviceManager(DomainParticipant dp)
   {
     this.domain = dp;
-    this.devices = new ArrayList<DDSDevice>();
+    this.devices = new HashMap<String, DDSMSBDevice>();
   }
 
 
   /**
    *
+   * @param name
    * @return
    */
-  public int addDevice()
+  public int addDevice(String name)
   {
+    if (!this.devices.containsKey(name))
+    {
+      this.devices.put(name, new DDSMSBDevice(name, this.domain));
+    }
+    return -1;
+  }
 
+
+  /**
+   *
+   * @param name
+   * @return
+   */
+  public int removeDevice(String name)
+  {
+    if (this.devices.containsKey(name))
+    {
+      this.devices.remove(name);
+      return 1;
+    }
     return -1;
   }
 
@@ -50,13 +69,21 @@ public class DDSDeviceManager
    *
    * @return
    */
-  public int removeDevice()
+  public DomainParticipant getDomain()
   {
+    return this.domain;
+  }
 
-    return -1;
+
+  /**
+   * Get the devices list by names
+   *
+   * @return Array of devices names
+   */
+  public String[] getDevices()
+  {
+    return (String[]) this.devices.keySet().toArray();
   }
 
 }
-
-
 // EOF

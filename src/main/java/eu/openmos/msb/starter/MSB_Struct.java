@@ -6,72 +6,43 @@
 package eu.openmos.msb.starter;
 
 import eu.openmos.msb.opcua.utils.OPCDeviceItf;
-import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.opcua.utils.OpcUaServersDiscoverySnippet;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
 import eu.openmos.msb.database.stateless.DeviceRegistryBean;
 import com.prosysopc.ua.ServiceException;
-import com.prosysopc.ua.ServiceException;
-import com.prosysopc.ua.StatusException;
-import com.prosysopc.ua.client.AddressSpaceException;
-import com.prosysopc.ua.client.ServerConnectionException;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.agentcloud.utilities.Constants;
 import eu.openmos.msb.opcua.milo.server.opcuaServerMSB;
-import eu.openmos.msb.recipesmanagement.RecipesDeployer;
 import eu.openmos.msb.recipesmanagement.RecipesDeployerImpl;
-import eu.openmos.msb.opcua.utils.CheckOPCServers;
 import eu.openmos.msb.opcua.utils.OpcUaDiscoveryMilo;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
-import org.eclipse.milo.opcua.stack.core.util.ConversionUtil;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.ws.Endpoint;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 
 /**
  *
  * @author fabio.miranda
  */
-public class FabioMSB_Struct
+public class MSB_Struct
 {
 
   private static final Map<String, Object> OPCclientIDMap = new HashMap<String, Object>();
   private static String MSB_OPCUA_SERVER_ADDRESS = null;
-  //private static fabio_opcua_badjoraz.prosysclient.OPCUAClient opcua_client_instance;
-
   private static eu.openmos.msb.opcua.milo.server.opcuaServerMSB opcuaServerInstanceMILO;
-
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
 
   /**
    * @param args the command line arguments
+   * @throws java.lang.Exception
    */
   public static void main(String[] args) throws Exception
   {
@@ -88,7 +59,7 @@ public class FabioMSB_Struct
       }
       catch (Exception ex)
       {
-        Logger.getLogger(FabioMSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
+        Logger.getLogger(MSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
     else
@@ -119,9 +90,9 @@ public class FabioMSB_Struct
     OPCdevDiscItf = new OPCDeviceDiscoveryItf()
     {
       /**
-       * 
+       *
        * @param name
-       * @param app_uri 
+       * @param app_uri
        */
       @Override
       public void on_new_server(String name, String app_uri)
@@ -131,9 +102,9 @@ public class FabioMSB_Struct
 
 
       /**
-       * 
+       *
        * @param name
-       * @param app_uri 
+       * @param app_uri
        */
       @Override
       public void on_new_endpoint(String name, String app_uri)
@@ -215,15 +186,15 @@ public class FabioMSB_Struct
             }
             catch (ServiceException ex)
             {
-              Logger.getLogger(FabioMSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
+              Logger.getLogger(MSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
             }
             catch (URISyntaxException ex)
             {
-              Logger.getLogger(FabioMSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
+              Logger.getLogger(MSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
             }
             catch (Exception ex)
             {
-              Logger.getLogger(FabioMSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
+              Logger.getLogger(MSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
             }
 
           }
@@ -236,8 +207,9 @@ public class FabioMSB_Struct
         }
       }
 
+
       /**
-       * 
+       *
        */
       @Override
       public void on_endpoint_dissapeared()
@@ -245,8 +217,9 @@ public class FabioMSB_Struct
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
       }
 
+
       /**
-       * 
+       *
        */
       @Override
       public void reset_tables()
@@ -255,10 +228,11 @@ public class FabioMSB_Struct
         System.out.println("reset endpoint and servers tables...");
       }
 
+
       /**
-       * 
+       *
        * @param name
-       * @param app_uri 
+       * @param app_uri
        */
       @Override
       public void on_server_dissapeared(String name, String app_uri)
@@ -293,11 +267,12 @@ public class FabioMSB_Struct
 
   }
 
+
   /**
-   * 
+   *
    * @param serverName
    * @param serverUri
-   * @return 
+   * @return
    */
   private static String registerServer(java.lang.String serverName, java.lang.String serverUri)
   {
@@ -308,10 +283,11 @@ public class FabioMSB_Struct
     return res;
   }
 
+
   /**
-   * 
+   *
    * @param ServerName
-   * @return 
+   * @return
    */
   public static int RemoveDownServer(String ServerName)
   {
@@ -336,10 +312,11 @@ public class FabioMSB_Struct
 
   }
 
+
   /**
-   * 
+   *
    * @param address
-   * @return 
+   * @return
    */
   public static boolean pingUrl(final String address)
   {
@@ -359,7 +336,7 @@ public class FabioMSB_Struct
     }
     catch (IOException ex)
     {
-      Logger.getLogger(FabioMSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(MSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
     }
 
     return false;
