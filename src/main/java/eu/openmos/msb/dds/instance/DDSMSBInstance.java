@@ -5,7 +5,11 @@
  */
 package eu.openmos.msb.dds.instance;
 
+import DDS.DOMAIN_ID_DEFAULT;
 import DDS.DomainParticipant;
+import DDS.DomainParticipantFactory;
+import DDS.PARTICIPANT_QOS_DEFAULT;
+import DDS.STATUS_MASK_NONE;
 import java.util.HashMap;
 
 
@@ -17,8 +21,8 @@ public class DDSMSBInstance
 {
 
   private static DDSMSBInstance instance = null;
-  private DDSDomainsManager domainsManger;
-  private HashMap<String, DDSDeviceManager> devicesManager;
+  private final HashMap<String, DomainParticipant> domainsMap;
+  private final HashMap<String, DDSDeviceManager> devicesManager;
 
 
   /**
@@ -26,7 +30,7 @@ public class DDSMSBInstance
    */
   protected DDSMSBInstance()
   {
-    this.domainsManger = new DDSDomainsManager();
+    this.domainsMap = new HashMap<String, DomainParticipant>();
     this.devicesManager = new HashMap<String, DDSDeviceManager>();
   }
 
@@ -53,54 +57,81 @@ public class DDSMSBInstance
 
 
   /**
+   * Adds a new domain participant to the application that it's store in the domainsMap HashMap and enables the
+   * application to handle communication between domains Refer to the documentation: OpenSplice DDS Java Reference Guide
+   * chapter 3.2.2.1 (pag. 188)
    *
-   * @param name
-   * @param id
-   */
-  public void newDomain(String name, int id)
-  {
-    try
-    {
-      DomainParticipant dp = this.domainsManger.createDomainParticipant(name, id);
-      this.devicesManager.put(name, new DDSDeviceManager(dp));
-    }
-    catch (Exception ex)
-    {
-      System.out.println("[ERROR] at newDomain (general message)" + ex.getMessage());
-    }
-  }
-
-
-  /**
-   *
-   * @param name
-   */
-  public void deleteDomain(String name)
-  {
-    this.domainsManger.deleteDomainParticipant(name);
-    this.devicesManager.remove(name);
-  }
-
-
-  /**
-   * Convenience method to list all available domains in the DDS instance
-   *
+   * @param domainName Name of the domain to add
+   * @param id Id of the domain
    * @return
    */
-  public String[] getAllAvailableDomains()
+  public void createDomain(String domainName, int id)
   {
-    return this.domainsManger.getDomainNames();
+    if (id < 0)
+    {
+      id = DOMAIN_ID_DEFAULT.value;
+    }
+
+    DomainParticipant participant;
+    participant = DomainParticipantFactory.get_instance().create_participant(
+      id,
+      PARTICIPANT_QOS_DEFAULT.value,
+      null,
+      STATUS_MASK_NONE.value);
+    DDSErrorHandler.checkHandle(participant, "DomainParticipantFactory.create_participant");
+    
+    
+    this.domainsMap.put(domainName, participant);
+    this.devicesManager.put(domainName, new DDSDeviceManager(participant)); 
+    
   }
 
 
   /**
+   * Deletes the Domain participant object Refer to the documentation: OpenSplice DDS Java Reference Guide chapter
+   * 3.2.2.2 (pag. 191)
    *
-   * @param name
-   * @return
+   * @param domainName Name of the domain to removed
    */
-  public DDSDeviceManager getDeviceManager(String name)
+  public void deleteDomain(String domainName)
   {
-    return this.devicesManager.get(name);
+    int status = DomainParticipantFactory.get_instance().delete_participant(this.domainsMap.remove(domainName));
+    DDSErrorHandler.checkStatus(status, "DomainParticipantFactory.delete_participant");
+    this.devicesManager.remove(domainName);
   }
+
+
+  /**
+   * Returns a array with all the domain names available
+   *
+   * @return array of strings
+   */
+  public String[] getDomainNames()
+  {
+    return (String[]) this.domainsMap.keySet().toArray();
+  }
+
+
+  /**
+   * Get's the domain by the given name
+   *
+   * @param domainName The domain name to obtain
+   * @return DomainParticipant
+   */
+  public DomainParticipant getDomain(String domainName)
+  {
+    return this.domainsMap.get(domainName);
+  }
+  
+  /**
+   * Method to obtain the Device Manager instance for a given domain
+   * @param domainName
+   * @return 
+   */
+  public DDSDeviceManager getDomainDeviceManager(String domainName)
+  {
+    return this.devicesManager.get(domainName);
+  }
+  
 }
 // EOF
