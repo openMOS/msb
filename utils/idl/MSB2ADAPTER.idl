@@ -1,0 +1,25 @@
+
+module MSB2ADAPTER {
+
+  struct GeneralMethodMessage {
+    string device;          // key device name (MUST BE unique per device)
+    string function;        // function to be called
+    string args;            // message body
+    string feedback;        // return message
+  };
+#pragma keylist GeneralMethodMessage device
+
+
+  struct StringMessage{
+    string args;            // data to be passed if needed
+  };
+#pragma keylist StringMessage 
+
+
+    
+
+};
+
+
+
+

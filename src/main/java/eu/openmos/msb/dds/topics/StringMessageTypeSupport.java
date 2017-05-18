@@ -1,20 +1,20 @@
-package MSB2Adapter;
+package eu.openmos.msb.dds.topics;
 
 import org.opensplice.dds.dcps.Utilities;
 
-public class GeneralMethodMessageTypeSupport extends org.opensplice.dds.dcps.TypeSupportImpl implements DDS.TypeSupportOperations
+public class StringMessageTypeSupport extends org.opensplice.dds.dcps.TypeSupportImpl implements DDS.TypeSupportOperations
 {
-    private static java.lang.String idl_type_name = "MSB2Adapter::GeneralMethodMessage";
-    private static java.lang.String idl_key_list = "id";
+    private static java.lang.String idl_type_name = "eu.openmos.msb.dds.topics::StringMessage";
+    private static java.lang.String idl_key_list = "";
 
     private long copyCache;
 
-    public GeneralMethodMessageTypeSupport()
+    public StringMessageTypeSupport()
     {
-        super("MSB2Adapter/GeneralMethodMessageDataReaderImpl",
-            "MSB2Adapter/GeneralMethodMessageDataReaderViewImpl",
-            "MSB2Adapter/GeneralMethodMessageDataWriterImpl",
-            "(LMSB2Adapter/GeneralMethodMessageTypeSupport;)V",
+        super("eu.openmos.msb.dds.topics/StringMessageDataReaderImpl",
+            "eu.openmos.msb.dds.topics/StringMessageDataReaderViewImpl",
+            "eu.openmos.msb.dds.topics/StringMessageDataWriterImpl",
+            "(Leu.openmos.msb.dds.topics/StringMessageTypeSupport;)V",
             "null",
             "null");
 
@@ -25,7 +25,7 @@ public class GeneralMethodMessageTypeSupport extends org.opensplice.dds.dcps.Typ
                     this,
                     idl_type_name,
                     idl_key_list,
-                    MSB2Adapter.GeneralMethodMessageMetaHolder.metaDescriptor);
+                    eu.openmos.msb.dds.topics.StringMessageMetaHolder.metaDescriptor);
         } catch (UnsatisfiedLinkError ule) {
             /*
              * JNI library is not loaded if no instance of the
@@ -38,13 +38,13 @@ public class GeneralMethodMessageTypeSupport extends org.opensplice.dds.dcps.Typ
                         this,
                         idl_type_name,
                         idl_key_list,
-                        MSB2Adapter.GeneralMethodMessageMetaHolder.metaDescriptor);
+                        eu.openmos.msb.dds.topics.StringMessageMetaHolder.metaDescriptor);
             }
         }
         if (success == 0) {
             throw Utilities.createException(
                     Utilities.EXCEPTION_TYPE_NO_MEMORY,
-                    "Could not allocate GeneralMethodMessageTypeSupport." );
+                    "Could not allocate StringMessageTypeSupport." );
         }
     }
 

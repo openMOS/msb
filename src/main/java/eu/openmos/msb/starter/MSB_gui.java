@@ -179,16 +179,17 @@ public class MSB_gui extends javax.swing.JFrame
     OnOffLDS = new javax.swing.JPanel();
     jPanel2 = new javax.swing.JPanel();
     l_ddsDomain = new javax.swing.JLabel();
-    l_regTopic = new javax.swing.JLabel();
-    tf_ddsDomain = new javax.swing.JTextField();
-    tf_regTopic = new javax.swing.JTextField();
-    b_register = new javax.swing.JButton();
-    b_startDomain = new javax.swing.JButton();
+    tf_msbDomain = new javax.swing.JTextField();
+    b_startMSBDDS = new javax.swing.JButton();
+    l_msbDomain = new javax.swing.JLabel();
+    l_msbPartition = new javax.swing.JLabel();
+    tf_msbPartition = new javax.swing.JTextField();
     jPanel4 = new javax.swing.JPanel();
     jPanel5 = new javax.swing.JPanel();
     StartWebService = new javax.swing.JButton();
     WebServiceAddress = new javax.swing.JTextField();
     OnOffWSPanel = new javax.swing.JPanel();
+    jLabel10 = new javax.swing.JLabel();
     l_openmosLogo = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -639,15 +640,15 @@ public class MSB_gui extends javax.swing.JFrame
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(jPanel1Layout.createSequentialGroup()
-            .addGap(25, 25, 25)
-            .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(jPanel1Layout.createSequentialGroup()
             .addGap(12, 12, 12)
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(msb_opcua_servername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(StartMSBServer)))
+            .addComponent(StartMSBServer))
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGap(24, 24, 24)
+            .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addGap(12, 12, 12)
         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -665,50 +666,40 @@ public class MSB_gui extends javax.swing.JFrame
         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(18, 18, 18)
         .addComponent(jLabel6)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addGap(17, 17, 17)
-            .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(btn_start_discovery)))
-        .addGap(270, 270, 270))
+          .addComponent(btn_start_discovery)
+          .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(275, 275, 275))
     );
 
     jTabbedPane1.addTab("OPCUA", jPanel1);
 
-    l_ddsDomain.setText("DDS Domain");
+    l_ddsDomain.setText("DDS Configuration");
 
-    l_regTopic.setText("DDS Registration Topic");
-
-    tf_ddsDomain.setText("openMosDomain");
-    tf_ddsDomain.addActionListener(new java.awt.event.ActionListener()
+    tf_msbDomain.setText("openMosDomainId");
+    tf_msbDomain.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        tf_ddsDomainActionPerformed(evt);
+        tf_msbDomainActionPerformed(evt);
       }
     });
 
-    tf_regTopic.setText("regist");
-    tf_regTopic.addActionListener(new java.awt.event.ActionListener()
+    b_startMSBDDS.setText("Start Domain");
+
+    l_msbDomain.setText("Domain");
+
+    l_msbPartition.setText("Partition");
+
+    tf_msbPartition.setText("openMosPartitionName");
+    tf_msbPartition.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        tf_regTopicActionPerformed(evt);
+        tf_msbPartitionActionPerformed(evt);
       }
     });
-
-    b_register.setText("Register");
-    b_register.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        b_registerActionPerformed(evt);
-      }
-    });
-
-    b_startDomain.setText("Start Domain");
 
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
@@ -716,14 +707,21 @@ public class MSB_gui extends javax.swing.JFrame
       jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addGap(12, 12, 12)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(b_startDomain, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(l_ddsDomain)
-          .addComponent(l_regTopic)
-          .addComponent(tf_regTopic, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
-          .addComponent(tf_ddsDomain)
-          .addComponent(b_register, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap(253, Short.MAX_VALUE))
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(l_msbDomain)
+              .addComponent(l_msbPartition))
+            .addGap(24, 24, 24)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(tf_msbPartition, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(tf_msbDomain, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))))
+        .addContainerGap(376, Short.MAX_VALUE))
+      .addGroup(jPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(b_startMSBDDS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addContainerGap())
     );
     jPanel2Layout.setVerticalGroup(
       jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -731,16 +729,16 @@ public class MSB_gui extends javax.swing.JFrame
         .addContainerGap()
         .addComponent(l_ddsDomain)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(tf_ddsDomain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(tf_msbDomain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(l_msbDomain))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(tf_msbPartition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(l_msbPartition))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(b_startDomain)
-        .addGap(23, 23, 23)
-        .addComponent(l_regTopic)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(tf_regTopic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(b_register)
-        .addContainerGap(255, Short.MAX_VALUE))
+        .addComponent(b_startMSBDDS)
+        .addContainerGap(477, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("DDS", jPanel2);
@@ -749,11 +747,11 @@ public class MSB_gui extends javax.swing.JFrame
     jPanel4.setLayout(jPanel4Layout);
     jPanel4Layout.setHorizontalGroup(
       jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 527, Short.MAX_VALUE)
+      .addGap(0, 652, Short.MAX_VALUE)
     );
     jPanel4Layout.setVerticalGroup(
       jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 446, Short.MAX_VALUE)
+      .addGap(0, 599, Short.MAX_VALUE)
     );
 
     jTabbedPane1.addTab("MQTT", jPanel4);
@@ -789,35 +787,38 @@ public class MSB_gui extends javax.swing.JFrame
       .addGap(0, 40, Short.MAX_VALUE)
     );
 
+    jLabel10.setText("Server Address:");
+
     javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
     jPanel5.setLayout(jPanel5Layout);
     jPanel5Layout.setHorizontalGroup(
       jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel5Layout.createSequentialGroup()
+        .addContainerGap()
         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(jPanel5Layout.createSequentialGroup()
-            .addGap(160, 160, 160)
-            .addComponent(StartWebService))
+            .addComponent(StartWebService, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addContainerGap())
           .addGroup(jPanel5Layout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(WebServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(18, 18, 18)
-            .addComponent(OnOffWSPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addContainerGap(142, Short.MAX_VALUE))
+            .addComponent(jLabel10)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(WebServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(OnOffWSPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(6, 6, 6))))
     );
     jPanel5Layout.setVerticalGroup(
       jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel5Layout.createSequentialGroup()
-        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel5Layout.createSequentialGroup()
-            .addGap(15, 15, 15)
-            .addComponent(WebServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(jPanel5Layout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(OnOffWSPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addGap(21, 21, 21)
+        .addContainerGap()
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(OnOffWSPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(WebServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jLabel10)))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(StartWebService)
-        .addContainerGap(348, Short.MAX_VALUE))
+        .addContainerGap(510, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("WebService", jPanel5);
@@ -837,9 +838,12 @@ public class MSB_gui extends javax.swing.JFrame
             .addContainerGap())
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(256, 256, 256))
+              .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel3)
@@ -879,9 +883,9 @@ public class MSB_gui extends javax.swing.JFrame
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 471, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
         .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1740,20 +1744,15 @@ public class MSB_gui extends javax.swing.JFrame
     // TODO add your handling code here:
   }//GEN-LAST:event_msb_opcua_servernameActionPerformed
 
-  private void tf_ddsDomainActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_ddsDomainActionPerformed
-  {//GEN-HEADEREND:event_tf_ddsDomainActionPerformed
+  private void tf_msbDomainActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_msbDomainActionPerformed
+  {//GEN-HEADEREND:event_tf_msbDomainActionPerformed
     // TODO add your handling code here:
-  }//GEN-LAST:event_tf_ddsDomainActionPerformed
+  }//GEN-LAST:event_tf_msbDomainActionPerformed
 
-  private void tf_regTopicActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_regTopicActionPerformed
-  {//GEN-HEADEREND:event_tf_regTopicActionPerformed
+  private void tf_msbPartitionActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_msbPartitionActionPerformed
+  {//GEN-HEADEREND:event_tf_msbPartitionActionPerformed
     // TODO add your handling code here:
-  }//GEN-LAST:event_tf_regTopicActionPerformed
-
-  private void b_registerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_registerActionPerformed
-  {//GEN-HEADEREND:event_b_registerActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_b_registerActionPerformed
+  }//GEN-LAST:event_tf_msbPartitionActionPerformed
 
 
   /**
@@ -2359,8 +2358,7 @@ public class MSB_gui extends javax.swing.JFrame
   private javax.swing.JButton StartWebService;
   private javax.swing.JTable TableServers;
   private javax.swing.JTextField WebServiceAddress;
-  private javax.swing.JButton b_register;
-  private javax.swing.JButton b_startDomain;
+  private javax.swing.JButton b_startMSBDDS;
   private javax.swing.JButton btn_ChangedState;
   private javax.swing.JButton btn_DeviceRegistration;
   private javax.swing.JButton btn_RecipeExecutionDone;
@@ -2377,6 +2375,7 @@ public class MSB_gui extends javax.swing.JFrame
   private javax.swing.JComboBox<String> comboServers;
   private javax.swing.JComboBox<String> jComboBox1;
   private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
@@ -2399,15 +2398,16 @@ public class MSB_gui extends javax.swing.JFrame
   private javax.swing.JSeparator jSeparator4;
   private javax.swing.JTabbedPane jTabbedPane1;
   private javax.swing.JLabel l_ddsDomain;
+  private javax.swing.JLabel l_msbDomain;
+  private javax.swing.JLabel l_msbPartition;
   private static javax.swing.JLabel l_openmosLogo;
-  private javax.swing.JLabel l_regTopic;
   private javax.swing.JTextField msb_opcua_servername;
   private static javax.swing.JTextArea opc_comms_log;
   private static javax.swing.JButton prodA;
   private static javax.swing.JButton prodB;
   private javax.swing.JTextField textToSend;
-  private javax.swing.JTextField tf_ddsDomain;
-  private javax.swing.JTextField tf_regTopic;
+  private javax.swing.JTextField tf_msbDomain;
+  private javax.swing.JTextField tf_msbPartition;
   // End of variables declaration//GEN-END:variables
 }
 //EOF

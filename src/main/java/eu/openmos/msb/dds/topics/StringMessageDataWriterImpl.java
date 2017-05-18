@@ -1,18 +1,18 @@
-package MSB2Adapter;
+package eu.openmos.msb.dds.topics;
 
-public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.DataWriterImpl implements GeneralMethodMessageDataWriter
+public class StringMessageDataWriterImpl extends org.opensplice.dds.dcps.DataWriterImpl implements StringMessageDataWriter
 {
     private long copyCache;
-    private GeneralMethodMessageTypeSupport typeSupport;
+    private StringMessageTypeSupport typeSupport;
 
-    public GeneralMethodMessageDataWriterImpl(MSB2Adapter.GeneralMethodMessageTypeSupport ts)
+    public StringMessageDataWriterImpl(eu.openmos.msb.dds.topics.StringMessageTypeSupport ts)
     {
         typeSupport = ts;
         copyCache = typeSupport.get_copyCache ();
     }
 
     public long register_instance(
-            MSB2Adapter.GeneralMethodMessage instance_data)
+            eu.openmos.msb.dds.topics.StringMessage instance_data)
     {
         return
             org.opensplice.dds.dcps.FooDataWriterImpl.registerInstance(
@@ -22,7 +22,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public long register_instance_w_timestamp(
-            MSB2Adapter.GeneralMethodMessage instance_data, 
+            eu.openmos.msb.dds.topics.StringMessage instance_data, 
             DDS.Time_t source_timestamp)
     {
         return
@@ -34,7 +34,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public int unregister_instance(
-            MSB2Adapter.GeneralMethodMessage instance_data, 
+            eu.openmos.msb.dds.topics.StringMessage instance_data, 
             long handle)
     {
         return
@@ -46,7 +46,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public int unregister_instance_w_timestamp(
-            MSB2Adapter.GeneralMethodMessage instance_data, 
+            eu.openmos.msb.dds.topics.StringMessage instance_data, 
             long handle, 
             DDS.Time_t source_timestamp)
     {
@@ -60,7 +60,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public int write(
-            MSB2Adapter.GeneralMethodMessage instance_data, 
+            eu.openmos.msb.dds.topics.StringMessage instance_data, 
             long handle)
     {
         return
@@ -72,7 +72,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public int write_w_timestamp(
-            MSB2Adapter.GeneralMethodMessage instance_data, 
+            eu.openmos.msb.dds.topics.StringMessage instance_data, 
             long handle, 
             DDS.Time_t source_timestamp)
     {
@@ -86,7 +86,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public int dispose(
-            MSB2Adapter.GeneralMethodMessage instance_data, 
+            eu.openmos.msb.dds.topics.StringMessage instance_data, 
             long instance_handle)
     {
         return
@@ -98,7 +98,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public int dispose_w_timestamp(
-            MSB2Adapter.GeneralMethodMessage instance_data, 
+            eu.openmos.msb.dds.topics.StringMessage instance_data, 
             long instance_handle, 
             DDS.Time_t source_timestamp)
     {
@@ -112,7 +112,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public int writedispose(
-            MSB2Adapter.GeneralMethodMessage instance_data, 
+            eu.openmos.msb.dds.topics.StringMessage instance_data, 
             long handle)
     {
         return
@@ -124,7 +124,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public int writedispose_w_timestamp(
-            MSB2Adapter.GeneralMethodMessage instance_data, 
+            eu.openmos.msb.dds.topics.StringMessage instance_data, 
             long handle, 
             DDS.Time_t source_timestamp)
     {
@@ -138,7 +138,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
 
     public int get_key_value(
-            MSB2Adapter.GeneralMethodMessageHolder key_holder, 
+            eu.openmos.msb.dds.topics.StringMessageHolder key_holder, 
             long handle)
     {
         return
@@ -150,7 +150,7 @@ public class GeneralMethodMessageDataWriterImpl extends org.opensplice.dds.dcps.
     }
     
     public long lookup_instance(
-            MSB2Adapter.GeneralMethodMessage instance_data)
+            eu.openmos.msb.dds.topics.StringMessage instance_data)
     {
         return
             org.opensplice.dds.dcps.FooDataWriterImpl.lookupInstance(

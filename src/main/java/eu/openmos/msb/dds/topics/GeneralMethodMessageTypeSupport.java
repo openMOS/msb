@@ -5,7 +5,7 @@ import org.opensplice.dds.dcps.Utilities;
 public class GeneralMethodMessageTypeSupport extends org.opensplice.dds.dcps.TypeSupportImpl implements DDS.TypeSupportOperations
 {
     private static java.lang.String idl_type_name = "eu.openmos.msb.dds.topics::GeneralMethodMessage";
-    private static java.lang.String idl_key_list = "function";
+    private static java.lang.String idl_key_list = "device";
 
     private long copyCache;
 

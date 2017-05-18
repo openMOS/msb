@@ -6,7 +6,15 @@
 package eu.openmos.msb.dds.instance;
 
 import DDS.*;
+import eu.openmos.msb.opcua.utils.OPCDeviceItf;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import org.opensplice.dds.dcps.ListenerBase;
+import org.xml.sax.SAXException;
 
 
 
@@ -17,6 +25,19 @@ import org.opensplice.dds.dcps.ListenerBase;
 public class DDSDataReaderListener extends ListenerBase implements DataReaderListener
 {
 
+  
+  private static OPCDeviceItf DeviceITF;
+  
+  
+  public DDSDataReaderListener()
+  {
+    DeviceITF = new OPCDeviceItf(); 
+  }
+
+  
+  
+  
+  
   @Override
   public void on_requested_deadline_missed(DataReader reader, RequestedDeadlineMissedStatus rdms)
   {
@@ -48,7 +69,18 @@ public class DDSDataReaderListener extends ListenerBase implements DataReaderLis
   @Override
   public void on_data_available(DataReader reader)
   {
-    throw new UnsupportedOperationException("Not supported yet."); 
+    
+    
+    try
+    {
+      DeviceITF.AllCases("Teste", "Teste");
+    }
+    catch (ParserConfigurationException | SAXException | IOException | JAXBException | TransformerException ex)
+    {
+      Logger.getLogger(DDSDataReaderListener.class.getName()).log(Level.SEVERE, null, ex);
+    } 
+    
+    
   }
 
 

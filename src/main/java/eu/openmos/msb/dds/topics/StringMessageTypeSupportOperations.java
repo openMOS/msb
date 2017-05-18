@@ -1,6 +1,6 @@
-package MSB2Adapter;
+package eu.openmos.msb.dds.topics;
 
-public interface GeneralMethodMessageTypeSupportOperations extends
+public interface StringMessageTypeSupportOperations extends
     DDS.TypeSupportOperations
 {
 

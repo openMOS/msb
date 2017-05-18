@@ -1,18 +1,18 @@
-package MSB2Adapter;
+package eu.openmos.msb.dds.topics;
 
-public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.DataReaderImpl implements GeneralMethodMessageDataReader
+public class StringMessageDataReaderImpl extends org.opensplice.dds.dcps.DataReaderImpl implements StringMessageDataReader
 {
     private long copyCache;
-    private GeneralMethodMessageTypeSupport typeSupport;
+    private StringMessageTypeSupport typeSupport;
 
-    public GeneralMethodMessageDataReaderImpl(MSB2Adapter.GeneralMethodMessageTypeSupport ts)
+    public StringMessageDataReaderImpl(eu.openmos.msb.dds.topics.StringMessageTypeSupport ts)
     {
         typeSupport = ts;
         copyCache = typeSupport.get_copyCache ();
     }
 
     public int read(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             int sample_states,
@@ -32,7 +32,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int take(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             int sample_states,
@@ -52,7 +52,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int read_w_condition(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             DDS.ReadCondition a_condition)
@@ -68,7 +68,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int take_w_condition(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             DDS.ReadCondition a_condition)
@@ -84,7 +84,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int read_next_sample(
-            MSB2Adapter.GeneralMethodMessageHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageHolder received_data,
             DDS.SampleInfoHolder sample_info)
     {
         return
@@ -96,7 +96,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int take_next_sample(
-            MSB2Adapter.GeneralMethodMessageHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageHolder received_data,
             DDS.SampleInfoHolder sample_info)
     {
         return
@@ -108,7 +108,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int read_instance(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             long a_handle,
@@ -130,7 +130,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int take_instance(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             long a_handle,
@@ -152,7 +152,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int read_next_instance(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             long a_handle,
@@ -174,7 +174,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int take_next_instance(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             long a_handle,
@@ -196,7 +196,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int read_next_instance_w_condition(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             long a_handle,
@@ -214,7 +214,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int take_next_instance_w_condition(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq,
             int max_samples,
             long a_handle,
@@ -232,7 +232,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int return_loan(
-            MSB2Adapter.GeneralMethodMessageSeqHolder received_data,
+            eu.openmos.msb.dds.topics.StringMessageSeqHolder received_data,
             DDS.SampleInfoSeqHolder info_seq)
     {
         int result;
@@ -260,7 +260,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public int get_key_value(
-            MSB2Adapter.GeneralMethodMessageHolder key_holder,
+            eu.openmos.msb.dds.topics.StringMessageHolder key_holder,
             long handle)
     {
         return
@@ -272,7 +272,7 @@ public class GeneralMethodMessageDataReaderImpl extends org.opensplice.dds.dcps.
     }
 
     public long lookup_instance(
-        MSB2Adapter.GeneralMethodMessage instance)
+        eu.openmos.msb.dds.topics.StringMessage instance)
     {
         return
             org.opensplice.dds.dcps.FooDataReaderImpl.lookupInstance(
