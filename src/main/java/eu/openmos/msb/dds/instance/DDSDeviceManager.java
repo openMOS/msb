@@ -64,10 +64,22 @@ public class DDSDeviceManager
     return -1;
   }
 
-
   /**
-   *
-   * @return
+   * 
+   * @param name
+   * @return 
+   */
+  public DDSMSBDevice getDevice(String name){
+    if (this.devices.containsKey(name))
+    {
+      return this.devices.get(name);
+    }
+    return null;
+  }
+  
+  /**
+   * Method to access the domain associated with this Device Manager instance
+   * @return DomainParticipant
    */
   public DomainParticipant getDomain()
   {

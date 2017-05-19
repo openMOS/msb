@@ -835,27 +835,31 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="l_ddsDomain" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="b_startMSBDDS" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="l_msbDomain" min="-2" max="-2" attributes="0"/>
-                                  <Component id="l_msbPartition" min="-2" max="-2" attributes="0"/>
+                                  <Component id="l_ddsDomain" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                          <Component id="l_msbDomainID" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="l_msbDomainName" alignment="0" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="tf_msbDomainName" pref="178" max="32767" attributes="0"/>
+                                          <Component id="tf_msbDomainID" alignment="0" max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
                               </Group>
-                              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="tf_msbPartition" alignment="1" min="-2" pref="178" max="-2" attributes="0"/>
-                                  <Component id="tf_msbDomain" min="-2" pref="178" max="-2" attributes="0"/>
-                              </Group>
+                              <EmptySpace min="0" pref="370" max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="376" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="b_startMSBDDS" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -867,17 +871,17 @@
                       <Component id="l_ddsDomain" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="tf_msbDomain" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="l_msbDomain" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="tf_msbDomainName" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="l_msbDomainName" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="tf_msbPartition" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="l_msbPartition" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="l_msbDomainID" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="tf_msbDomainID" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="b_startMSBDDS" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="477" max="32767" attributes="0"/>
+                      <EmptySpace pref="306" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -888,36 +892,42 @@
                 <Property name="text" type="java.lang.String" value="DDS Configuration"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="tf_msbDomain">
+            <Component class="javax.swing.JTextField" name="tf_msbDomainName">
               <Properties>
-                <Property name="text" type="java.lang.String" value="openMosDomainId"/>
+                <Property name="text" type="java.lang.String" value="openmos"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tf_msbDomainActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tf_msbDomainNameActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="b_startMSBDDS">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Start Domain"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="b_startMSBDDSActionPerformed"/>
+              </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="l_msbDomain">
+            <Component class="javax.swing.JLabel" name="l_msbDomainName">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Domain"/>
+                <Property name="text" type="java.lang.String" value="Domain Name"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="l_msbPartition">
+            <Component class="javax.swing.JLabel" name="l_msbDomainID">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Partition"/>
+                <Property name="text" type="java.lang.String" value="Domain ID"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="tf_msbPartition">
+            <Component class="javax.swing.JTextField" name="tf_msbDomainID">
               <Properties>
-                <Property name="text" type="java.lang.String" value="openMosPartitionName"/>
+                <Property name="text" type="java.lang.String" value="-1"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tf_msbPartitionActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tf_msbDomainIDActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="((AbstractDocument)tf_msbDomainID.getDocument()).setDocumentFilter(new DocumentFilter(){&#xa;        Pattern regEx = Pattern.compile(&quot;\\d*&quot;);&#xa;&#xa;        @Override&#xa;        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {          &#xa;            Matcher matcher = regEx.matcher(text);&#xa;            if(!matcher.matches()){&#xa;                return;&#xa;            }&#xa;            super.replace(fb, offset, length, text, attrs);&#xa;        }&#xa;    });"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
@@ -933,7 +943,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="652" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="687" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">

@@ -17,8 +17,8 @@ import DDS.Subscriber;
 import DDS.SubscriberQosHolder;
 import DDS.Topic;
 import DDS.TopicQosHolder;
-import eu.openmos.msb.dds.topics.GeneralMethodMessageTypeSupport;
-import eu.openmos.msb.dds.topics.StringMessageTypeSupport;
+import MSB2ADAPTER.GeneralMethodMessageTypeSupport;
+import MSB2ADAPTER.StringMessageTypeSupport;
 import java.util.HashMap;
 
 
@@ -36,7 +36,8 @@ public class DDSMSBDevice
   private HashMap<String, Topic> topics;
   private final DomainParticipant domain;
   private final String name;
-
+  private GeneralMethodMessageTypeSupport gmmType;
+  private StringMessageTypeSupport smType;
 
   /**
    * DDSDevice constructor. Receives the name and the domain to which will belong
@@ -46,6 +47,11 @@ public class DDSMSBDevice
    */
   public DDSMSBDevice(String name, DomainParticipant dp)
   {
+    
+    this.topics = new HashMap<String, Topic>();
+    this.dataWriters = new HashMap<String, DataWriter>();
+    this.datareaders = new HashMap<String, DataReader>();
+    
     this.domain = dp;
     this.name = name;
 
@@ -57,8 +63,8 @@ public class DDSMSBDevice
     DDSErrorHandler.checkStatus(status, "DomainParticipant.get_default_publisher_qos");
     pubQos.value.partition.name = new String[1];
     pubQos.value.partition.name[0] = name;
-    Publisher pub = this.domain.create_publisher(pubQos.value, null, STATUS_MASK_NONE.value);
-    DDSErrorHandler.checkHandle(pub, "DomainParticipant.create_publisher");
+    this.publisher = this.domain.create_publisher(pubQos.value, null, STATUS_MASK_NONE.value);
+    DDSErrorHandler.checkHandle(this.publisher, "DomainParticipant.create_publisher");
 
     // Create the Subscriber for this device
     SubscriberQosHolder subQos = new SubscriberQosHolder();
@@ -66,18 +72,23 @@ public class DDSMSBDevice
     DDSErrorHandler.checkStatus(status, "DomainParticipant.get_default_subscriber_qos");
     subQos.value.partition.name = new String[1];
     subQos.value.partition.name[0] = name;
-    Subscriber sub = this.domain.create_subscriber(subQos.value, null, STATUS_MASK_NONE.value);
-    DDSErrorHandler.checkHandle(sub, "DomainParticipant.create_subscriber");
+    this.subscriber = this.domain.create_subscriber(subQos.value, null, STATUS_MASK_NONE.value);
+    DDSErrorHandler.checkHandle(this.subscriber, "DomainParticipant.create_subscriber");
 
+    
+    String type;
     // Register the message type to the domain, this is specific to this network device
-    GeneralMethodMessageTypeSupport gmmType = new GeneralMethodMessageTypeSupport();
-    status = gmmType.register_type(domain, gmmType.get_type_name());
-    DDSErrorHandler.checkStatus(status, "register_type");
-
+    gmmType = new GeneralMethodMessageTypeSupport();
+    type = gmmType.get_type_name();
+    status = gmmType.register_type(domain, type);
+    DDSErrorHandler.checkStatus(status, "register_type GeneralMethodMessageTypeSupport");
     // Register the message type to the domain, this is specific to this network device
-    StringMessageTypeSupport smType = new StringMessageTypeSupport();
-    status = smType.register_type(domain, smType.get_type_name());
-    DDSErrorHandler.checkStatus(status, "register_type");
+    smType = new StringMessageTypeSupport();
+    type = smType.get_type_name();
+    status = smType.register_type(domain, type);
+    DDSErrorHandler.checkStatus(status, "register_type StringMessageTypeSupport");
+    
+    
 
   }
 
@@ -90,13 +101,23 @@ public class DDSMSBDevice
    */
   public void createTopic(String topicName, String topicType)
   {
+    
+    String tp = "";
+    switch(topicType)
+    {
+      case "GeneralMethod":
+        tp = gmmType.get_type_name();
+      case "String":
+        tp = smType.get_type_name();
+    }
+    
+    
     TopicQosHolder topicQos = new TopicQosHolder();
     int status = this.domain.get_default_topic_qos(topicQos);
     DDSErrorHandler.checkStatus(status, "DomainParticipant.set_default_topic_qos");
     topicQos.value.reliability.kind = ReliabilityQosPolicyKind.RELIABLE_RELIABILITY_QOS;
     topicQos.value.durability.kind = DurabilityQosPolicyKind.TRANSIENT_DURABILITY_QOS;
-
-    Topic topic = this.domain.create_topic(topicName, topicType, topicQos.value, null, STATUS_MASK_NONE.value);
+    Topic topic = this.domain.create_topic(topicName, tp, topicQos.value, null, STATUS_MASK_NONE.value);
     DDSErrorHandler.checkHandle(topic, "DomainParticipant.create_topic");
 
     this.topics.put(topicName, topic);

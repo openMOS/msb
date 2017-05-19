@@ -28,11 +28,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.opensplice.dds.dcps.ListenerBase;
 import org.xml.sax.SAXException;
-import eu.openmos.msb.dds.topics.GeneralMethodMessage;
-import eu.openmos.msb.dds.topics.GeneralMethodMessageDataReader;
-import eu.openmos.msb.dds.topics.GeneralMethodMessageSeqHolder;
-import eu.openmos.msb.dds.topics.StringMessage;
-import eu.openmos.msb.dds.topics.StringMessageSeqHolder;
+import MSB2ADAPTER.GeneralMethodMessage;
+import MSB2ADAPTER.GeneralMethodMessageDataReader;
+import MSB2ADAPTER.GeneralMethodMessageSeqHolder;
+
 
 
 /**

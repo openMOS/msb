@@ -7,6 +7,8 @@ package eu.openmos.msb.starter;
 import eu.openmos.msb.database.stateless.DeviceRegistryBean;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
+import eu.openmos.msb.dds.instance.DDSDeviceManager;
+import eu.openmos.msb.dds.instance.DDSMSBInstance;
 import eu.openmos.msb.dummyclasses.ExecuteData;
 import eu.openmos.msb.dummyclasses.ServerStatus;
 import eu.openmos.msb.opcua.milo.server.opcuaServerMSB;
@@ -19,15 +21,18 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.text.DocumentFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -36,6 +41,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.DefaultCaret;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,6 +51,9 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import java.util.regex.Pattern;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 
 
 /**
@@ -179,11 +188,11 @@ public class MSB_gui extends javax.swing.JFrame
     OnOffLDS = new javax.swing.JPanel();
     jPanel2 = new javax.swing.JPanel();
     l_ddsDomain = new javax.swing.JLabel();
-    tf_msbDomain = new javax.swing.JTextField();
+    tf_msbDomainName = new javax.swing.JTextField();
     b_startMSBDDS = new javax.swing.JButton();
-    l_msbDomain = new javax.swing.JLabel();
-    l_msbPartition = new javax.swing.JLabel();
-    tf_msbPartition = new javax.swing.JTextField();
+    l_msbDomainName = new javax.swing.JLabel();
+    l_msbDomainID = new javax.swing.JLabel();
+    tf_msbDomainID = new javax.swing.JTextField();
     jPanel4 = new javax.swing.JPanel();
     jPanel5 = new javax.swing.JPanel();
     StartWebService = new javax.swing.JButton();
@@ -677,27 +686,49 @@ public class MSB_gui extends javax.swing.JFrame
 
     l_ddsDomain.setText("DDS Configuration");
 
-    tf_msbDomain.setText("openMosDomainId");
-    tf_msbDomain.addActionListener(new java.awt.event.ActionListener()
+    tf_msbDomainName.setText("openmos");
+    tf_msbDomainName.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        tf_msbDomainActionPerformed(evt);
+        tf_msbDomainNameActionPerformed(evt);
       }
     });
 
     b_startMSBDDS.setText("Start Domain");
-
-    l_msbDomain.setText("Domain");
-
-    l_msbPartition.setText("Partition");
-
-    tf_msbPartition.setText("openMosPartitionName");
-    tf_msbPartition.addActionListener(new java.awt.event.ActionListener()
+    b_startMSBDDS.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        tf_msbPartitionActionPerformed(evt);
+        b_startMSBDDSActionPerformed(evt);
+      }
+    });
+
+    l_msbDomainName.setText("Domain Name");
+
+    l_msbDomainID.setText("Domain ID");
+
+    ((AbstractDocument)tf_msbDomainID.getDocument()).setDocumentFilter(new DocumentFilter()
+    {
+      Pattern regEx = Pattern.compile("\\d*");
+
+      @Override
+      public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException
+      {
+        Matcher matcher = regEx.matcher(text);
+        if(!matcher.matches())
+        {
+          return;
+        }
+        super.replace(fb, offset, length, text, attrs);
+      }
+    });
+    tf_msbDomainID.setText("-1");
+    tf_msbDomainID.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        tf_msbDomainIDActionPerformed(evt);
       }
     });
 
@@ -706,21 +737,23 @@ public class MSB_gui extends javax.swing.JFrame
     jPanel2Layout.setHorizontalGroup(
       jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel2Layout.createSequentialGroup()
-        .addGap(12, 12, 12)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(l_ddsDomain)
           .addGroup(jPanel2Layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(b_startMSBDDS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGap(12, 12, 12)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l_msbDomain)
-              .addComponent(l_msbPartition))
-            .addGap(24, 24, 24)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(tf_msbPartition, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(tf_msbDomain, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))))
-        .addContainerGap(376, Short.MAX_VALUE))
-      .addGroup(jPanel2Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(b_startMSBDDS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(l_ddsDomain)
+              .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                  .addComponent(l_msbDomainID, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(l_msbDomainName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(24, 24, 24)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                  .addComponent(tf_msbDomainName, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
+                  .addComponent(tf_msbDomainID))))
+            .addGap(0, 370, Short.MAX_VALUE)))
         .addContainerGap())
     );
     jPanel2Layout.setVerticalGroup(
@@ -730,15 +763,15 @@ public class MSB_gui extends javax.swing.JFrame
         .addComponent(l_ddsDomain)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(tf_msbDomain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(l_msbDomain))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+          .addComponent(tf_msbDomainName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(l_msbDomainName))
+        .addGap(18, 18, 18)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(tf_msbPartition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(l_msbPartition))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+          .addComponent(l_msbDomainID)
+          .addComponent(tf_msbDomainID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(18, 18, 18)
         .addComponent(b_startMSBDDS)
-        .addContainerGap(477, Short.MAX_VALUE))
+        .addContainerGap(306, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("DDS", jPanel2);
@@ -747,7 +780,7 @@ public class MSB_gui extends javax.swing.JFrame
     jPanel4.setLayout(jPanel4Layout);
     jPanel4Layout.setHorizontalGroup(
       jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 652, Short.MAX_VALUE)
+      .addGap(0, 687, Short.MAX_VALUE)
     );
     jPanel4Layout.setVerticalGroup(
       jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1278,7 +1311,7 @@ public class MSB_gui extends javax.swing.JFrame
 
       //TESTE INVOQUESKILL
       NodeId objectId = NodeId.parse("ns=2;s=Pre-Demonstrator_InstanceHierarchy/"
-          + "AssemblySystem/WorkStation/SC1:Task_slow_Recipe");
+        + "AssemblySystem/WorkStation/SC1:Task_slow_Recipe");
       NodeId methodId = NodeId.parse("ns=2;s=InvokeSkill/SC1:Task_slow_Recipe");
 
       MSBcs.InvoqueDeviceSkill(MSBcs.milo_client_instanceMSB, objectId, methodId).exceptionally(ex ->
@@ -1680,7 +1713,6 @@ public class MSB_gui extends javax.swing.JFrame
     try
     {
       // TODO add your handling code here:
-      // TODO add your handling code here:
       opc_comms_log.append("Starting MSB OPCUA Milo Server...\n");
 
       opcuaServerInstanceMILO = new opcuaServerMSB(msb_opcua_servername.getText()); //new MSB Milo server
@@ -1697,7 +1729,7 @@ public class MSB_gui extends javax.swing.JFrame
            * Thread(() -> future.complete(null))); future.get();
            */
         }
-        catch (Exception ex)
+        catch (InterruptedException | ExecutionException ex)
         {
           Logger.getLogger(MSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
           opc_comms_log.append("Exception: " + ex);
@@ -1733,6 +1765,7 @@ public class MSB_gui extends javax.swing.JFrame
    */
   private void StartMSBServerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_StartMSBServerMouseClicked
 
+
   }//GEN-LAST:event_StartMSBServerMouseClicked
 
 
@@ -1744,15 +1777,37 @@ public class MSB_gui extends javax.swing.JFrame
     // TODO add your handling code here:
   }//GEN-LAST:event_msb_opcua_servernameActionPerformed
 
-  private void tf_msbDomainActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_msbDomainActionPerformed
-  {//GEN-HEADEREND:event_tf_msbDomainActionPerformed
+  private void tf_msbDomainNameActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_msbDomainNameActionPerformed
+  {//GEN-HEADEREND:event_tf_msbDomainNameActionPerformed
     // TODO add your handling code here:
-  }//GEN-LAST:event_tf_msbDomainActionPerformed
+  }//GEN-LAST:event_tf_msbDomainNameActionPerformed
 
-  private void tf_msbPartitionActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_msbPartitionActionPerformed
-  {//GEN-HEADEREND:event_tf_msbPartitionActionPerformed
+  private void b_startMSBDDSActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_startMSBDDSActionPerformed
+  {//GEN-HEADEREND:event_b_startMSBDDSActionPerformed
+
+    
+    if(!tf_msbDomainName.getText().isEmpty() && !tf_msbDomainID.getText().isEmpty())
+    {
+      String domainName = tf_msbDomainName.getText();
+      int id = Integer.valueOf(tf_msbDomainID.getText());
+      
+      System.out.println("Domain: " + domainName);
+      System.out.println("ID " + id);
+      DDSMSBInstance.getInstance().createDomain(domainName, id);
+      DDSDeviceManager dm = DDSMSBInstance.getInstance().getDomainDeviceManager(domainName);
+      dm.addDevice("msb");
+      dm.getDevice("msb").createTopic("generalmethod", "GeneralMethod");
+      dm.getDevice("msb").registerReader("generalmethod");
+      System.out.println("Criei o GeneralMethod");
+    }
+
+
+  }//GEN-LAST:event_b_startMSBDDSActionPerformed
+
+  private void tf_msbDomainIDActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_msbDomainIDActionPerformed
+  {//GEN-HEADEREND:event_tf_msbDomainIDActionPerformed
     // TODO add your handling code here:
-  }//GEN-LAST:event_tf_msbPartitionActionPerformed
+  }//GEN-LAST:event_tf_msbDomainIDActionPerformed
 
 
   /**
@@ -2007,8 +2062,8 @@ public class MSB_gui extends javax.swing.JFrame
       for (int j = 0; j < TProductsmodel.getColumnCount(); j++)
       {//For each column in that row
         if (/*
-             * TProductsmodel.getValueAt(i, j).equals(productID) || TProductsmodel.getValueAt(i, j).equals(recipeID) ||
-             */TProductsmodel.getValueAt(i, j).equals(workstationName))
+           * TProductsmodel.getValueAt(i, j).equals(productID) || TProductsmodel.getValueAt(i, j).equals(recipeID) ||
+           */TProductsmodel.getValueAt(i, j).equals(workstationName))
         {//Search the model
           System.out.println("FOUND PRODUCT TO DELETE from table: " + TProductsmodel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
           indexToRemove = i;
@@ -2052,8 +2107,8 @@ public class MSB_gui extends javax.swing.JFrame
       for (int j = 0; j < TDevicesmodel.getColumnCount(); j++)
       {//For each column in that row
         if (/*
-             * TDevicesmodel.getValueAt(i, j).equals(DeviceName) || TDevicesmodel.getValueAt(i, j).equals(endpoint) ||
-             */TDevicesmodel.getValueAt(i, j).equals(workstationName))
+           * TDevicesmodel.getValueAt(i, j).equals(DeviceName) || TDevicesmodel.getValueAt(i, j).equals(endpoint) ||
+           */TDevicesmodel.getValueAt(i, j).equals(workstationName))
         {//Search the model
           System.out.println("FOUND PRODUCT TO DELETE from table: " + TDevicesmodel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
           indexToRemove = i;
@@ -2398,16 +2453,16 @@ public class MSB_gui extends javax.swing.JFrame
   private javax.swing.JSeparator jSeparator4;
   private javax.swing.JTabbedPane jTabbedPane1;
   private javax.swing.JLabel l_ddsDomain;
-  private javax.swing.JLabel l_msbDomain;
-  private javax.swing.JLabel l_msbPartition;
+  private javax.swing.JLabel l_msbDomainID;
+  private javax.swing.JLabel l_msbDomainName;
   private static javax.swing.JLabel l_openmosLogo;
   private javax.swing.JTextField msb_opcua_servername;
   private static javax.swing.JTextArea opc_comms_log;
   private static javax.swing.JButton prodA;
   private static javax.swing.JButton prodB;
   private javax.swing.JTextField textToSend;
-  private javax.swing.JTextField tf_msbDomain;
-  private javax.swing.JTextField tf_msbPartition;
+  private javax.swing.JTextField tf_msbDomainID;
+  private javax.swing.JTextField tf_msbDomainName;
   // End of variables declaration//GEN-END:variables
 }
 //EOF
