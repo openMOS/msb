@@ -82,6 +82,7 @@ public class MSB_gui extends javax.swing.JFrame
   private static JLabel labelWS;
   private static JLabel labelRegister;
   private static OPCDeviceItf DeviceITF;
+  private boolean isDDSRunning;
 
 
   /**
@@ -91,6 +92,8 @@ public class MSB_gui extends javax.swing.JFrame
   public MSB_gui() throws Exception
   {
     initComponents();
+
+    this.isDDSRunning = false;
 
     TServersmodel = (DefaultTableModel) TableServers.getModel();
     TProductsmodel = (DefaultTableModel) ProductsTable.getModel();
@@ -186,7 +189,7 @@ public class MSB_gui extends javax.swing.JFrame
     OnOffRegister = new javax.swing.JPanel();
     OnOffServerPanel = new javax.swing.JPanel();
     OnOffLDS = new javax.swing.JPanel();
-    jPanel2 = new javax.swing.JPanel();
+    p_dds = new javax.swing.JPanel();
     l_ddsDomain = new javax.swing.JLabel();
     tf_msbDomainName = new javax.swing.JTextField();
     b_startMSBDDS = new javax.swing.JButton();
@@ -732,41 +735,41 @@ public class MSB_gui extends javax.swing.JFrame
       }
     });
 
-    javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-    jPanel2.setLayout(jPanel2Layout);
-    jPanel2Layout.setHorizontalGroup(
-      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel2Layout.createSequentialGroup()
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel2Layout.createSequentialGroup()
+    javax.swing.GroupLayout p_ddsLayout = new javax.swing.GroupLayout(p_dds);
+    p_dds.setLayout(p_ddsLayout);
+    p_ddsLayout.setHorizontalGroup(
+      p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(p_ddsLayout.createSequentialGroup()
+        .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(p_ddsLayout.createSequentialGroup()
             .addContainerGap()
             .addComponent(b_startMSBDDS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-          .addGroup(jPanel2Layout.createSequentialGroup()
+          .addGroup(p_ddsLayout.createSequentialGroup()
             .addGap(12, 12, 12)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(l_ddsDomain)
-              .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+              .addGroup(p_ddsLayout.createSequentialGroup()
+                .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                   .addComponent(l_msbDomainID, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                   .addComponent(l_msbDomainName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(24, 24, 24)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                   .addComponent(tf_msbDomainName, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
                   .addComponent(tf_msbDomainID))))
             .addGap(0, 370, Short.MAX_VALUE)))
         .addContainerGap())
     );
-    jPanel2Layout.setVerticalGroup(
-      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel2Layout.createSequentialGroup()
+    p_ddsLayout.setVerticalGroup(
+      p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(p_ddsLayout.createSequentialGroup()
         .addContainerGap()
         .addComponent(l_ddsDomain)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(tf_msbDomainName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(l_msbDomainName))
         .addGap(18, 18, 18)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(l_msbDomainID)
           .addComponent(tf_msbDomainID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addGap(18, 18, 18)
@@ -774,7 +777,7 @@ public class MSB_gui extends javax.swing.JFrame
         .addContainerGap(306, Short.MAX_VALUE))
     );
 
-    jTabbedPane1.addTab("DDS", jPanel2);
+    jTabbedPane1.addTab("DDS", p_dds);
 
     javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
     jPanel4.setLayout(jPanel4Layout);
@@ -1785,20 +1788,35 @@ public class MSB_gui extends javax.swing.JFrame
   private void b_startMSBDDSActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_startMSBDDSActionPerformed
   {//GEN-HEADEREND:event_b_startMSBDDSActionPerformed
 
-    
-    if(!tf_msbDomainName.getText().isEmpty() && !tf_msbDomainID.getText().isEmpty())
+    if (!this.isDDSRunning && !tf_msbDomainName.getText().isEmpty() && !tf_msbDomainID.getText().isEmpty())
     {
-      String domainName = tf_msbDomainName.getText();
+      String domainName = tf_msbDomainName.getText(); // this could be a external variable
       int id = Integer.valueOf(tf_msbDomainID.getText());
-      
-      System.out.println("Domain: " + domainName);
+
+      System.out.println("Domain: " + domainName); 
       System.out.println("ID " + id);
       DDSMSBInstance.getInstance().createDomain(domainName, id);
       DDSDeviceManager dm = DDSMSBInstance.getInstance().getDomainDeviceManager(domainName);
       dm.addDevice("msb");
       dm.getDevice("msb").createTopic("generalmethod", "GeneralMethod");
       dm.getDevice("msb").registerReader("generalmethod");
-      System.out.println("Criei o GeneralMethod");
+
+      this.tf_msbDomainID.enable(false);
+      this.tf_msbDomainName.enable(false);
+      this.b_startMSBDDS.setText("Stop");
+      this.p_dds.repaint();
+      this.isDDSRunning = true;
+    }
+    else if (this.isDDSRunning)
+    {
+      String domainName = tf_msbDomainName.getText(); // this could be a external variable
+      
+      DDSMSBInstance.getInstance().deleteDomain(domainName);
+      
+      this.tf_msbDomainID.enable(true);
+      this.tf_msbDomainName.enable(true);
+      this.b_startMSBDDS.setText("Start");
+      this.isDDSRunning = false;
     }
 
 
@@ -2439,7 +2457,6 @@ public class MSB_gui extends javax.swing.JFrame
   private javax.swing.JLabel jLabel8;
   private javax.swing.JList<String> jList1;
   private javax.swing.JPanel jPanel1;
-  private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
   private javax.swing.JPanel jPanel5;
@@ -2458,6 +2475,7 @@ public class MSB_gui extends javax.swing.JFrame
   private static javax.swing.JLabel l_openmosLogo;
   private javax.swing.JTextField msb_opcua_servername;
   private static javax.swing.JTextArea opc_comms_log;
+  private javax.swing.JPanel p_dds;
   private static javax.swing.JButton prodA;
   private static javax.swing.JButton prodB;
   private javax.swing.JTextField textToSend;
