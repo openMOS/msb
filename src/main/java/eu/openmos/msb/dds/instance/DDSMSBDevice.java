@@ -3,14 +3,17 @@
  */
 package eu.openmos.msb.dds.instance;
 
-import DDS.DATAREADER_QOS_USE_TOPIC_QOS;
+import DDS.ANY_INSTANCE_STATE;
+import DDS.ANY_SAMPLE_STATE;
+import DDS.ANY_VIEW_STATE;
 import DDS.DataReader;
+import DDS.DataReaderQosHolder;
 import DDS.DataWriter;
 import DDS.DataWriterQosHolder;
 import DDS.DomainParticipant;
-import DDS.DurabilityQosPolicyKind;
 import DDS.Publisher;
 import DDS.PublisherQosHolder;
+import DDS.QueryCondition;
 import DDS.ReliabilityQosPolicyKind;
 import DDS.STATUS_MASK_NONE;
 import DDS.Subscriber;
@@ -20,6 +23,7 @@ import DDS.TopicQosHolder;
 import MSB2ADAPTER.GeneralMethodMessageTypeSupport;
 import MSB2ADAPTER.StringMessageTypeSupport;
 import java.util.HashMap;
+import org.opensplice.dds.dcps.TypeSupportImpl;
 
 
 /**
@@ -29,187 +33,437 @@ import java.util.HashMap;
 public class DDSMSBDevice
 {
 
+  public enum TopicType
+  {
+    GENERALMETHODMESSAGE,
+    STRINGMESSAGE
+  }
+
+  private HashMap<String, Topic> topics;
+  private DomainParticipant participant;
+  private GeneralMethodMessageTypeSupport gmmts;
+  private StringMessageTypeSupport smts;
+
+  // Publisher and Subscriber QOS holders
+  private PublisherQosHolder pubQos = new PublisherQosHolder();
+  private SubscriberQosHolder subQos = new SubscriberQosHolder();
   private Subscriber subscriber;
   private Publisher publisher;
-  private HashMap<String, DataWriter> dataWriters;
-  private HashMap<String, DataReader> datareaders;
-  private HashMap<String, Topic> topics;
-  private final DomainParticipant domain;
-  private final String name;
-  private GeneralMethodMessageTypeSupport gmmType;
-  private StringMessageTypeSupport smType;
+
+  // create one per topic ????
+  private DataWriterQosHolder WQosH = new DataWriterQosHolder();
+  private DataReaderQosHolder RQosH = new DataReaderQosHolder();
+
+  private final HashMap<String, DDSTopicHelper> topicInstances;
+
 
   /**
-   * DDSDevice constructor. Receives the name and the domain to which will belong
+   * DDSDevice constructor. Receives the deviceName and the domain to which will belong
    *
-   * @param name Name of the device (identifier)
-   * @param dp Domain to join the device
+   * @param deviceName Name of the device (identifier)
+   * @param participant
    */
-  public DDSMSBDevice(String name, DomainParticipant dp)
+  public DDSMSBDevice(String deviceName, DomainParticipant participant)
   {
-    
-    this.topics = new HashMap<String, Topic>();
-    this.dataWriters = new HashMap<String, DataWriter>();
-    this.datareaders = new HashMap<String, DataReader>();
-    
-    this.domain = dp;
-    this.name = name;
+    this.participant = participant;
+    int status = -1;
+    topicInstances = new HashMap<String, DDSTopicHelper>();
 
-    int status;
+    // create type
+    gmmts = new GeneralMethodMessageTypeSupport();
+    smts = new StringMessageTypeSupport();
 
-    // Create the Publisher for this device
-    PublisherQosHolder pubQos = new PublisherQosHolder();
-    status = this.domain.get_default_publisher_qos(pubQos);
-    DDSErrorHandler.checkStatus(status, "DomainParticipant.get_default_publisher_qos");
-    pubQos.value.partition.name = new String[1];
-    pubQos.value.partition.name[0] = name;
-    this.publisher = this.domain.create_publisher(pubQos.value, null, STATUS_MASK_NONE.value);
-    DDSErrorHandler.checkHandle(this.publisher, "DomainParticipant.create_publisher");
+    status = gmmts.register_type(this.participant, gmmts.get_type_name());
+    DDSErrorHandler.checkStatus(status, "register_type");
+    status = smts.register_type(this.participant, smts.get_type_name());
+    DDSErrorHandler.checkStatus(status, "register_type");
 
-    // Create the Subscriber for this device
-    SubscriberQosHolder subQos = new SubscriberQosHolder();
-    status = this.domain.get_default_subscriber_qos(subQos);
-    DDSErrorHandler.checkStatus(status, "DomainParticipant.get_default_subscriber_qos");
-    subQos.value.partition.name = new String[1];
-    subQos.value.partition.name[0] = name;
-    this.subscriber = this.domain.create_subscriber(subQos.value, null, STATUS_MASK_NONE.value);
-    DDSErrorHandler.checkHandle(this.subscriber, "DomainParticipant.create_subscriber");
-
-    
-    String type;
-    // Register the message type to the domain, this is specific to this network device
-    gmmType = new GeneralMethodMessageTypeSupport();
-    type = gmmType.get_type_name();
-    status = gmmType.register_type(domain, type);
-    DDSErrorHandler.checkStatus(status, "register_type GeneralMethodMessageTypeSupport");
-    // Register the message type to the domain, this is specific to this network device
-    smType = new StringMessageTypeSupport();
-    type = smType.get_type_name();
-    status = smType.register_type(domain, type);
-    DDSErrorHandler.checkStatus(status, "register_type StringMessageTypeSupport");
-    
-    
+    // deviceName of device represents the partition in DDS
+    createPublisher(deviceName);
+    createSubscriber(deviceName);
 
   }
 
 
   /**
-   * Create a topic with a know type and with the given name
+   * Crate a new Topic for reading information from the network
    *
-   * @param topicName Topic name
-   * @param topicType Topic type
+   * @param topicName Name of the topic
+   * @param topicType Type of the topic, at the moment only two are supported
    */
-  public void createTopic(String topicName, String topicType)
+  public void crateTopicReader(String topicName, TopicType topicType)
   {
-    
-    String tp = "";
-    switch(topicType)
+
+    if (topicType == TopicType.GENERALMETHODMESSAGE)
     {
-      case "GeneralMethod":
-        tp = gmmType.get_type_name();
-      case "String":
-        tp = smType.get_type_name();
+      createTopic(topicName, gmmts);
+      createReader(topicName);
     }
-    
-    
+    else if (topicType == TopicType.STRINGMESSAGE)
+    {
+      createTopic(topicName, smts);
+      createReader(topicName);
+    }
+
+  }
+
+
+  /**
+   * Crate a new Topic to read information from the network
+   *
+   * @param topicName Name of the topic
+   * @param topicType Type of the topic, at the moment only two are supported
+   * @param query String representing the query condition (SQL like query)
+   * @param query_args A sequence of strings which are the parameter values used in the SQL query string
+   *
+   * Please refer to the DDS section 3.5.2.2 of the OpenSplice DDS Java Reference Guide for more information about the
+   * query conditions
+   */
+  public void crateTopicReader(String topicName, TopicType topicType, String query, String[] query_args)
+  {
+    crateTopicReader(topicName, topicType);
+    createQueryCondition(topicName, query, query_args);
+  }
+
+
+  /**
+   * Create a new Topic to write information to the network
+   *
+   * @param topicName Name of the topic
+   * @param topicType Type of the topic, at the moment only two are supported
+   */
+  public void createTopicWriter(String topicName, TopicType topicType)
+  {
+    if (topicType == TopicType.GENERALMETHODMESSAGE)
+    {
+      createTopic(topicName, gmmts);
+      createWriter(topicName);
+    }
+    else if (topicType == TopicType.STRINGMESSAGE)
+    {
+
+      createTopic(topicName, smts);
+      createWriter(topicName);
+    }
+
+  }
+
+
+  /**
+   * Create a new Topic to write information to the network
+   *
+   * @param topicName Name of the topic
+   * @param topicType Type of the topic, at the moment only two are supported
+   * @param query String representing the query condition (SQL like query)
+   * @param query_args A sequence of strings which are the parameter values used in the SQL query string
+   *
+   * Please refer to the DDS section 3.5.2.2 of the OpenSplice DDS Java Reference Guide for more information about the
+   * query conditions
+   */
+  public void createTopicWriter(String topicName, TopicType topicType, String query, String[] query_args)
+  {
+    createTopicWriter(topicName, topicType);
+    createQueryCondition(topicName, query, query_args);
+  }
+
+
+  /**
+   * Obtain all the available topics registered in this device
+   *
+   * @return String array with all the topics already registered
+   */
+  public String[] getAvailableTopics()
+  {
+
+    return (String[]) topics.keySet().toArray();
+  }
+
+
+  /**
+   * PRIVATE FUNCTIONS *
+   */
+  /**
+   * Create a new topic
+   *
+   * @param topicName Topic Names
+   * @param ts Topic Type (DDS object type)
+   */
+  private void createTopic(String topicName, TypeSupportImpl ts)
+  {
+    int status = -1;
     TopicQosHolder topicQos = new TopicQosHolder();
-    int status = this.domain.get_default_topic_qos(topicQos);
-    DDSErrorHandler.checkStatus(status, "DomainParticipant.set_default_topic_qos");
+    topicInstances.put(topicName, new DDSTopicHelper());
+
+    this.participant.get_default_topic_qos(topicQos);
     topicQos.value.reliability.kind = ReliabilityQosPolicyKind.RELIABLE_RELIABILITY_QOS;
-    topicQos.value.durability.kind = DurabilityQosPolicyKind.TRANSIENT_DURABILITY_QOS;
-    Topic topic = this.domain.create_topic(topicName, tp, topicQos.value, null, STATUS_MASK_NONE.value);
+    topicQos.value.durability.kind = DDS.DurabilityQosPolicyKind.TRANSIENT_DURABILITY_QOS;
+    topicQos.value.deadline.period.nanosec = 0;
+    topicQos.value.deadline.period.sec = 1;
+
+    status = this.participant.set_default_topic_qos(topicQos.value);
+    DDSErrorHandler.checkStatus(status, "DomainParticipant.set_default_topic_qos");
+
+    Topic topic = this.participant.create_topic(
+      topicName,
+      ts.get_type_name(),
+      topicQos.value,
+      null,
+      STATUS_MASK_NONE.value
+    );
     DDSErrorHandler.checkHandle(topic, "DomainParticipant.create_topic");
 
-    this.topics.put(topicName, topic);
+    topicInstances.get(topicName).setTopic(topic);
+    topicInstances.get(topicName).setTopicQos(topicQos);
+  }
+
+
+  /**
+   * Create QueryCondition
+   *
+   * @param topicName Topic name
+   * @param query String representing the query condition (SQL like query)
+   * @param query_args A sequence of strings which are the parameter values used in the SQL query string
+   *
+   * Please refer to the DDS section 3.5.2.2 of the OpenSplice DDS Java Reference Guide for more information about the
+   * query conditions
+   */
+  private void createQueryCondition(String topicName, String query, String[] query_args)
+  {
+    QueryCondition qc = topicInstances.get(topicName).getDataReader().create_querycondition(
+      ANY_SAMPLE_STATE.value,
+      ANY_VIEW_STATE.value,
+      ANY_INSTANCE_STATE.value,
+      query,
+      query_args
+    );
+    topicInstances.get(topicName).setTopicQueryCondition(qc);
+  }
+
+
+  /**
+   * Create a new publisher
+   *
+   * @param partition Name of the DDS partition
+   * @return 0 if new publisher has been created, 1 if current publisher has been replaced and -1 if an error occurred
+   */
+  private int createPublisher(String partition)
+  {
+    try
+    {
+      if (this.publisher == null)
+      {
+        int status = this.participant.get_default_publisher_qos(pubQos);
+        DDSErrorHandler.checkStatus(status, "DomainParticipant.get_default_publisher_qos");
+
+        pubQos.value.partition.name = new String[1];
+        pubQos.value.partition.name[0] = partition;
+        this.publisher = this.participant.create_publisher(
+          pubQos.value,
+          null,
+          STATUS_MASK_NONE.value
+        );
+        DDSErrorHandler.checkHandle(this.publisher, "DomainParticipant.create_publisher");
+        return 0;
+      }
+      else
+      {
+        deletePublisher();
+        createPublisher(partition);
+        return 1;
+      }
+    }
+    catch (Exception ex)
+    {
+      System.out.println("[ERROR] on createPublisher" + ex.getMessage());
+      return -1;
+    }
+  }
+
+
+  /**
+   * Create a new subscriber
+   *
+   * @param partition Name of the DDS partition
+   * @return 0 if new subscriber has been created, 1 if current subscriber has been replaced and -1 if an error occurred
+   */
+  private int createSubscriber(String partition)
+  {
+    try
+    {
+
+      if (this.subscriber == null)
+      {
+
+        int status = this.participant.get_default_subscriber_qos(subQos);
+        DDSErrorHandler.checkStatus(status, "DomainParticipant.get_default_subscriber_qos");
+
+        subQos.value.partition.name = new String[1];
+        subQos.value.partition.name[0] = partition;
+        this.subscriber = this.participant.create_subscriber(
+          subQos.value,
+          null,
+          STATUS_MASK_NONE.value
+        );
+        DDSErrorHandler.checkHandle(this.subscriber, "DomainParticipant.create_subscriber");
+
+        return 0;
+      }
+      else
+      {
+        deleteSubscriber();
+        createSubscriber(partition);
+        return 1;
+      }
+    }
+    catch (Exception ex)
+    {
+      System.out.println("[Error] on createSubscriber" + ex.getMessage());
+      return -1;
+    }
+  }
+
+
+  /**
+   * Create a new writer, responsible to publish messages at the given topic. A topic with the same name has to be
+   * created first!
+   *
+   * @param topicName Name of the topic
+   * @return 0 if the writer was created, 1 if the given topic does not exists and -1 if error
+   */
+  private int createWriter(String topicName)
+  {
+    try
+    {
+      if (topicInstances.containsKey(topicName))
+      {
+        publisher.get_default_datawriter_qos(WQosH);
+        publisher.copy_from_topic_qos(WQosH, topicInstances.get(topicName).getTopicQos().value);
+        WQosH.value.writer_data_lifecycle.autodispose_unregistered_instances = false;
+        DataWriter writer = publisher.create_datawriter(
+          topicInstances.get(topicName).getTopic(),
+          WQosH.value,
+          null,
+          STATUS_MASK_NONE.value
+        );
+        DDSErrorHandler.checkHandle(writer, "Publisher.create_datawriter");
+        topicInstances.get(topicName).setDataWriter(writer);
+        return 0;
+      }
+      else
+      {
+        System.out.println("[createWriter] The given topic does not exists!");
+        return 1;
+      }
+    }
+    catch (Exception ex)
+    {
+      System.out.println("[ERROR] on createWriter" + ex.getMessage());
+      return -1;
+    }
 
   }
 
 
   /**
-   * Delete a given topic
+   * Create a new reader, responsible to subscribe messages at the given topic. A topic with the same name has to be
+   * created first!
    *
-   * @param topicName
+   * @param topicName Name of the topic
+   * @return 0 if the reader was created, 1 if the given topic does not exists and -1 if error
    */
-  public void deleteTopic(String topicName)
+  private int createReader(String topicName)
   {
-    Topic topic = topics.get(topicName);
-    int status = this.domain.delete_topic(topic);
+    try
+    {
+      if (topicInstances.containsKey(topicName))
+      {
+        subscriber.get_default_datareader_qos(RQosH);
+        subscriber.copy_from_topic_qos(RQosH, topicInstances.get(topicName).getTopicQos().value);
+        DataReader reader = subscriber.create_datareader(
+          topicInstances.get(topicName).getTopic(),
+          RQosH.value,
+          new ListenerDataListener(),
+          DDS.DATA_AVAILABLE_STATUS.value | DDS.REQUESTED_DEADLINE_MISSED_STATUS.value
+        );
+        DDSErrorHandler.checkHandle(reader, "Subscriber.create_datareader");
+
+        topicInstances.get(topicName).setDataReader(reader);
+        return 0;
+      }
+      else
+      {
+        System.out.println("[createReader] The given topic does not exists.");
+        return 1;
+      }
+    }
+    catch (Exception ex)
+    {
+      System.out.println("[ERROR] on createReader");
+      return -1;
+    }
+
+  }
+
+
+  /**
+   * Delete Topic
+   * @param topicName Name of the topic
+   */
+  private void deleteTopic(String topicName)
+  {
+    int status = this.participant.delete_topic(topicInstances.get(topicName).getTopic());
     DDSErrorHandler.checkStatus(status, "DDS.DomainParticipant.delete_topic");
   }
 
 
   /**
-   * Register a new writer for the given topic if this not exists in the current instance
-   *
-   * @param topicName Topic associated with the DataWriter
+   * Delete the publisher associated with this device
    */
-  public void registerWriter(String topicName)
+  private void deletePublisher()
   {
-    if (!dataWriters.containsKey(topicName) && topics.containsKey(topicName))
-    {
-      DataWriterQosHolder WQosH = new DataWriterQosHolder();
-      TopicQosHolder topicQos = new TopicQosHolder();
-      Topic topic = topics.get(topicName);
-      topic.get_qos(topicQos);
-      this.publisher.get_default_datawriter_qos(WQosH);
-      this.publisher.copy_from_topic_qos(WQosH, topicQos.value);
-      WQosH.value.writer_data_lifecycle.autodispose_unregistered_instances = false;
-      DataWriter writer = this.publisher.create_datawriter(topic, WQosH.value, null, STATUS_MASK_NONE.value);
-      DDSErrorHandler.checkHandle(writer, "Publisher.create_datawriter");
-      this.dataWriters.put(topicName, writer);
-    }
+    this.participant.delete_publisher(publisher);
+    this.publisher = null;
   }
 
 
   /**
-   * Register a new reader for the given topic if this not exists in the current instance
-   *
-   * @param topicName Topic associated with the DataReader
+   * Delete the subscriber associated with this device
    */
-  public void registerReader(String topicName)
+  private void deleteSubscriber()
   {
-    if (!datareaders.containsKey(topicName) && topics.containsKey(topicName))
-    {
-      Topic topic = topics.get(topicName);
-      int mask = DDS.DATA_AVAILABLE_STATUS.value | DDS.REQUESTED_DEADLINE_MISSED_STATUS.value;
-      DataReader reader = subscriber.create_datareader(topic,
-        DATAREADER_QOS_USE_TOPIC_QOS.value,
-        new DDSDataReaderListener(),
-        mask);
-      DDSErrorHandler.checkHandle(reader, "Subscriber.create_datareader");
-      this.datareaders.put(topicName, reader);
-    }
+    this.participant.delete_subscriber(subscriber);
+    this.subscriber = null;
   }
 
 
   /**
-   * Get the DataReader associated with a given topic
-   *
-   * @param topicName
-   * @return
+   * Get the Data Reader of the topic
+   * 
+   * @param topicName The name of the topic
+   * @return Data Reader of the given topic
    */
   public DataReader getReader(String topicName)
   {
-    return this.datareaders.get(topicName);
+    return topicInstances.get(topicName).getDataReader();
   }
 
 
   /**
-   * Get the DataWriter associated with a given topic
-   *
-   * @param topicName
-   * @return
+   * Get the Data Writer of the Topic
+   * 
+   * @param topicName The name of the topic
+   * @return Data Writer of the given topic
    */
   public DataWriter getWriter(String topicName)
   {
-    return this.dataWriters.get(topicName);
+    return topicInstances.get(topicName).getDataWriter();
   }
 
 
   /**
-   * Returns the device publisher instance
-   *
-   * @return publisher
+   * Get the publisher associated with this device
+   * 
+   * @return Publisher
    */
   public Publisher getPublisher()
   {
@@ -218,9 +472,9 @@ public class DDSMSBDevice
 
 
   /**
-   * Returns the device subscriber instance
+   * Get the subscriber associated with this device
    *
-   * @return subscriber
+   * @return Subscriber
    */
   public Subscriber getSubscriber()
   {
@@ -229,25 +483,38 @@ public class DDSMSBDevice
 
 
   /**
-   * Get a instance of a given topic
+   * Get the Topic object  of a given topic
    *
-   * @param topicName The name of the topic to be return
-   * @return return the Topic object for the given topic
+   * @param topicName Name of the topic
+   * @return Topic
    */
   public Topic getTopic(String topicName)
   {
-    return this.topics.get(topicName);
+    return topicInstances.get(topicName).getTopic();
   }
 
 
   /**
-   * Get a list of topics (name and instance) registered to this device instance
-   *
-   * @return A HashMap with the name and topic
+   * Get the Query Condition of a given topic
+   * 
+   * @param topicName Name of the topic
+   * @return QueryCondition
    */
-  public HashMap<String, Topic> getTopicsList()
+  public QueryCondition getQueryCondition(String topicName)
   {
-    return topics;
+    return topicInstances.get(topicName).getTopicQueryCondition();
   }
 
+
+  /**
+   * Get the DDS Participant associated with this device
+   *
+   * @return Participant
+   */
+  public DomainParticipant getParticipant()
+  {
+    return this.participant;
+  }
 }
+
+//EOF

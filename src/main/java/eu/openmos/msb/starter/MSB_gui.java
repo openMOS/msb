@@ -8,7 +8,7 @@ import eu.openmos.msb.database.stateless.DeviceRegistryBean;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.dds.instance.DDSDeviceManager;
-import eu.openmos.msb.dds.instance.DDSMSBInstance;
+import eu.openmos.msb.dds.instance.DDSMSBDevice;
 import eu.openmos.msb.dummyclasses.ExecuteData;
 import eu.openmos.msb.dummyclasses.ServerStatus;
 import eu.openmos.msb.opcua.milo.server.opcuaServerMSB;
@@ -1795,11 +1795,46 @@ public class MSB_gui extends javax.swing.JFrame
 
       System.out.println("Domain: " + domainName); 
       System.out.println("ID " + id);
-      DDSMSBInstance.getInstance().createDomain(domainName, id);
-      DDSDeviceManager dm = DDSMSBInstance.getInstance().getDomainDeviceManager(domainName);
+      
+
+     
+      DDSDeviceManager dm = DDSDeviceManager.getInstance();
+      
       dm.addDevice("msb");
-      dm.getDevice("msb").createTopic("generalmethod", "GeneralMethod");
-      dm.getDevice("msb").registerReader("generalmethod");
+      dm.getDevice("msb").crateTopicReader("generalmethod", DDSMSBDevice.TopicType.GENERALMETHODMESSAGE);
+      
+      dm.addDevice("agv");
+      dm.getDevice("agv").createTopicWriter("receita_A", DDSMSBDevice.TopicType.STRINGMESSAGE);
+      dm.getDevice("agv").createTopicWriter("receita_B", DDSMSBDevice.TopicType.STRINGMESSAGE);
+      
+      
+      
+     
+      
+         /*
+      
+    DDSEntityManager mgr = new DDSEntityManager();
+
+    // create domain participant
+    mgr.createParticipant("msb");
+
+    // create type
+    GeneralMethodMessageTypeSupport st = new GeneralMethodMessageTypeSupport();
+    mgr.registerType(st);
+
+    // create Topic
+    mgr.createTopic("generalmethod");
+
+    // create Subscriber
+    mgr.createSubscriber();
+
+    // create DataReader
+    mgr.createReader();
+      
+       */
+      
+      
+      
 
       this.tf_msbDomainID.enable(false);
       this.tf_msbDomainName.enable(false);
@@ -1811,7 +1846,7 @@ public class MSB_gui extends javax.swing.JFrame
     {
       String domainName = tf_msbDomainName.getText(); // this could be a external variable
       
-      DDSMSBInstance.getInstance().deleteDomain(domainName);
+      
       
       this.tf_msbDomainID.enable(true);
       this.tf_msbDomainName.enable(true);
