@@ -27,6 +27,8 @@ import eu.openmos.msb.cloudinterface.WebSocketsReceiver;
 import eu.openmos.msb.cloudinterface.WebSocketsSender;
 import eu.openmos.msb.cloudinterface.WebSocketsSenderDraft;
 import eu.openmos.msb.database.stateless.DeviceRegistryBean;
+import eu.openmos.msb.dds.instance.DDSDeviceManager;
+import eu.openmos.msb.dds.instance.DDSDevice;
 import eu.openmos.msb.dummyclasses.ChangedState;
 import eu.openmos.msb.dummyclasses.ExecuteData;
 import eu.openmos.msb.dummyclasses.RegFile;
@@ -45,6 +47,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Observable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import javax.xml.bind.JAXBContext;
@@ -72,7 +75,7 @@ import org.xml.sax.SAXException;
  *
  * @author fabio.miranda
  */
-public class OPCDeviceItf implements DeviceInterface
+public class OPCDeviceItf extends Observable implements DeviceInterface 
 {
 
   Vertx vertx = Vertx.vertx();
@@ -754,7 +757,8 @@ public class OPCDeviceItf implements DeviceInterface
    * @throws ParserConfigurationException
    * @throws TransformerException
    */
-  private String WorkStationRegistration(String args) throws JAXBException, FileNotFoundException, ParserConfigurationException, TransformerException
+  private String WorkStationRegistration(String args)
+    throws JAXBException, FileNotFoundException, ParserConfigurationException, TransformerException
   {
 
     //parse xml SelfDescriptionInformation
@@ -810,30 +814,61 @@ public class OPCDeviceItf implements DeviceInterface
 
       parsedClass = (RegFile) unmarshaller.unmarshal(docres);
 
-      //populate hashmaps
+      String protocol = null;
+      ArrayList<String> myresult = dbMSB.get_device_address_protocol(senderName);
+      if(myresult.size()>0)
+      protocol = myresult.get(1); //second field if protocol
+
+      // Populate hashmaps            <---------------------------------------------------------------------------------
       MyHashMaps myOpcUaMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
       List<ExecuteData> ETD = new ArrayList<>();
+      
+      MSB_MiloClientSubscription ThisOPCServerTemp = null;
+      if (protocol.contains("OPC"))
+      {
+        ThisOPCServerTemp = myOpcUaMap.OPCclientIDMaps.get(senderName);
+      }
+      
+      // --------------------------------------------------------------------------------------------------------------
+      
       int index = 0;
-      MSB_MiloClientSubscription ThisOPCServerTemp = myOpcUaMap.OPCclientIDMaps.get(senderName);
       for (String key : parsedClass.ExecuteTable.keySet())
       {
         System.out.println(key + " ->MAPA de execução deviceitf<- - " + parsedClass.ExecuteTable.get(key));
         ETD.add(parsedClass.ExecuteTable.get(key));
 
-        myOpcUaMap.setProductIDAdapterMaps(ETD.get(index).productID, ThisOPCServerTemp); //put productID vs miloclient
+        if (protocol.contains("OPC"))
+        {
+          myOpcUaMap.setProductIDAdapterMaps(ETD.get(index).productID, ThisOPCServerTemp); //put productID vs miloclient
+        }
+        else if(protocol.contains("DDS"))
+        {
+          DDSDeviceManager dm = DDSDeviceManager.getInstance();
+          dm.addDevice(senderName);
+          dm.getDevice(senderName).createTopicWriter(ETD.get(index).methodID, DDSDevice.TopicType.STRINGMESSAGE);
+        }
         index++;
       }
       myOpcUaMap.setExecutionInfoMaps(senderName, ETD);
+      MSB_gui.FillDDSCombos();
 
-      for (String key : parsedClass.ServerTable.keySet())
+      
+      // --------------------------------------------------------------------------------------------------------------
+      
+      if (parsedClass.ServerTable.size() > 0)
       {
-        System.out.println(key + " ->MAPA de execução deviceitf<- - " + parsedClass.ServerTable.get(key));
-        ServerStatus SStat = parsedClass.ServerTable.get(key);
+        for (String key : parsedClass.ServerTable.keySet())
+        {
+          System.out.println(key + " ->MAPA de execução deviceitf<- - " + parsedClass.ServerTable.get(key));
+          ServerStatus SStat = parsedClass.ServerTable.get(key);
 
-        myOpcUaMap.setDevicesNameDataMaps(senderName, SStat);
-        //call mainwindow filltables
-        MSB_gui.FillDevicesTable();
+          myOpcUaMap.setDevicesNameDataMaps(senderName, SStat);
+          //call mainwindow filltables
+          MSB_gui.FillDevicesTable();
+        }
       }
+      
+      // --------------------------------------------------------------------------------------------------------------
 
       System.out.println("\n\n\n Parsed class: " + parsedClass.Name + "\n\n\n");
     }
@@ -914,8 +949,8 @@ public class OPCDeviceItf implements DeviceInterface
       vertx.deployVerticle(new WebSocketsSenderDraft());
 
       return "OK - No AgentPlatform";
-    }
 
+    }
   }
 
 

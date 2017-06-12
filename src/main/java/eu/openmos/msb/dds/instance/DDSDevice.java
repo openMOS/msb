@@ -30,7 +30,7 @@ import org.opensplice.dds.dcps.TypeSupportImpl;
  *
  * @author andre
  */
-public class DDSMSBDevice
+public class DDSDevice
 {
 
   public enum TopicType
@@ -63,7 +63,7 @@ public class DDSMSBDevice
    * @param deviceName Name of the device (identifier)
    * @param participant
    */
-  public DDSMSBDevice(String deviceName, DomainParticipant participant)
+  public DDSDevice(String deviceName, DomainParticipant participant)
   {
     this.participant = participant;
     int status = -1;
@@ -347,12 +347,12 @@ public class DDSMSBDevice
         );
         DDSErrorHandler.checkHandle(writer, "Publisher.create_datawriter");
         topicInstances.get(topicName).setDataWriter(writer);
-        return 0;
+        return 1;
       }
       else
       {
         System.out.println("[createWriter] The given topic does not exists!");
-        return 1;
+        return 0;
       }
     }
     catch (Exception ex)
@@ -413,6 +413,7 @@ public class DDSMSBDevice
   {
     int status = this.participant.delete_topic(topicInstances.get(topicName).getTopic());
     DDSErrorHandler.checkStatus(status, "DDS.DomainParticipant.delete_topic");
+    topicInstances.remove(topicName);
   }
 
 

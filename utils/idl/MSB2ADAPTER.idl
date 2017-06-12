@@ -11,9 +11,10 @@ module MSB2ADAPTER {
 
 
   struct StringMessage{
+    string device;
     string args;            // data to be passed if needed
   };
-#pragma keylist StringMessage 
+#pragma keylist StringMessage device
 
 
     

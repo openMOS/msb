@@ -5,7 +5,7 @@ import org.opensplice.dds.dcps.Utilities;
 public class StringMessageTypeSupport extends org.opensplice.dds.dcps.TypeSupportImpl implements DDS.TypeSupportOperations
 {
     private static java.lang.String idl_type_name = "MSB2ADAPTER::StringMessage";
-    private static java.lang.String idl_key_list = "";
+    private static java.lang.String idl_key_list = "device";
 
     private long copyCache;
 

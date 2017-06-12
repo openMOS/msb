@@ -16,7 +16,20 @@ import MSB2ADAPTER.GeneralMethodMessage;
 import MSB2ADAPTER.GeneralMethodMessageDataReader;
 import MSB2ADAPTER.GeneralMethodMessageDataReaderImpl;
 import MSB2ADAPTER.GeneralMethodMessageSeqHolder;
+import MSB2ADAPTER.StringMessage;
+import MSB2ADAPTER.StringMessageDataReader;
 import MSB2ADAPTER.StringMessageDataReaderImpl;
+import MSB2ADAPTER.StringMessageSeqHolder;
+import eu.openmos.msb.database.stateless.DeviceRegistryBean;
+import eu.openmos.msb.opcua.utils.OPCDeviceItf;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import org.xml.sax.SAXException;
 
 
 public class ListenerDataListener implements DDS.DataReaderListener
@@ -28,64 +41,114 @@ public class ListenerDataListener implements DDS.DataReaderListener
     System.out.println("AVAILABLE");
     int status;
 
-    
-    
-    
-    
-    
-    if(arg0 instanceof GeneralMethodMessageDataReaderImpl)
+    if (arg0 instanceof GeneralMethodMessageDataReaderImpl)
     {
+      OPCDeviceItf deviceItf = new OPCDeviceItf();
+
       System.out.println("GeneralMethodMessageDataReaderImpl");
-    }
-    else if(arg0 instanceof StringMessageDataReaderImpl)
-    {
-      System.out.println("StringMessageDataReaderImpl");
-    }
-      
-    
-    
-    
-    
-    
-    
-    GeneralMethodMessageSeqHolder msgList = new GeneralMethodMessageSeqHolder();
-    SampleInfoSeqHolder infoSeq = new SampleInfoSeqHolder();
 
-    status = ((GeneralMethodMessageDataReader) arg0).take(
-      msgList,
-      infoSeq,
-      LENGTH_UNLIMITED.value,
-      NOT_READ_SAMPLE_STATE.value,
-      NEW_VIEW_STATE.value,
-      ANY_INSTANCE_STATE.value);
+      GeneralMethodMessageSeqHolder msgList = new GeneralMethodMessageSeqHolder();
+      SampleInfoSeqHolder infoSeq = new SampleInfoSeqHolder();
 
-    DDSErrorHandler.checkStatus(status, "MsgDataReader.read");
+      status = ((GeneralMethodMessageDataReader) arg0).take(
+        msgList,
+        infoSeq,
+        LENGTH_UNLIMITED.value,
+        NOT_READ_SAMPLE_STATE.value,
+        NEW_VIEW_STATE.value,
+        ANY_INSTANCE_STATE.value);
 
-    GeneralMethodMessage[] data = msgList.value;
-    boolean hasValidData = false;
+      DDSErrorHandler.checkStatus(status, "MsgDataReader.read");
 
-    if (data.length > 0)
-    {
+      GeneralMethodMessage[] data = msgList.value;
+      boolean hasValidData = false;
 
-      System.out.println("=== [ListenerDataListener.on_data_available] - msgList.length : " + data.length);
-      int i = 0;
-      do
+      if (data.length > 0)
       {
-        if (infoSeq.value[i].valid_data)
+
+        System.out.println("=== [ListenerDataListener.on_data_available] - msgList.length : " + data.length);
+        int i = 0;
+        do
         {
-          hasValidData = true;
-          System.out.println("    --- message received ---");
-          System.out.println("    userID  : " + data[i].function);
-          System.out.println("    Message : \"" + data[i].args + "\"");
+          if (infoSeq.value[i].valid_data)
+          {
+            hasValidData = true;
+            System.out.println("    --- message received ---");
+            System.out.println("    Device    : " + data[i].device);
+            System.out.println("    Function  : " + data[i].function);
+            System.out.println("    args      : " + data[i].args);
+            System.out.println("    Feedbak   : " + data[i].feedback);
+            System.out.println("    ------------------------");
 
+            try
+            {
+              String s = data[i].device + ":" + data[i].args;
+              deviceItf.AllCases(data[i].function, s);
+            }
+            catch (ParserConfigurationException | SAXException | IOException | JAXBException | TransformerException ex)
+            {
+              Logger.getLogger(ListenerDataListener.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+          }
         }
+        while (++i < data.length);
+
+        status = ((GeneralMethodMessageDataReader) arg0).return_loan(msgList, infoSeq);
+        DDSErrorHandler.checkStatus(status, "MsgDataReader.return_loan");
+
       }
-      while (++i < data.length);
+    }
+    else if (arg0 instanceof StringMessageDataReaderImpl)
+    {
 
-      
+      if (((StringMessageDataReaderImpl) arg0).get_topicdescription().get_name().compareTo("registo_fabio") == 0)
+      {
 
-      status = ((GeneralMethodMessageDataReader) arg0).return_loan(msgList, infoSeq);
-      DDSErrorHandler.checkStatus(status, "MsgDataReader.return_loan");
+        StringMessageSeqHolder msgList = new StringMessageSeqHolder();
+        SampleInfoSeqHolder infoSeq = new SampleInfoSeqHolder();
+
+        status = ((StringMessageDataReader) arg0).take(
+          msgList,
+          infoSeq,
+          LENGTH_UNLIMITED.value,
+          NOT_READ_SAMPLE_STATE.value,
+          NEW_VIEW_STATE.value,
+          ANY_INSTANCE_STATE.value);
+
+        DDSErrorHandler.checkStatus(status, "MsgDataReader.read");
+
+        StringMessage[] data = msgList.value;
+        boolean hasValidData = false;
+
+        if (data.length > 0)
+        {
+
+          System.out.println("=== [ListenerDataListener.on_data_available] - msgList.length : " + data.length);
+          int i = 0;
+          do
+          {
+            if (infoSeq.value[i].valid_data)
+            {
+              hasValidData = true;
+              System.out.println("    --- message received ---");
+              System.out.println("    Device    : " + data[i].device);
+              System.out.println("    args      : " + data[i].args);
+              System.out.println("    ------------------------");
+
+              DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+              ArrayList ArrayData = dbMSB.read_device_info(data[i].device);
+              dbMSB.register_device(data[i].device, "", "", data[i].device, "DDS");
+
+
+
+            }
+          }
+          while (++i < data.length);
+        }
+
+      }
+
     }
   }
 

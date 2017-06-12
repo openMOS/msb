@@ -8,7 +8,7 @@ import eu.openmos.msb.database.stateless.DeviceRegistryBean;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.dds.instance.DDSDeviceManager;
-import eu.openmos.msb.dds.instance.DDSMSBDevice;
+import eu.openmos.msb.dds.instance.DDSDevice;
 import eu.openmos.msb.dummyclasses.ExecuteData;
 import eu.openmos.msb.dummyclasses.ServerStatus;
 import eu.openmos.msb.opcua.milo.server.opcuaServerMSB;
@@ -21,7 +21,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.swing.text.DocumentFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +31,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -41,7 +39,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.text.AbstractDocument;
 import javax.swing.text.DefaultCaret;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,9 +48,16 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-import java.util.regex.Pattern;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
+import DDS.DataWriter;
+import DDS.HANDLE_NIL;
+import MSB2ADAPTER.StringMessage;
+import MSB2ADAPTER.StringMessageDataWriter;
+import MSB2ADAPTER.StringMessageDataWriterHelper;
+import eu.openmos.msb.dds.instance.DDSErrorHandler;
+import java.util.Observer;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+
 
 
 /**
@@ -61,7 +65,7 @@ import javax.swing.text.BadLocationException;
  *
  * @author fabio.miranda
  */
-public class MSB_gui extends javax.swing.JFrame
+public class MSB_gui extends javax.swing.JFrame implements Observer
 {
 
   // GLOBAL VARIABLES
@@ -127,6 +131,10 @@ public class MSB_gui extends javax.swing.JFrame
     OnOffWSPanel.setMaximumSize(new Dimension(34, 31));
 
     DeviceITF = new OPCDeviceItf(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
+    
+    
+    
+    
 
   }
 
@@ -155,25 +163,9 @@ public class MSB_gui extends javax.swing.JFrame
     jScrollPane4 = new javax.swing.JScrollPane();
     jList1 = new javax.swing.JList<>();
     jComboBox1 = new javax.swing.JComboBox<>();
-    jPanel3 = new javax.swing.JPanel();
-    btn_sendRecipe = new javax.swing.JButton();
-    comboServers = new javax.swing.JComboBox<>();
-    btn_RequestProduct = new javax.swing.JButton();
-    btn_DeviceRegistration = new javax.swing.JButton();
-    btn_SendURL = new javax.swing.JButton();
-    ComboMSB = new javax.swing.JComboBox<>();
-    btn_ChangedState = new javax.swing.JButton();
-    textToSend = new javax.swing.JTextField();
-    btn_RecipeExecutionDone = new javax.swing.JButton();
-    btn_sendrecipe2 = new javax.swing.JButton();
-    btn_updatestatus = new javax.swing.JButton();
-    btn_invoqueMethod = new javax.swing.JButton();
-    prodA = new javax.swing.JButton();
-    prodB = new javax.swing.JButton();
     jScrollPane5 = new javax.swing.JScrollPane();
     DevicesTable = new javax.swing.JTable();
     jLabel5 = new javax.swing.JLabel();
-    jLabel8 = new javax.swing.JLabel();
     jTabbedPane1 = new javax.swing.JTabbedPane();
     jPanel1 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
@@ -189,13 +181,27 @@ public class MSB_gui extends javax.swing.JFrame
     OnOffRegister = new javax.swing.JPanel();
     OnOffServerPanel = new javax.swing.JPanel();
     OnOffLDS = new javax.swing.JPanel();
+    comboServers = new javax.swing.JComboBox<>();
+    btn_SendURL = new javax.swing.JButton();
+    btn_RequestProduct = new javax.swing.JButton();
+    btn_sendRecipe = new javax.swing.JButton();
+    btn_invoqueMethod = new javax.swing.JButton();
+    ComboMSB = new javax.swing.JComboBox<>();
+    btn_DeviceRegistration = new javax.swing.JButton();
+    btn_RecipeExecutionDone = new javax.swing.JButton();
+    btn_ChangedState = new javax.swing.JButton();
+    btn_sendrecipe2 = new javax.swing.JButton();
+    btn_updatestatus = new javax.swing.JButton();
     p_dds = new javax.swing.JPanel();
     l_ddsDomain = new javax.swing.JLabel();
-    tf_msbDomainName = new javax.swing.JTextField();
     b_startMSBDDS = new javax.swing.JButton();
-    l_msbDomainName = new javax.swing.JLabel();
-    l_msbDomainID = new javax.swing.JLabel();
-    tf_msbDomainID = new javax.swing.JTextField();
+    jSeparator3 = new javax.swing.JSeparator();
+    cb_DDSDevice = new javax.swing.JComboBox<>();
+    cb_DDSRecipeList = new javax.swing.JComboBox<>();
+    b_DDSCallRecipe = new javax.swing.JButton();
+    l_testDDS = new javax.swing.JLabel();
+    l_DDSDevice = new javax.swing.JLabel();
+    l_DDSRecipe = new javax.swing.JLabel();
     jPanel4 = new javax.swing.JPanel();
     jPanel5 = new javax.swing.JPanel();
     StartWebService = new javax.swing.JButton();
@@ -203,6 +209,11 @@ public class MSB_gui extends javax.swing.JFrame
     OnOffWSPanel = new javax.swing.JPanel();
     jLabel10 = new javax.swing.JLabel();
     l_openmosLogo = new javax.swing.JLabel();
+    p_productExecution = new javax.swing.JPanel();
+    textToSend = new javax.swing.JTextField();
+    prodA = new javax.swing.JButton();
+    prodB = new javax.swing.JButton();
+    jLabel8 = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -293,191 +304,6 @@ public class MSB_gui extends javax.swing.JFrame
 
     jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-    jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-    btn_sendRecipe.setText("Call SendRecipe");
-    btn_sendRecipe.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btn_sendRecipeActionPerformed(evt);
-      }
-    });
-
-    comboServers.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        comboServersActionPerformed(evt);
-      }
-    });
-
-    btn_RequestProduct.setText("Call RequestProduct");
-    btn_RequestProduct.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btn_RequestProductActionPerformed(evt);
-      }
-    });
-
-    btn_DeviceRegistration.setText("Call DeviceRegistration");
-    btn_DeviceRegistration.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btn_DeviceRegistrationActionPerformed(evt);
-      }
-    });
-
-    btn_SendURL.setText("Call SendURL");
-    btn_SendURL.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btn_SendURLActionPerformed(evt);
-      }
-    });
-
-    btn_ChangedState.setText("Call ChangedState");
-    btn_ChangedState.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btn_ChangedStateActionPerformed(evt);
-      }
-    });
-
-    textToSend.setText("insert data to send");
-
-    btn_RecipeExecutionDone.setText("Call RecipeExecutionDone");
-    btn_RecipeExecutionDone.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btn_RecipeExecutionDoneActionPerformed(evt);
-      }
-    });
-
-    btn_sendrecipe2.setText("Call SendRecipe");
-    btn_sendrecipe2.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btn_sendrecipe2ActionPerformed(evt);
-      }
-    });
-
-    btn_updatestatus.setText("Call StatusUpdate");
-    btn_updatestatus.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btn_updatestatusActionPerformed(evt);
-      }
-    });
-
-    btn_invoqueMethod.setText("Call InvoqueMethod");
-    btn_invoqueMethod.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btn_invoqueMethodActionPerformed(evt);
-      }
-    });
-
-    prodA.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        prodAActionPerformed(evt);
-      }
-    });
-
-    prodB.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        prodBActionPerformed(evt);
-      }
-    });
-
-    javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-    jPanel3.setLayout(jPanel3Layout);
-    jPanel3Layout.setHorizontalGroup(
-      jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel3Layout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(comboServers, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGap(144, 144, 144)
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                .addComponent(btn_RequestProduct, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btn_SendURL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btn_sendRecipe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-              .addComponent(btn_invoqueMethod))))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-          .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-            .addComponent(prodA, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(prodB, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addComponent(textToSend, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(84, 84, 84)
-        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-            .addComponent(ComboMSB, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap())
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(btn_updatestatus, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                  .addComponent(btn_ChangedState, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(btn_RecipeExecutionDone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(btn_sendrecipe2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addComponent(btn_DeviceRegistration, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(46, 46, 46))))
-    );
-    jPanel3Layout.setVerticalGroup(
-      jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel3Layout.createSequentialGroup()
-        .addContainerGap(35, Short.MAX_VALUE)
-        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(comboServers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(ComboMSB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(textToSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGap(18, 18, 18)
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(btn_DeviceRegistration)
-              .addComponent(btn_SendURL))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(btn_RecipeExecutionDone)
-              .addComponent(btn_RequestProduct))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(btn_ChangedState)
-              .addComponent(btn_sendRecipe))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(btn_sendrecipe2)
-              .addComponent(btn_invoqueMethod))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(btn_updatestatus))
-          .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGap(37, 37, 37)
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(prodA, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(prodB, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))))
-        .addContainerGap())
-    );
-
     DevicesTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
     DevicesTable.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][]
@@ -512,9 +338,6 @@ public class MSB_gui extends javax.swing.JFrame
     jScrollPane5.setViewportView(DevicesTable);
 
     jLabel5.setText("Devices Table");
-
-    jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-    jLabel8.setText("Test Bench");
 
     jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -615,20 +438,109 @@ public class MSB_gui extends javax.swing.JFrame
       .addGap(0, 40, Short.MAX_VALUE)
     );
 
+    comboServers.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        comboServersActionPerformed(evt);
+      }
+    });
+
+    btn_SendURL.setText("Call SendURL");
+    btn_SendURL.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btn_SendURLActionPerformed(evt);
+      }
+    });
+
+    btn_RequestProduct.setText("Call RequestProduct");
+    btn_RequestProduct.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btn_RequestProductActionPerformed(evt);
+      }
+    });
+
+    btn_sendRecipe.setText("Call SendRecipe");
+    btn_sendRecipe.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btn_sendRecipeActionPerformed(evt);
+      }
+    });
+
+    btn_invoqueMethod.setText("Call InvoqueMethod");
+    btn_invoqueMethod.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btn_invoqueMethodActionPerformed(evt);
+      }
+    });
+
+    btn_DeviceRegistration.setText("Call DeviceRegistration");
+    btn_DeviceRegistration.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btn_DeviceRegistrationActionPerformed(evt);
+      }
+    });
+
+    btn_RecipeExecutionDone.setText("Call RecipeExecutionDone");
+    btn_RecipeExecutionDone.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btn_RecipeExecutionDoneActionPerformed(evt);
+      }
+    });
+
+    btn_ChangedState.setText("Call ChangedState");
+    btn_ChangedState.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btn_ChangedStateActionPerformed(evt);
+      }
+    });
+
+    btn_sendrecipe2.setText("Call SendRecipe");
+    btn_sendrecipe2.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btn_sendrecipe2ActionPerformed(evt);
+      }
+    });
+
+    btn_updatestatus.setText("Call StatusUpdate");
+    btn_updatestatus.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btn_updatestatusActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+      .addGroup(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(jSeparator1)
-          .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(jPanel1Layout.createSequentialGroup()
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(jSeparator2)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+              .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(msb_opcua_servername)
+                  .addComponent(msb_opcua_servername, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
                   .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                   .addComponent(LDSserverAddress)
                   .addComponent(LDSRegisterserver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -643,8 +555,27 @@ public class MSB_gui extends javax.swing.JFrame
                   .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
-              .addComponent(jLabel7))
-            .addGap(135, 135, 135)))
+              .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel7)
+                .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(135, 135, 135))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+              .addComponent(btn_sendRecipe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(btn_RequestProduct, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+              .addComponent(btn_SendURL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(btn_invoqueMethod, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(18, 18, 18)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(btn_DeviceRegistration, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(btn_RecipeExecutionDone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(btn_ChangedState, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(btn_sendrecipe2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(btn_updatestatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addComponent(comboServers, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(18, 18, 18)
+            .addComponent(ComboMSB, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     jPanel1Layout.setVerticalGroup(
@@ -682,21 +613,37 @@ public class MSB_gui extends javax.swing.JFrame
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(btn_start_discovery)
           .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(275, 275, 275))
+        .addGap(23, 23, 23)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addComponent(ComboMSB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(6, 6, 6)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(btn_DeviceRegistration)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_RecipeExecutionDone)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_ChangedState)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_sendrecipe2))
+              .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(btn_SendURL)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_RequestProduct)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_sendRecipe)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_invoqueMethod))))
+          .addComponent(comboServers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(btn_updatestatus)
+        .addContainerGap(68, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("OPCUA", jPanel1);
 
     l_ddsDomain.setText("DDS Configuration");
-
-    tf_msbDomainName.setText("openmos");
-    tf_msbDomainName.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        tf_msbDomainNameActionPerformed(evt);
-      }
-    });
 
     b_startMSBDDS.setText("Start Domain");
     b_startMSBDDS.addActionListener(new java.awt.event.ActionListener()
@@ -707,33 +654,41 @@ public class MSB_gui extends javax.swing.JFrame
       }
     });
 
-    l_msbDomainName.setText("Domain Name");
-
-    l_msbDomainID.setText("Domain ID");
-
-    ((AbstractDocument)tf_msbDomainID.getDocument()).setDocumentFilter(new DocumentFilter()
-    {
-      Pattern regEx = Pattern.compile("\\d*");
-
-      @Override
-      public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException
-      {
-        Matcher matcher = regEx.matcher(text);
-        if(!matcher.matches())
-        {
-          return;
-        }
-        super.replace(fb, offset, length, text, attrs);
-      }
-    });
-    tf_msbDomainID.setText("-1");
-    tf_msbDomainID.addActionListener(new java.awt.event.ActionListener()
+    cb_DDSDevice.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No devices available!"}));
+    cb_DDSDevice.setEnabled(false);
+    cb_DDSDevice.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        tf_msbDomainIDActionPerformed(evt);
+        cb_DDSDeviceActionPerformed(evt);
       }
     });
+
+    cb_DDSRecipeList.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No recipes available!"}));
+    cb_DDSRecipeList.setEnabled(false);
+    cb_DDSRecipeList.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cb_DDSRecipeListActionPerformed(evt);
+      }
+    });
+
+    b_DDSCallRecipe.setText("Call");
+    b_DDSCallRecipe.setEnabled(false);
+    b_DDSCallRecipe.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        b_DDSCallRecipeActionPerformed(evt);
+      }
+    });
+
+    l_testDDS.setText("Test DDS Call's");
+
+    l_DDSDevice.setText("Device");
+
+    l_DDSRecipe.setText("Recipe");
 
     javax.swing.GroupLayout p_ddsLayout = new javax.swing.GroupLayout(p_dds);
     p_dds.setLayout(p_ddsLayout);
@@ -743,38 +698,54 @@ public class MSB_gui extends javax.swing.JFrame
         .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(p_ddsLayout.createSequentialGroup()
             .addContainerGap()
-            .addComponent(b_startMSBDDS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-          .addGroup(p_ddsLayout.createSequentialGroup()
-            .addGap(12, 12, 12)
             .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l_ddsDomain)
+              .addComponent(b_startMSBDDS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(jSeparator3)))
+          .addGroup(p_ddsLayout.createSequentialGroup()
+            .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(p_ddsLayout.createSequentialGroup()
-                .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                  .addComponent(l_msbDomainID, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(l_msbDomainName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(24, 24, 24)
-                .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                  .addComponent(tf_msbDomainName, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
-                  .addComponent(tf_msbDomainID))))
-            .addGap(0, 370, Short.MAX_VALUE)))
+                .addGap(12, 12, 12)
+                .addComponent(l_ddsDomain))
+              .addGroup(p_ddsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(l_testDDS, javax.swing.GroupLayout.PREFERRED_SIZE, 546, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addGroup(p_ddsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(l_DDSDevice, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(l_DDSRecipe, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGap(0, 163, Short.MAX_VALUE)))
         .addContainerGap())
+      .addGroup(p_ddsLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(cb_DDSDevice, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(18, 18, 18)
+        .addComponent(cb_DDSRecipeList, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(18, 18, 18)
+        .addComponent(b_DDSCallRecipe, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(0, 0, Short.MAX_VALUE))
     );
     p_ddsLayout.setVerticalGroup(
       p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(p_ddsLayout.createSequentialGroup()
         .addContainerGap()
         .addComponent(l_ddsDomain)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(b_startMSBDDS)
+        .addGap(18, 18, 18)
+        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(l_testDDS)
+        .addGap(24, 24, 24)
+        .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(l_DDSDevice)
+          .addComponent(l_DDSRecipe))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(tf_msbDomainName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(l_msbDomainName))
-        .addGap(18, 18, 18)
-        .addGroup(p_ddsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(l_msbDomainID)
-          .addComponent(tf_msbDomainID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(18, 18, 18)
-        .addComponent(b_startMSBDDS)
-        .addContainerGap(306, Short.MAX_VALUE))
+          .addComponent(cb_DDSDevice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(cb_DDSRecipeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(b_DDSCallRecipe))
+        .addContainerGap(436, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("DDS", p_dds);
@@ -783,11 +754,11 @@ public class MSB_gui extends javax.swing.JFrame
     jPanel4.setLayout(jPanel4Layout);
     jPanel4Layout.setHorizontalGroup(
       jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 687, Short.MAX_VALUE)
+      .addGap(0, 721, Short.MAX_VALUE)
     );
     jPanel4Layout.setVerticalGroup(
       jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 599, Short.MAX_VALUE)
+      .addGap(0, 625, Short.MAX_VALUE)
     );
 
     jTabbedPane1.addTab("MQTT", jPanel4);
@@ -854,10 +825,65 @@ public class MSB_gui extends javax.swing.JFrame
             .addComponent(jLabel10)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(StartWebService)
-        .addContainerGap(510, Short.MAX_VALUE))
+        .addContainerGap(536, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("WebService", jPanel5);
+
+    p_productExecution.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+    textToSend.setText("insert data to send");
+
+    prodA.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        prodAActionPerformed(evt);
+      }
+    });
+
+    prodB.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        prodBActionPerformed(evt);
+      }
+    });
+
+    jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+    jLabel8.setText("Product Execution");
+
+    javax.swing.GroupLayout p_productExecutionLayout = new javax.swing.GroupLayout(p_productExecution);
+    p_productExecution.setLayout(p_productExecutionLayout);
+    p_productExecutionLayout.setHorizontalGroup(
+      p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(p_productExecutionLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(p_productExecutionLayout.createSequentialGroup()
+            .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(textToSend)
+              .addGroup(p_productExecutionLayout.createSequentialGroup()
+                .addComponent(prodA, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(prodB, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE)))
+            .addContainerGap())))
+    );
+    p_productExecutionLayout.setVerticalGroup(
+      p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(p_productExecutionLayout.createSequentialGroup()
+        .addGap(12, 12, 12)
+        .addComponent(jLabel8)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(textToSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(prodA, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(prodB, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(15, 15, 15))
+    );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -868,22 +894,17 @@ public class MSB_gui extends javax.swing.JFrame
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jScrollPane3)
-              .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane3)
             .addContainerGap())
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(layout.createSequentialGroup()
                 .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(256, 256, 256))
+                .addGap(247, 247, 247))
               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel3)
-                .addGap(296, 296, 296))
               .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                   .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -891,24 +912,29 @@ public class MSB_gui extends javax.swing.JFrame
                   .addComponent(jScrollPane1))
                 .addContainerGap())
               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 3, Short.MAX_VALUE)
                 .addComponent(jLabel5)
-                .addGap(302, 302, 302))))))
+                .addGap(302, 302, 302))
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel3)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(p_productExecution, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())))))
       .addGroup(layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addGap(503, 503, 503)
-            .addComponent(jLabel8))
-          .addGroup(layout.createSequentialGroup()
-            .addGap(493, 493, 493)
-            .addComponent(jLabel4)))
+        .addGap(493, 493, 493)
+        .addComponent(jLabel4)
         .addGap(0, 0, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 650, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(12, 12, 12)
@@ -918,21 +944,15 @@ public class MSB_gui extends javax.swing.JFrame
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 471, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(p_productExecution, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel4)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel8)
-        .addGap(2, 2, 2)
-        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addContainerGap())
     );
 
@@ -1715,10 +1735,10 @@ public class MSB_gui extends javax.swing.JFrame
   private void StartMSBServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartMSBServerActionPerformed
     try
     {
-      // TODO add your handling code here:
       opc_comms_log.append("Starting MSB OPCUA Milo Server...\n");
 
       opcuaServerInstanceMILO = new opcuaServerMSB(msb_opcua_servername.getText()); //new MSB Milo server
+     
       //launch MILO MSB OPCUA Server endpoint
       if (opcuaServerInstanceMILO.control == false)
       {
@@ -1727,10 +1747,6 @@ public class MSB_gui extends javax.swing.JFrame
           opcuaServerInstanceMILO.startup().get();
           opc_comms_log.append("Server created. \n");
           setConnectionColor(true, false, OnOffServerPanel, labelServer);
-          /*
-           * final CompletableFuture<Void> future = new CompletableFuture<>(); Runtime.getRuntime().addShutdownHook(new
-           * Thread(() -> future.complete(null))); future.get();
-           */
         }
         catch (InterruptedException | ExecutionException ex)
         {
@@ -1780,87 +1796,85 @@ public class MSB_gui extends javax.swing.JFrame
     // TODO add your handling code here:
   }//GEN-LAST:event_msb_opcua_servernameActionPerformed
 
-  private void tf_msbDomainNameActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_msbDomainNameActionPerformed
-  {//GEN-HEADEREND:event_tf_msbDomainNameActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_tf_msbDomainNameActionPerformed
-
   private void b_startMSBDDSActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_startMSBDDSActionPerformed
   {//GEN-HEADEREND:event_b_startMSBDDSActionPerformed
-
-    if (!this.isDDSRunning && !tf_msbDomainName.getText().isEmpty() && !tf_msbDomainID.getText().isEmpty())
-    {
-      String domainName = tf_msbDomainName.getText(); // this could be a external variable
-      int id = Integer.valueOf(tf_msbDomainID.getText());
-
-      System.out.println("Domain: " + domainName); 
-      System.out.println("ID " + id);
-      
-
-     
-      DDSDeviceManager dm = DDSDeviceManager.getInstance();
-      
+    
+    DDSDeviceManager dm = DDSDeviceManager.getInstance();
+    if (!this.isDDSRunning )
+    {  
       dm.addDevice("msb");
-      dm.getDevice("msb").crateTopicReader("generalmethod", DDSMSBDevice.TopicType.GENERALMETHODMESSAGE);
+      dm.getDevice("msb").crateTopicReader("generalmethod", DDSDevice.TopicType.GENERALMETHODMESSAGE);
+      dm.getDevice("msb").crateTopicReader("registo_fabio", DDSDevice.TopicType.STRINGMESSAGE);
       
-      dm.addDevice("agv");
-      dm.getDevice("agv").createTopicWriter("receita_A", DDSMSBDevice.TopicType.STRINGMESSAGE);
-      dm.getDevice("agv").createTopicWriter("receita_B", DDSMSBDevice.TopicType.STRINGMESSAGE);
-      
-      
-      
-     
-      
-         /*
-      
-    DDSEntityManager mgr = new DDSEntityManager();
-
-    // create domain participant
-    mgr.createParticipant("msb");
-
-    // create type
-    GeneralMethodMessageTypeSupport st = new GeneralMethodMessageTypeSupport();
-    mgr.registerType(st);
-
-    // create Topic
-    mgr.createTopic("generalmethod");
-
-    // create Subscriber
-    mgr.createSubscriber();
-
-    // create DataReader
-    mgr.createReader();
-      
-       */
-      
-      
-      
-
-      this.tf_msbDomainID.enable(false);
-      this.tf_msbDomainName.enable(false);
       this.b_startMSBDDS.setText("Stop");
-      this.p_dds.repaint();
+      this.p_dds.repaint(); 
       this.isDDSRunning = true;
+ 
     }
     else if (this.isDDSRunning)
     {
-      String domainName = tf_msbDomainName.getText(); // this could be a external variable
-      
-      
-      
-      this.tf_msbDomainID.enable(true);
-      this.tf_msbDomainName.enable(true);
       this.b_startMSBDDS.setText("Start");
       this.isDDSRunning = false;
+      dm.removeDevice("msb");
+      
+      cb_DDSDevice.removeAllItems();
+      cb_DDSDevice.addItem("No devices available!");
+      cb_DDSRecipeList.removeAllItems();
+      cb_DDSRecipeList.addItem("No recipes available!");
+      
+      cb_DDSDevice.setEnabled(false);
+      cb_DDSRecipeList.setEnabled(false);
+      
+      b_DDSCallRecipe.setEnabled(false);
+      
+      p_dds.repaint();
     }
 
 
   }//GEN-LAST:event_b_startMSBDDSActionPerformed
 
-  private void tf_msbDomainIDActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tf_msbDomainIDActionPerformed
-  {//GEN-HEADEREND:event_tf_msbDomainIDActionPerformed
+  private void b_DDSCallRecipeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_DDSCallRecipeActionPerformed
+  {//GEN-HEADEREND:event_b_DDSCallRecipeActionPerformed
+    DDSDeviceManager dm = DDSDeviceManager.getInstance();
+    //dm.getDevice(cb_DDSDevice.getModel().getElementAt(cb_DDSDevice.getSelectedIndex()));
+    try
+    {
+      int status;
+      String deviceName = cb_DDSDevice.getSelectedItem().toString();
+      String topic = cb_DDSRecipeList.getSelectedItem().toString();
+      DDSDevice d = dm.getDevice(deviceName);
+      d.createTopicWriter(topic, DDSDevice.TopicType.STRINGMESSAGE);
+      DataWriter dwriter = d.getWriter(topic);
+      StringMessageDataWriter listenerWriter = StringMessageDataWriterHelper.narrow(dwriter);
+      StringMessage msgSample = new StringMessage();
+
+      msgSample.device = deviceName;
+      msgSample.args = "0";
+      status = listenerWriter.write(msgSample, HANDLE_NIL.value);
+      DDSErrorHandler.checkStatus(status, "StringMessageDataWriter.write");
+      
+      
+    }
+    catch(Exception ex)
+    {
+      System.out.println("à meu deus"+ex.toString());
+    }
+    
+    
+    
+    
+    
+  }//GEN-LAST:event_b_DDSCallRecipeActionPerformed
+
+  private void cb_DDSRecipeListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cb_DDSRecipeListActionPerformed
+  {//GEN-HEADEREND:event_cb_DDSRecipeListActionPerformed
     // TODO add your handling code here:
-  }//GEN-LAST:event_tf_msbDomainIDActionPerformed
+  }//GEN-LAST:event_cb_DDSRecipeListActionPerformed
+
+  private void cb_DDSDeviceActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cb_DDSDeviceActionPerformed
+  {//GEN-HEADEREND:event_cb_DDSDeviceActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_cb_DDSDeviceActionPerformed
 
 
   /**
@@ -1957,7 +1971,39 @@ public class MSB_gui extends javax.swing.JFrame
     }
 
   }
-
+  
+  /**
+   * 
+   */
+  public static void FillDDSCombos()
+  {
+    MyHashMaps myOpcMap = MyHashMaps.getInstance(); //singleton to access hashmaps in other classes
+    int index = 0;
+    DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+    
+    ArrayList<String> devices = dbMSB.list_dds_devices();
+    
+    cb_DDSDevice.removeAllItems();
+    cb_DDSRecipeList.removeAllItems();
+    for (String key : devices)
+    {
+      cb_DDSDevice.addItem(key);      
+      List<ExecuteData> ETD = myOpcMap.ExecutiontTableMaps.get(key); //get product list for each workstatio 
+      for (int i = 0; i < ETD.size(); i++)
+      {
+        cb_DDSRecipeList.addItem(ETD.get(i).methodID);
+      }
+      index++;
+    }
+    
+    cb_DDSRecipeList.setEnabled(true);
+    cb_DDSDevice.setEnabled(true);
+    b_DDSCallRecipe.setEnabled(true);
+    
+    
+    p_dds.repaint();
+    
+  }
 
   /**
    *
@@ -2013,13 +2059,13 @@ public class MSB_gui extends javax.swing.JFrame
       productID, RecipeID, Status, Workstation
     });
 
-    Object[] rowData = new Object[TProductsmodel.getColumnCount()];
+    /*Object[] rowData = new Object[TProductsmodel.getColumnCount()];
     for (int i = 0; i < TProductsmodel.getColumnCount(); i++)
     {
       rowData[i] = TProductsmodel.getValueAt(0, i);
       System.out.println("Product NA TABELA: " + rowData[i].toString());
     }
-    opc_comms_log.append("Product successfully added to table. Name: " + productID + "\n");
+    opc_comms_log.append("Product successfully added to table. Name: " + productID + "\n");*/
   }
 
 
@@ -2273,6 +2319,13 @@ public class MSB_gui extends javax.swing.JFrame
   }
 
 
+  @Override
+  public void update(java.util.Observable o, Object arg)
+  {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+
   /**
    * reimplementation of modellistener for checkbox value checking
    */
@@ -2466,6 +2519,7 @@ public class MSB_gui extends javax.swing.JFrame
   private javax.swing.JButton StartWebService;
   private javax.swing.JTable TableServers;
   private javax.swing.JTextField WebServiceAddress;
+  private static javax.swing.JButton b_DDSCallRecipe;
   private javax.swing.JButton b_startMSBDDS;
   private javax.swing.JButton btn_ChangedState;
   private javax.swing.JButton btn_DeviceRegistration;
@@ -2477,6 +2531,8 @@ public class MSB_gui extends javax.swing.JFrame
   private javax.swing.JButton btn_sendrecipe2;
   private javax.swing.JButton btn_start_discovery;
   private javax.swing.JButton btn_updatestatus;
+  private static javax.swing.JComboBox<String> cb_DDSDevice;
+  private static javax.swing.JComboBox<String> cb_DDSRecipeList;
   private java.awt.Choice choice1;
   private java.awt.Choice choice2;
   private java.awt.Choice choice3;
@@ -2492,7 +2548,6 @@ public class MSB_gui extends javax.swing.JFrame
   private javax.swing.JLabel jLabel8;
   private javax.swing.JList<String> jList1;
   private javax.swing.JPanel jPanel1;
-  private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
   private javax.swing.JPanel jPanel5;
   private static javax.swing.JScrollPane jScrollPane1;
@@ -2502,20 +2557,21 @@ public class MSB_gui extends javax.swing.JFrame
   private javax.swing.JScrollPane jScrollPane5;
   private javax.swing.JSeparator jSeparator1;
   private javax.swing.JSeparator jSeparator2;
+  private javax.swing.JSeparator jSeparator3;
   private javax.swing.JSeparator jSeparator4;
   private javax.swing.JTabbedPane jTabbedPane1;
+  private javax.swing.JLabel l_DDSDevice;
+  private javax.swing.JLabel l_DDSRecipe;
   private javax.swing.JLabel l_ddsDomain;
-  private javax.swing.JLabel l_msbDomainID;
-  private javax.swing.JLabel l_msbDomainName;
   private static javax.swing.JLabel l_openmosLogo;
+  private javax.swing.JLabel l_testDDS;
   private javax.swing.JTextField msb_opcua_servername;
   private static javax.swing.JTextArea opc_comms_log;
-  private javax.swing.JPanel p_dds;
+  private static javax.swing.JPanel p_dds;
+  private javax.swing.JPanel p_productExecution;
   private static javax.swing.JButton prodA;
   private static javax.swing.JButton prodB;
   private javax.swing.JTextField textToSend;
-  private javax.swing.JTextField tf_msbDomainID;
-  private javax.swing.JTextField tf_msbDomainName;
   // End of variables declaration//GEN-END:variables
 }
 //EOF

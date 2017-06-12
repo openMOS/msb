@@ -24,7 +24,7 @@ public class DDSDeviceManager implements Runnable
 {
 
   private static DDSDeviceManager dmInstance = null; // Singleton Object
-  private final HashMap<String, DDSMSBDevice> devices;
+  private final HashMap<String, DDSDevice> devices;
   private final DomainParticipantFactory dpf;
   // future implementation could enable multiple participants!
   private final DomainParticipant participant;
@@ -58,7 +58,7 @@ public class DDSDeviceManager implements Runnable
   protected DDSDeviceManager(int domainId)
   {
     // Devices list associated with this DDS Domain 
-    this.devices = new HashMap<String, DDSMSBDevice>();
+    this.devices = new HashMap<String, DDSDevice>();
     dpf = DomainParticipantFactory.get_instance();
     DDSErrorHandler.checkHandle(dpf, "DomainParticipantFactory.get_instance");
     participant = dpf.create_participant(
@@ -83,7 +83,7 @@ public class DDSDeviceManager implements Runnable
   /**
    * Delete the DDS Domain Participant associated with this instance
    */
-  public void deleteParticipant()
+  private void deleteParticipant()
   {
     int status = dpf.delete_participant(participant);
     DDSErrorHandler.checkStatus(status, "delete_participant");
@@ -99,7 +99,7 @@ public class DDSDeviceManager implements Runnable
   {
     if (!this.devices.containsKey(name))
     {
-      this.devices.put(name, new DDSMSBDevice(name, participant));
+      this.devices.put(name, new DDSDevice(name, participant));
     }
     return -1;
   }
@@ -126,7 +126,7 @@ public class DDSDeviceManager implements Runnable
    * @param name Device name (id)
    * @return the specified devcie
    */
-  public DDSMSBDevice getDevice(String name)
+  public DDSDevice getDevice(String name)
   {
     if (this.devices.containsKey(name))
     {

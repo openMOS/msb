@@ -41,8 +41,8 @@ public class DatabaseInteraction {
             //Get a connection
             //conn = DriverManager.getConnection("jdbc:sqlite:C:\\OpenMOS\\code-git\\msb_db\\service_bus\\msb_db\\msbdb.db"); //DriverManager.getConnection(dbURL); 
             // conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\fabio.miranda\\Documents\\NetBeansProjects\\EJBDatabaseFabio\\msbdb.db"); //DriverManager.getConnection(dbURL); 
-            // conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\fabio.miranda\\Documents\\NetBeansProjects\\EJBDatabaseFabio\\msbdb.db"); //DriverManager.getConnection(dbURL); 
-            conn = DriverManager.getConnection(ConfigurationLoader.getMandatoryProperty(DATABASE_CONNECTION_STRING_PARAMETER_NAME));
+            conn = DriverManager.getConnection("jdbc:sqlite:./database//msbdb_FULL.db"); //DriverManager.getConnection(dbURL); 
+            //conn = DriverManager.getConnection(ConfigurationLoader.getMandatoryProperty(DATABASE_CONNECTION_STRING_PARAMETER_NAME));
             
             System.out.println("Opened database successfully");
         }
@@ -117,6 +117,34 @@ public class DatabaseInteraction {
             {   
                 myresult.add(results.getString(1));
                 myresult.add(results.getString(2));
+//                System.out.println(id + "\t\t" + results.getString(4) + "\t\t" + restName + "\t\t" + cityName);
+            }
+            results.close();
+            stmt.close();
+            shutdown();
+            return myresult;   
+        }
+        catch (SQLException sqlExcept)
+        {
+            sqlExcept.printStackTrace();
+        }
+        shutdown();
+        return null;
+    }
+    
+        public static ArrayList<String> listDDSDevices()
+    {
+        try
+        {
+            createConnection();
+            stmt = conn.createStatement();
+            ResultSet results = stmt.executeQuery("SELECT NAME FROM " + deviceTable +" WHERE protocol = 'DDS';");
+            ArrayList<String> myresult = new ArrayList<>();
+
+            while(results.next())
+            {   
+                myresult.add(results.getString(1));
+                
 //                System.out.println(id + "\t\t" + results.getString(4) + "\t\t" + restName + "\t\t" + cityName);
             }
             results.close();

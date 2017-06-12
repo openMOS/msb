@@ -25,28 +25,8 @@
                 <methodID>InvokeSkill/SC2:Task_fast_Recipe</methodID>
             </value>
         </entry>
-        <entry>
-            <key>C</key>
-            <value>
-                <productID>C</productID>
-                <recipeID>SC3:TaskFull_slow_Recipe</recipeID>
-                <status>true</status>
-                <objectID>Pre-Demonstrator_InstanceHierarchy/AssemblySystem/WorkStation/SC3:TaskFull_slow_Recipe</objectID>
-                <methodID>InvokeSkill/SC3:TaskFull_slow_Recipe</methodID>
-            </value>
-        </entry>
-        <entry>
-            <key>D</key>
-            <value>
-                <productID>D</productID>
-                <recipeID>SC4:TaskFull_fast_Recipe</recipeID>
-                <status>true</status>
-                <objectID>Pre-Demonstrator_InstanceHierarchy/AssemblySystem/WorkStation/SC4:TaskFull_fast_Recipe</objectID>
-                <methodID>InvokeSkill/SC4:TaskFull_fast_Recipe</methodID>
-            </value>
-        </entry>
     </ExecuteTable>
-    <ServerTable/>
+    <ServerTable />
     <Recipes>
         <entry>
             <key>Route_B_WS_lowspeed_Recipe</key>
