@@ -383,7 +383,7 @@ public class DDSDevice
           topicInstances.get(topicName).getTopic(),
           RQosH.value,
           new ListenerDataListener(),
-          DDS.DATA_AVAILABLE_STATUS.value | DDS.REQUESTED_DEADLINE_MISSED_STATUS.value
+          DDS.DATA_AVAILABLE_STATUS.value
         );
         DDSErrorHandler.checkHandle(reader, "Subscriber.create_datareader");
 
