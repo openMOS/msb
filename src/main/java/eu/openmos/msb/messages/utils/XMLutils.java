@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.openmos.msb.dummyclasses;
+package eu.openmos.msb.messages.utils;
 
+import eu.openmos.msb.messages.RegFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;

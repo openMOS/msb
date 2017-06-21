@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.opcua.utils;
 
-import eu.openmos.msb.starter.MSB_MiloClientSubscription;
+import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 import static java.lang.Thread.sleep;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;

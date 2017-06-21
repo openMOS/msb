@@ -1,7 +1,7 @@
 /*
  * TODO - Add licence
  */
-package eu.openmos.msb.starter;
+package eu.openmos.msb.opcua.milo.client;
 
 // IMPORTS
 import eu.openmos.msb.opcua.milo.client.Client;

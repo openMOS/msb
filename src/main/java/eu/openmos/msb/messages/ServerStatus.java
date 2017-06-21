@@ -3,11 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.openmos.msb.dummyclasses;
+package eu.openmos.msb.messages;
 
-
-import eu.openmos.agentcloud.data.recipe.KPISetting;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -17,13 +14,15 @@ import javax.xml.bind.annotation.XmlElement;
  * @author renato.martins
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExecuteState
+public class ServerStatus
 {
-    public ExecuteState() {}
-    
-    @XmlElement(name = "recipeID")
-    public String recipeID = "";
-    @XmlElement(name = "KPISettings")
-    public List<KPISetting> kpisSetting;
 
+    public ServerStatus() {
+    }
+    @XmlElement(name = "Name")
+    public String Name = "";
+    @XmlElement(name = "URL")
+    public String URL = "";
+    @XmlElement(name = "Connected")
+    public Boolean Connected = false;
 }

@@ -3,28 +3,27 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.openmos.msb.dummyclasses;
+package eu.openmos.msb.messages;
+
 
 import eu.openmos.agentcloud.data.recipe.KPISetting;
-import java.util.HashMap;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
  *
  * @author renato.martins
  */
-public class ChangedState
+@XmlAccessorType(XmlAccessType.FIELD)
+public class ExecuteState
 {
-    public ChangedState() {}
+    public ExecuteState() {}
     
-    @XmlElement(name = "productID")
-    public String productID = "";
     @XmlElement(name = "recipeID")
     public String recipeID = "";
     @XmlElement(name = "KPISettings")
     public List<KPISetting> kpisSetting;
-    @XmlElement(name = "ExecuteState")
-    public ExecuteState executeState;
-    
+
 }

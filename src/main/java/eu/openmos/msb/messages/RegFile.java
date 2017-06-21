@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.openmos.msb.dummyclasses;
+package eu.openmos.msb.messages;
 
 import eu.openmos.agentcloud.data.recipe.Recipe;
 import java.util.HashMap;

@@ -3,11 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.openmos.msb.starter;
+package eu.openmos.msb.datastructures;
 
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-import eu.openmos.msb.dummyclasses.ExecuteData;
-import eu.openmos.msb.dummyclasses.ServerStatus;
+import eu.openmos.msb.messages.ExecuteData;
+import eu.openmos.msb.messages.ServerStatus;
+import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.Map;
  *
  * @author fabio.miranda
  */
-public class MyHashMaps {
+public class HashMaps {
 
     public static Map<String, MSB_MiloClientSubscription> OPCclientIDMaps = new HashMap<String, MSB_MiloClientSubscription>();
     public static Map<MSB_MiloClientSubscription, CyberPhysicalAgentDescription> AgentDeviceMaps = new HashMap<MSB_MiloClientSubscription, CyberPhysicalAgentDescription>(); //OPCClient vs AgentID
@@ -25,13 +26,13 @@ public class MyHashMaps {
     public static Map<String, List<ExecuteData>> ExecutiontTableMaps=new HashMap<>(); //workstation name and executetabledata
     public static Map<String, ServerStatus> ServerTableMaps=new HashMap<String, ServerStatus>(); //devices in the workstation and its data
     
-    public static MyHashMaps instance = null;
+    public static HashMaps instance = null;
 
     
-    public static MyHashMaps getInstance() {
+    public static HashMaps getInstance() {
 
         if (instance == null) {
-            instance = new MyHashMaps();
+            instance = new HashMaps();
         }
         return instance;
     }
@@ -43,11 +44,11 @@ public class MyHashMaps {
     }
 
     public static void setOPCclientIDMaps(String key, MSB_MiloClientSubscription keyset) {
-        MyHashMaps.OPCclientIDMaps.put(key, keyset);
+        HashMaps.OPCclientIDMaps.put(key, keyset);
     }
     
     public static void deleteOPCclientIDMaps(String key) {
-        MyHashMaps.OPCclientIDMaps.remove(key);
+        HashMaps.OPCclientIDMaps.remove(key);
     }
     
 //AGENT vs DEVICE MAPS*************************************************
@@ -56,11 +57,11 @@ public class MyHashMaps {
     }
 
     public static void setAgentDeviceIDMaps(MSB_MiloClientSubscription key, CyberPhysicalAgentDescription keyset) {
-        MyHashMaps.AgentDeviceMaps.put(key, keyset);
+        HashMaps.AgentDeviceMaps.put(key, keyset);
     }
 
     public static void deleteOAgentDeviceIDMaps(MSB_MiloClientSubscription key) {
-        MyHashMaps.AgentDeviceMaps.remove(key);
+        HashMaps.AgentDeviceMaps.remove(key);
     }
 
 //PRODUCT vs DEVICE MAPS*************************************************
@@ -69,11 +70,11 @@ public class MyHashMaps {
     }
 
     public static void setProductIDAdapterMaps(String key, MSB_MiloClientSubscription keyset) {
-        MyHashMaps.ProductIDAdapterMaps.put(key, keyset);
+        HashMaps.ProductIDAdapterMaps.put(key, keyset);
     }
 
     public static void deleteProductIDAdapterMaps(String key) {
-        MyHashMaps.ProductIDAdapterMaps.remove(key);
+        HashMaps.ProductIDAdapterMaps.remove(key);
     }
 
 //WORKSTATIONName vs DEVICE data MAPS*************************************************
@@ -82,11 +83,11 @@ public class MyHashMaps {
     }
 
     public static void setDevicesNameDataMaps(String key, ServerStatus keyset) {
-        MyHashMaps.ServerTableMaps.put(key, keyset);
+        HashMaps.ServerTableMaps.put(key, keyset);
     }
 
     public static void deleteDevicesNameDataMaps(String key) {
-        MyHashMaps.ServerTableMaps.remove(key);
+        HashMaps.ServerTableMaps.remove(key);
     }
     
     
@@ -96,15 +97,15 @@ public class MyHashMaps {
     }
 
     public static void setExecutionInfoMaps(String key, List<ExecuteData> keyset) {
-        MyHashMaps.ExecutiontTableMaps.put(key, keyset);
+        HashMaps.ExecutiontTableMaps.put(key, keyset);
     }
 
     public static void deleteExecutionInfoMaps(String key) {
-        MyHashMaps.ExecutiontTableMaps.remove(key);
+        HashMaps.ExecutiontTableMaps.remove(key);
     }
     
     
-    protected MyHashMaps() {
+    protected HashMaps() {
 
     }
 }

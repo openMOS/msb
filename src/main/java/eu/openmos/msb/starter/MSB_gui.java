@@ -4,13 +4,15 @@
 package eu.openmos.msb.starter;
 
 // IMOPORTS
+import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
+import eu.openmos.msb.datastructures.HashMaps;
 import eu.openmos.msb.database.stateless.DeviceRegistryBean;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.dds.instance.DDSDeviceManager;
 import eu.openmos.msb.dds.instance.DDSDevice;
-import eu.openmos.msb.dummyclasses.ExecuteData;
-import eu.openmos.msb.dummyclasses.ServerStatus;
+import eu.openmos.msb.messages.ExecuteData;
+import eu.openmos.msb.messages.ServerStatus;
 import eu.openmos.msb.opcua.milo.server.opcuaServerMSB;
 import eu.openmos.msb.opcua.utils.OPCDeviceItf;
 import eu.openmos.msb.opcua.utils.OpcUaServersDiscoverySnippet;
@@ -1014,7 +1016,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private void btn_SendURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendURLActionPerformed
       String deviceName = String.valueOf(comboServers.getSelectedItem());
       //ver hashmap e chamar o metodo
-      MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
+      HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
       MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
 
       MSBcs.SendServerURL(MSBcs.milo_client_instanceMSB, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
@@ -1041,7 +1043,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private void btn_sendRecipeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendRecipeActionPerformed
       String deviceName = String.valueOf(comboServers.getSelectedItem());
       //ver hashmap e chamar o metodo
-      MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
+      HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
       MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
 
       MSBcs.SendRecipetoDevice(MSBcs.milo_client_instanceMSB, textToSend.getText()).exceptionally(ex ->
@@ -1075,7 +1077,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    * @param evt
    */
     private void btn_RequestProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RequestProductActionPerformed
-      MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access client objects in other classes
+      HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
       String requestedProduct = textToSend.getText();
 
       //get a clientObject that can produce ProductID
@@ -1084,7 +1086,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
       for (String key : myMaps.OPCclientIDMaps.keySet())
       { //get workstation names capable of produce ProductID
-        MSB_MiloClientSubscription MCS = MyHashMaps.OPCclientIDMaps.get(key);
+        MSB_MiloClientSubscription MCS = HashMaps.OPCclientIDMaps.get(key);
 
         String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
         String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
@@ -1329,7 +1331,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private void btn_invoqueMethodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_invoqueMethodActionPerformed
       String deviceName = String.valueOf(comboServers.getSelectedItem());
       //ver hashmap e chamar o metodo
-      MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
+      HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
       MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
 
       //TESTE INVOQUESKILL
@@ -1359,7 +1361,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       // TODO add your handling code here:
       // TODO add your handling code here:
       //NEW REQUEST PRODUCT
-      MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access client objects in other classes
+      HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
       String requestedProduct = "AGV_B";
 
       //get a clientObject that can produce ProductID
@@ -1368,7 +1370,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
       for (String key : myMaps.OPCclientIDMaps.keySet())
       { //get workstation names capable of produce ProductID
-        MSB_MiloClientSubscription MCS = MyHashMaps.OPCclientIDMaps.get(key);
+        MSB_MiloClientSubscription MCS = HashMaps.OPCclientIDMaps.get(key);
 
         String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
         String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
@@ -1417,7 +1419,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private void prodAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prodAActionPerformed
       // TODO add your handling code here:
       //NEW REQUEST PRODUCT
-      MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access client objects in other classes
+      HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
       String requestedProduct = "AGV_A";
 
       //get a clientObject that can produce ProductID
@@ -1426,7 +1428,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
       for (String key : myMaps.OPCclientIDMaps.keySet())
       { //get workstation names capable of produce ProductID
-        MSB_MiloClientSubscription MCS = MyHashMaps.OPCclientIDMaps.get(key);
+        MSB_MiloClientSubscription MCS = HashMaps.OPCclientIDMaps.get(key);
 
         String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
         String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
@@ -1557,10 +1559,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               MSB_MiloClientSubscription instance = new MSB_MiloClientSubscription();
 
               OPCclientIDMap.put(name, instance); //save the client objectID and the name of the device as hashmap
-              // MyHashMaps hash = null;
+              // HashMaps hash = null;
 
               // Singleton to access client objects in other classes
-              MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance();
+              HashMaps myOpcUaClientsMap = HashMaps.getInstance();
               myOpcUaClientsMap.setOPCclientIDMaps(name, instance);
 
               //start connection after inserting on the hashmap!
@@ -1671,7 +1673,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         {
           System.out.println(key + " ->new local hashmap<- - " + OPCclientIDMap.get(key));
         }
-        MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
+        HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
         for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet())
         {
           System.out.println(key + " ->new singleton hashmap<- - " + myOpcUaClientsMap.getOPCclientIDMaps().get(key));
@@ -1901,7 +1903,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   public static int RemoveDownServer(String ServerName)
   {
 
-    MyHashMaps myOpcUaClientsMap = MyHashMaps.getInstance(); //singleton to access client objects in other classes
+    HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
     myOpcUaClientsMap.deleteOPCclientIDMaps(ServerName); //remove server from singleton Hashmap
     OPCclientIDMap.remove(ServerName); //remove server from HashMap
     //delete server from DB
@@ -1957,11 +1959,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   public static void FillProductsTable()
   {
-    MyHashMaps myOpcMap = MyHashMaps.getInstance(); //singleton to access hashmaps in other classes
+    HashMaps myOpcMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
     int index = 0;
     for (String key : myOpcMap.ExecutiontTableMaps.keySet())
     {
-      System.out.println(key + " ->MAPA de execução MSBGUI<- - " + MyHashMaps.ExecutiontTableMaps.get(key));
+      System.out.println(key + " ->MAPA de execução MSBGUI<- - " + HashMaps.ExecutiontTableMaps.get(key));
       List<ExecuteData> ETD = myOpcMap.ExecutiontTableMaps.get(key); //get product list for each workstatio 
       for (int i = 0; i < ETD.size(); i++)
       {
@@ -1977,7 +1979,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   public static void FillDDSCombos()
   {
-    MyHashMaps myOpcMap = MyHashMaps.getInstance(); //singleton to access hashmaps in other classes
+    HashMaps myOpcMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
     int index = 0;
     DeviceRegistryBean dbMSB = new DeviceRegistryBean();
     
@@ -2033,10 +2035,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   public static void FillDevicesTable()
   {
-    for (String key : MyHashMaps.ServerTableMaps.keySet())
+    for (String key : HashMaps.ServerTableMaps.keySet())
     {
-      System.out.println(key + " ->MAPA de execução MSBGUI<- - " + MyHashMaps.ServerTableMaps.get(key));
-      ServerStatus SStat = MyHashMaps.ServerTableMaps.get(key);
+      System.out.println(key + " ->MAPA de execução MSBGUI<- - " + HashMaps.ServerTableMaps.get(key));
+      ServerStatus SStat = HashMaps.ServerTableMaps.get(key);
       //call mainwindow filltables
 
       addToTableDevice(SStat.Name, SStat.Connected, SStat.URL, key);
@@ -2389,7 +2391,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   public String CleanHashMapsFromWorkstation(String WorkstationName)
   {
-    MyHashMaps myMaps = MyHashMaps.getInstance(); //singleton to access hashmaps in other classes
+    HashMaps myMaps = HashMaps.getInstance(); //singleton to access hashmaps in other classes
 
     MSB_MiloClientSubscription ret = null;
     CyberPhysicalAgentDescription cpadRET = null;
