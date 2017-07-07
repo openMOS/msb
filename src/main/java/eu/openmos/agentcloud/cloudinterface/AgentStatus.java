@@ -6,8 +6,9 @@
 package eu.openmos.agentcloud.cloudinterface;
 
 /**
- * Object to be returned as an operation status for agent creation and removal operations.
- * 
+ * Object to be returned as an operation status for agent creation and removal
+ * operations.
+ *
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
 public class AgentStatus {
@@ -21,12 +22,10 @@ public class AgentStatus {
      *
      */
     // public static final String SUCCESS = "success.openmos.agents.cloudinterface.systemconfigurator";
-
     /**
      *
      */
     // public static final String ERROR = "error.openmos.agents.cloudinterface.systemconfigurator";
-
     /**
      * Code for a KO operation.
      */
@@ -40,33 +39,40 @@ public class AgentStatus {
      */
     public static final String REMOVEAGENT_SUCCESS = "agents.CI.systemconfigurator.removeagent.success";
     /**
-     * Code for message describing a missing parameter during agent creation operation.
+     * Code for message describing a missing parameter during agent creation
+     * operation.
      */
     public static final String CREATENEWAGENT_NEWAGENTINFO_PARAMETER_NULL = "agents.CI.systemconfigurator.createnewagent.newagentinfo.parameter.null";
     /**
-     * Code for message describing a missing id parameter during agent creation operation.
+     * Code for message describing a missing id parameter during agent creation
+     * operation.
      */
     public static final String CREATENEWAGENT_NEWAGENTINFO_ID_NULL = "agents.CI.systemconfigurator.createnewagent.newagentinfo.id.null";
     /**
-     * Code for message describing a missing agent type parameter during agent creation operation.
+     * Code for message describing a missing agent type parameter during agent
+     * creation operation.
      */
     public static final String CREATENEWAGENT_NEWAGENTINFO_TYPE_NULL = "agents.CI.systemconfigurator.createnewagent.newagentinfo.type.null";
     /**
-     * Code for message describing an unknown agent type parameter during agent creation operation.
+     * Code for message describing an unknown agent type parameter during agent
+     * creation operation.
      */
     public static final String CREATENEWAGENT_NEWAGENTINFO_TYPE_UNKNOWN = "agents.CI.systemconfigurator.createnewagent.newagentinfo.type.unknown";
     /**
-     * Code for message describing missing agent parameters during agent creation operation.
+     * Code for message describing missing agent parameters during agent
+     * creation operation.
      */
     public static final String CREATENEWAGENT_NEWAGENTINFO_PARAMETERS_NULL = "agents.CI.systemconfigurator.createnewagent.newagentinfo.parameters.null";
     /**
-     * 
+     *
      */
     // public static final String REMOVEAGENT_EXISTINGAGENTINFO_TYPE_NULL = "agents.CI.systemconfigurator.removeagent.existingagentinfo.type.null";
     /**
-     * Code for message describing a missing agent name parameter during agent removal operation.
+     * Code for message describing a missing agent name parameter during agent
+     * removal operation.
      */
     public static final String REMOVEAGENT_EXISTINGAGENTINFO_PARAMETER_NULL = "agents.CI.systemconfigurator.removeagent.existingagentinfo.parameter.null";
+
     /**
      *
      */
@@ -75,7 +81,6 @@ public class AgentStatus {
      *
      */
     // public static final String REMOVEAGENT_RESOURCE_NOT_FOUND = "agents.CI.systemconfigurator.removeagent.resource.not.found";
-
     public String getCode() {
         return code;
     }
@@ -94,9 +99,9 @@ public class AgentStatus {
 
     /**
      * Constructor.
-     * 
-     * @param code   The message code
-     * @param description    The message description
+     *
+     * @param code The message code
+     * @param description The message description
      */
     public AgentStatus(String code, String description) {
         this.code = code;

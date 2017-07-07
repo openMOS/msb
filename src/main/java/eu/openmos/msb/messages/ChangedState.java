@@ -14,10 +14,11 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * @author renato.martins
  */
-public class ChangedState
-{
-    public ChangedState() {}
-    
+public class ChangedState {
+
+    public ChangedState() {
+    }
+
     @XmlElement(name = "productID")
     public String productID = "";
     @XmlElement(name = "recipeID")
@@ -26,5 +27,5 @@ public class ChangedState
     public List<KPISetting> kpisSetting;
     @XmlElement(name = "ExecuteState")
     public ExecuteState executeState;
-    
+
 }

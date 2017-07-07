@@ -7,7 +7,7 @@ package eu.openmos.agentcloud.data.utilities;
 
 /**
  * Set of technical constants for recipes serialization/deserialization.
- * 
+ *
  * @author Pedro Monteiro <pedro.monteiro@uninova.pt>
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
@@ -41,5 +41,5 @@ public class Constants {
     public static final String TOKEN_DEPLOY_RECIPES_REQUEST = "+";
     public static final String TOKEN_PARAMETER = "*";
     public static final String TOKEN_ORDER = "!";
-    
+
 }

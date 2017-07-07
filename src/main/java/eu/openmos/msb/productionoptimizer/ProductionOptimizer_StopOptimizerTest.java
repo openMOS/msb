@@ -15,20 +15,20 @@ import org.apache.log4j.Logger;
  * @author valerio.gentile
  */
 public class ProductionOptimizer_StopOptimizerTest {
-    
+
     private static final Logger logger = Logger.getLogger(ProductionOptimizer_StopOptimizerTest.class.getName());
-    
+
     public static void main(String[] args) {
         logger.info("New stop optimizer Test main start");
-        
+
         ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
-	ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
-        
+        ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
+
         ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.stopOptimizer();
-        
+
         logger.info(productionOptimizerResponseBean.getCode());
         logger.info(productionOptimizerResponseBean.getDescription());
 
         logger.info("New stop optimizer Test main end");
-    }               
+    }
 }

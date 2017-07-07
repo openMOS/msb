@@ -67,11 +67,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
+
 /**
  *
  * @author fabio.miranda
  */
-public class opcuaServerNamespaceMSB implements Namespace{
+public class opcuaServerNamespaceMSB implements Namespace {
 
     public static final String NAMESPACE_URI = "urn:eclipse:milo:MSB-namespace";
 
@@ -95,10 +96,8 @@ public class opcuaServerNamespaceMSB implements Namespace{
         {"LocalizedText", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
         {"QualifiedName", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
         {"NodeId", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))},
-
         {"Duration", Identifiers.Duration, new Variant(1.0)},
-        {"UtcTime", Identifiers.UtcTime, new Variant(DateTime.now())},
-    };
+        {"UtcTime", Identifiers.UtcTime, new Variant(DateTime.now())},};
 
     private static final Object[][] STATIC_ARRAY_NODES = new Object[][]{
         {"BooleanArray", Identifiers.Boolean, false},
@@ -122,7 +121,6 @@ public class opcuaServerNamespaceMSB implements Namespace{
         {"NodeIdArray", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))}
     };
 
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Random random = new Random();
     private final SubscriptionModel subscriptionModel;
@@ -130,34 +128,34 @@ public class opcuaServerNamespaceMSB implements Namespace{
     private final UShort namespaceIndex;
     private final UaFolderNode parentFolder;
     //private SkillTypeNode skillTypeNode;
-    
+
     public opcuaServerNamespaceMSB(OpcUaServer server, UShort namespaceIndex) {
-                this.server = server;
-		this.namespaceIndex = namespaceIndex;
+        this.server = server;
+        this.namespaceIndex = namespaceIndex;
 
-		createSkillBaseType();
-			
-		NodeId parentFolderNodeId = new NodeId(namespaceIndex, "OPC_Device");
+        createSkillBaseType();
 
-		parentFolder = new UaFolderNode(server.getNodeMap(), parentFolderNodeId,
-				new QualifiedName(namespaceIndex, "OPC_Device"), LocalizedText.english("OPC_Device"));
+        NodeId parentFolderNodeId = new NodeId(namespaceIndex, "OPC_Device");
 
-		server.getNodeMap().put(parentFolderNodeId, parentFolder);
-		
-		try {
-			server.getUaNamespace().addReference(Identifiers.ObjectsFolder, Identifiers.Organizes, true,
-					parentFolderNodeId.expanded(), NodeClass.Object);
-		} catch (UaException e) {
-			logger.error("Error adding reference to Objects folder.", e);
-		}
-                addSUMMethodNode(parentFolder); //add example methods for testing
-                addGeneralMethodNode(parentFolder); //add example methods for testing
-                addXMLtoDeviceMethodNode(parentFolder); //add example methods for testing
-        
-		subscriptionModel = new SubscriptionModel(server, this);
-                
+        parentFolder = new UaFolderNode(server.getNodeMap(), parentFolderNodeId,
+                new QualifiedName(namespaceIndex, "OPC_Device"), LocalizedText.english("OPC_Device"));
+
+        server.getNodeMap().put(parentFolderNodeId, parentFolder);
+
+        try {
+            server.getUaNamespace().addReference(Identifiers.ObjectsFolder, Identifiers.Organizes, true,
+                    parentFolderNodeId.expanded(), NodeClass.Object);
+        } catch (UaException e) {
+            logger.error("Error adding reference to Objects folder.", e);
+        }
+        addSUMMethodNode(parentFolder); //add example methods for testing
+        addGeneralMethodNode(parentFolder); //add example methods for testing
+        addXMLtoDeviceMethodNode(parentFolder); //add example methods for testing
+
+        subscriptionModel = new SubscriptionModel(server, this);
+
     }
-    
+
     @Override
     public UShort getNamespaceIndex() {
         return namespaceIndex;
@@ -172,53 +170,53 @@ public class opcuaServerNamespaceMSB implements Namespace{
     public void read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds) {
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
-		for (ReadValueId id : readValueIds) {
-			ServerNode node = server.getNodeMap().get(id.getNodeId());
+        for (ReadValueId id : readValueIds) {
+            ServerNode node = server.getNodeMap().get(id.getNodeId());
 
-			if (node != null) {
-				DataValue value = node.readAttribute(new AttributeContext(server), id.getAttributeId(), timestamps, id.getIndexRange());
+            if (node != null) {
+                DataValue value = node.readAttribute(new AttributeContext(server), id.getAttributeId(), timestamps, id.getIndexRange());
 
-				if (logger.isTraceEnabled()) {
-					Variant variant = value.getValue();
-					Object o = variant != null ? variant.getValue() : null;
-					logger.trace("Read value={} from attributeId={} of {}", o, id.getAttributeId(), id.getNodeId());
-				}
+                if (logger.isTraceEnabled()) {
+                    Variant variant = value.getValue();
+                    Object o = variant != null ? variant.getValue() : null;
+                    logger.trace("Read value={} from attributeId={} of {}", o, id.getAttributeId(), id.getNodeId());
+                }
 
-				results.add(value);
-			} else {
-				results.add(new DataValue(new StatusCode(StatusCodes.Bad_NodeIdUnknown)));
-			}
-		}
+                results.add(value);
+            } else {
+                results.add(new DataValue(new StatusCode(StatusCodes.Bad_NodeIdUnknown)));
+            }
+        }
 
-		context.complete(results);
+        context.complete(results);
     }
 
     @Override
     public void write(WriteContext context, List<WriteValue> writeValues) {
         List<StatusCode> results = Lists.newArrayListWithCapacity(writeValues.size());
 
-		for (WriteValue writeValue : writeValues) {
-			try {
-				ServerNode node = server.getNodeMap().getNode(writeValue.getNodeId())
-						.orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
+        for (WriteValue writeValue : writeValues) {
+            try {
+                ServerNode node = server.getNodeMap().getNode(writeValue.getNodeId())
+                        .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
 
-				node.writeAttribute(new AttributeContext(server), writeValue.getAttributeId(),
-						writeValue.getValue(), writeValue.getIndexRange());
+                node.writeAttribute(new AttributeContext(server), writeValue.getAttributeId(),
+                        writeValue.getValue(), writeValue.getIndexRange());
 
-				if (logger.isTraceEnabled()) {
-					Variant variant = writeValue.getValue().getValue();
-					Object o = variant != null ? variant.getValue() : null;
-					logger.trace("Wrote value={} to attributeId={} of {}", o, writeValue.getAttributeId(),
-							writeValue.getNodeId());
-				}
+                if (logger.isTraceEnabled()) {
+                    Variant variant = writeValue.getValue().getValue();
+                    Object o = variant != null ? variant.getValue() : null;
+                    logger.trace("Wrote value={} to attributeId={} of {}", o, writeValue.getAttributeId(),
+                            writeValue.getNodeId());
+                }
 
-				results.add(StatusCode.GOOD);
-			} catch (UaException e) {
-				results.add(e.getStatusCode());
-			}
-		}
+                results.add(StatusCode.GOOD);
+            } catch (UaException e) {
+                results.add(e.getStatusCode());
+            }
+        }
 
-		context.complete(results);
+        context.complete(results);
     }
 
     @Override
@@ -293,193 +291,190 @@ public class opcuaServerNamespaceMSB implements Namespace{
         Namespace.super.deleteReference(context, referencesToDelete); //To change body of generated methods, choose Tools | Templates.
     }
 
-   /* @Override
+    /* @Override
     public void browse(BrowseContext bc, ViewDescription vd, UInteger ui, List<BrowseDescription> list) {
         Namespace.super.browse(bc, vd, ui, list); //To change body of generated methods, choose Tools | Templates.
     }*/
-
     @Override
     public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
         ServerNode node = server.getNodeMap().get(nodeId);
 
-		if (node != null) {
-			return CompletableFuture.completedFuture(node.getReferences());
-		} else {
-			CompletableFuture<List<Reference>> f = new CompletableFuture<>();
-			f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
-			return f;
-		}
+        if (node != null) {
+            return CompletableFuture.completedFuture(node.getReferences());
+        } else {
+            CompletableFuture<List<Reference>> f = new CompletableFuture<>();
+            f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
+            return f;
+        }
     }
-    
-          /**
-	 * Create the SkillBaseType as a child of ObjectTypes
-	 */
-	private void createSkillBaseType() {
-		
-		NodeId skillBaseTypeNodeId = new NodeId(getNamespaceIndex(), "SkillBaseType");
 
-		try {
-			getServer().getUaNamespace().addReference(Identifiers.ObjectTypesFolder, Identifiers.Organizes, true,
-					skillBaseTypeNodeId.expanded(), NodeClass.ObjectType);
-		} catch (UaException e) {
-			getLogger().error("Error adding reference to Object type folder.", e);
-		}
+    /**
+     * Create the SkillBaseType as a child of ObjectTypes
+     */
+    private void createSkillBaseType() {
 
-		QualifiedName browseName = new QualifiedName(getNamespaceIndex(), "SkillBaseType");
-		LocalizedText displayName = new LocalizedText("en", "SkillBaseType");
+        NodeId skillBaseTypeNodeId = new NodeId(getNamespaceIndex(), "SkillBaseType");
 
-		/*skillTypeNode = new SkillTypeNode(getNodeMap(), skillBaseTypeNodeId, browseName, displayName,
+        try {
+            getServer().getUaNamespace().addReference(Identifiers.ObjectTypesFolder, Identifiers.Organizes, true,
+                    skillBaseTypeNodeId.expanded(), NodeClass.ObjectType);
+        } catch (UaException e) {
+            getLogger().error("Error adding reference to Object type folder.", e);
+        }
+
+        QualifiedName browseName = new QualifiedName(getNamespaceIndex(), "SkillBaseType");
+        LocalizedText displayName = new LocalizedText("en", "SkillBaseType");
+
+        /*skillTypeNode = new SkillTypeNode(getNodeMap(), skillBaseTypeNodeId, browseName, displayName,
 				new LocalizedText("en", "Generic type for describing skill elements"),
 				UInteger.valueOf(0L), UInteger.valueOf(0L), true, getNamespaceIndex());
 
 		getNodeMap().put(skillBaseTypeNodeId, skillTypeNode);*/
+    }
 
-	}
-        
-        protected void addStaticScalarNodes() {
-		UaObjectNode folder = addFoldersToRoot(parentFolder, "/Static/AllProfiles/Scalar");
+    protected void addStaticScalarNodes() {
+        UaObjectNode folder = addFoldersToRoot(parentFolder, "/Static/AllProfiles/Scalar");
 
-		for (Object[] os : STATIC_SCALAR_NODES) {
-			String name = (String) os[0];
-			NodeId typeId = (NodeId) os[1];
-			Variant variant = (Variant) os[2];
+        for (Object[] os : STATIC_SCALAR_NODES) {
+            String name = (String) os[0];
+            NodeId typeId = (NodeId) os[1];
+            Variant variant = (Variant) os[2];
 
-			UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeMap())
-					.setNodeId(new NodeId(namespaceIndex, "/Static/AllProfiles/Scalar/" + name))
-					.setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-					.setBrowseName(new QualifiedName(namespaceIndex, name)).setDisplayName(LocalizedText.english(name))
-					.setDataType(typeId).setTypeDefinition(Identifiers.BaseDataVariableType).build();
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeMap())
+                    .setNodeId(new NodeId(namespaceIndex, "/Static/AllProfiles/Scalar/" + name))
+                    .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                    .setBrowseName(new QualifiedName(namespaceIndex, name)).setDisplayName(LocalizedText.english(name))
+                    .setDataType(typeId).setTypeDefinition(Identifiers.BaseDataVariableType).build();
 
-			node.setValue(new DataValue(variant));
+            node.setValue(new DataValue(variant));
 
-			folder.addReference(new Reference(folder.getNodeId(), Identifiers.Organizes, node.getNodeId().expanded(),
-					node.getNodeClass(), true));
+            folder.addReference(new Reference(folder.getNodeId(), Identifiers.Organizes, node.getNodeId().expanded(),
+                    node.getNodeClass(), true));
 
-			logger.debug("Added reference: {} -> {}", folder.getNodeId(), node.getNodeId());
+            logger.debug("Added reference: {} -> {}", folder.getNodeId(), node.getNodeId());
 
-			server.getNodeMap().put(node.getNodeId(), node);
-		}
+            server.getNodeMap().put(node.getNodeId(), node);
+        }
 
-	}
+    }
 
-	protected UaObjectNode addFoldersToRoot(UaNode root, String path) {
-		if (path.startsWith("/")) {
-			path = path.substring(1, path.length());
-		}
-		String[] elements = path.split("/");
+    protected UaObjectNode addFoldersToRoot(UaNode root, String path) {
+        if (path.startsWith("/")) {
+            path = path.substring(1, path.length());
+        }
+        String[] elements = path.split("/");
 
-		LinkedList<UaObjectNode> folderNodes = processPathElements(Lists.newArrayList(elements), Lists.newArrayList(),
-				Lists.newLinkedList());
+        LinkedList<UaObjectNode> folderNodes = processPathElements(Lists.newArrayList(elements), Lists.newArrayList(),
+                Lists.newLinkedList());
 
-		UaObjectNode firstNode = folderNodes.getFirst();
+        UaObjectNode firstNode = folderNodes.getFirst();
 
-		if (!server.getNodeMap().containsKey(firstNode.getNodeId())) {
-			server.getNodeMap().put(firstNode.getNodeId(), firstNode);
+        if (!server.getNodeMap().containsKey(firstNode.getNodeId())) {
+            server.getNodeMap().put(firstNode.getNodeId(), firstNode);
 
-			server.getNodeMap().get(root.getNodeId()).addReference(new Reference(root.getNodeId(),
-					Identifiers.Organizes, firstNode.getNodeId().expanded(), firstNode.getNodeClass(), true));
+            server.getNodeMap().get(root.getNodeId()).addReference(new Reference(root.getNodeId(),
+                    Identifiers.Organizes, firstNode.getNodeId().expanded(), firstNode.getNodeClass(), true));
 
-			logger.debug("Added reference: {} -> {}", root.getNodeId(), firstNode.getNodeId());
-		}
+            logger.debug("Added reference: {} -> {}", root.getNodeId(), firstNode.getNodeId());
+        }
 
-		PeekingIterator<UaObjectNode> iterator = Iterators.peekingIterator(folderNodes.iterator());
+        PeekingIterator<UaObjectNode> iterator = Iterators.peekingIterator(folderNodes.iterator());
 
-		while (iterator.hasNext()) {
-			UaObjectNode node = iterator.next();
+        while (iterator.hasNext()) {
+            UaObjectNode node = iterator.next();
 
-			server.getNodeMap().putIfAbsent(node.getNodeId(), node);
+            server.getNodeMap().putIfAbsent(node.getNodeId(), node);
 
-			if (iterator.hasNext()) {
-				UaObjectNode next = iterator.peek();
+            if (iterator.hasNext()) {
+                UaObjectNode next = iterator.peek();
 
-				if (!server.getNodeMap().containsKey(next.getNodeId())) {
-					server.getNodeMap().put(next.getNodeId(), next);
+                if (!server.getNodeMap().containsKey(next.getNodeId())) {
+                    server.getNodeMap().put(next.getNodeId(), next);
 
-					server.getNodeMap().get(node.getNodeId()).addReference(new Reference(node.getNodeId(),
-							Identifiers.Organizes, next.getNodeId().expanded(), next.getNodeClass(), true));
-					logger.debug("Added reference: {} -> {}", node.getNodeId(), next.getNodeId());
-				}
-			}
-		}
+                    server.getNodeMap().get(node.getNodeId()).addReference(new Reference(node.getNodeId(),
+                            Identifiers.Organizes, next.getNodeId().expanded(), next.getNodeClass(), true));
+                    logger.debug("Added reference: {} -> {}", node.getNodeId(), next.getNodeId());
+                }
+            }
+        }
 
-		return folderNodes.getLast();
-	}
+        return folderNodes.getLast();
+    }
 
-	private LinkedList<UaObjectNode> processPathElements(List<String> elements, List<String> path,
-			LinkedList<UaObjectNode> nodes) {
-		if (elements.size() == 1) {
-			String name = elements.get(0);
-			String prefix = String.join("/", path) + "/";
-			if (!prefix.startsWith("/")) {
-				prefix = "/" + prefix;
-			}
+    private LinkedList<UaObjectNode> processPathElements(List<String> elements, List<String> path,
+            LinkedList<UaObjectNode> nodes) {
+        if (elements.size() == 1) {
+            String name = elements.get(0);
+            String prefix = String.join("/", path) + "/";
+            if (!prefix.startsWith("/")) {
+                prefix = "/" + prefix;
+            }
 
-			UaObjectNode node = UaObjectNode.builder(server.getNodeMap())
-					.setNodeId(new NodeId(namespaceIndex, prefix + name))
-					.setBrowseName(new QualifiedName(namespaceIndex, name)).setDisplayName(LocalizedText.english(name))
-					.setTypeDefinition(Identifiers.FolderType).build();
+            UaObjectNode node = UaObjectNode.builder(server.getNodeMap())
+                    .setNodeId(new NodeId(namespaceIndex, prefix + name))
+                    .setBrowseName(new QualifiedName(namespaceIndex, name)).setDisplayName(LocalizedText.english(name))
+                    .setTypeDefinition(Identifiers.FolderType).build();
 
-			nodes.add(node);
+            nodes.add(node);
 
-			return nodes;
-		} else {
-			String name = elements.get(0);
-			String prefix = String.join("/", path) + "/";
-			if (!prefix.startsWith("/")) {
-				prefix = "/" + prefix;
-			}
+            return nodes;
+        } else {
+            String name = elements.get(0);
+            String prefix = String.join("/", path) + "/";
+            if (!prefix.startsWith("/")) {
+                prefix = "/" + prefix;
+            }
 
-			UaObjectNode node = UaObjectNode.builder(server.getNodeMap())
-					.setNodeId(new NodeId(namespaceIndex, prefix + name))
-					.setBrowseName(new QualifiedName(namespaceIndex, name)).setDisplayName(LocalizedText.english(name))
-					.setTypeDefinition(Identifiers.FolderType).build();
+            UaObjectNode node = UaObjectNode.builder(server.getNodeMap())
+                    .setNodeId(new NodeId(namespaceIndex, prefix + name))
+                    .setBrowseName(new QualifiedName(namespaceIndex, name)).setDisplayName(LocalizedText.english(name))
+                    .setTypeDefinition(Identifiers.FolderType).build();
 
-			nodes.add(node);
-			path.add(name);
+            nodes.add(node);
+            path.add(name);
 
-			return processPathElements(elements.subList(1, elements.size()), path, nodes);
-		}
-	}
+            return processPathElements(elements.subList(1, elements.size()), path, nodes);
+        }
+    }
 
-	/**
-	 * @return the server.getNodeManager()
-	 */
-	public ServerNodeMap getNodeMap() {
-		return server.getNodeMap();
-	}
+    /**
+     * @return the server.getNodeManager()
+     */
+    public ServerNodeMap getNodeMap() {
+        return server.getNodeMap();
+    }
 
-	/**
-	 * @return the server
-	 */
-	public OpcUaServer getServer() {
-		return server;
-	}
+    /**
+     * @return the server
+     */
+    public OpcUaServer getServer() {
+        return server;
+    }
 
-	/**
-	 * @return the parentFolder
-	 */
-	public UaFolderNode getParentFolder() {
-		return parentFolder;
-	}
+    /**
+     * @return the parentFolder
+     */
+    public UaFolderNode getParentFolder() {
+        return parentFolder;
+    }
 
-	public Logger getLogger() {
-		return logger;
-	}
-        
-        private void addSUMMethodNode(UaFolderNode folderNode) {
+    public Logger getLogger() {
+        return logger;
+    }
+
+    private void addSUMMethodNode(UaFolderNode folderNode) {
         UaMethodNode methodNodeSUM = UaMethodNode.builder(server.getNodeMap())
-            .setNodeId(new NodeId(namespaceIndex, "OPC_Device/SUM"))
-            .setBrowseName(new QualifiedName(namespaceIndex, "SUM"))
-            .setDisplayName(new LocalizedText(null, "SUM"))
-            .setDescription(
-                LocalizedText.english("Returns the sum of two values."))
-            .build();
-
+                .setNodeId(new NodeId(namespaceIndex, "OPC_Device/SUM"))
+                .setBrowseName(new QualifiedName(namespaceIndex, "SUM"))
+                .setDisplayName(new LocalizedText(null, "SUM"))
+                .setDescription(
+                        LocalizedText.english("Returns the sum of two values."))
+                .build();
 
         try {
-            AnnotationBasedInvocationHandler invocationHandler =
-                AnnotationBasedInvocationHandler.fromAnnotatedObject(
-                    server.getNodeMap(), new SumMethod());
+            AnnotationBasedInvocationHandler invocationHandler
+                    = AnnotationBasedInvocationHandler.fromAnnotatedObject(
+                            server.getNodeMap(), new SumMethod());
 
             //methodNodeSUM.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
             methodNodeSUM.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
@@ -488,32 +483,31 @@ public class opcuaServerNamespaceMSB implements Namespace{
             server.getNodeMap().addNode(methodNodeSUM);
 
             folderNode.addReference(new Reference(
-                folderNode.getNodeId(),
-                Identifiers.HasComponent,
-                methodNodeSUM.getNodeId().expanded(),
-                methodNodeSUM.getNodeClass(),
-                true
+                    folderNode.getNodeId(),
+                    Identifiers.HasComponent,
+                    methodNodeSUM.getNodeId().expanded(),
+                    methodNodeSUM.getNodeClass(),
+                    true
             ));
 
-            System.out.println("folderNode.getNodeId():"+folderNode.getNodeId().toString());
-            
+            System.out.println("folderNode.getNodeId():" + folderNode.getNodeId().toString());
+
             methodNodeSUM.addReference(new Reference(
-                methodNodeSUM.getNodeId(),
-                Identifiers.HasComponent,
-                folderNode.getNodeId().expanded(),
-                folderNode.getNodeClass(),
-                false
+                    methodNodeSUM.getNodeId(),
+                    Identifiers.HasComponent,
+                    folderNode.getNodeId().expanded(),
+                    folderNode.getNodeClass(),
+                    false
             ));
-            
-            System.out.println("methodNodeSUM.getNodeId():"+methodNodeSUM.getNodeId().toString());
-            
+
+            System.out.println("methodNodeSUM.getNodeId():" + methodNodeSUM.getNodeId().toString());
+
         } catch (Exception e) {
             logger.error("Error creating SUM() method.", e);
         }
     }
-        
 
-     private void addGeneralMethodNode(UaFolderNode folderNode) {
+    private void addGeneralMethodNode(UaFolderNode folderNode) {
         UaMethodNode methodNodeGeneral = UaMethodNode.builder(server.getNodeMap())
                 .setNodeId(new NodeId(namespaceIndex, "OPC_Device/GeneralMethod"))
                 .setBrowseName(new QualifiedName(namespaceIndex, "GeneralMethod"))
@@ -558,7 +552,7 @@ public class opcuaServerNamespaceMSB implements Namespace{
         }
     }
 
-     private void addXMLtoDeviceMethodNode(UaFolderNode folderNode) {
+    private void addXMLtoDeviceMethodNode(UaFolderNode folderNode) {
         UaMethodNode methodNodeXML = UaMethodNode.builder(server.getNodeMap())
                 .setNodeId(new NodeId(namespaceIndex, "OPC_Device/DeviceXMLMethod"))
                 .setBrowseName(new QualifiedName(namespaceIndex, "DeviceXMLMethod"))
@@ -602,8 +596,8 @@ public class opcuaServerNamespaceMSB implements Namespace{
             logger.error("Error creating DeviceXMLMethod() method.", e);
         }
     }
-        
-     /* private void addCalculatorSkillNodes(NodeId skillTypeNodeId, Object method) {
+
+    /* private void addCalculatorSkillNodes(NodeId skillTypeNodeId, Object method) {
         // Instantiate a skill for realizing the hypothetical motor, with a unique ecl@ss identifier
         skill = new Skill(getNodeMap(), getNamespaceIndex(),
                 skillTypeNodeId,
@@ -624,12 +618,11 @@ public class opcuaServerNamespaceMSB implements Namespace{
 
     }*/
 
-	/*public NodeId getSkillBaseTypeNodeId() {
+ /*public NodeId getSkillBaseTypeNodeId() {
 		return skillTypeNode.getNodeId();
 	}*/
 
-	/*public SkillTypeNode getSkillTypeNode() {
+ /*public SkillTypeNode getSkillTypeNode() {
 		return skillTypeNode;
 	}*/
-     
 }

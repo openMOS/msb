@@ -19,8 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Device")
 @XmlAccessorType(XmlAccessType.FIELD)
 
-public class RegFile
-{
+public class RegFile {
 
     public RegFile() {
     }
@@ -32,7 +31,7 @@ public class RegFile
     public String PhysicalLocation = "";
     @XmlElement(name = "LogicalLocation")
     public String LogicalLocation = "";
-    
+
     @XmlElement(name = "ExecuteTable")
     public HashMap<String, ExecuteData> ExecuteTable = new HashMap<>();
     @XmlElement(name = "ServerTable")

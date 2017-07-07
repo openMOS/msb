@@ -8,7 +8,7 @@ package eu.openmos.agentcloud.data;
 /**
  * Possible types for the data that comes from the Manufacturing Service Bus to
  * the Optimizer Agent.
- * 
+ *
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  */
 public enum DataType {

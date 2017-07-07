@@ -14,6 +14,7 @@ import java.util.StringTokenizer;
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  */
 public class PhysicalLocation extends Location {
+
     private String referenceFrameName;
     private long x;
     private long y;
@@ -22,8 +23,9 @@ public class PhysicalLocation extends Location {
     private long beta;
     private long gamma;
 
-    public PhysicalLocation() {}
-    
+    public PhysicalLocation() {
+    }
+
     public PhysicalLocation(String referenceFrameName, long x, long y, long z, long alpha, long beta, long gamma) {
         this.referenceFrameName = referenceFrameName;
         this.x = x;
@@ -92,20 +94,20 @@ public class PhysicalLocation extends Location {
 
     /**
      * Method that serializes the object.
-     * 
-     * @return Serialized form of the object. 
+     *
+     * @return Serialized form of the object.
      */
     @Override
     public String toString() {
         return referenceFrameName + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PHYSICAL_LOCATION + x + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PHYSICAL_LOCATION + y + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PHYSICAL_LOCATION + z + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PHYSICAL_LOCATION + alpha + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PHYSICAL_LOCATION + beta + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PHYSICAL_LOCATION + gamma;
     }
-    
+
     /**
-    * Method that deserializes a String object.
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-    */
+     * Method that deserializes a String object.
+     *
+     * @param object - String to be deserialized.
+     * @return Deserialized object.
+     */
     public static PhysicalLocation fromString(String object) {
         StringTokenizer tokenizer = new StringTokenizer(object, eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PHYSICAL_LOCATION);
         return new PhysicalLocation(tokenizer.nextToken(), Long.parseLong(tokenizer.nextToken()), Long.parseLong(tokenizer.nextToken()), Long.parseLong(tokenizer.nextToken()), Long.parseLong(tokenizer.nextToken()), Long.parseLong(tokenizer.nextToken()), Long.parseLong(tokenizer.nextToken()));

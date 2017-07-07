@@ -10,11 +10,12 @@ import java.util.StringTokenizer;
 
 /**
  * Object that describes a functional parameter of a device.
- * 
+ *
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  * @author Luis Ribeiro
  */
 public class Parameter {
+
     /**
      * Parameter's default value.
      */
@@ -43,15 +44,16 @@ public class Parameter {
      * Parameter's unit.
      */
     private String unit;
-    
+
     /**
      * Default constructor.
      */
-    public Parameter() {}
-    
+    public Parameter() {
+    }
+
     /**
      * Parameterized constructor.
-     * 
+     *
      * @param defaultValue - Parameter's default value.
      * @param description - Parameter's description.
      * @param uniqueId - Parameter's ID.
@@ -126,25 +128,25 @@ public class Parameter {
         this.unit = unit;
     }
 
-     /**
+    /**
      * Method that serializes the object.
-     * 
-     * @return Serialized form of the object. 
+     *
+     * @return Serialized form of the object.
      */
     @Override
     public String toString() {
         return defaultValue + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER + description + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER + uniqueId + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER + lowerBound + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER + upperBound + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER + name + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER + unit;
     }
-   
+
     /**
-    * Method that deserializes a String object.
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-    */
+     * Method that deserializes a String object.
+     *
+     * @param object - String to be deserialized.
+     * @return Deserialized object.
+     */
     public static Parameter fromString(String object) {
         StringTokenizer tokenizer = new StringTokenizer(object, eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER);
         return new Parameter(tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken());
     }
-    
+
 }

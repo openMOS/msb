@@ -9,13 +9,14 @@ import eu.openmos.agentcloud.utilities.Constants;
 import java.util.StringTokenizer;
 
 /**
- * Object that describes an actual setting of a KPI, i.e., a possible value for 
+ * Object that describes an actual setting of a KPI, i.e., a possible value for
  * it.
- * 
+ *
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  * @author Luis Ribeiro
  */
 public class KPISetting {
+
     /**
      * KPI Setting's description.
      */
@@ -36,11 +37,12 @@ public class KPISetting {
     /**
      * Default constructor.
      */
-    public KPISetting() {}
-    
-    /** 
+    public KPISetting() {
+    }
+
+    /**
      * Parameterized constuctor.
-     * 
+     *
      * @param description - KPI Setting's description.
      * @param id - KPI Setting's ID.
      * @param name - KPI Setting's name.
@@ -87,20 +89,20 @@ public class KPISetting {
 
     /**
      * Method that serializes the object.
-     * 
-     * @return Serialized form of the object. 
+     *
+     * @return Serialized form of the object.
      */
     @Override
     public String toString() {
         return description + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_KPI_SETTING + id + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_KPI_SETTING + name + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_KPI_SETTING + value;
     }
-    
+
     /**
-    * Method that deserializes a String object.
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-    */
+     * Method that deserializes a String object.
+     *
+     * @param object - String to be deserialized.
+     * @return Deserialized object.
+     */
     public static KPISetting fromString(String object) {
         StringTokenizer tokenizer = new StringTokenizer(object, eu.openmos.agentcloud.data.utilities.Constants.TOKEN_KPI_SETTING);
         return new KPISetting(tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken());

@@ -10,7 +10,6 @@
  * and the Eclipse Distribution License is available at
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
-
 package eu.openmos.msb.opcua.milo.server.methods;
 
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
@@ -27,17 +26,13 @@ public class SqrtMethod {
 
     @UaMethod
     public void invoke(
-        InvocationContext context,
-
-        @UaInputArgument(
-            name = "x",
-            description = "A value.")
-            Double x,
-
-        @UaOutputArgument(
-            name = "x_sqrt",
-            description = "The positive square root of x. If the argument is NaN or less than zero, the result is NaN.")
-            Out<Double> xSqrt) {
+            InvocationContext context,
+            @UaInputArgument(
+                    name = "x",
+                    description = "A value.") Double x,
+            @UaOutputArgument(
+                    name = "x_sqrt",
+                    description = "The positive square root of x. If the argument is NaN or less than zero, the result is NaN.") Out<Double> xSqrt) {
 
         System.out.println("sqrt(" + x.toString() + ")");
         logger.debug("Invoking sqrt() method of Object '{}'", context.getObjectNode().getBrowseName().getName());

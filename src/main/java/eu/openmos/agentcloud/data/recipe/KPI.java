@@ -10,11 +10,12 @@ import java.util.StringTokenizer;
 
 /**
  * Object that describes a Key Performance Indicator of the demonstrators.
- * 
+ *
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  * @author Luis Ribeiro
  */
 public class KPI {
+
     /**
      * KPI's Description.
      */
@@ -46,12 +47,13 @@ public class KPI {
 
     /**
      * Default constructor.
-     */   
-    public KPI() {}
-    
+     */
+    public KPI() {
+    }
+
     /**
      * Parameterized constructor.
-     * 
+     *
      * @param description - KPI's Description.
      * @param uniqueId - KPI's ID.
      * @param name - KPI's name.
@@ -128,8 +130,8 @@ public class KPI {
 
     /**
      * Method that serializes the object.
-     * 
-     * @return Serialized form of the object. 
+     *
+     * @return Serialized form of the object.
      */
     @Override
     public String toString() {
@@ -137,14 +139,14 @@ public class KPI {
     }
 
     /**
-    * Method that deserializes a String object.
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-    */
+     * Method that deserializes a String object.
+     *
+     * @param object - String to be deserialized.
+     * @return Deserialized object.
+     */
     public static KPI fromString(String object) {
         StringTokenizer tokenizer = new StringTokenizer(object, eu.openmos.agentcloud.data.utilities.Constants.TOKEN_KPI);
         return new KPI(tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken());
-    }   
-    
+    }
+
 }

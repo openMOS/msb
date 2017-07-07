@@ -21,14 +21,13 @@ public class HashMaps {
 
     public static Map<String, MSB_MiloClientSubscription> OPCclientIDMaps = new HashMap<String, MSB_MiloClientSubscription>();
     public static Map<MSB_MiloClientSubscription, CyberPhysicalAgentDescription> AgentDeviceMaps = new HashMap<MSB_MiloClientSubscription, CyberPhysicalAgentDescription>(); //OPCClient vs AgentID
-    public static Map<String, MSB_MiloClientSubscription> ProductIDAdapterMaps=new HashMap<String, MSB_MiloClientSubscription>(); //ProductID vs Adapterclient
-    
-    public static Map<String, List<ExecuteData>> ExecutiontTableMaps=new HashMap<>(); //workstation name and executetabledata
-    public static Map<String, ServerStatus> ServerTableMaps=new HashMap<String, ServerStatus>(); //devices in the workstation and its data
-    
+    public static Map<String, MSB_MiloClientSubscription> ProductIDAdapterMaps = new HashMap<String, MSB_MiloClientSubscription>(); //ProductID vs Adapterclient
+
+    public static Map<String, List<ExecuteData>> ExecutiontTableMaps = new HashMap<>(); //workstation name and executetabledata
+    public static Map<String, ServerStatus> ServerTableMaps = new HashMap<String, ServerStatus>(); //devices in the workstation and its data
+
     public static HashMaps instance = null;
 
-    
     public static HashMaps getInstance() {
 
         if (instance == null) {
@@ -38,7 +37,6 @@ public class HashMaps {
     }
 
 //OPC DEVICE name vs client MAPS*************************************************
-    
     public static Map<String, MSB_MiloClientSubscription> getOPCclientIDMaps() {
         return OPCclientIDMaps;
     }
@@ -46,11 +44,11 @@ public class HashMaps {
     public static void setOPCclientIDMaps(String key, MSB_MiloClientSubscription keyset) {
         HashMaps.OPCclientIDMaps.put(key, keyset);
     }
-    
+
     public static void deleteOPCclientIDMaps(String key) {
         HashMaps.OPCclientIDMaps.remove(key);
     }
-    
+
 //AGENT vs DEVICE MAPS*************************************************
     public static Map<MSB_MiloClientSubscription, CyberPhysicalAgentDescription> getAgentDeviceIDMaps() {
         return AgentDeviceMaps;
@@ -89,10 +87,9 @@ public class HashMaps {
     public static void deleteDevicesNameDataMaps(String key) {
         HashMaps.ServerTableMaps.remove(key);
     }
-    
-    
+
 //ExecutionInfoMaps
-     public static Map<String, List<ExecuteData>> getExecutionInfoMaps() {
+    public static Map<String, List<ExecuteData>> getExecutionInfoMaps() {
         return ExecutiontTableMaps;
     }
 
@@ -103,8 +100,7 @@ public class HashMaps {
     public static void deleteExecutionInfoMaps(String key) {
         HashMaps.ExecutiontTableMaps.remove(key);
     }
-    
-    
+
     protected HashMaps() {
 
     }

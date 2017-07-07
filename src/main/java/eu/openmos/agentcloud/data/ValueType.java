@@ -6,9 +6,9 @@
 package eu.openmos.agentcloud.data;
 
 /**
- * Possible Java types for the data that comes from the Manufacturing Service Bus
- * to the Optimizer Agent.
- * 
+ * Possible Java types for the data that comes from the Manufacturing Service
+ * Bus to the Optimizer Agent.
+ *
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  */
 public enum ValueType {

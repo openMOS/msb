@@ -13,14 +13,14 @@ import org.apache.log4j.Logger;
  * @author valerio.gentile
  */
 public class RD_startws {
+
     private static final Logger logger = Logger.getLogger(RD_startws.class.getName());
-    
-    public static void main(String[] args)
-    {
+
+    public static void main(String[] args) {
         logger.debug("RD_startws main start");
         // Endpoint.publish("http://localhost:9997/wsRecipesDeployer", new RecipesDeployerImpl());
         Endpoint.publish("http://0.0.0.0:9997/wsRecipesDeployer", new RecipesDeployerImpl());
         logger.debug("RD_startws main stop");
     }
-    
+
 }

@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class X509IdentityProvider implements IdentityProvider {
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final X509Certificate certificate;
     private final PrivateKey privateKey;
@@ -106,7 +107,6 @@ public class X509IdentityProvider implements IdentityProvider {
                 ByteString.of(signature));
         return new Tuple2<>(token, signatureData);
     }
-
 
     private static X509Certificate loadCertificateFromDerFile(String filename) {
         InputStream in;

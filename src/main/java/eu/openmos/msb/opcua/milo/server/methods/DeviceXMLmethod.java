@@ -17,21 +17,18 @@ import org.slf4j.LoggerFactory;
  * @author fabio.miranda
  */
 public class DeviceXMLmethod {
-      private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @UaMethod
     public void invoke(
-        AnnotationBasedInvocationHandler.InvocationContext context,
-
-        @UaInputArgument(
-            name = "XML_info",
-            description = "input a XML containing device info to MSB")
-            String x,
-
-        @UaOutputArgument(
-            name = "Feedback",
-            description = "Feedback of the operation")
-            AnnotationBasedInvocationHandler.Out<String> feedback) {
+            AnnotationBasedInvocationHandler.InvocationContext context,
+            @UaInputArgument(
+                    name = "XML_info",
+                    description = "input a XML containing device info to MSB") String x,
+            @UaOutputArgument(
+                    name = "Feedback",
+                    description = "Feedback of the operation") AnnotationBasedInvocationHandler.Out<String> feedback) {
 
         System.out.println("DeviceXMLmethod(" + x + ")");
         logger.debug("Invoking DeviceXMLmethod() method of Object '{}'", context.getObjectNode().getBrowseName().getName());

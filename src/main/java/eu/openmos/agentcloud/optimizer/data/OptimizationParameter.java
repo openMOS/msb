@@ -1,12 +1,13 @@
-
 package eu.openmos.agentcloud.optimizer.data;
 
 import java.util.StringTokenizer;
 
 /**
- * The OptimizationParameter class defines a setup parameter for an optimization algorithm.
- * This class should be used when reparametrizing a custom optimization algorithm through the optimizer agent {@link eu.openmos.agentcloud.optimizer.OptimizerAgent}
- * 
+ * The OptimizationParameter class defines a setup parameter for an optimization
+ * algorithm. This class should be used when reparametrizing a custom
+ * optimization algorithm through the optimizer agent
+ * {@link eu.openmos.agentcloud.optimizer.OptimizerAgent}
+ *
  * @author Luis Ribeiro <luis.ribeiro@liu.se>
  */
 public class OptimizationParameter {
@@ -16,12 +17,13 @@ public class OptimizationParameter {
     private String unit;
     private String value;
     private String defaultValue;
-    
-    public OptimizationParameter() {}
-    
+
+    public OptimizationParameter() {
+    }
+
     /**
      * The constructor
-     * 
+     *
      * @param name is the user defined name of the parameter
      * @param type is the user defined type of the parameter
      * @param unit is the user defined unit of the parameter
@@ -38,7 +40,7 @@ public class OptimizationParameter {
 
     /**
      * Getter for name
-     * 
+     *
      * @return the name of the parameter
      */
     public String getName() {
@@ -47,7 +49,7 @@ public class OptimizationParameter {
 
     /**
      * Setter for name
-     * 
+     *
      * @param name the new name of the parameter
      */
     public void setName(String name) {
@@ -56,7 +58,7 @@ public class OptimizationParameter {
 
     /**
      * Getter for Type
-     *  
+     *
      * @return the type of the parameter
      */
     public String getType() {
@@ -65,7 +67,7 @@ public class OptimizationParameter {
 
     /**
      * Setter for type
-     * 
+     *
      * @param type the new type of the parameter
      */
     public void setType(String type) {
@@ -74,7 +76,7 @@ public class OptimizationParameter {
 
     /**
      * Getter for unit
-     * 
+     *
      * @return the unit of the parameter
      */
     public String getUnit() {
@@ -83,7 +85,7 @@ public class OptimizationParameter {
 
     /**
      * Setter for unit
-     * 
+     *
      * @param unit the new unit of the parameter
      */
     public void setUnit(String unit) {
@@ -92,7 +94,7 @@ public class OptimizationParameter {
 
     /**
      * Getter for value
-     * 
+     *
      * @return the value of the parameter
      */
     public String getValue() {
@@ -101,7 +103,7 @@ public class OptimizationParameter {
 
     /**
      * Setter for value
-     * 
+     *
      * @param value the new value for value
      */
     public void setValue(String value) {
@@ -110,7 +112,7 @@ public class OptimizationParameter {
 
     /**
      * Getter for default value
-     * 
+     *
      * @return the default value
      */
     public String getDefaultValue() {
@@ -119,7 +121,7 @@ public class OptimizationParameter {
 
     /**
      * Setter for default value
-     * 
+     *
      * @param defaultValue the new default value
      */
     public void setDefaultValue(String defaultValue) {
@@ -130,10 +132,12 @@ public class OptimizationParameter {
     public String toString() {
         return name + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_OPTIMIZATION_PARAMETER + type + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_OPTIMIZATION_PARAMETER + unit + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_OPTIMIZATION_PARAMETER + value + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_OPTIMIZATION_PARAMETER + defaultValue;
     }
-    
+
     /**
-     * The fromString method takes a String description, of an OptimizationParameter, created with the toString method on this class and creates the corresponding object
-     * 
+     * The fromString method takes a String description, of an
+     * OptimizationParameter, created with the toString method on this class and
+     * creates the corresponding object
+     *
      * @param object is the String description of the object
      * @return the new object created from the String
      */

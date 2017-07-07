@@ -12,11 +12,12 @@ import java.util.StringTokenizer;
 
 /**
  * Object used to describe a Product Agent.
- * 
+ *
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
- * 
+ *
  */
 public class ProductDescription {
+
     /**
      * Agent's name.
      */
@@ -29,11 +30,12 @@ public class ProductDescription {
     /**
      * Default constructor.
      */
-    public ProductDescription() {} 
-    
+    public ProductDescription() {
+    }
+
     /**
      * Parameterized constructor.
-     * 
+     *
      * @param name - Agent's name.
      * @param skillRequirements - Skills that need to be executed.
      */
@@ -60,39 +62,40 @@ public class ProductDescription {
 
     /**
      * Method that serializes the object.
-     * 
-     * @return Serialized form of the object. 
+     *
+     * @return Serialized form of the object.
      */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(name);
         builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PRODUCT_DESCRIPTION);
-        for(SkillRequirement skillReq : skillRequirements) {
+        for (SkillRequirement skillReq : skillRequirements) {
             builder.append(skillReq.toString());
             builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_SKILL_REQUIREMENT_LIST_ITEM);
         }
         return builder.toString();
     }
-        
+
     /**
-    * Method that deserializes a String object.
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-    */
+     * Method that deserializes a String object.
+     *
+     * @param object - String to be deserialized.
+     * @return Deserialized object.
+     */
     public static ProductDescription fromString(String object) {
         StringTokenizer tokenizer = new StringTokenizer(object, eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PRODUCT_DESCRIPTION);
         String name = tokenizer.nextToken();
-        
+
         StringTokenizer skillRequirementsTokenizer = new StringTokenizer(tokenizer.nextToken(), eu.openmos.agentcloud.data.utilities.Constants.TOKEN_SKILL_REQUIREMENT_LIST_ITEM);
         List<SkillRequirement> skillRequirements = new LinkedList<>();
-        while(skillRequirementsTokenizer.hasMoreTokens()) {
+        while (skillRequirementsTokenizer.hasMoreTokens()) {
             String token = skillRequirementsTokenizer.nextToken();
-            if(!token.isEmpty())
+            if (!token.isEmpty()) {
                 skillRequirements.add(SkillRequirement.fromString(token));
+            }
         }
-        
+
         return new ProductDescription(name, skillRequirements);
     }
 }

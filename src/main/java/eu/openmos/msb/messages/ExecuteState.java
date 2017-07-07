@@ -5,7 +5,6 @@
  */
 package eu.openmos.msb.messages;
 
-
 import eu.openmos.agentcloud.data.recipe.KPISetting;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,10 +16,11 @@ import javax.xml.bind.annotation.XmlElement;
  * @author renato.martins
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExecuteState
-{
-    public ExecuteState() {}
-    
+public class ExecuteState {
+
+    public ExecuteState() {
+    }
+
     @XmlElement(name = "recipeID")
     public String recipeID = "";
     @XmlElement(name = "KPISettings")

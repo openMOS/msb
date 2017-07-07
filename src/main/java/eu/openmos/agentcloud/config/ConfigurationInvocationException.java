@@ -10,10 +10,9 @@ package eu.openmos.agentcloud.config;
  * @author valerio.gentile
  */
 public class ConfigurationInvocationException extends Exception {
-    
-    public ConfigurationInvocationException(String message)
-    {
+
+    public ConfigurationInvocationException(String message) {
         super(message);
     }
-    
+
 }

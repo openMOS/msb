@@ -15,8 +15,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
  * @author renato.martins
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExecuteData
-{
+public class ExecuteData {
 
     public ExecuteData() {
     }
@@ -30,5 +29,5 @@ public class ExecuteData
     public String objectID = "";
     @XmlElement(name = "methodID")
     public String methodID = "";
-    
+
 }

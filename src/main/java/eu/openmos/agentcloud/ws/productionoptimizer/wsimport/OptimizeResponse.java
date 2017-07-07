@@ -1,4 +1,3 @@
-
 package eu.openmos.agentcloud.ws.productionoptimizer.wsimport;
 
 import java.util.ArrayList;
@@ -8,12 +7,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import eu.openmos.agentcloud.data.recipe.Recipe;
 
-
 /**
- * <p>Java class for optimizeResponse complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p>
+ * Java class for optimizeResponse complex type.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
+ *
  * <pre>
  * &lt;complexType name="optimizeResponse">
  *   &lt;complexContent>
@@ -25,8 +26,8 @@ import eu.openmos.agentcloud.data.recipe.Recipe;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "optimizeResponse", propOrder = {
@@ -38,25 +39,24 @@ public class OptimizeResponse {
 
     /**
      * Gets the value of the optimizedRecipes property.
-     * 
+     *
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the optimizedRecipes property.
-     * 
+     * This accessor method returns a reference to the live list, not a
+     * snapshot. Therefore any modification you make to the returned list will
+     * be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the optimizedRecipes property.
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getOptimizedRecipes().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Recipe }
-     * 
-     * 
+     * Objects of the following type(s) are allowed in the list {@link Recipe }
+     *
+     *
      */
     public List<Recipe> getOptimizedRecipes() {
         if (optimizedRecipes == null) {

@@ -9,13 +9,14 @@ import eu.openmos.agentcloud.utilities.Constants;
 import java.util.StringTokenizer;
 
 /**
- * Object that describes an actual setting of a Parameter, i.e., a possible value 
- * for it.
- * 
+ * Object that describes an actual setting of a Parameter, i.e., a possible
+ * value for it.
+ *
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  * @author Luis Ribeiro
  */
 public class ParameterSetting {
+
     /**
      * Parameter Setting's description.
      */
@@ -36,11 +37,12 @@ public class ParameterSetting {
     /**
      * Default constructor.
      */
-    public ParameterSetting() {}
-    
+    public ParameterSetting() {
+    }
+
     /**
      * Parameterized constructor.
-     * 
+     *
      * @param description - Parameter Setting's description.
      * @param id - Parameter Setting's ID.
      * @param name - Parameter Setting's name.
@@ -85,22 +87,22 @@ public class ParameterSetting {
         this.value = value;
     }
 
-     /**
+    /**
      * Method that serializes the object.
-     * 
-     * @return Serialized form of the object. 
+     *
+     * @return Serialized form of the object.
      */
     @Override
     public String toString() {
         return description + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER_SETTING + id + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER_SETTING + name + eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER_SETTING + value;
     }
-   
+
     /**
-    * Method that deserializes a String object.
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-    */
+     * Method that deserializes a String object.
+     *
+     * @param object - String to be deserialized.
+     * @return Deserialized object.
+     */
     public static ParameterSetting fromString(String object) {
         StringTokenizer tokenizer = new StringTokenizer(object, eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER_SETTING);
         return new ParameterSetting(tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken());

@@ -6,16 +6,13 @@ import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 
-
 public interface Client {
 
-    default SecurityPolicy getSecurityPolicy() 
-    {
+    default SecurityPolicy getSecurityPolicy() {
         return SecurityPolicy.None;
     }
 
-    default IdentityProvider getIdentityProvider() 
-    {
+    default IdentityProvider getIdentityProvider() {
         return new AnonymousProvider();
     }
 

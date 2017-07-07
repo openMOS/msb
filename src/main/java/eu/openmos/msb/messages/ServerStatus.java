@@ -14,8 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
  * @author renato.martins
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ServerStatus
-{
+public class ServerStatus {
 
     public ServerStatus() {
     }

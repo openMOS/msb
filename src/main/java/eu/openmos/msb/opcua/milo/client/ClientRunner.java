@@ -15,22 +15,20 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClientRunner
-{
+public class ClientRunner {
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
     private final KeyStoreLoader loader = new KeyStoreLoader();
     private final String endpointUrl;
     private final Client uaClient;
 
-    public ClientRunner(String endpointUrl, Client clientExample)
-    {
+    public ClientRunner(String endpointUrl, Client clientExample) {
         this.endpointUrl = endpointUrl;
         this.uaClient = clientExample;
     }
 
-    private OpcUaClient createClient() throws Exception
-    {
+    private OpcUaClient createClient() throws Exception {
         SecurityPolicy securityPolicy = uaClient.getSecurityPolicy();
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointUrl).get();
 
@@ -59,43 +57,33 @@ public class ClientRunner
         return new OpcUaClient(config);
     }
 
-    public void run()
-    {
+    public void run() {
         future.whenComplete((client, ex)
-                ->
-        {
-            if (client != null)
-            {
-                try
-                {
+                -> {
+            if (client != null) {
+                try {
                     client.disconnect().get();
                     Stack.releaseSharedResources();
-                } catch (InterruptedException | ExecutionException e)
-                {
+                } catch (InterruptedException | ExecutionException e) {
                     logger.error("Error disconnecting:", e.getMessage(), e);
                 }
-            } else
-            {
+            } else {
                 logger.error("Error running example: {}", ex.getMessage(), ex);
                 Stack.releaseSharedResources();
             }
         });
 
-        try
-        {
+        try {
             OpcUaClient client = createClient();
 
-            try
-            {
+            try {
                 uaClient.run(client, future);
                 //future.get(5, TimeUnit.SECONDS);
-            } catch (Exception t)
-            {
+            } catch (Exception t) {
                 logger.error("Error running client example: {}", t.getMessage(), t);
                 future.complete(client);
             }
-        } catch (Exception t)
-        {
+        } catch (Exception t) {
             future.completeExceptionally(t);
         }
     }

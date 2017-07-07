@@ -18,8 +18,9 @@ import javax.jws.WebService;
  */
 @WebService
 public interface RecipesDeployer {
+
     @WebMethod(operationName = "sendRecipes")
-    @WebResult(name="recipesDeploymentStatus")
+    @WebResult(name = "recipesDeploymentStatus")
     public boolean sendRecipes(@WebParam(name = "deviceName") String deviceName, @WebParam(name = "mode") int mode, @WebParam(name = "recipes") List<Recipe> recipes);
-    
+
 }

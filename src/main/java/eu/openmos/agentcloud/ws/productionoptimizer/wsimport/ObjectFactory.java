@@ -1,4 +1,3 @@
-
 package eu.openmos.agentcloud.ws.productionoptimizer.wsimport;
 
 import javax.xml.bind.JAXBElement;
@@ -6,20 +5,17 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
-
 /**
- * This object contains factory methods for each 
- * Java content interface and Java element interface 
- * generated in the eu.openmos.agentcloud.ws.productionoptimizer.wsimport package. 
- * <p>An ObjectFactory allows you to programatically 
- * construct new instances of the Java representation 
- * for XML content. The Java representation of XML 
- * content can consist of schema derived interfaces 
- * and classes representing the binding of schema 
- * type definitions, element declarations and model 
- * groups.  Factory methods for each of these are 
- * provided in this class.
- * 
+ * This object contains factory methods for each Java content interface and Java
+ * element interface generated in the
+ * eu.openmos.agentcloud.ws.productionoptimizer.wsimport package.
+ * <p>
+ * An ObjectFactory allows you to programatically construct new instances of the
+ * Java representation for XML content. The Java representation of XML content
+ * can consist of schema derived interfaces and classes representing the binding
+ * of schema type definitions, element declarations and model groups. Factory
+ * methods for each of these are provided in this class.
+ *
  */
 @XmlRegistry
 public class ObjectFactory {
@@ -38,15 +34,17 @@ public class ObjectFactory {
     private final static QName _InitializeOptimizerResponse_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "initializeOptimizerResponse");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: eu.openmos.agentcloud.ws.productionoptimizer.wsimport
-     * 
+     * Create a new ObjectFactory that can be used to create new instances of
+     * schema derived classes for package:
+     * eu.openmos.agentcloud.ws.productionoptimizer.wsimport
+     *
      */
     public ObjectFactory() {
     }
 
     /**
      * Create an instance of {@link ResetOptimizer }
-     * 
+     *
      */
     public ResetOptimizer createResetOptimizer() {
         return new ResetOptimizer();
@@ -54,7 +52,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link OptimizeResponse }
-     * 
+     *
      */
     public OptimizeResponse createOptimizeResponse() {
         return new OptimizeResponse();
@@ -62,7 +60,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ResetOptimizerResponse }
-     * 
+     *
      */
     public ResetOptimizerResponse createResetOptimizerResponse() {
         return new ResetOptimizerResponse();
@@ -70,7 +68,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link StopOptimizerResponse }
-     * 
+     *
      */
     public StopOptimizerResponse createStopOptimizerResponse() {
         return new StopOptimizerResponse();
@@ -78,7 +76,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Optimize }
-     * 
+     *
      */
     public Optimize createOptimize() {
         return new Optimize();
@@ -86,7 +84,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link IsOptimizableResponse }
-     * 
+     *
      */
     public IsOptimizableResponse createIsOptimizableResponse() {
         return new IsOptimizableResponse();
@@ -94,7 +92,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ReparametrizeOptimizer }
-     * 
+     *
      */
     public ReparametrizeOptimizer createReparametrizeOptimizer() {
         return new ReparametrizeOptimizer();
@@ -102,7 +100,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ReparametrizeOptimizerResponse }
-     * 
+     *
      */
     public ReparametrizeOptimizerResponse createReparametrizeOptimizerResponse() {
         return new ReparametrizeOptimizerResponse();
@@ -110,7 +108,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link StopOptimizer }
-     * 
+     *
      */
     public StopOptimizer createStopOptimizer() {
         return new StopOptimizer();
@@ -118,7 +116,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link InitializeOptimizerResponse }
-     * 
+     *
      */
     public InitializeOptimizerResponse createInitializeOptimizerResponse() {
         return new InitializeOptimizerResponse();
@@ -126,7 +124,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link InitializeOptimizer }
-     * 
+     *
      */
     public InitializeOptimizer createInitializeOptimizer() {
         return new InitializeOptimizer();
@@ -134,7 +132,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link IsOptimizable }
-     * 
+     *
      */
     public IsOptimizable createIsOptimizable() {
         return new IsOptimizable();
@@ -142,15 +140,16 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ProductionOptimizerResponseBean }
-     * 
+     *
      */
     public ProductionOptimizerResponseBean createProductionOptimizerResponseBean() {
         return new ProductionOptimizerResponseBean();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link StopOptimizerResponse }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link StopOptimizerResponse }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "stopOptimizerResponse")
     public JAXBElement<StopOptimizerResponse> createStopOptimizerResponse(StopOptimizerResponse value) {
@@ -158,8 +157,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link OptimizeResponse }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link OptimizeResponse }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "optimizeResponse")
     public JAXBElement<OptimizeResponse> createOptimizeResponse(OptimizeResponse value) {
@@ -167,8 +167,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ResetOptimizerResponse }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link ResetOptimizerResponse }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "resetOptimizerResponse")
     public JAXBElement<ResetOptimizerResponse> createResetOptimizerResponse(ResetOptimizerResponse value) {
@@ -176,8 +177,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ResetOptimizer }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link ResetOptimizer }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "resetOptimizer")
     public JAXBElement<ResetOptimizer> createResetOptimizer(ResetOptimizer value) {
@@ -185,8 +187,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Optimize }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link Optimize }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "optimize")
     public JAXBElement<Optimize> createOptimize(Optimize value) {
@@ -194,8 +197,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link StopOptimizer }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link StopOptimizer }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "stopOptimizer")
     public JAXBElement<StopOptimizer> createStopOptimizer(StopOptimizer value) {
@@ -203,8 +207,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link IsOptimizableResponse }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link IsOptimizableResponse }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "isOptimizableResponse")
     public JAXBElement<IsOptimizableResponse> createIsOptimizableResponse(IsOptimizableResponse value) {
@@ -212,8 +217,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ReparametrizeOptimizer }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link ReparametrizeOptimizer }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "reparametrizeOptimizer")
     public JAXBElement<ReparametrizeOptimizer> createReparametrizeOptimizer(ReparametrizeOptimizer value) {
@@ -221,8 +227,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ReparametrizeOptimizerResponse }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link ReparametrizeOptimizerResponse }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "reparametrizeOptimizerResponse")
     public JAXBElement<ReparametrizeOptimizerResponse> createReparametrizeOptimizerResponse(ReparametrizeOptimizerResponse value) {
@@ -230,8 +237,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InitializeOptimizer }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link InitializeOptimizer }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "initializeOptimizer")
     public JAXBElement<InitializeOptimizer> createInitializeOptimizer(InitializeOptimizer value) {
@@ -239,8 +247,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link IsOptimizable }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link IsOptimizable }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "isOptimizable")
     public JAXBElement<IsOptimizable> createIsOptimizable(IsOptimizable value) {
@@ -248,8 +257,9 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InitializeOptimizerResponse }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link InitializeOptimizerResponse }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "initializeOptimizerResponse")
     public JAXBElement<InitializeOptimizerResponse> createInitializeOptimizerResponse(InitializeOptimizerResponse value) {

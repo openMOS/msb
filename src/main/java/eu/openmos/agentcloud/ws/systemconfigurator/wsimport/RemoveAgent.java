@@ -1,16 +1,17 @@
-
 package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for removeAgent complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p>
+ * Java class for removeAgent complex type.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
+ *
  * <pre>
  * &lt;complexType name="removeAgent">
  *   &lt;complexContent>
@@ -22,8 +23,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "removeAgent", propOrder = {
@@ -35,11 +36,9 @@ public class RemoveAgent {
 
     /**
      * Gets the value of the agentUniqueName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
+     *
      */
     public String getAgentUniqueName() {
         return agentUniqueName;
@@ -47,11 +46,9 @@ public class RemoveAgent {
 
     /**
      * Sets the value of the agentUniqueName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
+     *
      */
     public void setAgentUniqueName(String value) {
         this.agentUniqueName = value;

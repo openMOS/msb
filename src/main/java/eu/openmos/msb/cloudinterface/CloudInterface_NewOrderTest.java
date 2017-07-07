@@ -22,49 +22,45 @@ import org.apache.log4j.Logger;
  * @author valerio.gentile
  */
 public class CloudInterface_NewOrderTest {
-    
+
     private static final Logger logger = Logger.getLogger(CloudInterface_NewOrderTest.class.getName());
-    
+
     public static void main(String[] args) {
         logger.info("New Order Test main start");
-        
+
         SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-	SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-        
+        SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+
 /////////////////////////////
         String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-        logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");            
+        logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");
 
         BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
         bindingProvider.getRequestContext().put(
-              // BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://192.168.15.5:9999/wsSystemConfigurator");
-            BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+                // BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://192.168.15.5:9999/wsSystemConfigurator");
+                BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
 //////////////////////////////
 
         Order newOrder = getTestObject();
-                
+
         OrderStatus orderStatus = systemConfigurator.acceptNewOrder(newOrder);
         logger.info(orderStatus.getCode());
         logger.info(orderStatus.getDescription());
 
         logger.info("New Order Test main end");
     }
-            
 
-    public static Order getTestObject()
-    {
+    public static Order getTestObject() {
         Order o = new Order();
-        
+
         List<ProductDescription> lpd = new LinkedList();
-        for (int y = 1000; y < 2000; y+=100)
-        {
+        for (int y = 1000; y < 2000; y += 100) {
             ProductDescription pd1 = new ProductDescription();
             String pdName = "productionDescription_" + y;
             pd1.setName(pdName);
 
             List<SkillRequirement> lsr = new LinkedList();
-            for (int i = 0; i < 10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 SkillRequirement sr = new SkillRequirement();
                 sr.setDescription(pdName + "_skillRequirementDescription_" + i);
                 sr.setUniqueId(pdName + "_skillRequirementUniqueId_" + i);
@@ -74,13 +70,13 @@ public class CloudInterface_NewOrderTest {
                 // pd1.getSkillRequirements().add(sr);
                 lsr.add(sr);
             }
-                pd1.setSkillRequirements(lsr);
-            
+            pd1.setSkillRequirements(lsr);
+
             // o.getProductDescriptions().add(pd1);
             lpd.add(pd1);
-        }        
-            o.setProductDescriptions(lpd);
-        
+        }
+        o.setProductDescriptions(lpd);
+
         return o;
     }
 }

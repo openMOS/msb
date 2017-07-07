@@ -11,11 +11,12 @@ import java.util.StringTokenizer;
 
 /**
  * Object that describe a recipe of the system.
- * 
+ *
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  * @author Luis Ribeiro
  */
-public class Recipe {    
+public class Recipe {
+
     /**
      * Recipe's description.
      */
@@ -48,17 +49,18 @@ public class Recipe {
     /**
      * Default constructor.
      */
-    public Recipe() {}
-    
+    public Recipe() {
+    }
+
     /**
      * Parameterized constructor.
-     * 
+     *
      * @param description - Recipe's description.
      * @param uniqueId - Recipe's ID.
-     * @param kpisSetting - Recipe's KPI Settings. These must match the skill's 
+     * @param kpisSetting - Recipe's KPI Settings. These must match the skill's
      * KPIs.
      * @param name - Recipe's name.
-     * @param parametersSetting - Recipe's parameter settings. These must match 
+     * @param parametersSetting - Recipe's parameter settings. These must match
      * the skill's parameters.
      * @param uniqueAgentName - The agent capable of executing this recipe.
      * @param skillRequirements - The skills necessary to execute this recipe.
@@ -127,12 +129,12 @@ public class Recipe {
 
     public void setParametersSetting(List<ParameterSetting> parametersSetting) {
         this.parametersSetting = parametersSetting;
-    } 
+    }
 
-     /**
+    /**
      * Method that serializes the object.
-     * 
-     * @return Serialized form of the object. 
+     *
+     * @return Serialized form of the object.
      */
     @Override
     public String toString() {
@@ -141,10 +143,10 @@ public class Recipe {
         builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_RECIPE);
         builder.append(uniqueId);
         builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_RECIPE);
-        if(kpisSetting == null || kpisSetting.isEmpty())
+        if (kpisSetting == null || kpisSetting.isEmpty()) {
             builder.append(" ");
-        else {
-            for(KPISetting kpiSetting : kpisSetting) {
+        } else {
+            for (KPISetting kpiSetting : kpisSetting) {
                 builder.append(kpiSetting.toString());
                 builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_KPI_SETTING_LIST_ITEM);
             }
@@ -152,67 +154,70 @@ public class Recipe {
         builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_RECIPE);
         builder.append(name);
         builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_RECIPE);
-        if(parametersSetting == null || parametersSetting.isEmpty())
+        if (parametersSetting == null || parametersSetting.isEmpty()) {
             builder.append(" ");
-        else {
-            for(ParameterSetting parameterSetting : parametersSetting) {
+        } else {
+            for (ParameterSetting parameterSetting : parametersSetting) {
                 builder.append(parameterSetting.toString());
                 builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER_SETTING_LIST_ITEM);
             }
-         }
+        }
         builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_RECIPE);
         builder.append(uniqueAgentName);
         builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_RECIPE);
-        if(skillRequirements == null || skillRequirements.isEmpty())
+        if (skillRequirements == null || skillRequirements.isEmpty()) {
             builder.append(" ");
-        else {
-            for(SkillRequirement skillRequirement : skillRequirements) {
+        } else {
+            for (SkillRequirement skillRequirement : skillRequirements) {
                 builder.append(skillRequirement.toString());
                 builder.append(eu.openmos.agentcloud.data.utilities.Constants.TOKEN_SKILL_REQUIREMENT_LIST_ITEM);
             }
         }
-        
+
         return builder.toString();
     }
-   
+
     /**
-    * Method that deserializes a String object.
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-    */
+     * Method that deserializes a String object.
+     *
+     * @param object - String to be deserialized.
+     * @return Deserialized object.
+     */
     public static Recipe fromString(String object) {
         StringTokenizer tokenizer = new StringTokenizer(object, eu.openmos.agentcloud.data.utilities.Constants.TOKEN_RECIPE);
         String description = tokenizer.nextToken();
         String uniqueId = tokenizer.nextToken();
         StringTokenizer kpisSettingsTokenizer = new StringTokenizer(tokenizer.nextToken(), eu.openmos.agentcloud.data.utilities.Constants.TOKEN_KPI_SETTING_LIST_ITEM);
         List<KPISetting> kpisSettings = new LinkedList<>();
-        while(kpisSettingsTokenizer.hasMoreTokens()) {
+        while (kpisSettingsTokenizer.hasMoreTokens()) {
             String token = kpisSettingsTokenizer.nextToken();
-            if(!token.isEmpty() && !token.equals(" "))
+            if (!token.isEmpty() && !token.equals(" ")) {
                 kpisSettings.add(KPISetting.fromString(token));
+            }
         }
-        
+
         String name = tokenizer.nextToken();
-        
+
         StringTokenizer parametersSettingsTokenizer = new StringTokenizer(tokenizer.nextToken(), eu.openmos.agentcloud.data.utilities.Constants.TOKEN_PARAMETER_SETTING_LIST_ITEM);
         List<ParameterSetting> parametersSettings = new LinkedList<>();
-        while(parametersSettingsTokenizer.hasMoreTokens()) {
+        while (parametersSettingsTokenizer.hasMoreTokens()) {
             String token = parametersSettingsTokenizer.nextToken();
-            if(!token.isEmpty() && !token.equals(" "))
+            if (!token.isEmpty() && !token.equals(" ")) {
                 parametersSettings.add(ParameterSetting.fromString(token));
+            }
         }
-        
+
         String uniqueAgentName = tokenizer.nextToken();
-        
+
         StringTokenizer skillRequirementsTokenizer = new StringTokenizer(tokenizer.nextToken(), eu.openmos.agentcloud.data.utilities.Constants.TOKEN_SKILL_REQUIREMENT_LIST_ITEM);
         List<SkillRequirement> skillRequirements = new LinkedList<>();
-        while(skillRequirementsTokenizer.hasMoreTokens()) {
+        while (skillRequirementsTokenizer.hasMoreTokens()) {
             String token = skillRequirementsTokenizer.nextToken();
-            if(!token.isEmpty() && !token.equals(" "))
+            if (!token.isEmpty() && !token.equals(" ")) {
                 skillRequirements.add(SkillRequirement.fromString(token));
+            }
         }
-        
+
         return new Recipe(description, uniqueId, kpisSettings, name, parametersSettings, uniqueAgentName, skillRequirements);
-    }    
+    }
 }

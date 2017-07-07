@@ -7,7 +7,7 @@ package eu.openmos.agentcloud.cloudinterface;
 
 /**
  * Object to be returned as an operation status for new order submission.
- * 
+ *
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
 public class OrderStatus {
@@ -25,7 +25,7 @@ public class OrderStatus {
     /**
      * Code for message describing a successful order submission.
      */
-    public static final String ACCEPTNEWORDER_SUCCESS = "agents.CI.systemconfigurator.acceptneworder.success";    
+    public static final String ACCEPTNEWORDER_SUCCESS = "agents.CI.systemconfigurator.acceptneworder.success";
 
     public String getCode() {
         return code;
@@ -45,9 +45,9 @@ public class OrderStatus {
 
     /**
      * Constructor.
-     * 
-     * @param code   The message code
-     * @param description    The message description
+     *
+     * @param code The message code
+     * @param description The message description
      */
     public OrderStatus(String code, String description) {
         this.code = code;

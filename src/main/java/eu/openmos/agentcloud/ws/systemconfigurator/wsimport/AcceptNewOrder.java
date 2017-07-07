@@ -1,4 +1,3 @@
-
 package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,12 +5,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import eu.openmos.agentcloud.data.Order;
 
-
 /**
- * <p>Java class for acceptNewOrder complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p>
+ * Java class for acceptNewOrder complex type.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
+ *
  * <pre>
  * &lt;complexType name="acceptNewOrder">
  *   &lt;complexContent>
@@ -23,8 +24,8 @@ import eu.openmos.agentcloud.data.Order;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "acceptNewOrder", propOrder = {
@@ -36,11 +37,9 @@ public class AcceptNewOrder {
 
     /**
      * Gets the value of the newOrder property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Order }
-     *     
+     *
+     * @return possible object is {@link Order }
+     *
      */
     public Order getNewOrder() {
         return newOrder;
@@ -48,11 +47,9 @@ public class AcceptNewOrder {
 
     /**
      * Sets the value of the newOrder property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Order }
-     *     
+     *
+     * @param value allowed object is {@link Order }
+     *
      */
     public void setNewOrder(Order value) {
         this.newOrder = value;

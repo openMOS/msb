@@ -1,16 +1,17 @@
-
 package eu.openmos.agentcloud.ws.productionoptimizer.wsimport;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for productionOptimizerResponseBean complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p>
+ * Java class for productionOptimizerResponseBean complex type.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
+ *
  * <pre>
  * &lt;complexType name="productionOptimizerResponseBean">
  *   &lt;complexContent>
@@ -23,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "productionOptimizerResponseBean", propOrder = {
@@ -38,11 +39,9 @@ public class ProductionOptimizerResponseBean {
 
     /**
      * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
+     *
      */
     public String getCode() {
         return code;
@@ -50,11 +49,9 @@ public class ProductionOptimizerResponseBean {
 
     /**
      * Sets the value of the code property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
+     *
      */
     public void setCode(String value) {
         this.code = value;
@@ -62,11 +59,9 @@ public class ProductionOptimizerResponseBean {
 
     /**
      * Gets the value of the description property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
+     *
      */
     public String getDescription() {
         return description;
@@ -74,11 +69,9 @@ public class ProductionOptimizerResponseBean {
 
     /**
      * Sets the value of the description property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
+     *
      */
     public void setDescription(String value) {
         this.description = value;

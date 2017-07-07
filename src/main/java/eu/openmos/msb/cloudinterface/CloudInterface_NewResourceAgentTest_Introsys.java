@@ -31,7 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-
 import org.apache.log4j.Logger;
 
 /**
@@ -50,7 +49,7 @@ public class CloudInterface_NewResourceAgentTest_Introsys {
 
         myRecipes = new LinkedList();
         mySkills = new LinkedList();
-        
+
         getSkills();
         getRecipes();
 
@@ -98,17 +97,16 @@ public class CloudInterface_NewResourceAgentTest_Introsys {
 
         List<String> cpadParameters = new LinkedList<>(Arrays.asList("asdsad"));
         cpad.setAgentParameters(cpadParameters);
-                
 
         return cpad;
     }
 
     private static void getSkills() {
         File file = new File("introsysInfo/skills.txt");
-        
-if(!file.exists()) { 
-    throw new RuntimeException("skills.txt not found");
-}        
+
+        if (!file.exists()) {
+            throw new RuntimeException("skills.txt not found");
+        }
 
         BufferedReader br = null;
         try {
@@ -133,9 +131,9 @@ if(!file.exists()) {
     private static void getRecipes() {
         File file = new File("introsysInfo/recipes.txt");
 
-        if(!file.exists()) { 
-    throw new RuntimeException("recipes.txt not found");
-}        
+        if (!file.exists()) {
+            throw new RuntimeException("recipes.txt not found");
+        }
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(file));

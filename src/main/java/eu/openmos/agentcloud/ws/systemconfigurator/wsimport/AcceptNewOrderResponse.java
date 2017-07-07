@@ -1,4 +1,3 @@
-
 package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,12 +5,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import eu.openmos.agentcloud.cloudinterface.OrderStatus;
 
-
 /**
- * <p>Java class for acceptNewOrderResponse complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p>
+ * Java class for acceptNewOrderResponse complex type.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
+ *
  * <pre>
  * &lt;complexType name="acceptNewOrderResponse">
  *   &lt;complexContent>
@@ -23,8 +24,8 @@ import eu.openmos.agentcloud.cloudinterface.OrderStatus;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "acceptNewOrderResponse", propOrder = {
@@ -36,11 +37,9 @@ public class AcceptNewOrderResponse {
 
     /**
      * Gets the value of the orderStatus property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link OrderStatus }
-     *     
+     *
+     * @return possible object is {@link OrderStatus }
+     *
      */
     public OrderStatus getOrderStatus() {
         return orderStatus;
@@ -48,11 +47,9 @@ public class AcceptNewOrderResponse {
 
     /**
      * Sets the value of the orderStatus property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link OrderStatus }
-     *     
+     *
+     * @param value allowed object is {@link OrderStatus }
+     *
      */
     public void setOrderStatus(OrderStatus value) {
         this.orderStatus = value;

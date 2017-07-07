@@ -19,21 +19,21 @@ import org.apache.log4j.Logger;
  * @author valerio.gentile
  */
 public class ProductionOptimizer_ReparametrizeOptimizerTest {
-    
+
     private static final Logger logger = Logger.getLogger(ProductionOptimizer_ReparametrizeOptimizerTest.class.getName());
-    
+
     public static void main(String[] args) {
         logger.info("New reparametrize optimizer Test main start");
-        
+
         ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
-	ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
+        ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
 
         List<OptimizationParameter> listParameters = new ArrayList<>();
         ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.reparametrizeOptimizer(listParameters);
-        
+
         logger.info(productionOptimizerResponseBean.getCode());
         logger.info(productionOptimizerResponseBean.getDescription());
 
         logger.info("New reparametrize optimizer Test main end");
-    }               
+    }
 }
