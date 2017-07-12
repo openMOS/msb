@@ -11,10 +11,11 @@ public final class GeneralMethodMessage {
     }
 
     public GeneralMethodMessage(
-            java.lang.String _device,
-            java.lang.String _function,
-            java.lang.String _args,
-            java.lang.String _feedback) {
+        java.lang.String _device,
+        java.lang.String _function,
+        java.lang.String _args,
+        java.lang.String _feedback)
+    {
         device = _device;
         function = _function;
         args = _args;

@@ -71,7 +71,7 @@ import org.opcfoundation.ua.utils.AttributesUtil;
 import org.opcfoundation.ua.utils.CertificateUtils;
 import org.opcfoundation.ua.utils.MultiDimensionArrayUtils;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.msb.database.stateless.DeviceRegistryBean;
+import eu.openmos.msb.database.stateless.DeviceRegistry;
 import eu.openmos.msb.opcua.milo.client.X509IdentityProvider;
 import eu.openmos.msb.starter.MSB_Struct;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
@@ -226,7 +226,7 @@ public class OpcUaServersDiscoverySnippet extends Thread {
     }
 
     int CheckDBServersStatus() {
-        DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+        DeviceRegistry dbMSB = new DeviceRegistry();
         ArrayList<String> devices = dbMSB.list_all_devices();
         System.out.println("Verifying DB servers status...");
         String address;

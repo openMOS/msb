@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * @author Ricardo Matos
  */
 //@Local
-public interface DeviceRegistryLocal {
+public interface IDeviceRegistry {
 
     public String register_device(String device_name,
             String short_info,

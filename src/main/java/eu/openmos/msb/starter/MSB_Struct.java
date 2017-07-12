@@ -10,7 +10,7 @@ import eu.openmos.msb.datastructures.HashMaps;
 import eu.openmos.msb.opcua.utils.OPCDeviceItf;
 import eu.openmos.msb.opcua.utils.OpcUaServersDiscoverySnippet;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
-import eu.openmos.msb.database.stateless.DeviceRegistryBean;
+import eu.openmos.msb.database.stateless.DeviceRegistry;
 import com.prosysopc.ua.ServiceException;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.msb.opcua.milo.server.opcuaServerMSB;
@@ -99,7 +99,7 @@ public class MSB_Struct {
 
                 System.out.println("NAME: " + name + " URL: " + app_uri);
 
-                DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+                DeviceRegistry dbMSB = new DeviceRegistry();
                 ArrayList ArrayData = dbMSB.read_device_info(name);
 
                 if (ArrayData.isEmpty()) { //if the device name doesn't exist in the database, register 
@@ -229,7 +229,7 @@ public class MSB_Struct {
      * @return
      */
     private static String registerServer(java.lang.String serverName, java.lang.String serverUri) {
-        DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+        DeviceRegistry dbMSB = new DeviceRegistry();
         String res = dbMSB.register_device(serverName, "null", "null", serverUri, "opcua");
         System.out.println(res);
 
@@ -247,7 +247,7 @@ public class MSB_Struct {
         myOpcUaClientsMap.deleteOPCclientIDMaps(ServerName); //remove server from singleton Hashmap
         OPCclientIDMap.remove(ServerName); //remove server from HashMap
         //delete server from DB
-        DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+        DeviceRegistry dbMSB = new DeviceRegistry();
         int res = dbMSB.deregister_device(ServerName);
 
         if (res != -999) {

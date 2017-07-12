@@ -9,8 +9,9 @@ public final class StringMessage {
     }
 
     public StringMessage(
-            java.lang.String _device,
-            java.lang.String _args) {
+        java.lang.String _device,
+        java.lang.String _args)
+    {
         device = _device;
         args = _args;
     }

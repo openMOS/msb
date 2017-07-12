@@ -13,7 +13,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 
 //@WebService(serviceName = "DeviceRegistry")
-public class DeviceRegistryBean implements DeviceRegistryLocal {
+public class DeviceRegistry implements IDeviceRegistry {
 
     /**
      * Web service operation
