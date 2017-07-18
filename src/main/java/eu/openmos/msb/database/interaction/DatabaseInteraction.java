@@ -41,7 +41,7 @@ public class DatabaseInteraction {
             Class.forName("org.sqlite.JDBC");
             //Get a connection
             //conn = DriverManager.getConnection("jdbc:sqlite:C:\\OpenMOS\\code-git\\msb_db\\service_bus\\msb_db\\msbdb.db"); //DriverManager.getConnection(dbURL); 
-            // conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\fabio.miranda\\Documents\\NetBeansProjects\\EJBDatabaseFabio\\msbdb.db"); //DriverManager.getConnection(dbURL); 
+            //conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\fabio.miranda\\Documents\\NetBeansProjects\\EJBDatabaseFabio\\msbdb.db"); //DriverManager.getConnection(dbURL); 
             //conn = DriverManager.getConnection("jdbc:sqlite:./database//msbdb_FULL.db"); //DriverManager.getConnection(dbURL); 
             conn = DriverManager.getConnection(ConfigurationLoader.getMandatoryProperty(DATABASE_CONNECTION_STRING_PARAMETER_NAME));
 
