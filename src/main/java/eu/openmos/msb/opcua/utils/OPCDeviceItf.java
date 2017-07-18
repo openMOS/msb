@@ -707,6 +707,9 @@ public class OPCDeviceItf extends Observable implements DeviceInterface {
 
         DeviceRegistryBean dbMSB = new DeviceRegistryBean(); //TODO: save execution data on executionTable DB
 
+        //or
+        //String senderName2 = StringUtils.substringBefore(args, ":"); // returns the first string before character :
+        //String allData = StringUtils.substringAfter(args, ":"); // returns the first string after character :
         try {
             FiletoXMLtoObject("RegFile.xml");
             //XMLutils.FiletoXMLtoObject("RegFile.xml");
@@ -741,6 +744,13 @@ public class OPCDeviceItf extends Observable implements DeviceInterface {
 
             parsedClass = (RegFile) unmarshaller.unmarshal(docres);
 
+
+
+
+
+
+
+
             String protocol = null;
             ArrayList<String> myresult = dbMSB.get_device_address_protocol(senderName);
             if (myresult.size() > 0) {
@@ -751,7 +761,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface {
             List<ExecuteData> ETD = new ArrayList<>();
 
             MSB_MiloClientSubscription ThisOPCServerTemp = null;
-            if (protocol.contains("OPC")) {
+            if (protocol.contains("opc")) {
                 ThisOPCServerTemp = myOpcUaMap.OPCclientIDMaps.get(senderName);
             }
 
@@ -761,7 +771,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface {
                 System.out.println(key + " ->MAPA de execução deviceitf<- - " + parsedClass.ExecuteTable.get(key));
                 ETD.add(parsedClass.ExecuteTable.get(key));
 
-                if (protocol.contains("OPC")) {
+                if (protocol.contains("opc")) {
                     myOpcUaMap.setProductIDAdapterMaps(ETD.get(index).productID, ThisOPCServerTemp); //put productID vs miloclient
                 } else if (protocol.contains("DDS")) {
                     DDSDeviceManager dm = DDSDeviceManager.getInstance();

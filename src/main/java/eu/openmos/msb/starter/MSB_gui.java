@@ -57,8 +57,6 @@ import MSB2ADAPTER.StringMessageDataWriter;
 import MSB2ADAPTER.StringMessageDataWriterHelper;
 import eu.openmos.msb.dds.instance.DDSErrorHandler;
 import java.util.Observer;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 
 /**
  * *********************************************************************************************************************
@@ -313,7 +311,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer {
 
         jLabel1.setText("MSB OPCUA Server");
 
-        msb_opcua_servername.setText("opc.tcp://172.18.2.131:12637/MSB-OPCUA-SERVER");
+        msb_opcua_servername.setText("opc.tcp://172.18.1.119:12637/MSB-OPCUA-SERVER");
         msb_opcua_servername.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 msb_opcua_servernameActionPerformed(evt);
@@ -553,12 +551,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer {
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btn_start_discovery)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                    .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_start_discovery))
+                .addGap(23, 23, 23)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(ComboMSB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)

@@ -8,12 +8,18 @@ package eu.openmos.msb.messages;
 import eu.openmos.agentcloud.data.recipe.KPISetting;
 import java.util.HashMap;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author renato.martins
  */
+@XmlRootElement(name = "ChangedState")
+@XmlAccessorType(XmlAccessType.FIELD)
+
 public class ChangedState {
 
     public ChangedState() {
