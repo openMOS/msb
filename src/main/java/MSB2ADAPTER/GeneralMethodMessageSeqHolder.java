@@ -1,13 +1,16 @@
 package MSB2ADAPTER;
 
-public final class GeneralMethodMessageSeqHolder {
+public final class GeneralMethodMessageSeqHolder
+{
 
     public MSB2ADAPTER.GeneralMethodMessage value[] = null;
 
-    public GeneralMethodMessageSeqHolder() {
+    public GeneralMethodMessageSeqHolder()
+    {
     }
 
-    public GeneralMethodMessageSeqHolder(MSB2ADAPTER.GeneralMethodMessage[] initialValue) {
+    public GeneralMethodMessageSeqHolder(MSB2ADAPTER.GeneralMethodMessage[] initialValue)
+    {
         value = initialValue;
     }
 

@@ -26,7 +26,7 @@ import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_S
 import eu.openmos.msb.cloudinterface.WebSocketsReceiver;
 import eu.openmos.msb.cloudinterface.WebSocketsSender;
 import eu.openmos.msb.cloudinterface.WebSocketsSenderDraft;
-import eu.openmos.msb.database.stateless.DeviceRegistryBean;
+import eu.openmos.msb.database.stateless.DeviceRegistry;
 import eu.openmos.msb.dds.instance.DDSDeviceManager;
 import eu.openmos.msb.dds.instance.DDSDevice;
 import eu.openmos.msb.messages.ChangedState;
@@ -84,7 +84,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface {
    *
    * public OPCDeviceItf(String func, String args) { //super(); this.function = func; this.arguments = args; }
      */
-    DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+    DeviceRegistry dbMSB = new DeviceRegistry();
 
     /**
      *
@@ -585,7 +585,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface {
         String Alldata = args.substring(args.indexOf(':') + 1); //get XML data
         ChangedState parsedClass = null;
 
-        DeviceRegistryBean dbMSB = new DeviceRegistryBean(); //TODO: save execution data on executionTable DB
+        DeviceRegistry dbMSB = new DeviceRegistry(); //TODO: save execution data on executionTable DB
 
         //STRING TO XML
         DocumentBuilderFactory dfctr = DocumentBuilderFactory.newInstance();
@@ -705,7 +705,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface {
         String Alldata = args.substring(args.indexOf(':') + 1); //get XML data
         RegFile parsedClass = null;
 
-        DeviceRegistryBean dbMSB = new DeviceRegistryBean(); //TODO: save execution data on executionTable DB
+        DeviceRegistry dbMSB = new DeviceRegistry(); //TODO: save execution data on executionTable DB
 
         //or
         //String senderName2 = StringUtils.substringBefore(args, ":"); // returns the first string before character :

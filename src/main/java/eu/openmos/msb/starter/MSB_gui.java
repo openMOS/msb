@@ -6,7 +6,7 @@ package eu.openmos.msb.starter;
 // IMOPORTS
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 import eu.openmos.msb.datastructures.HashMaps;
-import eu.openmos.msb.database.stateless.DeviceRegistryBean;
+import eu.openmos.msb.database.stateless.DeviceRegistry;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.dds.instance.DDSDeviceManager;
@@ -1297,7 +1297,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer {
   private void btn_start_discoveryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_start_discoveryActionPerformed
 
       //delete old msb servers in the DB at the startup - they could have the same address
-      DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+      DeviceRegistry dbMSB = new DeviceRegistry();
       ArrayList ArrayData = dbMSB.list_all_devices();
       for (int i = 0; i < ArrayData.size(); i++) {
           if (ArrayData.get(i).toString().contains("MSB")) {
@@ -1342,7 +1342,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer {
               }
               System.out.println("NAME: " + name + " URL: " + app_uri);
 
-              DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+              DeviceRegistry dbMSB = new DeviceRegistry();
               ArrayList ArrayData = dbMSB.read_device_info(name);
 
               if (ArrayData.isEmpty()) { //if the device name doesn't exist in the database, register
@@ -1631,7 +1631,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer {
      * @return
      */
     private static String registerServer(java.lang.String serverName, java.lang.String serverUri) {
-        DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+        DeviceRegistry dbMSB = new DeviceRegistry();
         String res = dbMSB.register_device(serverName, "null", "null", serverUri, "opcua");
         System.out.println(res);
 
@@ -1649,7 +1649,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer {
         myOpcUaClientsMap.deleteOPCclientIDMaps(ServerName); //remove server from singleton Hashmap
         OPCclientIDMap.remove(ServerName); //remove server from HashMap
         //delete server from DB
-        DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+        DeviceRegistry dbMSB = new DeviceRegistry();
         int res = dbMSB.deregister_device(ServerName);
 
         if (res != -999) {
@@ -1710,7 +1710,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer {
     public static void FillDDSCombos() {
         HashMaps myOpcMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
         int index = 0;
-        DeviceRegistryBean dbMSB = new DeviceRegistryBean();
+        DeviceRegistry dbMSB = new DeviceRegistry();
 
         ArrayList<String> devices = dbMSB.list_dds_devices();
 

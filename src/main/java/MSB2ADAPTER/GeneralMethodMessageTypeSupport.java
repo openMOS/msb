@@ -1,34 +1,84 @@
 package MSB2ADAPTER;
 
-public class GeneralMethodMessageTypeSupport extends org.opensplice.dds.dcps.TypeSupportImpl implements DDS.TypeSupportOperations {
+import org.opensplice.dds.dcps.Utilities;
+
+public class GeneralMethodMessageTypeSupport extends org.opensplice.dds.dcps.TypeSupportImpl implements DDS.TypeSupportOperations
+{
+    private static java.lang.String idl_type_name = "MSB2ADAPTER::GeneralMethodMessage";
+    private static java.lang.String idl_key_list = "device";
 
     private long copyCache;
 
-    public GeneralMethodMessageTypeSupport() {
-        super("MSB2ADAPTER::GeneralMethodMessage",
-                "",
-                "device",
-                null,
-                MSB2ADAPTER.GeneralMethodMessageMetaHolder.metaDescriptor);
+    public GeneralMethodMessageTypeSupport()
+    {
+        super("MSB2ADAPTER/GeneralMethodMessageDataReaderImpl",
+            "MSB2ADAPTER/GeneralMethodMessageDataReaderViewImpl",
+            "MSB2ADAPTER/GeneralMethodMessageDataWriterImpl",
+            "(LMSB2ADAPTER/GeneralMethodMessageTypeSupport;)V",
+            "null",
+            "null");
+
+        int success = 0;
+
+        try {
+            success = org.opensplice.dds.dcps.FooTypeSupportImpl.Alloc(
+                    this,
+                    idl_type_name,
+                    idl_key_list,
+                    MSB2ADAPTER.GeneralMethodMessageMetaHolder.metaDescriptor);
+        } catch (UnsatisfiedLinkError ule) {
+            /*
+             * JNI library is not loaded if no instance of the
+             * DomainParticipantFactory exists.
+             */
+            DDS.DomainParticipantFactory f = DDS.DomainParticipantFactory.get_instance();
+
+            if (f != null) {
+                success = org.opensplice.dds.dcps.FooTypeSupportImpl.Alloc(
+                        this,
+                        idl_type_name,
+                        idl_key_list,
+                        MSB2ADAPTER.GeneralMethodMessageMetaHolder.metaDescriptor);
+            }
+        }
+        if (success == 0) {
+            throw Utilities.createException(
+                    Utilities.EXCEPTION_TYPE_NO_MEMORY,
+                    "Could not allocate GeneralMethodMessageTypeSupport." );
+        }
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
+    protected void finalize() throws Throwable
+    {
+    	try {
+    		org.opensplice.dds.dcps.FooTypeSupportImpl.Free(this);
+    	}
+        catch(Throwable t){
+    	}
+    	finally{
+    	    super.finalize();
+    	}
+
     }
 
-    @Override
-    protected DDS.DataWriter create_datawriter() {
-        return new GeneralMethodMessageDataWriterImpl(this);
+    public long get_copyCache()
+    {
+        return copyCache;
     }
 
-    @Override
-    protected DDS.DataReader create_datareader() {
-        return new GeneralMethodMessageDataReaderImpl(this);
+    public int register_type(
+            DDS.DomainParticipant participant,
+            java.lang.String type_name)
+    {
+        return org.opensplice.dds.dcps.FooTypeSupportImpl.registerType(
+                this,
+                participant,
+                type_name);
     }
 
-    @Override
-    protected DDS.DataReaderView create_dataview() {
-        return new GeneralMethodMessageDataReaderViewImpl(this);
+    public String get_type_name()
+    {
+        return idl_type_name;
     }
+
 }
