@@ -4,13 +4,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
+
 /**
  * <p>
  * Java class for reparametrizeOptimizerResponse complex type.
  *
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
  * &lt;complexType name="reparametrizeOptimizerResponse">
@@ -27,31 +27,37 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "reparametrizeOptimizerResponse", propOrder = {
-    "productionOptimizerResponseBean"
+@XmlType(name = "reparametrizeOptimizerResponse", propOrder =
+{
+  "productionOptimizerResponseBean"
 })
-public class ReparametrizeOptimizerResponse {
+public class ReparametrizeOptimizerResponse
+{
 
-    protected ProductionOptimizerResponseBean productionOptimizerResponseBean;
+  protected ProductionOptimizerResponseBean productionOptimizerResponseBean;
 
-    /**
-     * Gets the value of the productionOptimizerResponseBean property.
-     *
-     * @return possible object is {@link ProductionOptimizerResponseBean }
-     *
-     */
-    public ProductionOptimizerResponseBean getProductionOptimizerResponseBean() {
-        return productionOptimizerResponseBean;
-    }
 
-    /**
-     * Sets the value of the productionOptimizerResponseBean property.
-     *
-     * @param value allowed object is {@link ProductionOptimizerResponseBean }
-     *
-     */
-    public void setProductionOptimizerResponseBean(ProductionOptimizerResponseBean value) {
-        this.productionOptimizerResponseBean = value;
-    }
+  /**
+   * Gets the value of the productionOptimizerResponseBean property.
+   *
+   * @return possible object is {@link ProductionOptimizerResponseBean }
+   *
+   */
+  public ProductionOptimizerResponseBean getProductionOptimizerResponseBean()
+  {
+    return productionOptimizerResponseBean;
+  }
+
+
+  /**
+   * Sets the value of the productionOptimizerResponseBean property.
+   *
+   * @param value allowed object is {@link ProductionOptimizerResponseBean }
+   *
+   */
+  public void setProductionOptimizerResponseBean(ProductionOptimizerResponseBean value)
+  {
+    this.productionOptimizerResponseBean = value;
+  }
 
 }

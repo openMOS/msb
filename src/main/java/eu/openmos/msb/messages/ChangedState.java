@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+
 /**
  *
  * @author renato.martins
@@ -20,18 +21,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "ChangedState")
 @XmlAccessorType(XmlAccessType.FIELD)
 
-public class ChangedState {
+public class ChangedState
+{
 
-    public ChangedState() {
-    }
+  public ChangedState()
+  {
+  }
 
-    @XmlElement(name = "productID")
-    public String productID = "";
-    @XmlElement(name = "recipeID")
-    public String recipeID = "";
-    @XmlElement(name = "KPISettings")
-    public List<KPISetting> kpisSetting;
-    @XmlElement(name = "ExecuteState")
-    public ExecuteState executeState;
+  @XmlElement(name = "productID")
+  public String productID = "";
+  @XmlElement(name = "recipeID")
+  public String recipeID = "";
+  @XmlElement(name = "KPISettings")
+  public List<KPISetting> kpisSetting;
+  @XmlElement(name = "ExecuteState")
+  public ExecuteState executeState;
 
 }

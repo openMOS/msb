@@ -7,17 +7,22 @@ package eu.openmos.msb.opcua.utils;
 
 import java.util.List;
 
+
 /**
  *
  * @author fabio.miranda
  */
-public interface DeviceInterface {
+public interface DeviceInterface
+{
 
-    void ExecutionData(String Function, List args); //function: RequestProduct(int pID, etc)
+  void ExecutionData(String Function, List args); //function: RequestProduct(int pID, etc)
 
-    void EquipmentData(String Function, List args);
 
-    void EquipmentCommunication(String Function, List args);
+  void EquipmentData(String Function, List args);
 
-    void EquipmentRegistration(String Function, List args);
+
+  void EquipmentCommunication(String Function, List args);
+
+
+  void EquipmentRegistration(String Function, List args);
 }

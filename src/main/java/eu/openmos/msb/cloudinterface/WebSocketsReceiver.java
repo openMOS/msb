@@ -8,25 +8,32 @@ package eu.openmos.msb.cloudinterface;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 
+
 /**
  *
  * @author fabio.miranda
  */
-public class WebSocketsReceiver extends AbstractVerticle {
+public class WebSocketsReceiver extends AbstractVerticle
+{
 
-    private String name = null;
+  private String name = null;
 
-    public WebSocketsReceiver(String name) {
-        this.name = name;
-    }
 
-    @Override
-    public void start(Future<Void> startFuture) throws Exception {
-        vertx.eventBus().consumer("5555", message -> {
-            System.out.println(this.name
-                    + " received message: "
-                    + message.body());
-        });
-    }
+  public WebSocketsReceiver(String name)
+  {
+    this.name = name;
+  }
+
+
+  @Override
+  public void start(Future<Void> startFuture) throws Exception
+  {
+    vertx.eventBus().consumer("5555", message ->
+    {
+      System.out.println(this.name
+        + " received message: "
+        + message.body());
+    });
+  }
 
 }

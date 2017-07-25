@@ -25,98 +25,118 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 import org.slf4j.LoggerFactory;
 
+
 /**
  *
  * @author fabio.miranda
  */
-public class CheckOPCServers {
+public class CheckOPCServers
+{
 
-    private final int polling_period = 10;
-    /*30 seconds*/
-    private final Map<String, Object> clientObjectsList;
-    private Map<String, String> ServersDisconectedList;
+  private final int polling_period = 10;
+  /*
+   * 30 seconds
+   */
+  private final Map<String, Object> clientObjectsList;
+  private Map<String, String> ServersDisconectedList;
 
-    public CheckOPCServers(Map<String, Object> clientObjects) {
-        clientObjectsList = clientObjects;
-    }
 
-    private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
+  public CheckOPCServers(Map<String, Object> clientObjects)
+  {
+    clientObjectsList = clientObjects;
+  }
 
-    public Map<String, String> run() {
+  private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
-        //while(true){
-        // Get a typed reference to the Server object: ServerNode
-        for (String key : clientObjectsList.keySet()) {
-            try {
-                System.out.println("a tentar sacar o clientsubscription do hashMAP...");
-                MSB_MiloClientSubscription TempSubscription = (MSB_MiloClientSubscription) clientObjectsList.get(key);;
 
-                System.out.println("a tentar sacar o cliente do clientsubscription: " + TempSubscription);
-                //OpcUaClient client=TempSubscription.milo_client_instanceMSB;
-                if (TempSubscription.getClientObject() != null) {
-                    OpcUaClient client = TempSubscription.getClientObject();
+  public Map<String, String> run()
+  {
 
-                    ServerNode serverNode = client.getAddressSpace().getObjectNode(Identifiers.Server, ServerNode.class).get();
+    //while(true){
+    // Get a typed reference to the Server object: ServerNode
+    for (String key : clientObjectsList.keySet())
+    {
+      try
+      {
+        System.out.println("a tentar sacar o clientsubscription do hashMAP...");
+        MSB_MiloClientSubscription TempSubscription = (MSB_MiloClientSubscription) clientObjectsList.get(key);;
 
-                    // Read properties of the Server object...
-                    String[] serverArray = serverNode.getServerArray().get();
-                    String[] namespaceArray = serverNode.getNamespaceArray().get();
+        System.out.println("a tentar sacar o cliente do clientsubscription: " + TempSubscription);
+        //OpcUaClient client=TempSubscription.milo_client_instanceMSB;
+        if (TempSubscription.getClientObject() != null)
+        {
+          OpcUaClient client = TempSubscription.getClientObject();
 
-                    logger.info("ServerArray={}", Arrays.toString(serverArray));
-                    logger.info("NamespaceArray={}", Arrays.toString(namespaceArray));
+          ServerNode serverNode = client.getAddressSpace().getObjectNode(Identifiers.Server, ServerNode.class).get();
 
-                    // Read the value of attribute the ServerStatus variable component
-                    ServerStatusDataType serverStatus = serverNode.getServerStatus().get();
+          // Read properties of the Server object...
+          String[] serverArray = serverNode.getServerArray().get();
+          String[] namespaceArray = serverNode.getNamespaceArray().get();
 
-                    logger.info("ServerStatus={}", serverStatus);
+          logger.info("ServerArray={}", Arrays.toString(serverArray));
+          logger.info("NamespaceArray={}", Arrays.toString(namespaceArray));
 
-                    // Get a typed reference to the ServerStatus variable
-                    // component and read value attributes individually
-                    ServerStatusNode serverStatusNode = serverNode.serverStatus().get();
-                    BuildInfo buildInfo = serverStatusNode.getBuildInfo().get();
-                    DateTime startTime = serverStatusNode.getStartTime().get();
-                    DateTime currentTime = serverStatusNode.getCurrentTime().get();
-                    ServerState state = serverStatusNode.getState().get();
+          // Read the value of attribute the ServerStatus variable component
+          ServerStatusDataType serverStatus = serverNode.getServerStatus().get();
 
-                    logger.info("ServerStatus.BuildInfo={}", buildInfo);
-                    logger.info("ServerStatus.StartTime={}", startTime);
-                    logger.info("ServerStatus.CurrentTime={}", currentTime);
-                    logger.info("ServerStatus.State={}", state);
+          logger.info("ServerStatus={}", serverStatus);
 
-                    LocalDateTime MSBTime = LocalDateTime.now();
-                    Date MSBDate = new Date();
-                    long MSB_DateUTC = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+          // Get a typed reference to the ServerStatus variable
+          // component and read value attributes individually
+          ServerStatusNode serverStatusNode = serverNode.serverStatus().get();
+          BuildInfo buildInfo = serverStatusNode.getBuildInfo().get();
+          DateTime startTime = serverStatusNode.getStartTime().get();
+          DateTime currentTime = serverStatusNode.getCurrentTime().get();
+          ServerState state = serverStatusNode.getState().get();
 
-                    Date ServerTime = currentTime.getJavaDate();
-                    long ServerDateUTC = ServerTime.getTime();
+          logger.info("ServerStatus.BuildInfo={}", buildInfo);
+          logger.info("ServerStatus.StartTime={}", startTime);
+          logger.info("ServerStatus.CurrentTime={}", currentTime);
+          logger.info("ServerStatus.State={}", state);
 
-                    System.out.println("SERVERTIME: " + ServerTime + " MSBTIME: " + MSBTime + " MSBDate: " + MSBDate);
-                    System.out.println("MSB_DateUTC: " + MSB_DateUTC + " ServerDateUTC: " + ServerDateUTC);
+          LocalDateTime MSBTime = LocalDateTime.now();
+          Date MSBDate = new Date();
+          long MSB_DateUTC = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
-                } else {
-                    System.out.println("null :c");
-                }
-            } catch (InterruptedException ex) {
-                Logger.getLogger(CheckOPCServers.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("what is the problem? interrupt " + ex.getMessage());
-                //return ex.getMessage();
-                //ServersDisconectedList.put(key, ex.getMessage());
-            } catch (ExecutionException ex) {
-                Logger.getLogger(CheckOPCServers.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("what is the problem? execution " + ex.getMessage() + " name: " + key);
-                ServersDisconectedList.put(key, ex.getMessage());
-                return ServersDisconectedList;
-            }
+          Date ServerTime = currentTime.getJavaDate();
+          long ServerDateUTC = ServerTime.getTime();
+
+          System.out.println("SERVERTIME: " + ServerTime + " MSBTIME: " + MSBTime + " MSBDate: " + MSBDate);
+          System.out.println("MSB_DateUTC: " + MSB_DateUTC + " ServerDateUTC: " + ServerDateUTC);
+
         }
-
-        try {
-            sleep(polling_period * 1000);
-            System.out.println("Sleeping...");
-        } catch (InterruptedException ex) {
-            Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+        else
+        {
+          System.out.println("null :c");
         }
-        //}
+      }
+      catch (InterruptedException ex)
+      {
+        Logger.getLogger(CheckOPCServers.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println("what is the problem? interrupt " + ex.getMessage());
+        //return ex.getMessage();
+        //ServersDisconectedList.put(key, ex.getMessage());
+      }
+      catch (ExecutionException ex)
+      {
+        Logger.getLogger(CheckOPCServers.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println("what is the problem? execution " + ex.getMessage() + " name: " + key);
+        ServersDisconectedList.put(key, ex.getMessage());
         return ServersDisconectedList;
+      }
     }
+
+    try
+    {
+      sleep(polling_period * 1000);
+      System.out.println("Sleeping...");
+    }
+    catch (InterruptedException ex)
+    {
+      Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    //}
+    return ServersDisconectedList;
+  }
 
 }

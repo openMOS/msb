@@ -10,25 +10,29 @@ import eu.openmos.agentcloud.ws.productionoptimizer.wsimport.ProductionOptimizer
 import eu.openmos.agentcloud.ws.productionoptimizer.wsimport.ProductionOptimizer_Service;
 import org.apache.log4j.Logger;
 
+
 /**
  *
  * @author valerio.gentile
  */
-public class ProductionOptimizer_StopOptimizerTest {
+public class ProductionOptimizer_StopOptimizerTest
+{
 
-    private static final Logger logger = Logger.getLogger(ProductionOptimizer_StopOptimizerTest.class.getName());
+  private static final Logger logger = Logger.getLogger(ProductionOptimizer_StopOptimizerTest.class.getName());
 
-    public static void main(String[] args) {
-        logger.info("New stop optimizer Test main start");
 
-        ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
-        ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
+  public static void main(String[] args)
+  {
+    logger.info("New stop optimizer Test main start");
 
-        ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.stopOptimizer();
+    ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
+    ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
 
-        logger.info(productionOptimizerResponseBean.getCode());
-        logger.info(productionOptimizerResponseBean.getDescription());
+    ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.stopOptimizer();
 
-        logger.info("New stop optimizer Test main end");
-    }
+    logger.info(productionOptimizerResponseBean.getCode());
+    logger.info(productionOptimizerResponseBean.getDescription());
+
+    logger.info("New stop optimizer Test main end");
+  }
 }

@@ -10,25 +10,29 @@ import eu.openmos.agentcloud.ws.productionoptimizer.wsimport.ProductionOptimizer
 import eu.openmos.agentcloud.ws.productionoptimizer.wsimport.ProductionOptimizer_Service;
 import org.apache.log4j.Logger;
 
+
 /**
  *
  * @author valerio.gentile
  */
-public class ProductionOptimizer_IsOptimizableTest {
+public class ProductionOptimizer_IsOptimizableTest
+{
 
-    private static final Logger logger = Logger.getLogger(ProductionOptimizer_IsOptimizableTest.class.getName());
+  private static final Logger logger = Logger.getLogger(ProductionOptimizer_IsOptimizableTest.class.getName());
 
-    public static void main(String[] args) {
-        logger.info("New is optimizable Test main start");
 
-        ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
-        ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
+  public static void main(String[] args)
+  {
+    logger.info("New is optimizable Test main start");
 
-        ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.isOptimizable();
+    ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
+    ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
 
-        logger.info(productionOptimizerResponseBean.getCode());
-        logger.info(productionOptimizerResponseBean.getDescription());
+    ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.isOptimizable();
 
-        logger.info("New is optimizable Test main end");
-    }
+    logger.info(productionOptimizerResponseBean.getCode());
+    logger.info(productionOptimizerResponseBean.getDescription());
+
+    logger.info("New is optimizable Test main end");
+  }
 }

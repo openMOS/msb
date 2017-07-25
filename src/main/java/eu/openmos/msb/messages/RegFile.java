@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+
 /**
  *
  * @author renato.martins
@@ -19,23 +20,25 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Device")
 @XmlAccessorType(XmlAccessType.FIELD)
 
-public class RegFile {
+public class RegFile
+{
 
-    public RegFile() {
-    }
-    @XmlElement(name = "Name")
-    public String Name = "";
-    @XmlElement(name = "Type")
-    public String Type = "";
-    @XmlElement(name = "PhysicalLocation")
-    public String PhysicalLocation = "";
-    @XmlElement(name = "LogicalLocation")
-    public String LogicalLocation = "";
+  public RegFile()
+  {
+  }
+  @XmlElement(name = "Name")
+  public String Name = "";
+  @XmlElement(name = "Type")
+  public String Type = "";
+  @XmlElement(name = "PhysicalLocation")
+  public String PhysicalLocation = "";
+  @XmlElement(name = "LogicalLocation")
+  public String LogicalLocation = "";
 
-    @XmlElement(name = "ExecuteTable")
-    public HashMap<String, ExecuteData> ExecuteTable = new HashMap<>();
-    @XmlElement(name = "ServerTable")
-    public HashMap<String, ServerStatus> ServerTable = new HashMap<>();
-    @XmlElement(name = "Recipes")
-    public HashMap<String, Recipe> Recipes = new HashMap<>();
+  @XmlElement(name = "ExecuteTable")
+  public HashMap<String, ExecuteData> ExecuteTable = new HashMap<>();
+  @XmlElement(name = "ServerTable")
+  public HashMap<String, ServerStatus> ServerTable = new HashMap<>();
+  @XmlElement(name = "Recipes")
+  public HashMap<String, Recipe> Recipes = new HashMap<>();
 }

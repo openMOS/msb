@@ -12,15 +12,17 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
+
 /**
  *
  * @author valerio.gentile
  */
 @WebService
-public interface RecipesDeployer {
+public interface RecipesDeployer
+{
 
-    @WebMethod(operationName = "sendRecipes")
-    @WebResult(name = "recipesDeploymentStatus")
-    public boolean sendRecipes(@WebParam(name = "deviceName") String deviceName, @WebParam(name = "mode") int mode, @WebParam(name = "recipes") List<Recipe> recipes);
+  @WebMethod(operationName = "sendRecipes")
+  @WebResult(name = "recipesDeploymentStatus")
+  public boolean sendRecipes(@WebParam(name = "deviceName") String deviceName, @WebParam(name = "mode") int mode, @WebParam(name = "recipes") List<Recipe> recipes);
 
 }

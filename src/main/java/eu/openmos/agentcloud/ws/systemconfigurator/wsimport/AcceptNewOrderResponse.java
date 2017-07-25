@@ -5,13 +5,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import eu.openmos.agentcloud.cloudinterface.OrderStatus;
 
+
 /**
  * <p>
  * Java class for acceptNewOrderResponse complex type.
  *
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
  * &lt;complexType name="acceptNewOrderResponse">
@@ -28,31 +28,37 @@ import eu.openmos.agentcloud.cloudinterface.OrderStatus;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "acceptNewOrderResponse", propOrder = {
-    "orderStatus"
+@XmlType(name = "acceptNewOrderResponse", propOrder =
+{
+  "orderStatus"
 })
-public class AcceptNewOrderResponse {
+public class AcceptNewOrderResponse
+{
 
-    protected OrderStatus orderStatus;
+  protected OrderStatus orderStatus;
 
-    /**
-     * Gets the value of the orderStatus property.
-     *
-     * @return possible object is {@link OrderStatus }
-     *
-     */
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
 
-    /**
-     * Sets the value of the orderStatus property.
-     *
-     * @param value allowed object is {@link OrderStatus }
-     *
-     */
-    public void setOrderStatus(OrderStatus value) {
-        this.orderStatus = value;
-    }
+  /**
+   * Gets the value of the orderStatus property.
+   *
+   * @return possible object is {@link OrderStatus }
+   *
+   */
+  public OrderStatus getOrderStatus()
+  {
+    return orderStatus;
+  }
+
+
+  /**
+   * Sets the value of the orderStatus property.
+   *
+   * @param value allowed object is {@link OrderStatus }
+   *
+   */
+  public void setOrderStatus(OrderStatus value)
+  {
+    this.orderStatus = value;
+  }
 
 }

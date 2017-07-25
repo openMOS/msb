@@ -5,13 +5,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import eu.openmos.agentcloud.cloudinterface.AgentStatus;
 
+
 /**
  * <p>
  * Java class for removeAgentResponse complex type.
  *
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
  * &lt;complexType name="removeAgentResponse">
@@ -28,31 +28,37 @@ import eu.openmos.agentcloud.cloudinterface.AgentStatus;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "removeAgentResponse", propOrder = {
-    "agentStatus"
+@XmlType(name = "removeAgentResponse", propOrder =
+{
+  "agentStatus"
 })
-public class RemoveAgentResponse {
+public class RemoveAgentResponse
+{
 
-    protected AgentStatus agentStatus;
+  protected AgentStatus agentStatus;
 
-    /**
-     * Gets the value of the agentStatus property.
-     *
-     * @return possible object is {@link AgentStatus }
-     *
-     */
-    public AgentStatus getAgentStatus() {
-        return agentStatus;
-    }
 
-    /**
-     * Sets the value of the agentStatus property.
-     *
-     * @param value allowed object is {@link AgentStatus }
-     *
-     */
-    public void setAgentStatus(AgentStatus value) {
-        this.agentStatus = value;
-    }
+  /**
+   * Gets the value of the agentStatus property.
+   *
+   * @return possible object is {@link AgentStatus }
+   *
+   */
+  public AgentStatus getAgentStatus()
+  {
+    return agentStatus;
+  }
+
+
+  /**
+   * Sets the value of the agentStatus property.
+   *
+   * @param value allowed object is {@link AgentStatus }
+   *
+   */
+  public void setAgentStatus(AgentStatus value)
+  {
+    this.agentStatus = value;
+  }
 
 }

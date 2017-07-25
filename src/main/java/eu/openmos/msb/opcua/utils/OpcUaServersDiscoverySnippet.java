@@ -91,201 +91,261 @@ import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.eclipse.milo.opcua.stack.core.application.services.DiscoveryServiceSet;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
 
+
 /**
  *
  * @author Admin
  */
-public class OpcUaServersDiscoverySnippet extends Thread {
+public class OpcUaServersDiscoverySnippet extends Thread
+{
 
-    private final int discovery_period = 10;
-    /*
+  private final int discovery_period = 10;
+  /*
    * 35 seconds
-     */
-    private final String LDS_uri;
-    private final OPCDeviceDiscoveryItf servers_dynamic;
-    private final List<String> list_servers = new ArrayList<String>();
-    private final List<String> list_endpoints = new ArrayList<String>();
+   */
+  private final String LDS_uri;
+  private final OPCDeviceDiscoveryItf servers_dynamic;
+  private final List<String> list_servers = new ArrayList<String>();
+  private final List<String> list_endpoints = new ArrayList<String>();
 
-    public OpcUaServersDiscoverySnippet(String _LDS_uri, OPCDeviceDiscoveryItf _servers_dynamic) {
-        LDS_uri = _LDS_uri;
-        servers_dynamic = _servers_dynamic;
+
+  public OpcUaServersDiscoverySnippet(String _LDS_uri, OPCDeviceDiscoveryItf _servers_dynamic)
+  {
+    LDS_uri = _LDS_uri;
+    servers_dynamic = _servers_dynamic;
+  }
+
+
+  @Override
+  public void run()
+  {
+
+    while (true)
+    {
+      servers_dynamic.reset_tables();
+
+      try
+      {
+        discoverServer(LDS_uri);
+        CheckDBServersStatus();
+      }
+      catch (ServerListException ex)
+      {
+        Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      catch (URISyntaxException ex)
+      {
+        Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      catch (InterruptedException ex)
+      {
+        Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      catch (ExecutionException ex)
+      {
+        Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+      }
+
+      try
+      {
+        sleep(discovery_period * 1000);
+        System.out.println("Sleeping...");
+      }
+      catch (InterruptedException ex)
+      {
+        Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+  }
+
+
+  protected EndpointDescription discoverEndpoints(org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription serverApp, String applicationUri) throws URISyntaxException, InterruptedException, ExecutionException, Exception
+  {
+    final String[] discoveryUrls = serverApp.getDiscoveryUrls(); //OLDMSB
+
+    if (discoveryUrls != null)
+    {
+
+      int i = 0;
+      List<org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription> edList = new ArrayList<org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription>();
+
+      for (String url : discoveryUrls)
+      {
+
+        try
+        {
+
+          for (org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get())
+          {
+
+            edList.add(ed);
+            System.out.println("EndPoints from: " + url + " = " + ed);
+
+            servers_dynamic.on_new_endpoint(serverApp.getApplicationName().getText(), ed.getEndpointUrl()); //before 13-12-17 args-> app_uri , ed.getEndpointUrl()
+
+          }
+        }
+        catch (Exception e)
+        {
+          println("Cannot discover Endpoints from URL " + url + ": " + e.getMessage());
+          println("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + url + ": " + e.getMessage());
+
+          if (e.getCause().getMessage().contains("Connection refused"))
+          {
+            //DELETE SERVER FROM DATABASE AND HASHMAP
+
+            servers_dynamic.on_server_dissapeared(serverApp.getApplicationName().getText(), url);
+          }
+        }
+      }
+
+    }
+    else
+    {
+      println("No suitable discoveryUrl available: using the current Url");
+    }
+    return null;
+  }
+
+
+  boolean discoverServer(String uri) throws ServerListException, URISyntaxException, InterruptedException, ExecutionException
+  {
+    // Discover a new server list from a discovery server at URI
+
+    org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription[] serverList = UaTcpStackClient.findServers(uri).get(); //new MSB
+
+    if (serverList.length == 0)
+    {
+      println("No servers found");
+      return false;
     }
 
-    @Override
-    public void run() {
+    for (int i = 0; i < serverList.length; i++)
+    {
+      final org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription s = serverList[i];
 
-        while (true) {
-            servers_dynamic.reset_tables();
-
-            try {
-                discoverServer(LDS_uri);
-                CheckDBServersStatus();
-            } catch (ServerListException ex) {
-                Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (URISyntaxException ex) {
-                Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ExecutionException ex) {
-                Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            try {
-                sleep(discovery_period * 1000);
-                System.out.println("Sleeping...");
-            } catch (InterruptedException ex) {
-                Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    protected EndpointDescription discoverEndpoints(org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription serverApp, String applicationUri) throws URISyntaxException, InterruptedException, ExecutionException, Exception {
-        final String[] discoveryUrls = serverApp.getDiscoveryUrls(); //OLDMSB
-
-        if (discoveryUrls != null) {
-
-            int i = 0;
-            List<org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription> edList = new ArrayList<org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription>();
-
-            for (String url : discoveryUrls) {
-
-                try {
-
-                    for (org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get()) {
-
-                        edList.add(ed);
-                        System.out.println("EndPoints from: " + url + " = " + ed);
-
-                        servers_dynamic.on_new_endpoint(serverApp.getApplicationName().getText(), ed.getEndpointUrl()); //before 13-12-17 args-> app_uri , ed.getEndpointUrl()
-
-                    }
-                } catch (Exception e) {
-                    println("Cannot discover Endpoints from URL " + url + ": " + e.getMessage());
-                    println("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + url + ": " + e.getMessage());
-
-                    if (e.getCause().getMessage().contains("Connection refused")) {
-                        //DELETE SERVER FROM DATABASE AND HASHMAP
-
-                        servers_dynamic.on_server_dissapeared(serverApp.getApplicationName().getText(), url);
-                    }
-                }
-            }
-
-        } else {
-            println("No suitable discoveryUrl available: using the current Url");
-        }
-        return null;
-    }
-
-    boolean discoverServer(String uri) throws ServerListException, URISyntaxException, InterruptedException, ExecutionException {
-        // Discover a new server list from a discovery server at URI
-
-        org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription[] serverList = UaTcpStackClient.findServers(uri).get(); //new MSB
-
-        if (serverList.length == 0) {
-            println("No servers found");
-            return false;
-        }
-
-        for (int i = 0; i < serverList.length; i++) {
-            final org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription s = serverList[i];
-
-            servers_dynamic.on_new_server(s.getApplicationName().getText(), s.getApplicationUri());
-            /*
+      servers_dynamic.on_new_server(s.getApplicationName().getText(), s.getApplicationUri());
+      /*
        * name, application
-             */
+       */
 
-            System.out.println("getApplicationUri output " + s.getApplicationUri());
-            System.out.println("getDiscoveryUrls output " + s.getDiscoveryUrls()[0]);
+      System.out.println("getApplicationUri output " + s.getApplicationUri());
+      System.out.println("getDiscoveryUrls output " + s.getDiscoveryUrls()[0]);
 
-            try {
-                if (s.getApplicationType() != org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType.DiscoveryServer) //discover endpoints only from servers. not from discovery
-                {
-                    discoverEndpoints(s, s.getApplicationUri());
-                }
-            } catch (Exception ex) {
-                Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+      try
+      {
+        if (s.getApplicationType() != org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType.DiscoveryServer) //discover endpoints only from servers. not from discovery
+        {
+          discoverEndpoints(s, s.getApplicationUri());
+        }
+      }
+      catch (Exception ex)
+      {
+        Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+      }
+
+    }
+    return true;
+  }
+
+
+  private boolean check_if_object_exists(List<String> list, String element)
+  {
+    return list.contains(element);
+  }
+
+
+  void println(String in)
+  {
+    System.out.println(in);
+  }
+
+
+  boolean on_server_dissapeared(String name, String url)
+  {
+    System.out.println("url disapeared: " + url);
+    System.out.println("name disapeared: " + name);
+    return true;
+  }
+
+
+  int CheckDBServersStatus()
+  {
+    DeviceRegistry dbMSB = new DeviceRegistry();
+    ArrayList<String> devices = dbMSB.list_all_devices();
+    System.out.println("Verifying DB servers status...");
+    String address;
+    org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription[] endpointsFromServer = null;
+    int retMsg = 0;
+    String DevicetoRemove = null;
+    String Protocol = null;
+    //UaTcpStackClient opcChecker = null;
+
+    for (String device : devices)
+    {
+      ArrayList<String> addressProtocol = dbMSB.get_device_address_protocol(device);
+      if (addressProtocol.size() > 0)
+      {
+        address = addressProtocol.get(0); //0->address 1->protocol
+        try
+        {
+          // OPCUA Client TODO - Add DDS and MQTT
+          endpointsFromServer = UaTcpStackClient.getEndpoints(address).get();
+        }
+        catch (InterruptedException ex)
+        {
+          Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (ExecutionException ex)
+        {
+          Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+          if (ex.getCause().getMessage().contains("Connection refused"))
+          {
+            //DELETE SERVER FROM DATABASE, HASHMAP AND TABLE
+            servers_dynamic.on_server_dissapeared(device, address);
+            retMsg = MSB_Struct.RemoveDownServer(device);
+            if (DevicetoRemove != null && Protocol != null)
+            {
+              DevicetoRemove = device;
+              Protocol = addressProtocol.get(1); //0->address 1->protocol
             }
 
+          }
         }
-        return true;
-    }
+      }
 
-    private boolean check_if_object_exists(List<String> list, String element) {
-        return list.contains(element);
-    }
-
-    void println(String in) {
-        System.out.println(in);
-    }
-
-    boolean on_server_dissapeared(String name, String url) {
-        System.out.println("url disapeared: " + url);
-        System.out.println("name disapeared: " + name);
-        return true;
-    }
-
-    int CheckDBServersStatus() {
-        DeviceRegistry dbMSB = new DeviceRegistry();
-        ArrayList<String> devices = dbMSB.list_all_devices();
-        System.out.println("Verifying DB servers status...");
-        String address;
-        org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription[] endpointsFromServer = null;
-        int retMsg = 0;
-        String DevicetoRemove = null;
-        String Protocol = null;
-        //UaTcpStackClient opcChecker = null;
-
-        for (String device : devices) {
-            ArrayList<String> addressProtocol = dbMSB.get_device_address_protocol(device);
-            if (addressProtocol.size() > 0) {
-                address = addressProtocol.get(0); //0->address 1->protocol
-                try {
-                    // OPCUA Client TODO - Add DDS and MQTT
-                    endpointsFromServer = UaTcpStackClient.getEndpoints(address).get();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ExecutionException ex) {
-                    Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
-                    if (ex.getCause().getMessage().contains("Connection refused")) {
-                        //DELETE SERVER FROM DATABASE, HASHMAP AND TABLE
-                        servers_dynamic.on_server_dissapeared(device, address);
-                        retMsg = MSB_Struct.RemoveDownServer(device);
-                        if (DevicetoRemove != null && Protocol != null) {
-                            DevicetoRemove = device;
-                            Protocol = addressProtocol.get(1); //0->address 1->protocol
-                        }
-
-                    }
-                }
-            }
-
-            if (endpointsFromServer == null) {
-                System.out.println("This server doens't have Endpoints available:  " + device);
-                //delete it from db and hashmap
-                retMsg = MSB_Struct.RemoveDownServer(device);
-                if (DevicetoRemove != null && Protocol != null) {
-                    DevicetoRemove = device;
-                    Protocol = addressProtocol.get(1); //0->address 1->protocol
-                }
-
-            } else if (endpointsFromServer.length == 0) {
-                System.out.println("This server doens't have Endpoints available: " + device);
-                //delete it from db and hashmap
-                retMsg = MSB_Struct.RemoveDownServer(device);
-                if (DevicetoRemove != null && Protocol != null) {
-                    DevicetoRemove = device;
-                    Protocol = addressProtocol.get(1); //0->address 1->protocol
-                }
-
-            }
+      if (endpointsFromServer == null)
+      {
+        System.out.println("This server doens't have Endpoints available:  " + device);
+        //delete it from db and hashmap
+        retMsg = MSB_Struct.RemoveDownServer(device);
+        if (DevicetoRemove != null && Protocol != null)
+        {
+          DevicetoRemove = device;
+          Protocol = addressProtocol.get(1); //0->address 1->protocol
         }
 
-        if (DevicetoRemove != null) {
-            servers_dynamic.on_server_dissapeared(DevicetoRemove, Protocol);
+      }
+      else if (endpointsFromServer.length == 0)
+      {
+        System.out.println("This server doens't have Endpoints available: " + device);
+        //delete it from db and hashmap
+        retMsg = MSB_Struct.RemoveDownServer(device);
+        if (DevicetoRemove != null && Protocol != null)
+        {
+          DevicetoRemove = device;
+          Protocol = addressProtocol.get(1); //0->address 1->protocol
         }
 
-        return retMsg;
+      }
     }
+
+    if (DevicetoRemove != null)
+    {
+      servers_dynamic.on_server_dissapeared(DevicetoRemove, Protocol);
+    }
+
+    return retMsg;
+  }
 
 }

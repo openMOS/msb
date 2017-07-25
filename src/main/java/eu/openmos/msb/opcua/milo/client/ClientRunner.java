@@ -15,77 +15,100 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClientRunner {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
-    private final KeyStoreLoader loader = new KeyStoreLoader();
-    private final String endpointUrl;
-    private final Client uaClient;
+public class ClientRunner
+{
 
-    public ClientRunner(String endpointUrl, Client clientExample) {
-        this.endpointUrl = endpointUrl;
-        this.uaClient = clientExample;
-    }
+  private final Logger logger = LoggerFactory.getLogger(getClass());
+  private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
+  private final KeyStoreLoader loader = new KeyStoreLoader();
+  private final String endpointUrl;
+  private final Client uaClient;
 
-    private OpcUaClient createClient() throws Exception {
-        SecurityPolicy securityPolicy = uaClient.getSecurityPolicy();
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointUrl).get();
 
-        EndpointDescription endpointAux = Arrays.stream(endpoints)
-                .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
-                .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
+  public ClientRunner(String endpointUrl, Client clientExample)
+  {
+    this.endpointUrl = endpointUrl;
+    this.uaClient = clientExample;
+  }
 
-        EndpointDescription endpointFinal = new EndpointDescription(
-                endpointAux.getEndpointUrl()/*.replace("kuka-introsys", "172.20.11.100")*/, endpointAux.getServer(),
-                endpointAux.getServerCertificate(), endpointAux.getSecurityMode(), endpointAux.getSecurityPolicyUri(),
-                endpointAux.getUserIdentityTokens(), endpointAux.getTransportProfileUri(), endpointAux.getSecurityLevel());
 
-        logger.info("Using endpoint: {} [{}]", endpointFinal.getEndpointUrl(), securityPolicy);
+  private OpcUaClient createClient() throws Exception
+  {
+    SecurityPolicy securityPolicy = uaClient.getSecurityPolicy();
+    EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointUrl).get();
 
-        loader.load();
-        OpcUaClientConfig config = OpcUaClientConfig.builder()
-                .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
-                .setApplicationUri("urn:digitalpetri:opcua:client")
-                .setCertificate(loader.getClientCertificate())
-                .setKeyPair(loader.getClientKeyPair())
-                .setEndpoint(endpointFinal)
-                .setIdentityProvider(uaClient.getIdentityProvider())
-                .setRequestTimeout(uint(30000))
-                .build();
+    EndpointDescription endpointAux = Arrays.stream(endpoints)
+      .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
+      .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
-        return new OpcUaClient(config);
-    }
+    EndpointDescription endpointFinal = new EndpointDescription(
+      endpointAux.getEndpointUrl()/*
+       * .replace("kuka-introsys", "172.20.11.100")
+       */, endpointAux.getServer(),
+      endpointAux.getServerCertificate(), endpointAux.getSecurityMode(), endpointAux.getSecurityPolicyUri(),
+      endpointAux.getUserIdentityTokens(), endpointAux.getTransportProfileUri(), endpointAux.getSecurityLevel());
 
-    public void run() {
-        future.whenComplete((client, ex)
-                -> {
-            if (client != null) {
-                try {
-                    client.disconnect().get();
-                    Stack.releaseSharedResources();
-                } catch (InterruptedException | ExecutionException e) {
-                    logger.error("Error disconnecting:", e.getMessage(), e);
-                }
-            } else {
-                logger.error("Error running example: {}", ex.getMessage(), ex);
-                Stack.releaseSharedResources();
-            }
-        });
+    logger.info("Using endpoint: {} [{}]", endpointFinal.getEndpointUrl(), securityPolicy);
 
-        try {
-            OpcUaClient client = createClient();
+    loader.load();
+    OpcUaClientConfig config = OpcUaClientConfig.builder()
+      .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
+      .setApplicationUri("urn:digitalpetri:opcua:client")
+      .setCertificate(loader.getClientCertificate())
+      .setKeyPair(loader.getClientKeyPair())
+      .setEndpoint(endpointFinal)
+      .setIdentityProvider(uaClient.getIdentityProvider())
+      .setRequestTimeout(uint(30000))
+      .build();
 
-            try {
-                uaClient.run(client, future);
-                //future.get(5, TimeUnit.SECONDS);
-            } catch (Exception t) {
-                logger.error("Error running client example: {}", t.getMessage(), t);
-                future.complete(client);
-            }
-        } catch (Exception t) {
-            future.completeExceptionally(t);
+    return new OpcUaClient(config);
+  }
+
+
+  public void run()
+  {
+    future.whenComplete((client, ex)
+      ->
+    {
+      if (client != null)
+      {
+        try
+        {
+          client.disconnect().get();
+          Stack.releaseSharedResources();
         }
+        catch (InterruptedException | ExecutionException e)
+        {
+          logger.error("Error disconnecting:", e.getMessage(), e);
+        }
+      }
+      else
+      {
+        logger.error("Error running example: {}", ex.getMessage(), ex);
+        Stack.releaseSharedResources();
+      }
+    });
+
+    try
+    {
+      OpcUaClient client = createClient();
+
+      try
+      {
+        uaClient.run(client, future);
+        //future.get(5, TimeUnit.SECONDS);
+      }
+      catch (Exception t)
+      {
+        logger.error("Error running client example: {}", t.getMessage(), t);
+        future.complete(client);
+      }
     }
+    catch (Exception t)
+    {
+      future.completeExceptionally(t);
+    }
+  }
 
 }

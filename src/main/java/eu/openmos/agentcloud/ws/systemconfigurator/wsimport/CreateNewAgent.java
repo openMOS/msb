@@ -5,13 +5,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 
+
 /**
  * <p>
  * Java class for createNewAgent complex type.
  *
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
  * &lt;complexType name="createNewAgent">
@@ -28,31 +28,37 @@ import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "createNewAgent", propOrder = {
-    "cyberPhysicalAgentDescription"
+@XmlType(name = "createNewAgent", propOrder =
+{
+  "cyberPhysicalAgentDescription"
 })
-public class CreateNewAgent {
+public class CreateNewAgent
+{
 
-    protected CyberPhysicalAgentDescription cyberPhysicalAgentDescription;
+  protected CyberPhysicalAgentDescription cyberPhysicalAgentDescription;
 
-    /**
-     * Gets the value of the cyberPhysicalAgentDescription property.
-     *
-     * @return possible object is {@link CyberPhysicalAgentDescription }
-     *
-     */
-    public CyberPhysicalAgentDescription getCyberPhysicalAgentDescription() {
-        return cyberPhysicalAgentDescription;
-    }
 
-    /**
-     * Sets the value of the cyberPhysicalAgentDescription property.
-     *
-     * @param value allowed object is {@link CyberPhysicalAgentDescription }
-     *
-     */
-    public void setCyberPhysicalAgentDescription(CyberPhysicalAgentDescription value) {
-        this.cyberPhysicalAgentDescription = value;
-    }
+  /**
+   * Gets the value of the cyberPhysicalAgentDescription property.
+   *
+   * @return possible object is {@link CyberPhysicalAgentDescription }
+   *
+   */
+  public CyberPhysicalAgentDescription getCyberPhysicalAgentDescription()
+  {
+    return cyberPhysicalAgentDescription;
+  }
+
+
+  /**
+   * Sets the value of the cyberPhysicalAgentDescription property.
+   *
+   * @param value allowed object is {@link CyberPhysicalAgentDescription }
+   *
+   */
+  public void setCyberPhysicalAgentDescription(CyberPhysicalAgentDescription value)
+  {
+    this.cyberPhysicalAgentDescription = value;
+  }
 
 }

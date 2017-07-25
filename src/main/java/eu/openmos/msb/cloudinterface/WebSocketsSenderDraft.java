@@ -8,16 +8,19 @@ package eu.openmos.msb.cloudinterface;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 
+
 /**
  *
  * @author fabio.miranda
  */
-public class WebSocketsSenderDraft extends AbstractVerticle {
+public class WebSocketsSenderDraft extends AbstractVerticle
+{
 
-    @Override
-    public void start(Future<Void> startFuture) throws Exception {
-        vertx.eventBus().publish("5555", "message 2");
-        vertx.eventBus().send("5555", "message 1");
-    }
+  @Override
+  public void start(Future<Void> startFuture) throws Exception
+  {
+    vertx.eventBus().publish("5555", "message 2");
+    vertx.eventBus().send("5555", "message 1");
+  }
 
 }

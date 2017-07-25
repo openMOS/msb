@@ -31,166 +31,168 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 //import com.introsys.mavenprojectxmltest;
+
 /**
  *
  * @author fabio.miranda
  */
-public class XMLutils {
+public class XMLutils
+{
 
-    public static void main(String[] args) {
+  public static void main(String[] args)
+  {
 
-        /* try {
-                com.introsys.mavenprojectxmltest.parserFunc.FiletoXMLtoObject("RegFile.xml");
-            } catch (ParserConfigurationException ex) {
-                Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SAXException ex) {
-                Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (JAXBException ex) {
-                Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
-        try {
-            FiletoXMLtoObject("RegFile.xml");
-        } catch (ParserConfigurationException | SAXException | IOException | JAXBException ex) {
-            Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    /*
+     * try { com.introsys.mavenprojectxmltest.parserFunc.FiletoXMLtoObject("RegFile.xml"); } catch
+     * (ParserConfigurationException ex) { Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex); }
+     * catch (SAXException ex) { Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex); } catch
+     * (IOException ex) { Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex); } catch (JAXBException
+     * ex) { Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex); }
+     */
+    try
+    {
+      FiletoXMLtoObject("RegFile.xml");
     }
-
-    public static void FileToStringToObject(String regFilexml) {
-        /*    File fXmlFile = new File(regFilexml);
-           DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-           DocumentBuilder dBuilder = null;
-           dBuilder = dbFactory.newDocumentBuilder();
-           org.w3c.dom.Document doc = dBuilder.parse(regFilexml);            StringWriter sw = new StringWriter();
-           TransformerFactory tf = TransformerFactory.newInstance();
-           Transformer transformer = tf.newTransformer();
-           transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-           transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-           transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-           transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-           transformer.transform(new DOMSource((Node) doc), new StreamResult(sw));
-           return sw.toString();*/
+    catch (ParserConfigurationException | SAXException | IOException | JAXBException ex)
+    {
+      Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex);
     }
+  }
 
-    public static String XMLtoString(String path) {
-        try {
 
-            File fXmlFile = new File(path);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
+  public static void FileToStringToObject(String regFilexml)
+  {
+    /*
+     * File fXmlFile = new File(regFilexml); DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+     * DocumentBuilder dBuilder = null; dBuilder = dbFactory.newDocumentBuilder(); org.w3c.dom.Document doc =
+     * dBuilder.parse(regFilexml); StringWriter sw = new StringWriter(); TransformerFactory tf =
+     * TransformerFactory.newInstance(); Transformer transformer = tf.newTransformer();
+     * transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+     * transformer.setOutputProperty(OutputKeys.METHOD, "xml"); transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+     * transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8"); transformer.transform(new DOMSource((Node) doc), new
+     * StreamResult(sw)); return sw.toString();
+     */
+  }
 
-            StringWriter sw = new StringWriter();
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(new DOMSource((Node) doc), new StreamResult(sw));
-            return sw.toString();
-        } catch (Exception ex) {
-            throw new RuntimeException("Error converting to String", ex);
-        }
+
+  public static String XMLtoString(String path)
+  {
+    try
+    {
+
+      File fXmlFile = new File(path);
+      DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+      Document doc = dBuilder.parse(fXmlFile);
+
+      StringWriter sw = new StringWriter();
+      TransformerFactory tf = TransformerFactory.newInstance();
+      Transformer transformer = tf.newTransformer();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+      transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+      transformer.transform(new DOMSource((Node) doc), new StreamResult(sw));
+      return sw.toString();
     }
-
-    public static String StringtoXML(String stringFile) {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = null;
-
-        try {
-            db = dbf.newDocumentBuilder();
-            InputSource is = new InputSource();
-            is.setCharacterStream(new StringReader(stringFile));
-            try {
-                org.w3c.dom.Document doc = db.parse(is);
-                String message = doc.getDocumentElement().getTextContent();
-                System.out.println(message);
-
-                JAXBContext jc = JAXBContext.newInstance(RegFile.class);
-                Unmarshaller unmar = jc.createUnmarshaller();
-
-                RegFile aux = (RegFile) unmar.unmarshal(doc);
-                int i = 0;
-            } catch (Exception e) {
-                // handle SAXException
-            }
-        } catch (Exception e1) {
-            // handle ParserConfigurationException
-        }
-        return "";
+    catch (Exception ex)
+    {
+      throw new RuntimeException("Error converting to String", ex);
     }
+  }
 
-    public static void stringToDom(String xmlSource)
-            throws SAXException, ParserConfigurationException, IOException, TransformerConfigurationException, TransformerException, JAXBException {
-        // Parse the given input
-        /*DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(new InputSource(new StringReader(xmlSource)));
 
-        // Write the parsed document to an xml file
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(doc);
+  public static String StringtoXML(String stringFile)
+  {
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilder db = null;
 
-        StreamResult result = new StreamResult(new File("my-file.xml"));
-        transformer.transform(source, result);*/
-
-        FiletoXMLtoObject("RegFile.xml");
-        FileToStringToObject("RegFile.xml");
-    }
-
-    public static String FiletoXMLtoObject(String filepath) throws ParserConfigurationException, SAXException, IOException, JAXBException {
-
-        java.io.File fXmlFile = new File(filepath);
-        javax.xml.parsers.DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        javax.xml.parsers.DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        org.w3c.dom.Document doc = dBuilder.parse(fXmlFile);
-
-        //optional, but recommended
-        //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-        doc.getDocumentElement().normalize();
+    try
+    {
+      db = dbf.newDocumentBuilder();
+      InputSource is = new InputSource();
+      is.setCharacterStream(new StringReader(stringFile));
+      try
+      {
+        org.w3c.dom.Document doc = db.parse(is);
         String message = doc.getDocumentElement().getTextContent();
-
         System.out.println(message);
 
-        javax.xml.bind.JAXBContext jc = javax.xml.bind.JAXBContext.newInstance(RegFile.class);
-        javax.xml.bind.Unmarshaller unmar = jc.createUnmarshaller();
-        //eu.openmos.msb.dummyclasses.RegFile aux = (eu.openmos.msb.dummyclasses.RegFile) unmar.unmarshal(doc);
-        RegFile aux = new RegFile();
-        aux = (RegFile) unmar.unmarshal(fXmlFile);
+        JAXBContext jc = JAXBContext.newInstance(RegFile.class);
+        Unmarshaller unmar = jc.createUnmarshaller();
 
-        aux = (RegFile) unmar.unmarshal(doc);
-
-        //not working renaxo
-        /*DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-       DocumentBuilder db = null;
-
-       try
-       {
-           db = dbf.newDocumentBuilder();
-           InputSource is = new InputSource();
-           is.setCharacterStream(new StringReader(filepath));
-            //is.setCharacterStream(new StringReader(filepath));
-           try
-           {
-               org.w3c.dom.Document doc = db.parse(is);
-               String message = doc.getDocumentElement().getTextContent();
-               System.out.println(message);
-               JAXBContext jc = JAXBContext.newInstance(RegFile.class);
-               Unmarshaller unmar = jc.createUnmarshaller();
-               RegFile aux = (RegFile) unmar.unmarshal(doc);
-               int i = 0;
-           } catch (IOException | JAXBException | DOMException | SAXException e)
-           {
-            System.out.println("prob1: "+e);
-           }
-       } catch (ParserConfigurationException e1) 
-       {
-            System.out.println("prob2: "+e1);
-       }*/
-        return "";
-
+        RegFile aux = (RegFile) unmar.unmarshal(doc);
+        int i = 0;
+      }
+      catch (Exception e)
+      {
+        // handle SAXException
+      }
     }
+    catch (Exception e1)
+    {
+      // handle ParserConfigurationException
+    }
+    return "";
+  }
+
+
+  public static void stringToDom(String xmlSource)
+    throws SAXException, ParserConfigurationException, IOException, TransformerConfigurationException, TransformerException, JAXBException
+  {
+    // Parse the given input
+    /*
+     * DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); DocumentBuilder builder =
+     * factory.newDocumentBuilder(); Document doc = builder.parse(new InputSource(new StringReader(xmlSource)));
+     *
+     * // Write the parsed document to an xml file TransformerFactory transformerFactory =
+     * TransformerFactory.newInstance(); Transformer transformer = transformerFactory.newTransformer(); DOMSource source
+     * = new DOMSource(doc);
+     *
+     * StreamResult result = new StreamResult(new File("my-file.xml")); transformer.transform(source, result);
+     */
+
+    FiletoXMLtoObject("RegFile.xml");
+    FileToStringToObject("RegFile.xml");
+  }
+
+
+  public static String FiletoXMLtoObject(String filepath) throws ParserConfigurationException, SAXException, IOException, JAXBException
+  {
+
+    java.io.File fXmlFile = new File(filepath);
+    javax.xml.parsers.DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    javax.xml.parsers.DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+    org.w3c.dom.Document doc = dBuilder.parse(fXmlFile);
+
+    //optional, but recommended
+    //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+    doc.getDocumentElement().normalize();
+    String message = doc.getDocumentElement().getTextContent();
+
+    System.out.println(message);
+
+    javax.xml.bind.JAXBContext jc = javax.xml.bind.JAXBContext.newInstance(RegFile.class);
+    javax.xml.bind.Unmarshaller unmar = jc.createUnmarshaller();
+    //eu.openmos.msb.dummyclasses.RegFile aux = (eu.openmos.msb.dummyclasses.RegFile) unmar.unmarshal(doc);
+    RegFile aux = new RegFile();
+    aux = (RegFile) unmar.unmarshal(fXmlFile);
+
+    aux = (RegFile) unmar.unmarshal(doc);
+
+    //not working renaxo
+    /*
+     * DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); DocumentBuilder db = null;
+     *
+     * try { db = dbf.newDocumentBuilder(); InputSource is = new InputSource(); is.setCharacterStream(new
+     * StringReader(filepath)); //is.setCharacterStream(new StringReader(filepath)); try { org.w3c.dom.Document doc =
+     * db.parse(is); String message = doc.getDocumentElement().getTextContent(); System.out.println(message);
+     * JAXBContext jc = JAXBContext.newInstance(RegFile.class); Unmarshaller unmar = jc.createUnmarshaller(); RegFile
+     * aux = (RegFile) unmar.unmarshal(doc); int i = 0; } catch (IOException | JAXBException | DOMException |
+     * SAXException e) { System.out.println("prob1: "+e); } } catch (ParserConfigurationException e1) {
+     * System.out.println("prob2: "+e1); }
+     */
+    return "";
+
+  }
 }

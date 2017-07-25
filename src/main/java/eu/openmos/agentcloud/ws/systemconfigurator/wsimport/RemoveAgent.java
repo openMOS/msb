@@ -4,13 +4,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
+
 /**
  * <p>
  * Java class for removeAgent complex type.
  *
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
  * &lt;complexType name="removeAgent">
@@ -27,31 +27,37 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "removeAgent", propOrder = {
-    "agentUniqueName"
+@XmlType(name = "removeAgent", propOrder =
+{
+  "agentUniqueName"
 })
-public class RemoveAgent {
+public class RemoveAgent
+{
 
-    protected String agentUniqueName;
+  protected String agentUniqueName;
 
-    /**
-     * Gets the value of the agentUniqueName property.
-     *
-     * @return possible object is {@link String }
-     *
-     */
-    public String getAgentUniqueName() {
-        return agentUniqueName;
-    }
 
-    /**
-     * Sets the value of the agentUniqueName property.
-     *
-     * @param value allowed object is {@link String }
-     *
-     */
-    public void setAgentUniqueName(String value) {
-        this.agentUniqueName = value;
-    }
+  /**
+   * Gets the value of the agentUniqueName property.
+   *
+   * @return possible object is {@link String }
+   *
+   */
+  public String getAgentUniqueName()
+  {
+    return agentUniqueName;
+  }
+
+
+  /**
+   * Sets the value of the agentUniqueName property.
+   *
+   * @param value allowed object is {@link String }
+   *
+   */
+  public void setAgentUniqueName(String value)
+  {
+    this.agentUniqueName = value;
+  }
 
 }

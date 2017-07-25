@@ -12,24 +12,28 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+
 /**
  *
  * @author valerio.gentile
  */
-public class ProductionOptimizer_OptimizeTest {
+public class ProductionOptimizer_OptimizeTest
+{
 
-    private static final Logger logger = Logger.getLogger(ProductionOptimizer_OptimizeTest.class.getName());
+  private static final Logger logger = Logger.getLogger(ProductionOptimizer_OptimizeTest.class.getName());
 
-    public static void main(String[] args) {
-        logger.info("New optimize Test main start");
 
-        ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
-        ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
+  public static void main(String[] args)
+  {
+    logger.info("New optimize Test main start");
 
-        List<Recipe> recipes = productionOptimizer.optimize();
+    ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
+    ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
 
-        logger.info(recipes.toString());
+    List<Recipe> recipes = productionOptimizer.optimize();
 
-        logger.info("New optimize Test main end");
-    }
+    logger.info(recipes.toString());
+
+    logger.info("New optimize Test main end");
+  }
 }

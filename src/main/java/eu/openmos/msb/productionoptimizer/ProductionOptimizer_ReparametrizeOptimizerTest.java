@@ -14,26 +14,30 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+
 /**
  *
  * @author valerio.gentile
  */
-public class ProductionOptimizer_ReparametrizeOptimizerTest {
+public class ProductionOptimizer_ReparametrizeOptimizerTest
+{
 
-    private static final Logger logger = Logger.getLogger(ProductionOptimizer_ReparametrizeOptimizerTest.class.getName());
+  private static final Logger logger = Logger.getLogger(ProductionOptimizer_ReparametrizeOptimizerTest.class.getName());
 
-    public static void main(String[] args) {
-        logger.info("New reparametrize optimizer Test main start");
 
-        ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
-        ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
+  public static void main(String[] args)
+  {
+    logger.info("New reparametrize optimizer Test main start");
 
-        List<OptimizationParameter> listParameters = new ArrayList<>();
-        ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.reparametrizeOptimizer(listParameters);
+    ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
+    ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
 
-        logger.info(productionOptimizerResponseBean.getCode());
-        logger.info(productionOptimizerResponseBean.getDescription());
+    List<OptimizationParameter> listParameters = new ArrayList<>();
+    ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.reparametrizeOptimizer(listParameters);
 
-        logger.info("New reparametrize optimizer Test main end");
-    }
+    logger.info(productionOptimizerResponseBean.getCode());
+    logger.info(productionOptimizerResponseBean.getDescription());
+
+    logger.info("New reparametrize optimizer Test main end");
+  }
 }
