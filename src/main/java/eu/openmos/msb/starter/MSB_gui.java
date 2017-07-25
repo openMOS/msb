@@ -64,78 +64,81 @@ import java.util.Observer;
  *
  * @author fabio.miranda
  */
-public class MSB_gui extends javax.swing.JFrame implements Observer {
+public class MSB_gui extends javax.swing.JFrame implements Observer
+{
 
-    // GLOBAL VARIABLES
-    private static final Map<String, Object> OPCclientIDMap = new HashMap<String, Object>();
-    private static String MSB_OPCUA_SERVER_ADDRESS = null;
-    private static eu.openmos.msb.opcua.milo.server.opcuaServerMSB opcuaServerInstanceMILO;
-    private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
-    private static DefaultTableModel TServersmodel;
-    private static DefaultTableModel TProductsmodel;
-    private static DefaultTableModel TDevicesmodel;
-    private static ImageIcon redLight;
-    private static ImageIcon greenLight;
-    private static ImageIcon greyLight;
-    private static ImageIcon iconPROD_A;
-    private static ImageIcon iconPROD_B;
-    private static JLabel labelLDS;
-    private static JLabel labelServer;
-    private static JLabel labelWS;
-    private static JLabel labelRegister;
-    private static OPCDeviceItf DeviceITF;
-    private boolean isDDSRunning;
+  // GLOBAL VARIABLES
+  private static final Map<String, Object> OPCclientIDMap = new HashMap<String, Object>();
+  private static String MSB_OPCUA_SERVER_ADDRESS = null;
+  private static eu.openmos.msb.opcua.milo.server.opcuaServerMSB opcuaServerInstanceMILO;
+  private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
+  private static DefaultTableModel TServersmodel;
+  private static DefaultTableModel TProductsmodel;
+  private static DefaultTableModel TDevicesmodel;
+  private static ImageIcon redLight;
+  private static ImageIcon greenLight;
+  private static ImageIcon greyLight;
+  private static ImageIcon iconPROD_A;
+  private static ImageIcon iconPROD_B;
+  private static JLabel labelLDS;
+  private static JLabel labelServer;
+  private static JLabel labelWS;
+  private static JLabel labelRegister;
+  private static OPCDeviceItf DeviceITF;
+  private boolean isDDSRunning;
 
-    /**
-     *
-     * @throws Exception
-     */
-    public MSB_gui() throws Exception {
-        initComponents();
 
-        this.isDDSRunning = false;
+  /**
+   *
+   * @throws Exception
+   */
+  public MSB_gui() throws Exception
+  {
+    initComponents();
 
-        TServersmodel = (DefaultTableModel) TableServers.getModel();
-        TProductsmodel = (DefaultTableModel) ProductsTable.getModel();
-        TDevicesmodel = (DefaultTableModel) DevicesTable.getModel();
-        prodA.hide();
-        prodB.hide();
+    this.isDDSRunning = false;
 
-        ProductsTable.getModel().addTableModelListener(new CheckBoxModelListener());
+    TServersmodel = (DefaultTableModel) TableServers.getModel();
+    TProductsmodel = (DefaultTableModel) ProductsTable.getModel();
+    TDevicesmodel = (DefaultTableModel) DevicesTable.getModel();
+    prodA.hide();
+    prodB.hide();
 
-        OnOffServerPanel.setLayout(new FlowLayout());
-        OnOffRegister.setLayout(new FlowLayout());
-        OnOffWSPanel.setLayout(new FlowLayout());
-        OnOffLDS.setLayout(new FlowLayout());
+    ProductsTable.getModel().addTableModelListener(new CheckBoxModelListener());
 
-        //faz o setup das imagens e dimensiona para o tamanho pretendido
-        setImage();
-        labelServer = new JLabel(redLight);
-        OnOffServerPanel.add(labelServer);
-        OnOffServerPanel.setMaximumSize(new Dimension(34, 31));
+    OnOffServerPanel.setLayout(new FlowLayout());
+    OnOffRegister.setLayout(new FlowLayout());
+    OnOffWSPanel.setLayout(new FlowLayout());
+    OnOffLDS.setLayout(new FlowLayout());
 
-        labelLDS = new JLabel(redLight);
-        OnOffLDS.add(labelLDS);
-        OnOffLDS.setMaximumSize(new Dimension(34, 31));
+    //faz o setup das imagens e dimensiona para o tamanho pretendido
+    setImage();
+    labelServer = new JLabel(redLight);
+    OnOffServerPanel.add(labelServer);
+    OnOffServerPanel.setMaximumSize(new Dimension(34, 31));
 
-        labelRegister = new JLabel(redLight);
-        OnOffRegister.add(labelRegister);
-        OnOffRegister.setMaximumSize(new Dimension(34, 31));
+    labelLDS = new JLabel(redLight);
+    OnOffLDS.add(labelLDS);
+    OnOffLDS.setMaximumSize(new Dimension(34, 31));
 
-        labelWS = new JLabel(redLight);
-        OnOffWSPanel.add(labelWS);
-        OnOffWSPanel.setMaximumSize(new Dimension(34, 31));
+    labelRegister = new JLabel(redLight);
+    OnOffRegister.add(labelRegister);
+    OnOffRegister.setMaximumSize(new Dimension(34, 31));
 
-        DeviceITF = new OPCDeviceItf(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
+    labelWS = new JLabel(redLight);
+    OnOffWSPanel.add(labelWS);
+    OnOffWSPanel.setMaximumSize(new Dimension(34, 31));
 
-    }
+    DeviceITF = new OPCDeviceItf(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
+  }
+
+
+  /**
+   * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The
+   * content of this method is always regenerated by the Form Editor.
+   */
+  @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -878,1270 +881,1551 @@ public class MSB_gui extends javax.swing.JFrame implements Observer {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
     private void StartWebServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartWebServiceActionPerformed
-        // TODO add your handling code here:
-        String address = WebServiceAddress.getText();
+      // TODO add your handling code here:
+      String address = WebServiceAddress.getText();
 
-        //myRecipeWS.publish(address, new RecipesDeployerImpl());
-        //System.out.println("Listening: " + address);
-        //opc_comms_log.setText("Starting WebServer...\n Listening on: "+ address);
-        Thread wsThread = new Thread() {
-            @Override
-            public void run() {
+      //myRecipeWS.publish(address, new RecipesDeployerImpl());
+      //System.out.println("Listening: " + address);
+      //opc_comms_log.setText("Starting WebServer...\n Listening on: "+ address);
+      Thread wsThread = new Thread()
+      {
+        @Override
+        public void run()
+        {
 
-                Endpoint myRecipeWS = Endpoint.publish(address, new RecipesDeployerImpl());
-                System.out.println("Listening: " + address);
-                opc_comms_log.append("Starting WebServer...\nListening on: " + address + "\n");
-                Boolean status = myRecipeWS.isPublished();
-                if (status) {
-                    setConnectionColor(true, false, OnOffWSPanel, labelWS);
-                    opc_comms_log.append("Recipes WebServer successfully published\n");
-                } else {
-                    setConnectionColor(false, true, OnOffWSPanel, labelWS);
-                    opc_comms_log.append("Failed publishing Recipes WebServer\n");
-                }
-            }
-        };
+          Endpoint myRecipeWS = Endpoint.publish(address, new RecipesDeployerImpl());
+          System.out.println("Listening: " + address);
+          opc_comms_log.append("Starting WebServer...\nListening on: " + address + "\n");
+          Boolean status = myRecipeWS.isPublished();
+          if (status)
+          {
+            setConnectionColor(true, false, OnOffWSPanel, labelWS);
+            opc_comms_log.append("Recipes WebServer successfully published\n");
+          }
+          else
+          {
+            setConnectionColor(false, true, OnOffWSPanel, labelWS);
+            opc_comms_log.append("Failed publishing Recipes WebServer\n");
+          }
+        }
+      };
 
-        wsThread.start();
+      wsThread.start();
     }//GEN-LAST:event_StartWebServiceActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
     private void WebServiceAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_WebServiceAddressActionPerformed
-        // TODO add your handling code here:
+      // TODO add your handling code here:
     }//GEN-LAST:event_WebServiceAddressActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
-    private void btn_SendURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendURLActionPerformed
-        String deviceName = String.valueOf(comboServers.getSelectedItem());
-        //ver hashmap e chamar o metodo
-        HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
-        MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
 
-        MSBcs.SendServerURL(MSBcs.milo_client_instanceMSB, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex
-                -> {
-            System.out.println("error invoking SendServerURL() for server: " + deviceName + "\n" + ex);
-            //logger.error("error invoking SendServerURL()", ex);
-            opc_comms_log.append("error invoking SendServerURL() for server: " + deviceName + "\n" + ex + "\n");
-            return "-1.0";
-        }).thenAccept(v
-                -> {
-            //logger.info("SendServerURL(cenas)={}", v);
-            System.out.println("SendServerURL(uri)={}\n" + v);
-            opc_comms_log.append("SendServerURL(uri)={}\n" + v);
-            //future.complete(client);
-        });
+  /**
+   *
+   * @param evt
+   */
+    private void btn_SendURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendURLActionPerformed
+      String deviceName = String.valueOf(comboServers.getSelectedItem());
+      //ver hashmap e chamar o metodo
+      HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
+      MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
+
+      MSBcs.SendServerURL(MSBcs.milo_client_instanceMSB, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex
+        ->
+      {
+        System.out.println("error invoking SendServerURL() for server: " + deviceName + "\n" + ex);
+        //logger.error("error invoking SendServerURL()", ex);
+        opc_comms_log.append("error invoking SendServerURL() for server: " + deviceName + "\n" + ex + "\n");
+        return "-1.0";
+      }).thenAccept(v
+        ->
+      {
+        //logger.info("SendServerURL(cenas)={}", v);
+        System.out.println("SendServerURL(uri)={}\n" + v);
+        opc_comms_log.append("SendServerURL(uri)={}\n" + v);
+        //future.complete(client);
+      });
 
     }//GEN-LAST:event_btn_SendURLActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
-    private void btn_sendRecipeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendRecipeActionPerformed
-        String deviceName = String.valueOf(comboServers.getSelectedItem());
-        //ver hashmap e chamar o metodo
-        HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
-        MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
 
-        MSBcs.SendRecipetoDevice(MSBcs.milo_client_instanceMSB, textToSend.getText()).exceptionally(ex
-                -> {
-            System.out.println("error invoking SendRecipetoDevice() for server: " + deviceName + "\n" + ex);
-            //logger.error("error invoking SendServerURL()", ex);
-            opc_comms_log.append("error invoking SendRecipetoDevice() for server: " + deviceName + "\n" + ex + "\n");
-            return "-1.0";
-        }).thenAccept(v
-                -> {
-            //logger.info("SendServerURL(cenas)={}", v);
-            System.out.println("SendRecipetoDevice(uri)={}\n" + v);
-            opc_comms_log.append("SendRecipetoDevice(uri)={}\n" + v);
-            //future.complete(client);
-        });
+  /**
+   *
+   * @param evt
+   */
+    private void btn_sendRecipeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendRecipeActionPerformed
+      String deviceName = String.valueOf(comboServers.getSelectedItem());
+      //ver hashmap e chamar o metodo
+      HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
+      MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
+
+      MSBcs.SendRecipetoDevice(MSBcs.milo_client_instanceMSB, textToSend.getText()).exceptionally(ex
+        ->
+      {
+        System.out.println("error invoking SendRecipetoDevice() for server: " + deviceName + "\n" + ex);
+        //logger.error("error invoking SendServerURL()", ex);
+        opc_comms_log.append("error invoking SendRecipetoDevice() for server: " + deviceName + "\n" + ex + "\n");
+        return "-1.0";
+      }).thenAccept(v
+        ->
+      {
+        //logger.info("SendServerURL(cenas)={}", v);
+        System.out.println("SendRecipetoDevice(uri)={}\n" + v);
+        opc_comms_log.append("SendRecipetoDevice(uri)={}\n" + v);
+        //future.complete(client);
+      });
 
     }//GEN-LAST:event_btn_sendRecipeActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
     private void comboServersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboServersActionPerformed
-        // TODO add your handling code here:
+      // TODO add your handling code here:
     }//GEN-LAST:event_comboServersActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_RequestProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RequestProductActionPerformed
-        HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
-        String requestedProduct = textToSend.getText();
+      HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
+      String requestedProduct = textToSend.getText();
 
-        //get a clientObject that can produce ProductID
-        MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct);
-        List<String> DeviceNames = new ArrayList<String>();
+      //get a clientObject that can produce ProductID
+      MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct);
+      List<String> DeviceNames = new ArrayList<String>();
 
-        for (String key : myMaps.OPCclientIDMaps.keySet()) { //get workstation names capable of produce ProductID
-            MSB_MiloClientSubscription MCS = HashMaps.OPCclientIDMaps.get(key);
+      for (String key : myMaps.OPCclientIDMaps.keySet())
+      { //get workstation names capable of produce ProductID
+        MSB_MiloClientSubscription MCS = HashMaps.OPCclientIDMaps.get(key);
 
-            String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
-            String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
+        String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
+        String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
 
-            if (clientInstanceObject.equals(clientCapableOfProduct)) {
-                DeviceNames.add(key);
-            }
+        if (clientInstanceObject.equals(clientCapableOfProduct))
+        {
+          DeviceNames.add(key);
+        }
+      }
+
+      if (DeviceNames.size() > 0)
+      {
+        //choose the first one - Warning: in the future, choose the most cost-effective workstation
+        List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0));
+
+        for (int i = 0; i < ExeData.size(); i++)
+        {
+          String prodID = ExeData.get(i).getProductID();
+          String methodIdSTR = ExeData.get(i).getMethodID();
+          String objectIdSTR = ExeData.get(i).getObjectID();
+
+          NodeId objectId = NodeId.parse("ns=2;s=" + objectIdSTR);
+          NodeId methodId = NodeId.parse("ns=2;s=" + methodIdSTR);
+
+          if (prodID.equals(requestedProduct))
+          {
+            MSBcs2.InvoqueDeviceSkill(MSBcs2.milo_client_instanceMSB, objectId, methodId);
+            break;
+          }
         }
 
-        if (DeviceNames.size() > 0) {
-            //choose the first one - Warning: in the future, choose the most cost-effective workstation
-            List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0));
-
-            for (int i = 0; i < ExeData.size(); i++) {
-                String prodID = ExeData.get(i).productID;
-                String methodIdSTR = ExeData.get(i).methodID;
-                String objectIdSTR = ExeData.get(i).objectID;
-
-                NodeId objectId = NodeId.parse("ns=2;s=" + objectIdSTR);
-                NodeId methodId = NodeId.parse("ns=2;s=" + methodIdSTR);
-
-                if (prodID.equals(requestedProduct)) {
-                    MSBcs2.InvoqueDeviceSkill(MSBcs2.milo_client_instanceMSB, objectId, methodId);
-                    break;
-                }
-            }
-
-        } else {
-            opc_comms_log.append("There is no Workstation capable of making product: " + textToSend.getText() + "\n");
-        }
+      }
+      else
+      {
+        opc_comms_log.append("There is no Workstation capable of making product: " + textToSend.getText() + "\n");
+      }
     }//GEN-LAST:event_btn_RequestProductActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
-    private void btn_DeviceRegistrationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeviceRegistrationActionPerformed
-        String ret = "null";
-        //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
-        try {
-            ret = DeviceITF.AllCases("deviceregistration", textToSend.getText()); //simulate a device registration
 
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-        } catch (SAXException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-        } catch (IOException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-        } catch (JAXBException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-        } catch (TransformerException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        opc_comms_log.append("Device registration method called. Returned: " + ret + "\n");
+  /**
+   *
+   * @param evt
+   */
+    private void btn_DeviceRegistrationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeviceRegistrationActionPerformed
+      String ret = "null";
+      //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
+      try
+      {
+        ret = DeviceITF.AllCases("deviceregistration", textToSend.getText()); //simulate a device registration
+
+      }
+      catch (ParserConfigurationException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
+      }
+      catch (SAXException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
+      }
+      catch (IOException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
+      }
+      catch (JAXBException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
+      }
+      catch (TransformerException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      opc_comms_log.append("Device registration method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_DeviceRegistrationActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_ChangedStateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ChangedStateActionPerformed
-        String ret = "null";
-        try {
-            ret = DeviceITF.AllCases("changedstate", textToSend.getText()); //simulate a device registration
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-        } catch (SAXException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-        } catch (IOException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-        } catch (JAXBException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-        } catch (TransformerException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        opc_comms_log.append("Changed State method called. Returned: " + ret + "\n");
+      String ret = "null";
+      try
+      {
+        ret = DeviceITF.AllCases("changedstate", textToSend.getText()); //simulate a device registration
+      }
+      catch (ParserConfigurationException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
+      }
+      catch (SAXException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
+      }
+      catch (IOException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
+      }
+      catch (JAXBException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
+      }
+      catch (TransformerException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      opc_comms_log.append("Changed State method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_ChangedStateActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
-    private void btn_RecipeExecutionDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RecipeExecutionDoneActionPerformed
-        String ret = "null";
-        //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
-        try {
-            ret = DeviceITF.AllCases("recipeexecutiondone", textToSend.getText()); //simulate a device registration
 
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-        } catch (SAXException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-        } catch (IOException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-        } catch (JAXBException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-        } catch (TransformerException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        opc_comms_log.append("RecipeExecutionDone method called. Returned: " + ret + "\n");
+  /**
+   *
+   * @param evt
+   */
+    private void btn_RecipeExecutionDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RecipeExecutionDoneActionPerformed
+      String ret = "null";
+      //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
+      try
+      {
+        ret = DeviceITF.AllCases("recipeexecutiondone", textToSend.getText()); //simulate a device registration
+
+      }
+      catch (ParserConfigurationException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
+      }
+      catch (SAXException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
+      }
+      catch (IOException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
+      }
+      catch (JAXBException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
+      }
+      catch (TransformerException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      opc_comms_log.append("RecipeExecutionDone method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_RecipeExecutionDoneActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
-    private void btn_sendrecipe2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendrecipe2ActionPerformed
-        String ret = "null";
-        //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
-        try {
-            ret = DeviceITF.AllCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
 
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-        } catch (SAXException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-        } catch (IOException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-        } catch (JAXBException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-        } catch (TransformerException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        opc_comms_log.append("sendRecipe method called. Returned: " + ret + "\n");
+  /**
+   *
+   * @param evt
+   */
+    private void btn_sendrecipe2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendrecipe2ActionPerformed
+      String ret = "null";
+      //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
+      try
+      {
+        ret = DeviceITF.AllCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
+
+      }
+      catch (ParserConfigurationException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
+      }
+      catch (SAXException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
+      }
+      catch (IOException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
+      }
+      catch (JAXBException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
+      }
+      catch (TransformerException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      opc_comms_log.append("sendRecipe method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_sendrecipe2ActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
-    private void btn_updatestatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updatestatusActionPerformed
-        String ret = "null";
-        //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
-        try {
-            ret = DeviceITF.AllCases("statusupdate", textToSend.getText()); //simulate a device registration
 
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-        } catch (SAXException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-        } catch (IOException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-        } catch (JAXBException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-            opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-        } catch (TransformerException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        opc_comms_log.append("statusupdate method called. Returned: " + ret + "\n");
+  /**
+   *
+   * @param evt
+   */
+    private void btn_updatestatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updatestatusActionPerformed
+      String ret = "null";
+      //OPCDeviceItf DeviceITF = new OPCDeviceItf(); 
+      try
+      {
+        ret = DeviceITF.AllCases("statusupdate", textToSend.getText()); //simulate a device registration
+
+      }
+      catch (ParserConfigurationException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
+      }
+      catch (SAXException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
+      }
+      catch (IOException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
+      }
+      catch (JAXBException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
+      }
+      catch (TransformerException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      opc_comms_log.append("statusupdate method called. Returned: " + ret + "\n");
     }//GEN-LAST:event_btn_updatestatusActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
     private void btn_invoqueMethodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_invoqueMethodActionPerformed
-        String deviceName = String.valueOf(comboServers.getSelectedItem());
-        //ver hashmap e chamar o metodo
-        HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
-        MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
+      String deviceName = String.valueOf(comboServers.getSelectedItem());
+      //ver hashmap e chamar o metodo
+      HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
+      MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
 
-        //TESTE INVOQUESKILL
-        NodeId objectId = NodeId.parse("ns=2;s=Pre-Demonstrator_InstanceHierarchy/"
-                + "AssemblySystem/WorkStation/SC1:Task_slow_Recipe");
-        NodeId methodId = NodeId.parse("ns=2;s=InvokeSkill/SC1:Task_slow_Recipe");
+      //TESTE INVOQUESKILL
+      NodeId objectId = NodeId.parse("ns=2;s=Pre-Demonstrator_InstanceHierarchy/"
+        + "AssemblySystem/WorkStation/SC1:Task_slow_Recipe");
+      NodeId methodId = NodeId.parse("ns=2;s=InvokeSkill/SC1:Task_slow_Recipe");
 
-        MSBcs.InvoqueDeviceSkill(MSBcs.milo_client_instanceMSB, objectId, methodId).exceptionally(ex
-                -> {
-            System.out.println("error invoking Call InvoqueMethod() for server: " + ex);
-            //logger.error("error invoking SendServerURL()", ex);
-            return "-1.0";
-        }).thenAccept(v
-                -> {
-            //logger.info("SendServerURL(cenas)={}", v);
-            System.out.println("Call InvoqueMethod(uri)={}\n" + v);
-            //future.complete(client);
-        });
+      MSBcs.InvoqueDeviceSkill(MSBcs.milo_client_instanceMSB, objectId, methodId).exceptionally(ex
+        ->
+      {
+        System.out.println("error invoking Call InvoqueMethod() for server: " + ex);
+        //logger.error("error invoking SendServerURL()", ex);
+        return "-1.0";
+      }).thenAccept(v
+        ->
+      {
+        //logger.info("SendServerURL(cenas)={}", v);
+        System.out.println("Call InvoqueMethod(uri)={}\n" + v);
+        //future.complete(client);
+      });
     }//GEN-LAST:event_btn_invoqueMethodActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
     private void prodBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prodBActionPerformed
-        // TODO add your handling code here:
-        // TODO add your handling code here:
-        //NEW REQUEST PRODUCT
-        HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
-        String requestedProduct = "AGV_B";
 
-        //get a clientObject that can produce ProductID
-        MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct);
-        List<String> DeviceNames = new ArrayList<String>();
+      //NEW REQUEST PRODUCT
+      HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
+      String requestedProduct = "AGV_B";
 
-        for (String key : myMaps.OPCclientIDMaps.keySet()) { //get workstation names capable of produce ProductID
-            MSB_MiloClientSubscription MCS = HashMaps.OPCclientIDMaps.get(key);
+      //get a clientObject that can produce ProductID
+      MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct);
+      List<String> DeviceNames = new ArrayList<String>();
 
-            String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
-            String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
+      for (String key : myMaps.OPCclientIDMaps.keySet())
+      { //get workstation names capable of produce ProductID
+        MSB_MiloClientSubscription MCS = HashMaps.OPCclientIDMaps.get(key);
 
-            if (clientInstanceObject.equals(clientCapableOfProduct)) {
-                DeviceNames.add(key);
-            }
+        String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
+        String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
+
+        if (clientInstanceObject.equals(clientCapableOfProduct))
+        {
+          DeviceNames.add(key);
+        }
+      }
+
+      if (DeviceNames.size() > 0)
+      {
+        //choose the first one - Warning: in the future, choose the most cost-effective workstation
+        List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0));
+
+        for (int i = 0; i < ExeData.size(); i++)
+        {
+          String prodID = ExeData.get(i).getProductID();
+          String methodIdSTR = ExeData.get(i).getMethodID();
+          String objectIdSTR = ExeData.get(i).getObjectID();
+
+          NodeId objectId = NodeId.parse("ns=2;s=" + objectIdSTR);
+          NodeId methodId = NodeId.parse("ns=2;s=" + methodIdSTR);
+
+          if (prodID.equals(requestedProduct))
+          {
+            MSBcs2.InvoqueDeviceSkill(MSBcs2.milo_client_instanceMSB, objectId, methodId);
+            opc_comms_log.append("Invoked prodB \n");
+            break;
+          }
         }
 
-        if (DeviceNames.size() > 0) {
-            //choose the first one - Warning: in the future, choose the most cost-effective workstation
-            List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0));
-
-            for (int i = 0; i < ExeData.size(); i++) {
-                String prodID = ExeData.get(i).productID;
-                String methodIdSTR = ExeData.get(i).methodID;
-                String objectIdSTR = ExeData.get(i).objectID;
-
-                NodeId objectId = NodeId.parse("ns=2;s=" + objectIdSTR);
-                NodeId methodId = NodeId.parse("ns=2;s=" + methodIdSTR);
-
-                if (prodID.equals(requestedProduct)) {
-                    MSBcs2.InvoqueDeviceSkill(MSBcs2.milo_client_instanceMSB, objectId, methodId);
-                    opc_comms_log.append("Invoked prodB \n");
-                    break;
-                }
-            }
-
-        } else {
-            opc_comms_log.append("There is no Workstation capable of making product: " + textToSend.getText() + "\n");
-        }
+      }
+      else
+      {
+        opc_comms_log.append("There is no Workstation capable of making product: " + textToSend.getText() + "\n");
+      }
 
     }//GEN-LAST:event_prodBActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
     private void prodAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prodAActionPerformed
-        // TODO add your handling code here:
-        //NEW REQUEST PRODUCT
-        HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
-        String requestedProduct = "AGV_A";
+      // TODO add your handling code here:
+      //NEW REQUEST PRODUCT
+      HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
+      String requestedProduct = "AGV_A";
 
-        //get a clientObject that can produce ProductID
-        MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct);
-        List<String> DeviceNames = new ArrayList<String>();
+      //get a clientObject that can produce ProductID
+      MSB_MiloClientSubscription MSBcs2 = myMaps.ProductIDAdapterMaps.get(requestedProduct);
+      List<String> DeviceNames = new ArrayList<String>();
 
-        for (String key : myMaps.OPCclientIDMaps.keySet()) { //get workstation names capable of produce ProductID
-            MSB_MiloClientSubscription MCS = HashMaps.OPCclientIDMaps.get(key);
+      for (String key : myMaps.OPCclientIDMaps.keySet())
+      { //get workstation names capable of produce ProductID
+        MSB_MiloClientSubscription MCS = HashMaps.OPCclientIDMaps.get(key);
 
-            String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
-            String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
+        String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
+        String clientCapableOfProduct = MSBcs2.milo_client_instanceMSB.toString();
 
-            if (clientInstanceObject.equals(clientCapableOfProduct)) {
-                DeviceNames.add(key);
-            }
+        if (clientInstanceObject.equals(clientCapableOfProduct))
+        {
+          DeviceNames.add(key);
+        }
+      }
+
+      if (DeviceNames.size() > 0)
+      {
+        //choose the first one - Warning: in the future, choose the most cost-effective workstation
+        List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0));
+
+        for (int i = 0; i < ExeData.size(); i++)
+        {
+          String prodID = ExeData.get(i).getProductID();
+          String methodIdSTR = ExeData.get(i).getMethodID();
+          String objectIdSTR = ExeData.get(i).getObjectID();
+
+          NodeId objectId = NodeId.parse("ns=2;s=" + objectIdSTR);
+          NodeId methodId = NodeId.parse("ns=2;s=" + methodIdSTR);
+
+          if (prodID.equals(requestedProduct))
+          {
+            MSBcs2.InvoqueDeviceSkill(MSBcs2.milo_client_instanceMSB, objectId, methodId);
+            opc_comms_log.append("Invoked prodA \n");
+            break;
+          }
         }
 
-        if (DeviceNames.size() > 0) {
-            //choose the first one - Warning: in the future, choose the most cost-effective workstation
-            List<ExecuteData> ExeData = myMaps.ExecutiontTableMaps.get(DeviceNames.get(0));
-
-            for (int i = 0; i < ExeData.size(); i++) {
-                String prodID = ExeData.get(i).productID;
-                String methodIdSTR = ExeData.get(i).methodID;
-                String objectIdSTR = ExeData.get(i).objectID;
-
-                NodeId objectId = NodeId.parse("ns=2;s=" + objectIdSTR);
-                NodeId methodId = NodeId.parse("ns=2;s=" + methodIdSTR);
-
-                if (prodID.equals(requestedProduct)) {
-                    MSBcs2.InvoqueDeviceSkill(MSBcs2.milo_client_instanceMSB, objectId, methodId);
-                    opc_comms_log.append("Invoked prodA \n");
-                    break;
-                }
-            }
-
-        } else {
-            opc_comms_log.append("There is no Workstation capable of making product: " + textToSend.getText() + "\n");
-        }
+      }
+      else
+      {
+        opc_comms_log.append("There is no Workstation capable of making product: " + textToSend.getText() + "\n");
+      }
 
     }//GEN-LAST:event_prodAActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
   private void btn_start_discoveryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_start_discoveryActionPerformed
 
-      //delete old msb servers in the DB at the startup - they could have the same address
-      DeviceRegistry dbMSB = new DeviceRegistry();
-      ArrayList ArrayData = dbMSB.list_all_devices();
-      for (int i = 0; i < ArrayData.size(); i++) {
-          if (ArrayData.get(i).toString().contains("MSB")) {
-              System.out.println("found old MSB instance on database: " + i);
-              dbMSB.deregister_device(ArrayData.get(i).toString());
-          }
+    //delete old msb servers in the DB at the startup - they could have the same address
+    DeviceRegistry dbMSB = new DeviceRegistry();
+    ArrayList ArrayData = dbMSB.list_all_devices();
+    for (int i = 0; i < ArrayData.size(); i++)
+    {
+      if (ArrayData.get(i).toString().contains("MSB"))
+      {
+        System.out.println("found old MSB instance on database: " + i);
+        dbMSB.deregister_device(ArrayData.get(i).toString());
+      }
+    }
+
+    //launch Discovery Service to search for other devices (OPCUA servers from devices)
+    OPCDeviceDiscoveryItf OPCdevDiscItf;
+    OPCdevDiscItf = new OPCDeviceDiscoveryItf()
+    {
+
+      /**
+       *
+       * @param name
+       * @param app_uri
+       */
+      @Override
+      public void on_new_server(String name, String app_uri)
+      {
+        System.out.println("server found: " + app_uri);
+
+        labelLDS.setIcon(greenLight); //blink status LED every polling cycle
+        try
+        {
+          Thread.sleep(1000);
+        }
+        catch (InterruptedException ex)
+        {
+          Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        labelLDS.setIcon(greyLight);
       }
 
-      //launch Discovery Service to search for other devices (OPCUA servers from devices)
-      OPCDeviceDiscoveryItf OPCdevDiscItf;
-      OPCdevDiscItf = new OPCDeviceDiscoveryItf() {
 
-          /**
-           *
-           * @param name
-           * @param app_uri
-           */
-          @Override
-          public void on_new_server(String name, String app_uri) {
-              System.out.println("server found: " + app_uri);
+      /**
+       *
+       * @param name
+       * @param app_uri
+       */
+      @Override
+      public void on_new_endpoint(String name, String app_uri)
+      {
+        //every time there is a "polling" cycle in discovery, check OPC client/server connections
+        System.out.println("POLLING CYCLE********************************");
+        if (OPCclientIDMap.size() > 0)
+        { //verify client connection status in the end of the polling cycle
 
-              labelLDS.setIcon(greenLight); //blink status LED every polling cycle
-              try {
-                  Thread.sleep(1000);
-              } catch (InterruptedException ex) {
-                  Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-              }
-              labelLDS.setIcon(greyLight);
+        }
+        System.out.println("NAME: " + name + " URL: " + app_uri);
+
+        DeviceRegistry dbMSB = new DeviceRegistry();
+        ArrayList ArrayData = dbMSB.read_device_info(name);
+
+        if (ArrayData.isEmpty())
+        { //if the device name doesn't exist in the database, register
+          registerServer(name, app_uri);
+          addToTableServers(name, "opcua", app_uri);
+          System.out.println("onNewServer Registered Server: " + name + " " + app_uri);
+          opc_comms_log.append("New Server found and registered: " + name + " " + app_uri + "\n");
+          if (name.contains("MSB"))
+          {
+            MSB_OPCUA_SERVER_ADDRESS = app_uri;
+            ComboMSB.addItem(name);
           }
 
-          /**
-           *
-           * @param name
-           * @param app_uri
-           */
-          @Override
-          public void on_new_endpoint(String name, String app_uri) {
-              //every time there is a "polling" cycle in discovery, check OPC client/server connections
-              System.out.println("POLLING CYCLE********************************");
-              if (OPCclientIDMap.size() > 0) { //verify client connection status in the end of the polling cycle
+          if (app_uri.contains("4840"))
+          {
+            System.out.println("Don't create an opc client for LDS!");
+          }
+          else
+          {
+            try
+            {
+
+              MSB_MiloClientSubscription instance = new MSB_MiloClientSubscription();
+
+              OPCclientIDMap.put(name, instance); //save the client objectID and the name of the device as hashmap
+              // HashMaps hash = null;
+
+              // Singleton to access client objects in other classes
+              HashMaps myOpcUaClientsMap = HashMaps.getInstance();
+              myOpcUaClientsMap.setOPCclientIDMaps(name, instance);
+
+              //start connection after inserting on the hashmap!
+              instance.startConnection(app_uri);
+
+              // Iterate over all values, using the keySet method.
+              // call SendServerURL() method from device
+              OpcUaClient client = instance.getClientObject();
+              if (!name.contains("MSB"))
+              {
+                comboServers.addItem(name);
+                instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex
+                  ->
+                {
+                  System.out.println("error invoking SendServerURL() for server: " + name + "\n" + ex);
+                  //logger.error("error invoking SendServerURL()", ex);
+                  return "-1.0";
+                }).thenAccept(v
+                  ->
+                {
+                  //logger.info("SendServerURL(cenas)={}", v);
+                  System.out.println("SendServerURL(uri)={}\n" + v);
+                  //future.complete(client);
+                });
 
               }
-              System.out.println("NAME: " + name + " URL: " + app_uri);
 
-              DeviceRegistry dbMSB = new DeviceRegistry();
-              ArrayList ArrayData = dbMSB.read_device_info(name);
-
-              if (ArrayData.isEmpty()) { //if the device name doesn't exist in the database, register
-                  registerServer(name, app_uri);
-                  addToTableServers(name, "opcua", app_uri);
-                  System.out.println("onNewServer Registered Server: " + name + " " + app_uri);
-                  opc_comms_log.append("New Server found and registered: " + name + " " + app_uri + "\n");
-                  if (name.contains("MSB")) {
-                      MSB_OPCUA_SERVER_ADDRESS = app_uri;
-                      ComboMSB.addItem(name);
-                  }
-
-                  if (app_uri.contains("4840")) {
-                      System.out.println("Don't create an opc client for LDS!");
-                  } else {
-                      try {
-
-                          MSB_MiloClientSubscription instance = new MSB_MiloClientSubscription();
-
-                          OPCclientIDMap.put(name, instance); //save the client objectID and the name of the device as hashmap
-                          // HashMaps hash = null;
-
-                          // Singleton to access client objects in other classes
-                          HashMaps myOpcUaClientsMap = HashMaps.getInstance();
-                          myOpcUaClientsMap.setOPCclientIDMaps(name, instance);
-
-                          //start connection after inserting on the hashmap!
-                          instance.startConnection(app_uri);
-
-                          // Iterate over all values, using the keySet method.
-                          // call SendServerURL() method from device
-                          OpcUaClient client = instance.getClientObject();
-                          if (!name.contains("MSB")) {
-                              comboServers.addItem(name);
-                              instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex
-                                      -> {
-                                  System.out.println("error invoking SendServerURL() for server: " + name + "\n" + ex);
-                                  //logger.error("error invoking SendServerURL()", ex);
-                                  return "-1.0";
-                              }).thenAccept(v
-                                      -> {
-                                  //logger.info("SendServerURL(cenas)={}", v);
-                                  System.out.println("SendServerURL(uri)={}\n" + v);
-                                  //future.complete(client);
-                              });
-
-                          }
-
-                          if (client == null) {
-                              System.out.println("Client = null?");
-                          }
-
-                          for (String key : OPCclientIDMap.keySet()) {
-                              System.out.println(key + " ->hashmap<- - " + OPCclientIDMap.get(key));
-                          }
-
-                          for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet()) {
-                              System.out.println(key + " ->singleton hashmap<- - " + myOpcUaClientsMap.getOPCclientIDMaps().get(key));
-                          }
-                      } catch (Exception ex) {
-                          Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-                      }
-                  }
-
-              } else {  //if the device name exist in the database, check if it is still available
-                  System.out.println("Server : " + name + " " + app_uri + " Already registered in the Database!");
+              if (client == null)
+              {
+                System.out.println("Client = null?");
               }
+
+              for (String key : OPCclientIDMap.keySet())
+              {
+                System.out.println(key + " ->hashmap<- - " + OPCclientIDMap.get(key));
+              }
+
+              for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet())
+              {
+                System.out.println(key + " ->singleton hashmap<- - " + myOpcUaClientsMap.getOPCclientIDMaps().get(key));
+              }
+            }
+            catch (Exception ex)
+            {
+              Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+            }
           }
 
-          /**
-           *
-           */
-          @Override
-          public void on_endpoint_dissapeared() {
-              //To change body of generated methods, choose Tools | Templates.
-              throw new UnsupportedOperationException("Not supported yet.");
+        }
+        else
+        {  //if the device name exist in the database, check if it is still available
+          System.out.println("Server : " + name + " " + app_uri + " Already registered in the Database!");
+        }
+      }
+
+
+      /**
+       *
+       */
+      @Override
+      public void on_endpoint_dissapeared()
+      {
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+
+      /**
+       *
+       */
+      @Override
+      public void reset_tables()
+      {
+        // dropServersAndEndpoints(); //ver
+        System.out.println("reset endpoint and servers tables...");
+      }
+
+
+      /**
+       *
+       * @param name
+       * @param app_uri
+       */
+      @Override
+      public void on_server_dissapeared(String name, String app_uri)
+      {
+        System.out.println("This server has disapeared: " + name);
+        if (RemoveDownServer(name) == 1)
+        {
+          opc_comms_log.append("The server: " + name + " has disapeared and has been successfully removed from database.\n");
+          //deleteFromTableServers(name, "", app_uri);
+          CleanTablesFromWorkstation(name);
+          //wait for completion? warning
+          try
+          {
+            Thread.sleep(1000);
           }
-
-          /**
-           *
-           */
-          @Override
-          public void reset_tables() {
-              // dropServersAndEndpoints(); //ver
-              System.out.println("reset endpoint and servers tables...");
+          catch (InterruptedException ex)
+          {
+            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
           }
+          CleanHashMapsFromWorkstation(name);
 
-          /**
-           *
-           * @param name
-           * @param app_uri
-           */
-          @Override
-          public void on_server_dissapeared(String name, String app_uri) {
-              System.out.println("This server has disapeared: " + name);
-              if (RemoveDownServer(name) == 1) {
-                  opc_comms_log.append("The server: " + name + " has disapeared and has been successfully removed from database.\n");
-                  //deleteFromTableServers(name, "", app_uri);
-                  CleanTablesFromWorkstation(name);
-                  //wait for completion? warning
-                  try {
-                      Thread.sleep(1000);
-                  } catch (InterruptedException ex) {
-                      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-                  }
-                  CleanHashMapsFromWorkstation(name);
+        }
+        else
+        {
+          opc_comms_log.append("The server: " + name + " has disapeared and has NOT been removed from database.\n");
+        }
+        for (String key : OPCclientIDMap.keySet())
+        {
+          System.out.println(key + " ->new local hashmap<- - " + OPCclientIDMap.get(key));
+        }
+        HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
+        for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet())
+        {
+          System.out.println(key + " ->new singleton hashmap<- - " + myOpcUaClientsMap.getOPCclientIDMaps().get(key));
+        }
+      }
 
-              } else {
-                  opc_comms_log.append("The server: " + name + " has disapeared and has NOT been removed from database.\n");
-              }
-              for (String key : OPCclientIDMap.keySet()) {
-                  System.out.println(key + " ->new local hashmap<- - " + OPCclientIDMap.get(key));
-              }
-              HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
-              for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet()) {
-                  System.out.println(key + " ->new singleton hashmap<- - " + myOpcUaClientsMap.getOPCclientIDMaps().get(key));
-              }
-          }
+    };
 
-      };
+    // String LDS_uri="opc.tcp://localhost:4840";
+    String LDS_uri = LDSserverAddress.getText();
 
-      // String LDS_uri="opc.tcp://localhost:4840";
-      String LDS_uri = LDSserverAddress.getText();
+    OpcUaServersDiscoverySnippet OPCDiscoverySnippet = new OpcUaServersDiscoverySnippet(LDS_uri, OPCdevDiscItf);
+    OPCDiscoverySnippet.start();
 
-      OpcUaServersDiscoverySnippet OPCDiscoverySnippet = new OpcUaServersDiscoverySnippet(LDS_uri, OPCdevDiscItf);
-      OPCDiscoverySnippet.start();
-
-      //TODO
-      //create a new OPCDevice with structure methods - common to all OPCcommunication?
+    //TODO
+    //create a new OPCDevice with structure methods - common to all OPCcommunication?
   }//GEN-LAST:event_btn_start_discoveryActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
   private void LDSRegisterserverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LDSRegisterserverActionPerformed
-      int ret = 0;
-      try {
-          ret = opcuaServerInstanceMILO.register(LDSserverAddress.getText());
-          opc_comms_log.append("Registering MSB OPCUA Milo Server on the LDS server...\n");
-          if (ret == 1) {
-              opc_comms_log.append("Success\n");
-              setConnectionColor(true, false, OnOffRegister, labelRegister);
-          } else {
-              opc_comms_log.append("Failed to register MSB OPCUA Milo Server on the LDS server!\n");
-              setConnectionColor(false, true, OnOffRegister, labelRegister);
-          }
-      } catch (Exception ex) {
-          Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+    int ret = 0;
+    try
+    {
+      ret = opcuaServerInstanceMILO.register(LDSserverAddress.getText());
+      opc_comms_log.append("Registering MSB OPCUA Milo Server on the LDS server...\n");
+      if (ret == 1)
+      {
+        opc_comms_log.append("Success\n");
+        setConnectionColor(true, false, OnOffRegister, labelRegister);
       }
+      else
+      {
+        opc_comms_log.append("Failed to register MSB OPCUA Milo Server on the LDS server!\n");
+        setConnectionColor(false, true, OnOffRegister, labelRegister);
+      }
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }//GEN-LAST:event_LDSRegisterserverActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
   private void LDSserverAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LDSserverAddressActionPerformed
-      // TODO add your handling code here:
+    // TODO add your handling code here:
   }//GEN-LAST:event_LDSserverAddressActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
   private void StartMSBServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartMSBServerActionPerformed
-      try {
-          opc_comms_log.append("Starting MSB OPCUA Milo Server...\n");
+    try
+    {
+      opc_comms_log.append("Starting MSB OPCUA Milo Server...\n");
 
-          opcuaServerInstanceMILO = new opcuaServerMSB(msb_opcua_servername.getText()); //new MSB Milo server
+      opcuaServerInstanceMILO = new opcuaServerMSB(msb_opcua_servername.getText()); //new MSB Milo server
 
-          //launch MILO MSB OPCUA Server endpoint
-          if (opcuaServerInstanceMILO.control == false) {
-              try {
-                  opcuaServerInstanceMILO.startup().get();
-                  opc_comms_log.append("Server created. \n");
-                  setConnectionColor(true, false, OnOffServerPanel, labelServer);
-              } catch (InterruptedException | ExecutionException ex) {
-                  Logger.getLogger(MSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
-                  opc_comms_log.append("Exception: " + ex);
-                  setConnectionColor(false, true, OnOffServerPanel, labelServer);
-              }
-          } else {
-              System.out.println("MSB Server already created!\n");
-              opc_comms_log.append("MSB Server already created!\n");
-          }
-
-          try {//test to see if the server is running at the first discovery
-              Thread.sleep(500);
-          } catch (InterruptedException ex) {
-              Thread.currentThread().interrupt();
-          }
-
-      } catch (Exception ex) {
-          Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+      //launch MILO MSB OPCUA Server endpoint
+      if (opcuaServerInstanceMILO.control == false)
+      {
+        try
+        {
+          opcuaServerInstanceMILO.startup().get();
+          opc_comms_log.append("Server created. \n");
+          setConnectionColor(true, false, OnOffServerPanel, labelServer);
+        }
+        catch (InterruptedException | ExecutionException ex)
+        {
+          Logger.getLogger(MSB_Struct.class.getName()).log(Level.SEVERE, null, ex);
+          opc_comms_log.append("Exception: " + ex);
+          setConnectionColor(false, true, OnOffServerPanel, labelServer);
+        }
       }
+      else
+      {
+        System.out.println("MSB Server already created!\n");
+        opc_comms_log.append("MSB Server already created!\n");
+      }
+
+      try
+      {//test to see if the server is running at the first discovery
+        Thread.sleep(500);
+      }
+      catch (InterruptedException ex)
+      {
+        Thread.currentThread().interrupt();
+      }
+
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }//GEN-LAST:event_StartMSBServerActionPerformed
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
   private void StartMSBServerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_StartMSBServerMouseClicked
 
   }//GEN-LAST:event_StartMSBServerMouseClicked
 
-    /**
-     *
-     * @param evt
-     */
+
+  /**
+   *
+   * @param evt
+   */
   private void msb_opcua_servernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msb_opcua_servernameActionPerformed
-      // TODO add your handling code here:
+    // TODO add your handling code here:
   }//GEN-LAST:event_msb_opcua_servernameActionPerformed
 
   private void b_startMSBDDSActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_startMSBDDSActionPerformed
   {//GEN-HEADEREND:event_b_startMSBDDSActionPerformed
 
-      DDSDeviceManager dm = DDSDeviceManager.getInstance();
-      if (!this.isDDSRunning) {
-          dm.addDevice("msb");
-          dm.getDevice("msb").crateTopicReader("generalmethod", DDSDevice.TopicType.GENERALMETHODMESSAGE);
-          dm.getDevice("msb").crateTopicReader("registo_fabio", DDSDevice.TopicType.STRINGMESSAGE);
+    DDSDeviceManager dm = DDSDeviceManager.getInstance();
+    if (!this.isDDSRunning)
+    {
+      dm.addDevice("msb");
+      dm.getDevice("msb").crateTopicReader("generalmethod", DDSDevice.TopicType.GENERALMETHODMESSAGE);
+      dm.getDevice("msb").crateTopicReader("registo_fabio", DDSDevice.TopicType.STRINGMESSAGE);
 
-          this.b_startMSBDDS.setText("Stop");
-          this.p_dds.repaint();
-          this.isDDSRunning = true;
+      this.b_startMSBDDS.setText("Stop");
+      this.p_dds.repaint();
+      this.isDDSRunning = true;
 
-      } else if (this.isDDSRunning) {
-          this.b_startMSBDDS.setText("Start");
-          this.isDDSRunning = false;
-          dm.removeDevice("msb");
+    }
+    else if (this.isDDSRunning)
+    {
+      this.b_startMSBDDS.setText("Start");
+      this.isDDSRunning = false;
+      dm.removeDevice("msb");
 
-          cb_DDSDevice.removeAllItems();
-          cb_DDSDevice.addItem("No devices available!");
-          cb_DDSRecipeList.removeAllItems();
-          cb_DDSRecipeList.addItem("No recipes available!");
+      cb_DDSDevice.removeAllItems();
+      cb_DDSDevice.addItem("No devices available!");
+      cb_DDSRecipeList.removeAllItems();
+      cb_DDSRecipeList.addItem("No recipes available!");
 
-          cb_DDSDevice.setEnabled(false);
-          cb_DDSRecipeList.setEnabled(false);
+      cb_DDSDevice.setEnabled(false);
+      cb_DDSRecipeList.setEnabled(false);
 
-          b_DDSCallRecipe.setEnabled(false);
+      b_DDSCallRecipe.setEnabled(false);
 
-          p_dds.repaint();
-      }
+      p_dds.repaint();
+    }
 
   }//GEN-LAST:event_b_startMSBDDSActionPerformed
 
   private void b_DDSCallRecipeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_DDSCallRecipeActionPerformed
   {//GEN-HEADEREND:event_b_DDSCallRecipeActionPerformed
-      DDSDeviceManager dm = DDSDeviceManager.getInstance();
-      //dm.getDevice(cb_DDSDevice.getModel().getElementAt(cb_DDSDevice.getSelectedIndex()));
-      try {
-          int status;
-          String deviceName = cb_DDSDevice.getSelectedItem().toString();
-          String topic = cb_DDSRecipeList.getSelectedItem().toString();
-          DDSDevice d = dm.getDevice(deviceName);
-          d.createTopicWriter(topic, DDSDevice.TopicType.STRINGMESSAGE);
-          DataWriter dwriter = d.getWriter(topic);
-          StringMessageDataWriter listenerWriter = StringMessageDataWriterHelper.narrow(dwriter);
-          StringMessage msgSample = new StringMessage();
+    DDSDeviceManager dm = DDSDeviceManager.getInstance();
+    //dm.getDevice(cb_DDSDevice.getModel().getElementAt(cb_DDSDevice.getSelectedIndex()));
+    try
+    {
+      int status;
+      String deviceName = cb_DDSDevice.getSelectedItem().toString();
+      String topic = cb_DDSRecipeList.getSelectedItem().toString();
+      DDSDevice d = dm.getDevice(deviceName);
+      d.createTopicWriter(topic, DDSDevice.TopicType.STRINGMESSAGE);
+      DataWriter dwriter = d.getWriter(topic);
+      StringMessageDataWriter listenerWriter = StringMessageDataWriterHelper.narrow(dwriter);
+      StringMessage msgSample = new StringMessage();
 
-          msgSample.device = deviceName;
-          msgSample.args = "0";
-          status = listenerWriter.write(msgSample, HANDLE_NIL.value);
-          DDSErrorHandler.checkStatus(status, "StringMessageDataWriter.write");
+      msgSample.device = deviceName;
+      msgSample.args = "0";
+      status = listenerWriter.write(msgSample, HANDLE_NIL.value);
+      DDSErrorHandler.checkStatus(status, "StringMessageDataWriter.write");
 
-      } catch (Exception ex) {
-          System.out.println("à meu deus" + ex.toString());
-      }
+    }
+    catch (Exception ex)
+    {
+      System.out.println("à meu deus" + ex.toString());
+    }
 
   }//GEN-LAST:event_b_DDSCallRecipeActionPerformed
 
   private void cb_DDSRecipeListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cb_DDSRecipeListActionPerformed
   {//GEN-HEADEREND:event_cb_DDSRecipeListActionPerformed
-      // TODO add your handling code here:
+    // TODO add your handling code here:
   }//GEN-LAST:event_cb_DDSRecipeListActionPerformed
 
   private void cb_DDSDeviceActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cb_DDSDeviceActionPerformed
   {//GEN-HEADEREND:event_cb_DDSDeviceActionPerformed
-      // TODO add your handling code here:
+    // TODO add your handling code here:
   }//GEN-LAST:event_cb_DDSDeviceActionPerformed
 
-    /**
-     *
-     * @param serverName
-     * @param serverUri
-     * @return
-     */
-    private static String registerServer(java.lang.String serverName, java.lang.String serverUri) {
-        DeviceRegistry dbMSB = new DeviceRegistry();
-        String res = dbMSB.register_device(serverName, "null", "null", serverUri, "opcua");
-        System.out.println(res);
 
-        return res;
-    }
+  /**
+   *
+   * @param serverName
+   * @param serverUri
+   * @return
+   */
+  private static String registerServer(java.lang.String serverName, java.lang.String serverUri)
+  {
+    DeviceRegistry dbMSB = new DeviceRegistry();
+    String res = dbMSB.register_device(serverName, "null", "null", serverUri, "opcua");
+    System.out.println(res);
 
-    /**
-     *
-     * @param ServerName
-     * @return
-     */
-    public static int RemoveDownServer(String ServerName) {
+    return res;
+  }
 
-        HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
-        myOpcUaClientsMap.deleteOPCclientIDMaps(ServerName); //remove server from singleton Hashmap
-        OPCclientIDMap.remove(ServerName); //remove server from HashMap
-        //delete server from DB
-        DeviceRegistry dbMSB = new DeviceRegistry();
-        int res = dbMSB.deregister_device(ServerName);
 
-        if (res != -999) {
-            System.out.println("DownServer successfully deleted from DB!");
-            return 1;
-        } else {
-            System.out.println("ERROR deleting DownServer from DB!");
-            return -1;
-        }
+  /**
+   *
+   * @param ServerName
+   * @return
+   */
+  public static int RemoveDownServer(String ServerName)
+  {
 
-    }
+    HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
+    myOpcUaClientsMap.deleteOPCclientIDMaps(ServerName); //remove server from singleton Hashmap
+    OPCclientIDMap.remove(ServerName); //remove server from HashMap
+    //delete server from DB
+    DeviceRegistry dbMSB = new DeviceRegistry();
+    int res = dbMSB.deregister_device(ServerName);
 
-    /**
-     *
-     * @param serverName
-     * @param protocol
-     * @param serverUri
-     */
-    private void addToTableServers(String serverName, String protocol, String serverUri) {
-        TServersmodel.addRow(new Object[]{
-            serverName, protocol, serverUri
-        });
-
-        Object[] rowData = new Object[TServersmodel.getColumnCount()];
-        for (int i = 0; i < TServersmodel.getColumnCount(); i++) {
-            rowData[i] = TServersmodel.getValueAt(0, i);
-            System.out.println("Server successfully added to table. Name: " + rowData.toString());
-        }
-        opc_comms_log.append("Server successfully added to table. Name: " + serverName + "URL: " + serverUri + "\n");
-
-        //warning - demo purposes
-        if (serverName.contains("Adapter")) {
-            CreateProductButtons();
-        }
-
-    }
-
-    /**
-     *
-     */
-    public static void FillProductsTable() {
-        HashMaps myOpcMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
-        int index = 0;
-        for (String key : myOpcMap.ExecutiontTableMaps.keySet()) {
-            System.out.println(key + " ->MAPA de execução MSBGUI<- - " + HashMaps.ExecutiontTableMaps.get(key));
-            List<ExecuteData> ETD = myOpcMap.ExecutiontTableMaps.get(key); //get product list for each workstatio 
-            for (int i = 0; i < ETD.size(); i++) {
-                addToTableProduct(ETD.get(i).productID, ETD.get(i).recipeID, ETD.get(i).status, key); //add each product from the list for each workstation
-            }
-            index++;
-        }
-
-    }
-
-    /**
-     *
-     */
-    public static void FillDDSCombos() {
-        HashMaps myOpcMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
-        int index = 0;
-        DeviceRegistry dbMSB = new DeviceRegistry();
-
-        ArrayList<String> devices = dbMSB.list_dds_devices();
-
-        cb_DDSDevice.removeAllItems();
-        cb_DDSRecipeList.removeAllItems();
-        for (String key : devices) {
-            cb_DDSDevice.addItem(key);
-            List<ExecuteData> ETD = myOpcMap.ExecutiontTableMaps.get(key); //get product list for each workstatio 
-            for (int i = 0; i < ETD.size(); i++) {
-                cb_DDSRecipeList.addItem(ETD.get(i).methodID);
-            }
-            index++;
-        }
-
-        cb_DDSRecipeList.setEnabled(true);
-        cb_DDSDevice.setEnabled(true);
-        b_DDSCallRecipe.setEnabled(true);
-
-        p_dds.repaint();
-
-    }
-
-    /**
-     *
-     */
-    public void CreateProductButtons() {
-        //DRAFT 
-        try {
-            prodA.show();
-            prodB.show();
-            Image imgA = ImageIO.read(new File("images\\prodA.png"));
-            Image imgB = ImageIO.read(new File("images\\prodB.png"));
-
-            prodA.setIcon(new ImageIcon(imgA));
-            prodB.setIcon(new ImageIcon(imgB));
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-    }
-
-    /**
-     *
-     */
-    public static void FillDevicesTable() {
-        for (String key : HashMaps.ServerTableMaps.keySet()) {
-            System.out.println(key + " ->MAPA de execução MSBGUI<- - " + HashMaps.ServerTableMaps.get(key));
-            ServerStatus SStat = HashMaps.ServerTableMaps.get(key);
-            //call mainwindow filltables
-
-            addToTableDevice(SStat.Name, SStat.Connected, SStat.URL, key);
-        }
-    }
-
-    /**
-     * add a row to tableProduct
-     *
-     * @param productID
-     * @param RecipeID
-     * @param Status
-     * @param Workstation
-     */
-    public static void addToTableProduct(String productID, String RecipeID, Boolean Status, String Workstation) {
-        TProductsmodel.addRow(new Object[]{
-            productID, RecipeID, Status, Workstation
-        });
-
-        /*Object[] rowData = new Object[TProductsmodel.getColumnCount()];
-    for (int i = 0; i < TProductsmodel.getColumnCount(); i++)
+    if (res != -999)
     {
-      rowData[i] = TProductsmodel.getValueAt(0, i);
-      System.out.println("Product NA TABELA: " + rowData[i].toString());
+      System.out.println("DownServer successfully deleted from DB!");
+      return 1;
     }
-    opc_comms_log.append("Product successfully added to table. Name: " + productID + "\n");*/
+    else
+    {
+      System.out.println("ERROR deleting DownServer from DB!");
+      return -1;
     }
 
-    /**
-     * add a row to DeviceTable
-     *
-     * @param DeviceName
-     * @param Status
-     * @param Endpoint
-     * @param WorkStation
+  }
+
+
+  /**
+   *
+   * @param serverName
+   * @param protocol
+   * @param serverUri
+   */
+  private void addToTableServers(String serverName, String protocol, String serverUri)
+  {
+    TServersmodel.addRow(new Object[]
+    {
+      serverName, protocol, serverUri
+    });
+
+    Object[] rowData = new Object[TServersmodel.getColumnCount()];
+    for (int i = 0; i < TServersmodel.getColumnCount(); i++)
+    {
+      rowData[i] = TServersmodel.getValueAt(0, i);
+      System.out.println("Server successfully added to table. Name: " + rowData.toString());
+    }
+    opc_comms_log.append("Server successfully added to table. Name: " + serverName + "URL: " + serverUri + "\n");
+
+    //warning - demo purposes
+    if (serverName.contains("Adapter"))
+    {
+      CreateProductButtons();
+    }
+
+  }
+
+
+  /**
+   *
+   */
+  public static void FillProductsTable()
+  {
+    HashMaps myOpcMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
+    int index = 0;
+    for (String key : myOpcMap.ExecutiontTableMaps.keySet())
+    {
+      System.out.println(key + " ->MAPA de execução MSBGUI<- - " + HashMaps.ExecutiontTableMaps.get(key));
+      List<ExecuteData> ETD = myOpcMap.ExecutiontTableMaps.get(key); //get product list for each workstatio 
+      for (int i = 0; i < ETD.size(); i++)
+      {
+        addToTableProduct(ETD.get(i).getProductID(), ETD.get(i).getRecipeID(), ETD.get(i).getStatus(), key); //add each product from the list for each workstation
+      }
+      index++;
+    }
+
+  }
+
+
+  /**
+   *
+   */
+  public static void FillDDSCombos()
+  {
+    HashMaps myOpcMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
+    int index = 0;
+    DeviceRegistry dbMSB = new DeviceRegistry();
+
+    ArrayList<String> devices = dbMSB.list_dds_devices();
+
+    cb_DDSDevice.removeAllItems();
+    cb_DDSRecipeList.removeAllItems();
+    for (String key : devices)
+    {
+      cb_DDSDevice.addItem(key);
+      List<ExecuteData> ETD = myOpcMap.ExecutiontTableMaps.get(key); //get product list for each workstatio 
+      for (int i = 0; i < ETD.size(); i++)
+      {
+        cb_DDSRecipeList.addItem(ETD.get(i).getMethodID());
+      }
+      index++;
+    }
+
+    cb_DDSRecipeList.setEnabled(true);
+    cb_DDSDevice.setEnabled(true);
+    b_DDSCallRecipe.setEnabled(true);
+
+    p_dds.repaint();
+
+  }
+
+
+  /**
+   *
+   */
+  public void CreateProductButtons()
+  {
+    //DRAFT 
+    try
+    {
+      prodA.show();
+      prodB.show();
+      Image imgA = ImageIO.read(new File("images\\prodA.png"));
+      Image imgB = ImageIO.read(new File("images\\prodB.png"));
+
+      prodA.setIcon(new ImageIcon(imgA));
+      prodB.setIcon(new ImageIcon(imgB));
+    }
+    catch (Exception ex)
+    {
+      System.out.println(ex);
+    }
+  }
+
+
+  /**
+   *
+   */
+  public static void FillDevicesTable()
+  {
+    for (String key : HashMaps.ServerTableMaps.keySet())
+    {
+      System.out.println(key + " ->MAPA de execução MSBGUI<- - " + HashMaps.ServerTableMaps.get(key));
+      ServerStatus SStat = HashMaps.ServerTableMaps.get(key);
+      //call mainwindow filltables
+
+      addToTableDevice(SStat.getName(), SStat.getConnected(), SStat.getURL(), key);
+    }
+  }
+
+
+  /**
+   * add a row to tableProduct
+   *
+   * @param productID
+   * @param RecipeID
+   * @param Status
+   * @param Workstation
+   */
+  public static void addToTableProduct(String productID, String RecipeID, Boolean Status, String Workstation)
+  {
+    TProductsmodel.addRow(new Object[]
+    {
+      productID, RecipeID, Status, Workstation
+    });
+
+    /*
+     * Object[] rowData = new Object[TProductsmodel.getColumnCount()]; for (int i = 0; i <
+     * TProductsmodel.getColumnCount(); i++) { rowData[i] = TProductsmodel.getValueAt(0, i); System.out.println("Product
+     * NA TABELA: " + rowData[i].toString()); } opc_comms_log.append("Product successfully added to table. Name: " +
+     * productID + "\n");
      */
-    public static void addToTableDevice(String DeviceName, Boolean Status, String Endpoint, String WorkStation) {
-        TDevicesmodel.addRow(new Object[]{
-            DeviceName, Status, Endpoint, WorkStation
-        });
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+  }
+
+
+  /**
+   * add a row to DeviceTable
+   *
+   * @param DeviceName
+   * @param Status
+   * @param Endpoint
+   * @param WorkStation
+   */
+  public static void addToTableDevice(String DeviceName, Boolean Status, String Endpoint, String WorkStation)
+  {
+    TDevicesmodel.addRow(new Object[]
+    {
+      DeviceName, Status, Endpoint, WorkStation
+    });
+    try
+    {
+      Thread.sleep(1000);
+    }
+    catch (InterruptedException ex)
+    {
+      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    Object[] rowData = new Object[TDevicesmodel.getColumnCount()];
+    for (int i = 0; i < TDevicesmodel.getColumnCount(); i++)
+    {
+      rowData[i] = TDevicesmodel.getValueAt(0, i);
+      System.out.println("Devices NA TABELA: " + rowData[i].toString());
+    }
+    opc_comms_log.append("Devices successfully added to table. Name: " + DeviceName + "\n");
+  }
+
+
+  /**
+   *
+   * @param serverName
+   * @param protocol
+   * @param serverUri
+   */
+  private void deleteFromTableServers(String serverName, String protocol, String serverUri)
+  {
+
+    int rowcont = TServersmodel.getRowCount();
+    int indexToRemove = -1;
+    for (int i = 0; i < TServersmodel.getRowCount(); i++)
+    {//For each row
+      for (int j = 0; j < TServersmodel.getColumnCount(); j++)
+      {//For each column in that row
+        if (TServersmodel.getValueAt(i, j).equals(serverName))
+        {//Search the model
+          System.out.println("FOUND SERVER TO DELETE from table: " + TServersmodel.getValueAt(i, j));//Print if found string
+          indexToRemove = i;
+          TServersmodel.removeRow(indexToRemove);
+          i--;
         }
-        Object[] rowData = new Object[TDevicesmodel.getColumnCount()];
-        for (int i = 0; i < TDevicesmodel.getColumnCount(); i++) {
-            rowData[i] = TDevicesmodel.getValueAt(0, i);
-            System.out.println("Devices NA TABELA: " + rowData[i].toString());
-        }
-        opc_comms_log.append("Devices successfully added to table. Name: " + DeviceName + "\n");
+      }//For inner loop 
+    }//For outer loop 
+
+    if (indexToRemove != -1)
+    {
+
+      System.out.println("SERVER DELETED from table: " + serverName);//Print if server found 
+      opc_comms_log.append("SERVER DELETED from table: " + serverName + "\n");
+    }
+    else
+    {
+      System.out.println("SERVER TO DELETE NOT FOUND from table: " + serverName);//Print if server not found 
+      //opc_comms_log.append("SERVER TO DELETE NOT FOUND from table: " + serverName + "\n");
     }
 
-    /**
-     *
-     * @param serverName
-     * @param protocol
-     * @param serverUri
-     */
-    private void deleteFromTableServers(String serverName, String protocol, String serverUri) {
+    comboServers.removeItem(serverName);
 
-        int rowcont = TServersmodel.getRowCount();
-        int indexToRemove = -1;
-        for (int i = 0; i < TServersmodel.getRowCount(); i++) {//For each row
-            for (int j = 0; j < TServersmodel.getColumnCount(); j++) {//For each column in that row
-                if (TServersmodel.getValueAt(i, j).equals(serverName)) {//Search the model
-                    System.out.println("FOUND SERVER TO DELETE from table: " + TServersmodel.getValueAt(i, j));//Print if found string
-                    indexToRemove = i;
-                    TServersmodel.removeRow(indexToRemove);
-                    i--;
-                }
-            }//For inner loop 
-        }//For outer loop 
+  }
 
-        if (indexToRemove != -1) {
 
-            System.out.println("SERVER DELETED from table: " + serverName);//Print if server found 
-            opc_comms_log.append("SERVER DELETED from table: " + serverName + "\n");
-        } else {
-            System.out.println("SERVER TO DELETE NOT FOUND from table: " + serverName);//Print if server not found 
-            //opc_comms_log.append("SERVER TO DELETE NOT FOUND from table: " + serverName + "\n");
-        }
+  /**
+   *
+   * @param productID
+   * @param recipeID
+   * @param workstationName
+   */
+  private static void deleteFromTableProducts(String productID, String recipeID, String workstationName)
+  {
+    //delete from product ID? recipeID? or workstationName? or all?
+    //TODO
 
-        comboServers.removeItem(serverName);
-
-    }
-
-    /**
-     *
-     * @param productID
-     * @param recipeID
-     * @param workstationName
-     */
-    private static void deleteFromTableProducts(String productID, String recipeID, String workstationName) {
-        //delete from product ID? recipeID? or workstationName? or all?
-        //TODO
-
-        int rowcont = TProductsmodel.getRowCount();
-        int indexToRemove = -1;
-        for (int i = 0; i < TProductsmodel.getRowCount(); i++) {//For each row
-            for (int j = 0; j < TProductsmodel.getColumnCount(); j++) {//For each column in that row
-                if (/*
+    int rowcont = TProductsmodel.getRowCount();
+    int indexToRemove = -1;
+    for (int i = 0; i < TProductsmodel.getRowCount(); i++)
+    {//For each row
+      for (int j = 0; j < TProductsmodel.getColumnCount(); j++)
+      {//For each column in that row
+        if (/*
            * TProductsmodel.getValueAt(i, j).equals(productID) || TProductsmodel.getValueAt(i, j).equals(recipeID) ||
-                         */TProductsmodel.getValueAt(i, j).equals(workstationName)) {//Search the model
-                    System.out.println("FOUND PRODUCT TO DELETE from table: " + TProductsmodel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
-                    indexToRemove = i;
-                    TProductsmodel.removeRow(indexToRemove);
-                    i--;
-                }
-            }//For inner loop 
-        }//For outer loop 
-
-        if (indexToRemove != -1) {
-            System.out.println("PRODUCT DELETED from table: " + productID);//Print if server found 
-            opc_comms_log.append("PRODUCT DELETED from table: " + productID + "\n");
-        } else {
-            System.out.println("PRODUCT TO DELETE NOT FOUND from table: " + productID);//Print if server not found 
-            //opc_comms_log.append("PRODUCT TO DELETE NOT FOUND from table: " + productID + "\n");
+           */TProductsmodel.getValueAt(i, j).equals(workstationName))
+        {//Search the model
+          System.out.println("FOUND PRODUCT TO DELETE from table: " + TProductsmodel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
+          indexToRemove = i;
+          TProductsmodel.removeRow(indexToRemove);
+          i--;
         }
+      }//For inner loop 
+    }//For outer loop 
 
+    if (indexToRemove != -1)
+    {
+      System.out.println("PRODUCT DELETED from table: " + productID);//Print if server found 
+      opc_comms_log.append("PRODUCT DELETED from table: " + productID + "\n");
+    }
+    else
+    {
+      System.out.println("PRODUCT TO DELETE NOT FOUND from table: " + productID);//Print if server not found 
+      //opc_comms_log.append("PRODUCT TO DELETE NOT FOUND from table: " + productID + "\n");
     }
 
-    /**
-     *
-     * @param DeviceName
-     * @param status
-     * @param endpoint
-     * @param workstationName
-     */
-    private static void deleteFromTableDevices(String DeviceName, Boolean status, String endpoint, String workstationName) {
-        //delete from DeviceName? status? or endpoint? or all?
-        //TODO
+  }
 
-        int rowcount = TDevicesmodel.getRowCount();
 
-        int indexToRemove = -1;
-        for (int i = 0; i < TDevicesmodel.getRowCount(); i++) {//For each row
-            for (int j = 0; j < TDevicesmodel.getColumnCount(); j++) {//For each column in that row
-                if (/*
+  /**
+   *
+   * @param DeviceName
+   * @param status
+   * @param endpoint
+   * @param workstationName
+   */
+  private static void deleteFromTableDevices(String DeviceName, Boolean status, String endpoint, String workstationName)
+  {
+    //delete from DeviceName? status? or endpoint? or all?
+    //TODO
+
+    int rowcount = TDevicesmodel.getRowCount();
+
+    int indexToRemove = -1;
+    for (int i = 0; i < TDevicesmodel.getRowCount(); i++)
+    {//For each row
+      for (int j = 0; j < TDevicesmodel.getColumnCount(); j++)
+      {//For each column in that row
+        if (/*
            * TDevicesmodel.getValueAt(i, j).equals(DeviceName) || TDevicesmodel.getValueAt(i, j).equals(endpoint) ||
-                         */TDevicesmodel.getValueAt(i, j).equals(workstationName)) {//Search the model
-                    System.out.println("FOUND PRODUCT TO DELETE from table: " + TDevicesmodel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
-                    indexToRemove = i;
-                    TDevicesmodel.removeRow(indexToRemove);
-                    i--;
-                }
-            }//For inner loop 
-        }//For outer loop 
-
-        if (indexToRemove != -1) {
-            System.out.println("DEVICE DELETED from table: " + workstationName);//Print if server found 
-            opc_comms_log.append("DEVICE DELETED from table: " + workstationName + "\n");
-        } else {
-            System.out.println("DEVICE TO DELETE NOT FOUND from table: " + workstationName);//Print if server not found 
-            //opc_comms_log.append("DEVICE TO DELETE NOT FOUND from table: " + DeviceName + "\n");
+           */TDevicesmodel.getValueAt(i, j).equals(workstationName))
+        {//Search the model
+          System.out.println("FOUND PRODUCT TO DELETE from table: " + TDevicesmodel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
+          indexToRemove = i;
+          TDevicesmodel.removeRow(indexToRemove);
+          i--;
         }
+      }//For inner loop 
+    }//For outer loop 
 
+    if (indexToRemove != -1)
+    {
+      System.out.println("DEVICE DELETED from table: " + workstationName);//Print if server found 
+      opc_comms_log.append("DEVICE DELETED from table: " + workstationName + "\n");
+    }
+    else
+    {
+      System.out.println("DEVICE TO DELETE NOT FOUND from table: " + workstationName);//Print if server not found 
+      //opc_comms_log.append("DEVICE TO DELETE NOT FOUND from table: " + DeviceName + "\n");
     }
 
-    /**
-     *
-     */
-    private void setImage() {
-        //faz o set das images e dimensiona se acordo com o tamanho do panel
-        BufferedImage img = null;
-        BufferedImage img1 = null;
-        BufferedImage img2 = null;
-        try {
-            img = ImageIO.read(new File("images/green-circle.png"));
-            img1 = ImageIO.read(new File("images/red.png"));
-            img2 = ImageIO.read(new File("images/glossy-gray.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+  }
 
-        Image dimg = img.getScaledInstance(34, 31, Image.SCALE_SMOOTH);
-        Image dimg2 = img1.getScaledInstance(34, 31, Image.SCALE_SMOOTH);
-        Image dimg3 = img2.getScaledInstance(34, 31, Image.SCALE_SMOOTH);
-        greenLight = new ImageIcon(dimg);
-        redLight = new ImageIcon(dimg2);
-        greyLight = new ImageIcon(dimg3);
+
+  /**
+   *
+   */
+  private void setImage()
+  {
+    //faz o set das images e dimensiona se acordo com o tamanho do panel
+    BufferedImage img = null;
+    BufferedImage img1 = null;
+    BufferedImage img2 = null;
+    try
+    {
+      img = ImageIO.read(new File("images/green-circle.png"));
+      img1 = ImageIO.read(new File("images/red.png"));
+      img2 = ImageIO.read(new File("images/glossy-gray.png"));
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
     }
 
-    /**
-     *
-     * @param con
-     * @param lastState
-     * @param panel
-     * @param label
-     * @return
-     */
-    private boolean setConnectionColor(boolean con, boolean lastState, JPanel panel, JLabel label) {
-        // verifica o estado da ligaçao ao servidor e altera a imagem de acordo com a mesma
-        if (con != lastState) {
+    Image dimg = img.getScaledInstance(34, 31, Image.SCALE_SMOOTH);
+    Image dimg2 = img1.getScaledInstance(34, 31, Image.SCALE_SMOOTH);
+    Image dimg3 = img2.getScaledInstance(34, 31, Image.SCALE_SMOOTH);
+    greenLight = new ImageIcon(dimg);
+    redLight = new ImageIcon(dimg2);
+    greyLight = new ImageIcon(dimg3);
+  }
 
-            if (con == true) {
 
-                panel.removeAll();
-                label.setIcon(greenLight);
-                panel.add(label);
-                panel.revalidate();
-                panel.repaint();
-            } else if (con == false) {
+  /**
+   *
+   * @param con
+   * @param lastState
+   * @param panel
+   * @param label
+   * @return
+   */
+  private boolean setConnectionColor(boolean con, boolean lastState, JPanel panel, JLabel label)
+  {
+    // verifica o estado da ligaçao ao servidor e altera a imagem de acordo com a mesma
+    if (con != lastState)
+    {
 
-                panel.removeAll();
-                label.setIcon(redLight);
-                panel.add(label);
-                panel.revalidate();
-                panel.repaint();
-            }
-            return con;
-        }
-        return lastState;
+      if (con == true)
+      {
+
+        panel.removeAll();
+        label.setIcon(greenLight);
+        panel.add(label);
+        panel.revalidate();
+        panel.repaint();
+      }
+      else if (con == false)
+      {
+
+        panel.removeAll();
+        label.setIcon(redLight);
+        panel.add(label);
+        panel.revalidate();
+        panel.repaint();
+      }
+      return con;
     }
+    return lastState;
+  }
 
-    /**
-     *
-     */
-    private void threadCheckServersConnection() {
-        //thread da verificaçao da ligaçao ao servidor do plc
-        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-        exec.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                /*
+
+  /**
+   *
+   */
+  private void threadCheckServersConnection()
+  {
+    //thread da verificaçao da ligaçao ao servidor do plc
+    ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+    exec.scheduleAtFixedRate(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        /*
          * boolean aux1 = setConnectionColor(SubscriptionPLC.Connection, SubscriptionPLC.lastState, OnOffPLCPanel,
          * labelPLC); if (aux1 == SubscriptionPLC.Connection) { SubscriptionPLC.lastState = aux1; }
-                 */
-            }
-        }, 0, 100, TimeUnit.MILLISECONDS);
-    }
+         */
+      }
+    }, 0, 100, TimeUnit.MILLISECONDS);
+  }
 
-    @Override
-    public void update(java.util.Observable o, Object arg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    /**
-     * reimplementation of modellistener for checkbox value checking
-     */
-    public class CheckBoxModelListener implements TableModelListener {
+  @Override
+  public void update(java.util.Observable o, Object arg)
+  {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 
-        public void tableChanged(TableModelEvent e) {
-            int row = e.getFirstRow();
-            int column = e.getColumn();
-            if (column == 2) { //column of the checkbox
-                TableModel model = (TableModel) e.getSource();
-                String columnName = model.getColumnName(column);
-                Boolean checked = (Boolean) model.getValueAt(row, column);
-                String recipeID = (String) model.getValueAt(row, 1);
-                if (checked) {
-                    System.out.println(columnName + ": " + true);
-                    opc_comms_log.append("SendChanges:" + columnName + " of " + recipeID + " " + true + "\n");
-                } else {
-                    System.out.println(columnName + ": " + false);
-                    opc_comms_log.append("SendChanges:" + columnName + " of " + recipeID + " " + false + "\n");
-                }
-            }
-        }
-    }
 
-    /**
-     *
-     * @param text
-     */
-    public void setLogText(String text) {
-        opc_comms_log.append(text + '\n');
-    }
+  /**
+   * reimplementation of modellistener for checkbox value checking
+   */
+  public class CheckBoxModelListener implements TableModelListener
+  {
 
-    /**
-     *
-     * @param WorkstationName
-     * @return
-     */
-    public String CleanTablesFromWorkstation(String WorkstationName) {
-        deleteFromTableDevices(null, null, null, WorkstationName);
-        deleteFromTableProducts(null, null, WorkstationName);
-        deleteFromTableServers(WorkstationName, null, null);
-
-        return "OK";
-    }
-
-    /**
-     *
-     * @param WorkstationName
-     * @return
-     */
-    public String CleanHashMapsFromWorkstation(String WorkstationName) {
-        HashMaps myMaps = HashMaps.getInstance(); //singleton to access hashmaps in other classes
-
-        MSB_MiloClientSubscription ret = null;
-        CyberPhysicalAgentDescription cpadRET = null;
-        Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myMaps.getOPCclientIDMaps(); //get opcdevice name and object map 
-        MSB_MiloClientSubscription ClientToRemove = OpcuaDeviceHashMap.get(WorkstationName);
-
-        //remove every trace related to the opc client object name on the productIDAdapterMaps
-        for (String key : myMaps.ProductIDAdapterMaps.keySet()) {
-            MSB_MiloClientSubscription MCS = myMaps.ProductIDAdapterMaps.get(key);
-
-            String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
-
-            if (clientInstanceObject.equals(ClientToRemove)) {
-                ret = myMaps.ProductIDAdapterMaps.remove(key);
-                cpadRET = myMaps.AgentDeviceMaps.remove(clientInstanceObject);
-            }
-        }
-
-        //remove every trace related to the workstation name on the ExecutiontTableMaps
-        List<ExecuteData> ret1 = myMaps.ExecutiontTableMaps.remove(WorkstationName);
-
-        //remove every trace related to the workstation name on the ServerTableMaps
-        ServerStatus ret2 = myMaps.ServerTableMaps.remove(WorkstationName);
-
-        //remove every trace related to the workstation name on the OpcuaDeviceHashMap
-        MSB_MiloClientSubscription ret3 = OpcuaDeviceHashMap.remove(WorkstationName);
-
-        if (ret != null || ret1 != null || ret2 != null || ret3 != null) //if there was data removed, notify
+    public void tableChanged(TableModelEvent e)
+    {
+      int row = e.getFirstRow();
+      int column = e.getColumn();
+      if (column == 2)
+      { //column of the checkbox
+        TableModel model = (TableModel) e.getSource();
+        String columnName = model.getColumnName(column);
+        Boolean checked = (Boolean) model.getValueAt(row, column);
+        String recipeID = (String) model.getValueAt(row, 1);
+        if (checked)
         {
-            opc_comms_log.append("Successfully removed " + WorkstationName + " from the Maps" + "\n");
+          System.out.println(columnName + ": " + true);
+          opc_comms_log.append("SendChanges:" + columnName + " of " + recipeID + " " + true + "\n");
         }
+        else
+        {
+          System.out.println(columnName + ": " + false);
+          opc_comms_log.append("SendChanges:" + columnName + " of " + recipeID + " " + false + "\n");
+        }
+      }
+    }
+  }
 
-        /*
+
+  /**
+   *
+   * @param text
+   */
+  public void setLogText(String text)
+  {
+    opc_comms_log.append(text + '\n');
+  }
+
+
+  /**
+   *
+   * @param WorkstationName
+   * @return
+   */
+  public String CleanTablesFromWorkstation(String WorkstationName)
+  {
+    deleteFromTableDevices(null, null, null, WorkstationName);
+    deleteFromTableProducts(null, null, WorkstationName);
+    deleteFromTableServers(WorkstationName, null, null);
+
+    return "OK";
+  }
+
+
+  /**
+   *
+   * @param WorkstationName
+   * @return
+   */
+  public String CleanHashMapsFromWorkstation(String WorkstationName)
+  {
+    HashMaps myMaps = HashMaps.getInstance(); //singleton to access hashmaps in other classes
+
+    MSB_MiloClientSubscription ret = null;
+    CyberPhysicalAgentDescription cpadRET = null;
+    Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myMaps.getOPCclientIDMaps(); //get opcdevice name and object map 
+    MSB_MiloClientSubscription ClientToRemove = OpcuaDeviceHashMap.get(WorkstationName);
+
+    //remove every trace related to the opc client object name on the productIDAdapterMaps
+    for (String key : myMaps.ProductIDAdapterMaps.keySet())
+    {
+      MSB_MiloClientSubscription MCS = myMaps.ProductIDAdapterMaps.get(key);
+
+      String clientInstanceObject = MCS.milo_client_instanceMSB.toString();
+
+      if (clientInstanceObject.equals(ClientToRemove))
+      {
+        ret = myMaps.ProductIDAdapterMaps.remove(key);
+        cpadRET = myMaps.AgentDeviceMaps.remove(clientInstanceObject);
+      }
+    }
+
+    //remove every trace related to the workstation name on the ExecutiontTableMaps
+    List<ExecuteData> ret1 = myMaps.ExecutiontTableMaps.remove(WorkstationName);
+
+    //remove every trace related to the workstation name on the ServerTableMaps
+    ServerStatus ret2 = myMaps.ServerTableMaps.remove(WorkstationName);
+
+    //remove every trace related to the workstation name on the OpcuaDeviceHashMap
+    MSB_MiloClientSubscription ret3 = OpcuaDeviceHashMap.remove(WorkstationName);
+
+    if (ret != null || ret1 != null || ret2 != null || ret3 != null) //if there was data removed, notify
+    {
+      opc_comms_log.append("Successfully removed " + WorkstationName + " from the Maps" + "\n");
+    }
+
+    /*
      * AgentStatus status = DeviceITF.RemoveAgent(cpadRET.getUniqueName()); opc_comms_log.append("Removing agent:
      * "+cpadRET.getUniqueName()); if(status.equals("OK")){ opc_comms_log.append("Agent successfully deleted"); }else{
      * opc_comms_log.append("Problem deleting agent!"); }
-         */
-        return "OK";
-    }
-
-    /**
-     * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    return "OK";
+  }
 
-        //Set the Nimbus look and feel
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+  /**
+   * @param args the command line arguments
+   */
+  public static void main(String args[])
+  {
+
+    //Set the Nimbus look and feel
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    try
+    {
+      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
+      {
+        if ("Nimbus".equals(info.getName()))
+        {
+          javax.swing.UIManager.setLookAndFeel(info.getClassName());
+          break;
         }
-        //</editor-fold>
-        //</editor-fold>
-
-        /*
-     * Create and display the form
-         */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            /**
-             *
-             */
-            public void run() {
-
-                try {
-                    new MSB_gui().setVisible(true);
-                } catch (Exception ex) {
-                    Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                ImageIcon imageIcon;
-                imageIcon = new ImageIcon(new ImageIcon("./main/resources/eu/openmos/msb/icons/OpenMos-logo-RGB-colours.png").getImage().getScaledInstance(l_openmosLogo.getWidth(), l_openmosLogo.getHeight(), Image.SCALE_DEFAULT));
-                l_openmosLogo.setIcon(imageIcon);
-
-                jScrollPane1.getVerticalScrollBar().setAutoscrolls(true);
-
-                DefaultCaret caret = (DefaultCaret) opc_comms_log.getCaret();
-                caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-            }
-        });
-
+      }
     }
+    catch (ClassNotFoundException ex)
+    {
+      java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    }
+    catch (InstantiationException ex)
+    {
+      java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    }
+    catch (IllegalAccessException ex)
+    {
+      java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    }
+    catch (javax.swing.UnsupportedLookAndFeelException ex)
+    {
+      java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    }
+    //</editor-fold>
+    //</editor-fold>
+
+    /*
+     * Create and display the form
+     */
+    java.awt.EventQueue.invokeLater(new Runnable()
+    {
+      /**
+       *
+       */
+      public void run()
+      {
+
+        try
+        {
+          new MSB_gui().setVisible(true);
+        }
+        catch (Exception ex)
+        {
+          Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        ImageIcon imageIcon;
+        imageIcon = new ImageIcon(new ImageIcon("./main/resources/eu/openmos/msb/icons/OpenMos-logo-RGB-colours.png").getImage().getScaledInstance(l_openmosLogo.getWidth(), l_openmosLogo.getHeight(), Image.SCALE_DEFAULT));
+        l_openmosLogo.setIcon(imageIcon);
+
+        jScrollPane1.getVerticalScrollBar().setAutoscrolls(true);
+
+        DefaultCaret caret = (DefaultCaret) opc_comms_log.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+      }
+    });
+
+  }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> ComboMSB;

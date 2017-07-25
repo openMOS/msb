@@ -12,9 +12,5 @@ package eu.openmos.msb.datastructures;
  */
 public class Recipe
 {
- 
-  
-  
-  
-  
+
 }
