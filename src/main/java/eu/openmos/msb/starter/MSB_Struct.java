@@ -6,7 +6,7 @@
 package eu.openmos.msb.starter;
 
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
-import eu.openmos.msb.datastructures.HashMaps;
+import eu.openmos.msb.datastructures.MSBClients;
 import eu.openmos.msb.opcua.utils.OPCDeviceItf;
 import eu.openmos.msb.opcua.utils.OpcUaServersDiscoverySnippet;
 import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
@@ -149,7 +149,7 @@ public class MSB_Struct
               OPCclientIDMap.put(name, instance);
 
               //singleton to access client objects in other classes
-              HashMaps myOpcUaClientsMap = HashMaps.getInstance();
+              MSBClients myOpcUaClientsMap = MSBClients.getInstance();
               myOpcUaClientsMap.setOPCclientIDMaps(name, instance);
 
               // Iterate over all values, using the keySet method.
@@ -181,7 +181,7 @@ public class MSB_Struct
               {
                 System.out.println(key + " ->hashmap<- - " + OPCclientIDMap.get(key));
               }
-              HashMaps myOpcUaClientsMap2 = HashMaps.getInstance(); //singleton to access client objects in other classes
+              MSBClients myOpcUaClientsMap2 = MSBClients.getInstance(); //singleton to access client objects in other classes
               for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet())
               {
                 System.out.println(key + " ->singleton hashmap<- - " + myOpcUaClientsMap.getOPCclientIDMaps().get(key));
@@ -248,7 +248,7 @@ public class MSB_Struct
         {
           System.out.println(key + " ->new local hashmap<- - " + OPCclientIDMap.get(key));
         }
-        HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
+        MSBClients myOpcUaClientsMap = MSBClients.getInstance(); //singleton to access client objects in other classes
         for (String key : myOpcUaClientsMap.getOPCclientIDMaps().keySet())
         {
           System.out.println(key + " ->new singleton hashmap<- - " + myOpcUaClientsMap.getOPCclientIDMaps().get(key));
@@ -296,7 +296,7 @@ public class MSB_Struct
   public static int RemoveDownServer(String ServerName)
   {
 
-    HashMaps myOpcUaClientsMap = HashMaps.getInstance(); //singleton to access client objects in other classes
+    MSBClients myOpcUaClientsMap = MSBClients.getInstance(); //singleton to access client objects in other classes
     myOpcUaClientsMap.deleteOPCclientIDMaps(ServerName); //remove server from singleton Hashmap
     OPCclientIDMap.remove(ServerName); //remove server from HashMap
     //delete server from DB

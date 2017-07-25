@@ -32,7 +32,7 @@ public class DeviceRegistry implements IDeviceRegistry
     @WebParam(name = "device_protocol") String device_protocol)
   {
 
-    boolean res = DatabaseInteraction.getInstance().registerDevice(device_name, device_protocol, short_info, long_info, "0", "0");
+    boolean res = DatabaseInteraction.getInstance().createDevice(device_name, device_protocol, short_info, long_info, "0", "0");
 
     if (res)
     {
@@ -192,7 +192,7 @@ public class DeviceRegistry implements IDeviceRegistry
   @Override
   public int deregister_device(@WebParam(name = "device_id") String device_id)
   {
-    return DatabaseInteraction.getInstance().deregisterDeviceById(device_id);
+    return DatabaseInteraction.getInstance().removeDeviceById(device_id);
   }
 
 

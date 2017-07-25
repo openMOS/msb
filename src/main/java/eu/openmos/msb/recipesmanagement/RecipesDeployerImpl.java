@@ -7,7 +7,7 @@ package eu.openmos.msb.recipesmanagement;
 
 import eu.openmos.agentcloud.data.recipe.Recipe;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
-import eu.openmos.msb.datastructures.HashMaps;
+import eu.openmos.msb.datastructures.MSBClients;
 import java.util.List;
 import java.util.Map;
 import javax.jws.WebService;
@@ -61,7 +61,7 @@ public class RecipesDeployerImpl implements RecipesDeployer
 
     //send it to the device
     Map<String, MSB_MiloClientSubscription> OPCclientMapper;
-    HashMaps mytest = HashMaps.getInstance();
+    MSBClients mytest = MSBClients.getInstance();
     OPCclientMapper = mytest.getOPCclientIDMaps();
 
     MSB_MiloClientSubscription msbClientSub = null;

@@ -5,6 +5,7 @@
  */
 package eu.openmos.msb.datastructures;
 
+
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.messages.ExecuteData;
 import eu.openmos.msb.messages.ServerStatus;
@@ -18,9 +19,11 @@ import java.util.Map;
  *
  * @author fabio.miranda
  */
-public class HashMaps
+public class MSBClients
 {
 
+  private final Map<String, DeviceAdapter> deviceAdapters = new HashMap<String, DeviceAdapter>();
+  
   // workstation name || OPC UA Client
   public static Map<String, MSB_MiloClientSubscription> OPCclientIDMaps = new HashMap<String, MSB_MiloClientSubscription>();
   //workstation name || executetabledata
@@ -28,100 +31,157 @@ public class HashMaps
   // device name || devices in the workstation and its data
   public static Map<String, ServerStatus> ServerTableMaps = new HashMap<String, ServerStatus>();
 
-  public static Map<MSB_MiloClientSubscription, CyberPhysicalAgentDescription> AgentDeviceMaps = new HashMap<MSB_MiloClientSubscription, CyberPhysicalAgentDescription>(); //OPCClient vs AgentID
+  //OPCClient vs AgentID
+  public static Map<MSB_MiloClientSubscription, CyberPhysicalAgentDescription> AgentDeviceMaps = new HashMap<MSB_MiloClientSubscription, CyberPhysicalAgentDescription>();
 
-  public static HashMaps instance = null;
+  private static final Object lock = new Object();
+  private static volatile MSBClients instance = null;
 
+  
 
-  public static HashMaps getInstance()
+  protected MSBClients()
   {
-
-    if (instance == null)
-    {
-      instance = new HashMaps();
-    }
-    return instance;
+    // EMPTY 
   }
 
 
-  //OPC DEVICE name vs client MAPS*************************************************
+  public static MSBClients getInstance()
+  {
+    MSBClients i = instance;
+    if (i == null)
+    {
+      synchronized (lock)
+      {
+        // While we were waiting for the lock, another 
+        i = instance; // thread may have instantiated the object.
+        if (i == null)
+        {
+          i = new MSBClients();
+          instance = i;
+        }
+      }
+    }
+    return i;
+  }
+
+
+  /**
+   * @brief OPC DEVICE name vs client MAPS 
+   * @return
+   */
   public static Map<String, MSB_MiloClientSubscription> getOPCclientIDMaps()
   {
     return OPCclientIDMaps;
   }
 
 
+  /**
+   * @brief @param key
+   * @param keyset
+   */
   public static void setOPCclientIDMaps(String key, MSB_MiloClientSubscription keyset)
   {
-    HashMaps.OPCclientIDMaps.put(key, keyset);
+    MSBClients.OPCclientIDMaps.put(key, keyset);
   }
 
 
+  /**
+   * @brief @param key
+   */
   public static void deleteOPCclientIDMaps(String key)
   {
-    HashMaps.OPCclientIDMaps.remove(key);
+    MSBClients.OPCclientIDMaps.remove(key);
   }
 
 
-//AGENT vs DEVICE MAPS*************************************************
+  /**
+   * @brief AGENT vs DEVICE MAPS ************************************************ 
+   * @return
+   */
   public static Map<MSB_MiloClientSubscription, CyberPhysicalAgentDescription> getAgentDeviceIDMaps()
   {
     return AgentDeviceMaps;
   }
 
 
+  /**
+   *
+   * @param key
+   * @param keyset
+   */
   public static void setAgentDeviceIDMaps(MSB_MiloClientSubscription key, CyberPhysicalAgentDescription keyset)
   {
-    HashMaps.AgentDeviceMaps.put(key, keyset);
+    MSBClients.AgentDeviceMaps.put(key, keyset);
   }
 
 
+  /**
+   *
+   * @param key
+   */
   public static void deleteOAgentDeviceIDMaps(MSB_MiloClientSubscription key)
   {
-    HashMaps.AgentDeviceMaps.remove(key);
+    MSBClients.AgentDeviceMaps.remove(key);
   }
 
-//WORKSTATIONName vs DEVICE data MAPS*************************************************
 
+  /**
+   * @brief WORKSTATIONName vs DEVICE data MAPS ************************************************ 
+   * @return
+   */
   public static Map<String, ServerStatus> getDevicesNameDataMaps()
   {
     return ServerTableMaps;
   }
 
 
+  /**
+   *
+   * @param key
+   * @param keyset
+   */
   public static void setDevicesNameDataMaps(String key, ServerStatus keyset)
   {
-    HashMaps.ServerTableMaps.put(key, keyset);
+    MSBClients.ServerTableMaps.put(key, keyset);
   }
 
 
+  /**
+   *
+   * @param key
+   */
   public static void deleteDevicesNameDataMaps(String key)
   {
-    HashMaps.ServerTableMaps.remove(key);
+    MSBClients.ServerTableMaps.remove(key);
   }
 
-//ExecutionInfoMaps
 
+  /**
+   * @brief ExecutionInfoMaps
+   * @return
+   */
   public static Map<String, List<ExecuteData>> getExecutionInfoMaps()
   {
     return ExecutiontTableMaps;
   }
 
 
+  /**
+   * @brief @param key
+   * @param keyset
+   */
   public static void setExecutionInfoMaps(String key, List<ExecuteData> keyset)
   {
-    HashMaps.ExecutiontTableMaps.put(key, keyset);
+    MSBClients.ExecutiontTableMaps.put(key, keyset);
   }
 
 
+  /**
+   * @brief @param key
+   */
   public static void deleteExecutionInfoMaps(String key)
   {
-    HashMaps.ExecutiontTableMaps.remove(key);
+    MSBClients.ExecutiontTableMaps.remove(key);
   }
 
-
-  protected HashMaps()
-  {
-
-  }
 }

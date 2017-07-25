@@ -5,13 +5,11 @@
  */
 package eu.openmos.msb.datastructures;
 
-import eu.openmos.msb.messages.ExecuteData;
 import eu.openmos.msb.messages.ServerStatus;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
 
 
 /**
@@ -29,7 +27,6 @@ public class DeviceAdapter
   // [TODO - af-silva - ver qual a melhor solucao para ter mais do que um cliente para diferents protocolos]
   // Client
   private MSB_MiloClientSubscription opcClientIDMaps = new MSB_MiloClientSubscription();
-  private List<ExecuteData> executionTableMaps; //workstation name || executetabledata
   private List<ServerStatus> serverStatusMaps; // device name || devices in the workstation and its data
 
 
@@ -127,80 +124,6 @@ public class DeviceAdapter
   {
     this.opcClientIDMaps = opcClientIDMaps;
   }
-
-
-  // TABLES ***********************************************************************************************************/
-  // ***************************************************************************************************************** /
-  /**
-   * @return the executionTableMaps
-   */
-  public List<ExecuteData> getExecutionTableMaps()
-  {
-    return executionTableMaps;
-  }
-
-
-  /**
-   *
-   * @param data
-   */
-  public void addToExecutionData(ExecuteData data)
-  {
-    this.executionTableMaps.add(data);
-  }
-
-
-  /**
-   *
-   * @param productID
-   * @return
-   */
-  public ExecuteData getExecuteDataByProductID(String productID)
-  {
-    Iterator<ExecuteData> it = this.executionTableMaps.iterator();
-    while (it.hasNext())
-    {
-      ExecuteData temp = it.next();
-      if (temp.getProductID().toUpperCase().equals(productID.toUpperCase()))
-      {
-        return temp;
-      }
-    }
-    return null;
-  }
-
-
-  /**
-   *
-   * @param recipeID
-   * @return
-   */
-  public ExecuteData getExecuteDataByRecipeID(String recipeID)
-  {
-    Iterator<ExecuteData> it = this.executionTableMaps.iterator();
-    while (it.hasNext())
-    {
-      ExecuteData temp = it.next();
-      if (temp.getRecipeID().toUpperCase().equals(recipeID.toUpperCase()))
-      {
-        return temp;
-      }
-    }
-    return null;
-  }
-
-
-  /**
-   *
-   * @param recipeID
-   * @return
-   */
-  public boolean removeExecuteDataByRecipeID(String recipeID)
-  {
-    ExecuteData data = getExecuteDataByRecipeID(recipeID);
-    return this.executionTableMaps.remove(data);
-  }
-
 
   // ***************************************************************************************************************** /
   /**

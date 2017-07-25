@@ -35,7 +35,7 @@ import eu.openmos.msb.messages.RegFile;
 import eu.openmos.msb.messages.ServerStatus;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
-import eu.openmos.msb.datastructures.HashMaps;
+import eu.openmos.msb.datastructures.MSBClients;
 import io.vertx.core.Vertx;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -578,7 +578,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
   {
 
     //check the sender opcClient object from its Name
-    HashMaps myMaps = HashMaps.getInstance(); //singleton to access hashmaps in other classes
+    MSBClients myMaps = MSBClients.getInstance(); //singleton to access hashmaps in other classes
     Map<String, MSB_MiloClientSubscription> ProductAdapterHashMap = myMaps.getProductIDAdapterMaps(); //get opcdevice name and object map
     MSB_MiloClientSubscription MiloClientID = ProductAdapterHashMap.get(ProductID);  //get the opcdevice objectID for the given ProductID
     CompletableFuture<String> RequestProductResponse = MiloClientID.RequestProduct(MiloClientID.milo_client_instanceMSB, ProductID); //call the method on the respective Device
@@ -662,7 +662,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     }
 
     //check the sender opcClient object from its Name
-    HashMaps myOpcUaClientsAgentsMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
+    MSBClients myOpcUaClientsAgentsMap = MSBClients.getInstance(); //singleton to access hashmaps in other classes
     Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps(); //get opcdevice name and object map
     MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(senderName);  //get the opcdevice objectID for the given Server Name
 
@@ -825,7 +825,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         protocol = myresult.get(1); //second field if protocol
       }
       // Populate hashmaps            <---------------------------------------------------------------------------------
-      HashMaps myOpcUaMap = HashMaps.getInstance(); //singleton to access client objects in other classes
+      MSBClients myOpcUaMap = MSBClients.getInstance(); //singleton to access client objects in other classes
       List<ExecuteData> ETD = new ArrayList<>();
 
       MSB_MiloClientSubscription ThisOPCServerTemp = null;
@@ -897,7 +897,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
 
         CyberPhysicalAgentDescription cpad = DummyCPADgeneration(parsedClass);
 
-        HashMaps myMaps = HashMaps.getInstance(); //singleton to access client objects in other classes
+        MSBClients myMaps = MSBClients.getInstance(); //singleton to access client objects in other classes
         List<ExecuteData> ETD = new ArrayList<>();
 
         for (String key : parsedClass.ExecuteTable.keySet())
@@ -914,7 +914,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
         String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
         Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName()));
-        HashMaps myOpcUaClientsAgentsMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
+        MSBClients myOpcUaClientsAgentsMap = MSBClients.getInstance(); //singleton to access hashmaps in other classes
         Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps();
         MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(senderName);
 
@@ -1371,7 +1371,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     String SenderName = "someAdaptor"; //replace with workstation name in the received arguments
 
     //check the sender opcClient object from its Name
-    HashMaps myOpcUaClientsAgentsMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
+    MSBClients myOpcUaClientsAgentsMap = MSBClients.getInstance(); //singleton to access hashmaps in other classes
     Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps(); //get opcdevice name and object map
     MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(SenderName);  //get the opcdevice objectID for the given Server Name
 
@@ -1581,7 +1581,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     String SenderName = "someAdaptor"; //replace with workstation name in the received arguments
 
     //check the sender opcClient object from its Name
-    HashMaps myOpcUaClientsAgentsMap = HashMaps.getInstance(); //singleton to access hashmaps in other classes
+    MSBClients myOpcUaClientsAgentsMap = MSBClients.getInstance(); //singleton to access hashmaps in other classes
     Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps(); //get opcdevice name and object map
     MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(SenderName);  //get the opcdevice objectID for the given Server Name
 

@@ -35,6 +35,8 @@ public class RegFile
   @XmlElement(name = "LogicalLocation")
   public String LogicalLocation = "";
 
+  
+  // [TODO - Resolve this -> to delete?????]
   @XmlElement(name = "ExecuteTable")
   public HashMap<String, ExecuteData> ExecuteTable = new HashMap<>();
   @XmlElement(name = "ServerTable")

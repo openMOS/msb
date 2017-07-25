@@ -75,7 +75,7 @@ import eu.openmos.msb.database.stateless.DeviceRegistry;
 import eu.openmos.msb.opcua.milo.client.X509IdentityProvider;
 import eu.openmos.msb.starter.MSB_Struct;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
-import eu.openmos.msb.datastructures.HashMaps;
+import eu.openmos.msb.datastructures.MSBClients;
 import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;

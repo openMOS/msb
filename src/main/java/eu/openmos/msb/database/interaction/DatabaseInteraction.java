@@ -23,7 +23,8 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Ricardo Matos
+ * @author Andre Silva
+ * @author Fabio Miranda
  */
 public class DatabaseInteraction
 {
@@ -143,8 +144,7 @@ public class DatabaseInteraction
    */
   public boolean resetDB()
   {
-    // EMTPY [TODO]
-    return false;
+    return createInMemDatabase();
   }
 
 
@@ -158,7 +158,7 @@ public class DatabaseInteraction
    * @param agent_id
    * @return
    */
-  public boolean registerDevice(String device_name, String protocol, String short_descriptor, String long_descriptor, String client_id, String agent_id)
+  public boolean createDevice(String device_name, String protocol, String short_descriptor, String long_descriptor, String client_id, String agent_id)
   {
     boolean ok = false;
     try
@@ -182,31 +182,6 @@ public class DatabaseInteraction
   }
 
 
-  public boolean updateDevice(String device_name, String protocol, String short_descriptor, String long_descriptor, String client_id, String agent_id)
-  {
-    boolean ok = false;
-    try
-    {
-      stmt = conn.createStatement();
-      stmt.execute("UPDATE DeviceAdapter"
-        + "(short_description, long_description, protocol, client_id, agent_id)"
-        + " VALUES ("
-        + "'" + device_name + "','" + short_descriptor + "','" + long_descriptor + "','" + protocol + "','" + client_id + "','" + agent_id + "')"
-        + "WHERE DeviceAdapter.nam = " + device_name + ";");
-      stmt.close();
-      conn.commit();
-      ok = true;
-    }
-    catch (SQLException ex)
-    {
-      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
-      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
-      ok = false;
-    }
-    return ok;
-  }
-
-
   /**
    *
    * @return
@@ -216,15 +191,16 @@ public class DatabaseInteraction
     try
     {
       stmt = conn.createStatement();
-      ResultSet results = stmt.executeQuery("SELECT id, name FROM DeviceAdapter;");
-      ArrayList<String> myresult = new ArrayList<>();
-
-      while (results.next())
+      ArrayList<String> myresult;
+      try (ResultSet results = stmt.executeQuery("SELECT id, name FROM DeviceAdapter;"))
       {
-        myresult.add(results.getString(1));
-        myresult.add(results.getString(2));
+        myresult = new ArrayList<>();
+        while (results.next())
+        {
+          myresult.add(results.getString(1));
+          myresult.add(results.getString(2));
+        }
       }
-      results.close();
       stmt.close();
       return myresult;
     }
@@ -309,7 +285,7 @@ public class DatabaseInteraction
    * @param deviceName
    * @return
    */
-  public int deregisterDeviceByName(String deviceName)
+  public int removeDeviceByName(String deviceName)
   {
     try
     {
@@ -334,7 +310,7 @@ public class DatabaseInteraction
    * @param deviceId
    * @return
    */
-  public int deregisterDeviceById(String deviceId)
+  public int removeDeviceById(String deviceId)
   {
     try
     {
@@ -455,20 +431,21 @@ public class DatabaseInteraction
    * @param protocol
    * @param short_descriptor
    * @param long_descriptor
-   * @param address
+   * @param client_id
+   * @param agent_id
    * @return
    */
-  public boolean editDeviceByName(String name, String protocol, String short_descriptor, String long_descriptor, String address)
+  public boolean updateDevice(String name, String protocol, String short_descriptor, String long_descriptor, String client_id, String agent_id)
   {
     try
     {
-
-      ps = conn.prepareStatement("UPDATE DeviceAdapter SET short_description = ?, long_description = ?, protocol = ?, address = ?"
+      ps = conn.prepareStatement("UPDATE DeviceAdapter SET short_description = ?, long_description = ?, protocol = ?, client_id = ?, agent_id = ?"
         + "WHERE name = ?");
       ps.setString(1, short_descriptor);
       ps.setString(2, long_descriptor);
       ps.setString(3, protocol);
-      ps.setString(4, address);
+      ps.setString(4, client_id);
+      ps.setString(4, agent_id);
       ps.setString(5, name);
       ps.executeUpdate();
       ps.close();
@@ -480,7 +457,6 @@ public class DatabaseInteraction
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-
     return false;
   }
 
