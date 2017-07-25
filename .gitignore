@@ -53,4 +53,7 @@ buildNumber.properties
 .project
 target/
 
+# Database
+*.db
+
 
