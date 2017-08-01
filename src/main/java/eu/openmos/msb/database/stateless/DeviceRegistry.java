@@ -32,9 +32,9 @@ public class DeviceRegistry implements IDeviceRegistry
     @WebParam(name = "device_protocol") String device_protocol)
   {
 
-    boolean res = DatabaseInteraction.getInstance().createDevice(device_name, device_protocol, short_info, long_info, "0", "0");
+    int res = DatabaseInteraction.getInstance().createDevice(device_name, device_protocol, short_info, long_info);
 
-    if (res)
+    if (res != -1)
     {
       return "Server Registered Successfully";
     }

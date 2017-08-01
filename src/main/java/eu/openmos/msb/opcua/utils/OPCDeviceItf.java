@@ -35,7 +35,7 @@ import eu.openmos.msb.messages.RegFile;
 import eu.openmos.msb.messages.ServerStatus;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
-import eu.openmos.msb.datastructures.MSBClients;
+import eu.openmos.msb.datastructures.DAClientsManager;
 import io.vertx.core.Vertx;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,8 +48,6 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -573,26 +571,29 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
    *
    * @param ProductID
    * @return
+   * [TODO]
+   * if from production Optimizer Agent - webservice?
+   * call RequestProduct(ProductID) //to lauch order service
+   * wait for return RequestProduct(ProductID) //from launch order service
+   * if launch order service - opcua
+   * call ExecuteSkill(ProductID) //to Workstation
+   * wait for return ExecuteSkill(Recipe,EquipmentID) //from Workstation
+   * or wait for NoRecipe(Recipe,ProductID //from workstation
+   * call ExecuteSkill(Recipe) //to equipment?? change this
+   * wait for RecipeExecutionDone(RecipeID) //change this
+   * call RecipeExecutionDone(RecipeID) //change this
    */
   private String RequestProduct(String ProductID)
   {
 
+    /*
     //check the sender opcClient object from its Name
-    MSBClients myMaps = MSBClients.getInstance(); //singleton to access hashmaps in other classes
+    DAClientsManager myMaps = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
     Map<String, MSB_MiloClientSubscription> ProductAdapterHashMap = myMaps.getProductIDAdapterMaps(); //get opcdevice name and object map
     MSB_MiloClientSubscription MiloClientID = ProductAdapterHashMap.get(ProductID);  //get the opcdevice objectID for the given ProductID
     CompletableFuture<String> RequestProductResponse = MiloClientID.RequestProduct(MiloClientID.milo_client_instanceMSB, ProductID); //call the method on the respective Device
 
-    //if from production Optimizer Agent - webservice?
-    //call RequestProduct(ProductID) //to lauch order service
-    //wait for return RequestProduct(ProductID) //from launch order service
-    //if launch order service - opcua
-    //call ExecuteSkill(ProductID) //to Workstation
-    //wait for return ExecuteSkill(Recipe,EquipmentID) //from Workstation
-    //or wait for NoRecipe(Recipe,ProductID //from workstation
-    //call ExecuteSkill(Recipe) //to equipment?? change this
-    //wait for RecipeExecutionDone(RecipeID) //change this
-    //call RecipeExecutionDone(RecipeID) //change this
+    
     try
     {
       return RequestProductResponse.get();
@@ -602,7 +603,8 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
       Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
       return ex.getMessage();
     }
-
+    */
+    return null;
   }
 
 
@@ -662,7 +664,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     }
 
     //check the sender opcClient object from its Name
-    MSBClients myOpcUaClientsAgentsMap = MSBClients.getInstance(); //singleton to access hashmaps in other classes
+    DAClientsManager myOpcUaClientsAgentsMap = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
     Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps(); //get opcdevice name and object map
     MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(senderName);  //get the opcdevice objectID for the given Server Name
 
@@ -707,13 +709,13 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
    * @param EntityID
    * @param Recipe
    * @param ProductID
+   * from resource Agent or transport  Agent
+   * call DeployNewRecipe(Recipe,ProductID) //to EntityID - workstation or transport equipment
+   * wait for return RecipeDeployed(Recipe,ProductID)
+   * return RecipeDeployed(WorkstationID, Recipe,ProductID) //back to sender.
    */
   private void DeployNewRecipe(String EntityID, String Recipe, String ProductID)
   {
-    //from resource Agent or transport  Agent
-    // call DeployNewRecipe(Recipe,ProductID) //to EntityID - workstation or transport equipment
-    //wait for return RecipeDeployed(Recipe,ProductID)
-    //return RecipeDeployed(WorkstationID, Recipe,ProductID) //back to sender.
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -825,7 +827,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         protocol = myresult.get(1); //second field if protocol
       }
       // Populate hashmaps            <---------------------------------------------------------------------------------
-      MSBClients myOpcUaMap = MSBClients.getInstance(); //singleton to access client objects in other classes
+      DAClientsManager myOpcUaMap = DAClientsManager.getInstance(); //singleton to access client objects in other classes
       List<ExecuteData> ETD = new ArrayList<>();
 
       MSB_MiloClientSubscription ThisOPCServerTemp = null;
@@ -843,7 +845,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
 
         if (protocol.contains("opc"))
         {
-          myOpcUaMap.setProductIDAdapterMaps(ETD.get(index).getProductID(), ThisOPCServerTemp); //put productID vs miloclient
+          //myOpcUaMap.setProductIDAdapterMaps(ETD.get(index).getProductID(), ThisOPCServerTemp); //put productID vs miloclient
         }
         else if (protocol.contains("dds"))
         {
@@ -897,7 +899,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
 
         CyberPhysicalAgentDescription cpad = DummyCPADgeneration(parsedClass);
 
-        MSBClients myMaps = MSBClients.getInstance(); //singleton to access client objects in other classes
+        DAClientsManager myMaps = DAClientsManager.getInstance(); //singleton to access client objects in other classes
         List<ExecuteData> ETD = new ArrayList<>();
 
         for (String key : parsedClass.ExecuteTable.keySet())
@@ -914,7 +916,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
         String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
         Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName()));
-        MSBClients myOpcUaClientsAgentsMap = MSBClients.getInstance(); //singleton to access hashmaps in other classes
+        DAClientsManager myOpcUaClientsAgentsMap = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
         Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps();
         MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(senderName);
 
@@ -980,8 +982,6 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     String kpiDefaultLowerBound = "SkillKpiDefaultLowerBound";
     String kpiCurrentValue = "SkillKpiCurrentValue";
     String kpiUnit = "SkillKpiUnit";
-    // kpi = new Kpi(kpiDescription, kpiUniqueId, kpiName, kpiDefaultUpperBound, kpiDefaultLowerBound, kpiCurrentValue, kpiUnit);
-    // kpi = new Kpi(kpiDescription, kpiUniqueId, kpiName, kpiDefaultUpperBound, kpiDefaultLowerBound, kpiCurrentValue, kpiUnit);
     kpi = new KPI();
     kpi.setDescription(kpiDescription);
     kpi.setUniqueId(kpiUniqueId);
@@ -1371,7 +1371,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     String SenderName = "someAdaptor"; //replace with workstation name in the received arguments
 
     //check the sender opcClient object from its Name
-    MSBClients myOpcUaClientsAgentsMap = MSBClients.getInstance(); //singleton to access hashmaps in other classes
+    DAClientsManager myOpcUaClientsAgentsMap = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
     Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps(); //get opcdevice name and object map
     MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(SenderName);  //get the opcdevice objectID for the given Server Name
 
@@ -1581,7 +1581,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     String SenderName = "someAdaptor"; //replace with workstation name in the received arguments
 
     //check the sender opcClient object from its Name
-    MSBClients myOpcUaClientsAgentsMap = MSBClients.getInstance(); //singleton to access hashmaps in other classes
+    DAClientsManager myOpcUaClientsAgentsMap = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
     Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps(); //get opcdevice name and object map
     MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(SenderName);  //get the opcdevice objectID for the given Server Name
 

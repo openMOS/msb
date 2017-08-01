@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Andre Silva
- * @author Fabio Miranda
+ * @author Fabio Miranda (1st)
+ * @author af-silva (2nd)
  */
 public class DatabaseInteraction
 {
@@ -37,8 +37,11 @@ public class DatabaseInteraction
   private Connection conn = null;
   private Statement stmt = null;
   private PreparedStatement ps = null;
-
-
+  
+  
+  /**
+   * @brief private constructor from the singleton implementation
+   */
   private DatabaseInteraction()
   {
     createInMemDatabase();
@@ -154,31 +157,28 @@ public class DatabaseInteraction
    * @param protocol
    * @param short_descriptor
    * @param long_descriptor
-   * @param client_id
-   * @param agent_id
    * @return
    */
-  public boolean createDevice(String device_name, String protocol, String short_descriptor, String long_descriptor, String client_id, String agent_id)
+  public int createDevice(String device_name, String protocol, String short_descriptor, String long_descriptor)
   {
-    boolean ok = false;
+    int ok_id = -1;
     try
     {
       stmt = conn.createStatement();
-      stmt.execute("INSERT INTO DeviceAdapter"
-        + "(name, short_description, long_description, protocol, client_id, agent_id)"
+      ok_id = stmt.executeUpdate("INSERT INTO DeviceAdapter"
+        + "(name, short_description, long_description, protocol)"
         + " VALUES ("
-        + "'" + device_name + "','" + short_descriptor + "','" + long_descriptor + "','" + protocol + "','" + client_id + "','" + agent_id + "')");
+        + "'" + device_name + "','" + short_descriptor + "','" + long_descriptor + "','" + protocol + "')");
       stmt.close();
       conn.commit();
-      ok = true;
     }
     catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
-      ok = false;
+      ok_id = -1; // make sure to return the -1 value
     }
-    return ok;
+    return ok_id;
   }
 
 
