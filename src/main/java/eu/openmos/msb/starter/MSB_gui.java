@@ -1978,7 +1978,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       System.out.println("DEVICE TO DELETE NOT FOUND from table: " + workstationName);//Print if server not found 
       //opc_comms_log.append("DEVICE TO DELETE NOT FOUND from table: " + DeviceName + "\n");
     }
-
+    
   }
 
 

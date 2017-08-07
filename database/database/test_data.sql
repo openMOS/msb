@@ -29,12 +29,12 @@ INSERT INTO Skill (aml_id, name, description) VALUES ("abfe31de14", "PRODUTO_C",
 
 
 -- RECIPE DAS SKILLS DOS DA
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de1", 2, 10, "Recipe Task_Full_A", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de2", 4, 11, "Recipe Task_Full_C", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de3", 2, 9,  "Recipe Task_Full_B", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de4", 3, 6,  "Recipe TransportAB", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de5", 3, 7,  "Recipe TransportCB", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de6", 3, 8,  "Recipe TransportBD", "address");
+INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de01", 2, 10, "Recipe Task_Full_A", "address");
+INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de02", 4, 11, "Recipe Task_Full_C", "address");
+INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de03", 2, 9,  "Recipe Task_Full_B", "address");
+INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de04", 3, 6,  "Recipe TransportAB", "address");
+INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de05", 3, 7,  "Recipe TransportCB", "address");
+INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de06", 3, 8,  "Recipe TransportBD", "address");
 
 -- RECIPE DOS PRODUTOS
 INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES ("abfe31de07", 1, 12, "RECIPE_PRODUTO_A", "MSB"); 
