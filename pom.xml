@@ -10,7 +10,12 @@
             <id>local-repo</id>
             <name>Local repository</name>
             <url>file:${project.basedir}/repo</url>
-        </repository> 
+        </repository>
+        <repository>
+            <id>unknown-jars-temp-repo</id>
+            <name>A temporary repository created by NetBeans for libraries and jars it could not identify. Please replace the dependencies in this repository with correct ones and delete this repository.</name>
+            <url>file:${project.basedir}/lib</url>
+        </repository>
     </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,6 +24,13 @@
     </properties>
     
     <dependencies>
+        
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
@@ -155,14 +167,10 @@
         
         <!-- MSB custom libraries -->
         <dependency>
-            <groupId>eu.openmos.msb.opcua</groupId>
-            <artifactId>Opc.Ua.Stack</artifactId>
-            <version>1.02.337.8</version>
-        </dependency>
-        <dependency>
             <groupId>eu.openmos.msb.prosys</groupId>
             <artifactId>Prosys-OPC-UA-Java-SDK-Client-Server-Evaluation</artifactId>
             <version>2.2.2-638</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>eu.openmos.msb.miloclient</groupId>
@@ -199,9 +207,25 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>opensplice</groupId>
-            <artifactId>dds</artifactId>
-            <version>6.0</version>
+            <groupId>eu.openmos.msb.dds</groupId>
+            <artifactId>dcpssaj</artifactId>
+            <version>6.4.140407</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.milo</groupId>
+            <artifactId>opc-ua-stack</artifactId>
+            <version>0.1.1</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>eu.openmos.msb.opcua</groupId>
+            <artifactId>Opc.Ua.Stack</artifactId>
+            <version>1.02.337.8</version>
+        </dependency>
+        <dependency>
+            <groupId>unknown.binary</groupId>
+            <artifactId>AbsoluteLayout</artifactId>
+            <version>SNAPSHOT</version>
         </dependency>
     </dependencies>
     <name>openMOSMSBWithDDS</name>
