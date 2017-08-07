@@ -26,16 +26,16 @@ import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_S
 import eu.openmos.msb.cloudinterface.WebSocketsReceiver;
 import eu.openmos.msb.cloudinterface.WebSocketsSender;
 import eu.openmos.msb.cloudinterface.WebSocketsSenderDraft;
-import eu.openmos.msb.database.stateless.DeviceRegistry;
-import eu.openmos.msb.dds.instance.DDSDeviceManager;
-import eu.openmos.msb.dds.instance.DDSDevice;
 import eu.openmos.msb.messages.ChangedState;
 import eu.openmos.msb.messages.ExecuteData;
 import eu.openmos.msb.messages.RegFile;
-import eu.openmos.msb.messages.ServerStatus;
+import eu.openmos.msb.messages.HelperDevicesInfo;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
-import eu.openmos.msb.datastructures.DAClientsManager;
+import eu.openmos.msb.datastructures.DACManager;
+import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.messages.ServerStatus;
+
 import io.vertx.core.Vertx;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -79,14 +79,12 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
   Vertx vertx = Vertx.vertx();
   Boolean withAGENTCloud = false;
 
+
   /*
    * final private String function; final private String arguments;
    *
    * public OPCDeviceItf(String func, String args) { //super(); this.function = func; this.arguments = args; }
    */
-  DeviceRegistry dbMSB = new DeviceRegistry();
-
-
   /**
    *
    *
@@ -570,40 +568,28 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
   /**
    *
    * @param ProductID
-   * @return
-   * [TODO]
-   * if from production Optimizer Agent - webservice?
-   * call RequestProduct(ProductID) //to lauch order service
-   * wait for return RequestProduct(ProductID) //from launch order service
-   * if launch order service - opcua
-   * call ExecuteSkill(ProductID) //to Workstation
-   * wait for return ExecuteSkill(Recipe,EquipmentID) //from Workstation
-   * or wait for NoRecipe(Recipe,ProductID //from workstation
-   * call ExecuteSkill(Recipe) //to equipment?? change this
-   * wait for RecipeExecutionDone(RecipeID) //change this
-   * call RecipeExecutionDone(RecipeID) //change this
+   * @return [TODO] if from production Optimizer Agent - webservice? call RequestProduct(ProductID) //to lauch order
+   * service wait for return RequestProduct(ProductID) //from launch order service if launch order service - opcua call
+   * ExecuteSkill(ProductID) //to Workstation wait for return ExecuteSkill(Recipe,EquipmentID) //from Workstation or
+   * wait for NoRecipe(Recipe,ProductID //from workstation call ExecuteSkill(Recipe) //to equipment?? change this wait
+   * for RecipeExecutionDone(RecipeID) //change this call RecipeExecutionDone(RecipeID) //change this
    */
   private String RequestProduct(String ProductID)
   {
 
     /*
-    //check the sender opcClient object from its Name
-    DAClientsManager myMaps = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
-    Map<String, MSB_MiloClientSubscription> ProductAdapterHashMap = myMaps.getProductIDAdapterMaps(); //get opcdevice name and object map
-    MSB_MiloClientSubscription MiloClientID = ProductAdapterHashMap.get(ProductID);  //get the opcdevice objectID for the given ProductID
-    CompletableFuture<String> RequestProductResponse = MiloClientID.RequestProduct(MiloClientID.milo_client_instanceMSB, ProductID); //call the method on the respective Device
-
-    
-    try
-    {
-      return RequestProductResponse.get();
-    }
-    catch (InterruptedException | ExecutionException ex)
-    {
-      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
-      return ex.getMessage();
-    }
-    */
+     * //check the sender opcClient object from its Name DACManager myMaps = DACManager.getInstance(); //singleton to
+     * access hashmaps in other classes Map<String, MSB_MiloClientSubscription> ProductAdapterHashMap =
+     * myMaps.getProductIDAdapterMaps(); //get opcdevice name and object map MSB_MiloClientSubscription MiloClientID =
+     * ProductAdapterHashMap.get(ProductID); //get the opcdevice objectID for the given ProductID
+     * CompletableFuture<String> RequestProductResponse =
+     * MiloClientID.RequestProduct(MiloClientID.milo_client_instanceMSB, ProductID); //call the method on the respective
+     * Device
+     *
+     *
+     * try { return RequestProductResponse.get(); } catch (InterruptedException | ExecutionException ex) {
+     * Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex); return ex.getMessage(); }
+     */
     return null;
   }
 
@@ -625,53 +611,38 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     String Alldata = args.substring(args.indexOf(':') + 1); //get XML data
     ChangedState parsedClass = null;
 
-    DeviceRegistry dbMSB = new DeviceRegistry(); //TODO: save execution data on executionTable DB
-
     //STRING TO XML
     DocumentBuilderFactory dfctr = DocumentBuilderFactory.newInstance();
     DocumentBuilder bldr = null;
     try
     {
       bldr = dfctr.newDocumentBuilder();
-    }
-    catch (ParserConfigurationException ex)
-    {
-      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    InputSource insrc = new InputSource();
-    insrc.setCharacterStream(new StringReader(Alldata));
-    org.w3c.dom.Document docres = null;
-    try
-    {
-
+      InputSource insrc = new InputSource();
+      insrc.setCharacterStream(new StringReader(Alldata));
+      org.w3c.dom.Document docres = null;
       docres = bldr.parse(insrc);
       System.out.println("\n\nThis is the XML received: " + docres.getDocumentElement().getTextContent() + "\n\n");
-    }
-    catch (SAXException | IOException ex)
-    {
-      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    try
-    {
       JAXBContext jaxbContext = JAXBContext.newInstance(ChangedState.class);
       Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
       parsedClass = (ChangedState) unmarshaller.unmarshal(docres);
     }
-    catch (Exception ex)
+    catch (ParserConfigurationException | SAXException | IOException ex)
+    {
+      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (JAXBException | DOMException ex)
     {
       System.out.println("\n Problem parsing class: " + ex.toString());
     }
 
-    //check the sender opcClient object from its Name
-    DAClientsManager myOpcUaClientsAgentsMap = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
-    Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps(); //get opcdevice name and object map
-    MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(senderName);  //get the opcdevice objectID for the given Server Name
+    DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(senderName);
+    //get the opcdevice objectID for the given Server Name
+    MSB_MiloClientSubscription MiloClientID = (MSB_MiloClientSubscription) da.getClient();
 
     if (withAGENTCloud)
     {
-      Map<MSB_MiloClientSubscription, CyberPhysicalAgentDescription> DevAgentMap = myOpcUaClientsAgentsMap.getAgentDeviceIDMaps();
-      CyberPhysicalAgentDescription agentObj = DevAgentMap.get(MiloClientID); //get the  agentID for the respective sender client object
+
+      CyberPhysicalAgentDescription agentObj = da.getCyberPhysicalAgentDescription(); //get the  agentID for the respective sender client object
 
       //already deployed when agent is created ?
       Vertx.vertx().deployVerticle(new WebSocketsSender("5555")); //test! delete
@@ -708,11 +679,9 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
    *
    * @param EntityID
    * @param Recipe
-   * @param ProductID
-   * from resource Agent or transport  Agent
-   * call DeployNewRecipe(Recipe,ProductID) //to EntityID - workstation or transport equipment
-   * wait for return RecipeDeployed(Recipe,ProductID)
-   * return RecipeDeployed(WorkstationID, Recipe,ProductID) //back to sender.
+   * @param ProductID from resource Agent or transport Agent call DeployNewRecipe(Recipe,ProductID) //to EntityID -
+   * workstation or transport equipment wait for return RecipeDeployed(Recipe,ProductID) return
+   * RecipeDeployed(WorkstationID, Recipe,ProductID) //back to sender.
    */
   private void DeployNewRecipe(String EntityID, String Recipe, String ProductID)
   {
@@ -763,199 +732,123 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
   private String WorkStationRegistration(String args)
     throws JAXBException, FileNotFoundException, ParserConfigurationException, TransformerException
   {
+    
+    DACManager instance = DACManager.getInstance();
+    
+    // for performance monitoring
+    System.out.println("\n\n WorkStationRegistration message has arrived \n\n");
+    long start = System.currentTimeMillis();
 
     //parse xml SelfDescriptionInformation
     String senderName = args.split("\\:")[0]; //get sender name
     String Alldata = args.substring(args.indexOf(':') + 1); //get XML data
     RegFile parsedClass = null;
 
-    DeviceRegistry dbMSB = new DeviceRegistry(); //TODO: save execution data on executionTable DB
-
-    //or
-    //String senderName2 = StringUtils.substringBefore(args, ":"); // returns the first string before character :
-    //String allData = StringUtils.substringAfter(args, ":"); // returns the first string after character :
     try
     {
-      FiletoXMLtoObject("RegFile.xml");
-      //XMLutils.FiletoXMLtoObject("RegFile.xml");
-    }
-    catch (SAXException | IOException ex)
-    {
-      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
-    }
+      // TODO perguntar ao fabio o que é isto
+      //FiletoXMLtoObject("RegFile.xml");
 
-    DocumentBuilderFactory dfctr = DocumentBuilderFactory.newInstance();
-    DocumentBuilder bldr = null;
-    try
-    {
-
+      // Pass the XML file (RegFile) to java classes
+      DocumentBuilderFactory dfctr = DocumentBuilderFactory.newInstance();
+      DocumentBuilder bldr = null;
       bldr = dfctr.newDocumentBuilder();
-    }
-    catch (ParserConfigurationException ex)
-    {
-      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    InputSource insrc = new InputSource();
-    insrc.setCharacterStream(new StringReader(Alldata));
-    org.w3c.dom.Document docres = null;
-    try
-    {
-
+      InputSource insrc = new InputSource();
+      insrc.setCharacterStream(new StringReader(Alldata));
+      org.w3c.dom.Document docres = null;
       docres = bldr.parse(insrc);
       System.out.println("\n\nThis is the XML received: " + docres.getDocumentElement().getTextContent() + "\n\n");
-    }
-    catch (SAXException ex)
-    {
-      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    catch (IOException ex)
-    {
-      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    try
-    {
       JAXBContext jaxbContext = JAXBContext.newInstance(RegFile.class);
       Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
       parsedClass = (RegFile) unmarshaller.unmarshal(docres);
 
       String protocol = null;
-      ArrayList<String> myresult = dbMSB.get_device_address_protocol(senderName);
-      if (myresult.size() > 0)
-      {
-        protocol = myresult.get(1); //second field if protocol
-      }
-      // Populate hashmaps            <---------------------------------------------------------------------------------
-      DAClientsManager myOpcUaMap = DAClientsManager.getInstance(); //singleton to access client objects in other classes
-      List<ExecuteData> ETD = new ArrayList<>();
-
-      MSB_MiloClientSubscription ThisOPCServerTemp = null;
-      if (protocol.contains("opc"))
-      {
-        ThisOPCServerTemp = myOpcUaMap.OPCclientIDMaps.get(senderName);
-      }
-
-      // --------------------------------------------------------------------------------------------------------------
-      int index = 0;
-      for (String key : parsedClass.ExecuteTable.keySet())
-      {
-        System.out.println(key + " ->MAPA de execução deviceitf<- - " + parsedClass.ExecuteTable.get(key));
-        ETD.add(parsedClass.ExecuteTable.get(key));
-
-        if (protocol.contains("opc"))
-        {
-          //myOpcUaMap.setProductIDAdapterMaps(ETD.get(index).getProductID(), ThisOPCServerTemp); //put productID vs miloclient
-        }
-        else if (protocol.contains("dds"))
-        {
-          DDSDeviceManager dm = DDSDeviceManager.getInstance();
-          dm.addDevice(senderName);
-          dm.getDevice(senderName).createTopicWriter(ETD.get(index).getMethodID(), DDSDevice.TopicType.STRINGMESSAGE);
-        }
-        index++;
-      }
-      myOpcUaMap.setExecutionInfoMaps(senderName, ETD);
-      MSB_gui.FillDDSCombos();
-
-      // --------------------------------------------------------------------------------------------------------------
+      
+      DeviceAdapter da = instance.getDeviceAdapter(senderName);
+      
+      
       if (parsedClass.ServerTable.size() > 0)
       {
         for (String key : parsedClass.ServerTable.keySet())
-        {
-          System.out.println(key + " ->MAPA de execução deviceitf<- - " + parsedClass.ServerTable.get(key));
+        {          
           ServerStatus SStat = parsedClass.ServerTable.get(key);
-
-          myOpcUaMap.setDevicesNameDataMaps(senderName, SStat);
-          //call mainwindow filltables
-          MSB_gui.FillDevicesTable();
+          da.addToServerStatusMaps(SStat);
+          // visual
+          MSB_gui.fillDevicesTable();
         }
       }
-
+      
+      for (String key : parsedClass.Recipes.keySet())
+      {
+        Recipe r = parsedClass.Recipes.get(key);
+        instance.registerRecipe(senderName, r.getUniqueId(), r.getName());
+        MSB_gui.fillRecipesTable();
+      }
+                
+      
+      
       // --------------------------------------------------------------------------------------------------------------
       System.out.println("\n\n\n Parsed class: " + parsedClass.Name + "\n\n\n");
-    }
-    catch (Exception ex)
-    {
-      System.out.println("\n Problem parsing class: " + ex.toString());
-    }
 
-    System.out.println("\n\n WorkStationRegistration message has arrived \n\n");
-    long start = System.currentTimeMillis();
-
-    //SACAR RecipeID, NodeID, ProductID, Workstation e fazer uma tabela de execução
-    if (withAGENTCloud)
-    {
-      try
+      if (withAGENTCloud)
       {
+
+        
         SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
         SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-
         String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-
         BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
         bindingProvider.getRequestContext().put(
           BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-
         CyberPhysicalAgentDescription cpad = DummyCPADgeneration(parsedClass);
 
-        DAClientsManager myMaps = DAClientsManager.getInstance(); //singleton to access client objects in other classes
-        List<ExecuteData> ETD = new ArrayList<>();
-
-        for (String key : parsedClass.ExecuteTable.keySet())
-        {
-          System.out.println(key + " ->MAPA de execução deviceitf<- - " + parsedClass.ExecuteTable.get(key));
-          ETD.add(parsedClass.ExecuteTable.get(key));
-        }
-
-        myMaps.setExecutionInfoMaps(senderName, ETD);
-        //call mainwindow filltables
-        MSB_gui.FillProductsTable();
-
+        
+        
         AgentStatus agentStatus = systemConfigurator.createNewAgent(cpad);
         System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
         String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
         Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName()));
-        DAClientsManager myOpcUaClientsAgentsMap = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
-        Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps();
-        MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(senderName);
 
+        
         //add the sender client object to the respective agentID
-        myOpcUaClientsAgentsMap.setAgentDeviceIDMaps(MiloClientID, cpad);
-
+        da.setCyberPhysicalAgentDescription(cpad);
         return agentStatus.getCode(); //OK? ou KO?
 
       }
-      catch (Exception e)
+      else
       {
-        long elapsedTime = (long) ((System.currentTimeMillis() - start) / 1000F);
-        System.out.println("\n\n ELAPSED TIME: " + elapsedTime + "s");
-        System.out.println("\n\n Problem with Ws " + e.toString());
-        return e.toString();
-      }
+        //call mainwindow filltables
+        MSB_gui.fillRecipesTable();
+        vertx.deployVerticle(new WebSocketsReceiver("R1"));
+        vertx.deployVerticle(new WebSocketsReceiver("R2"));
 
-    }
-    else
-    {
-      //call mainwindow filltables
-      MSB_gui.FillProductsTable();
-      vertx.deployVerticle(new WebSocketsReceiver("R1"));
-      vertx.deployVerticle(new WebSocketsReceiver("R2"));
-      try
-      {
         Thread.sleep(3000);
-      }
-      catch (InterruptedException ex)
-      {
-        Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      vertx.deployVerticle(new WebSocketsSenderDraft());
 
-      return "OK - No AgentPlatform";
+        vertx.deployVerticle(new WebSocketsSenderDraft());
 
+        return "OK - No AgentPlatform";
+
+      }
     }
+    catch (SAXException | IOException | ParserConfigurationException | JAXBException | DOMException ex)
+    {
+      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
+      System.out.println("Problems parsing the RegFile");
+    }
+    catch (InterruptedException ex)
+    {
+      Logger.getLogger(OPCDeviceItf.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    finally
+    {
+      long elapsedTime = (long) ((System.currentTimeMillis() - start) / 1000F);
+      System.out.println("\n\n ELAPSED TIME: " + elapsedTime + "s");
+    }
+    return null;
   }
 
+  
+  
 
   /**
    *
@@ -1370,17 +1263,10 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     //check which workstation sent
     String SenderName = "someAdaptor"; //replace with workstation name in the received arguments
 
-    //check the sender opcClient object from its Name
-    DAClientsManager myOpcUaClientsAgentsMap = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
-    Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps(); //get opcdevice name and object map
-    MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(SenderName);  //get the opcdevice objectID for the given Server Name
-
-    Map<MSB_MiloClientSubscription, CyberPhysicalAgentDescription> DevAgentMap = myOpcUaClientsAgentsMap.getAgentDeviceIDMaps();
-    CyberPhysicalAgentDescription agentObj = DevAgentMap.get(MiloClientID); //get the  agentID for the respective sender client object
-
-    //already deployed when agent is created ?
-    //Vertx.vertx().deployVerticle(new WebSocketsSender("5555")); //test! delete
-    //vertx.deployVerticle(new WebSocketsSender(agentObj.getUniqueName()));
+    DACManager instance = DACManager.getInstance(); 
+    CyberPhysicalAgentDescription agentObj = instance.getDeviceAdapter(SenderName).getCyberPhysicalAgentDescription();
+    
+    
     if (withAGENTCloud)
     {
       //Send message on the respective AgentID topic/websocket
@@ -1579,14 +1465,9 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
 
     //check which workstation sent
     String SenderName = "someAdaptor"; //replace with workstation name in the received arguments
-
-    //check the sender opcClient object from its Name
-    DAClientsManager myOpcUaClientsAgentsMap = DAClientsManager.getInstance(); //singleton to access hashmaps in other classes
-    Map<String, MSB_MiloClientSubscription> OpcuaDeviceHashMap = myOpcUaClientsAgentsMap.getOPCclientIDMaps(); //get opcdevice name and object map
-    MSB_MiloClientSubscription MiloClientID = OpcuaDeviceHashMap.get(SenderName);  //get the opcdevice objectID for the given Server Name
-
-    Map<MSB_MiloClientSubscription, CyberPhysicalAgentDescription> DevAgentMap = myOpcUaClientsAgentsMap.getAgentDeviceIDMaps();
-    CyberPhysicalAgentDescription agentObj = DevAgentMap.get(MiloClientID); //get the  agentID for the respective sender client object
+    DACManager instance = DACManager.getInstance();
+    
+    CyberPhysicalAgentDescription agentObj = instance.getDeviceAdapter(SenderName).getCyberPhysicalAgentDescription();
 
     //already deployed when agent is created ?
     //Vertx.vertx().deployVerticle(new WebSocketsSender("5555")); //test! delete

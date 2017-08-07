@@ -6,6 +6,7 @@
 package eu.openmos.msb.datastructures;
 
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
+import eu.openmos.msb.messages.HelperDevicesInfo;
 import eu.openmos.msb.messages.ServerStatus;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +25,7 @@ public abstract class DeviceAdapter
    * device name || devices in the workstation and its data
    */
   protected List<ServerStatus> serverStatusMaps;
-  protected CyberPhysicalAgentDescription agentDevice;
+  protected CyberPhysicalAgentDescription cpad;
 
 
   public DeviceAdapter()
@@ -92,7 +93,7 @@ public abstract class DeviceAdapter
 
   /**
    *
-   * @return List of ServerStatus
+   * @return List of HelperDevicesInfo
    */
   public List<ServerStatus> getServerStatusMaps()
   {
@@ -146,9 +147,17 @@ public abstract class DeviceAdapter
    */
   public void setCyberPhysicalAgentDescription(CyberPhysicalAgentDescription agent)
   {
-    agentDevice = agent;
+    this.cpad = agent;
   }
 
+  /**
+   * 
+   * @return  CyberPhysicalAgentDescription 
+   */
+  public CyberPhysicalAgentDescription getCyberPhysicalAgentDescription()
+  {
+    return this.cpad;
+  }
 
   /**
    *

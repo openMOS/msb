@@ -1,10 +1,10 @@
 -- TESTES DE INSERTS
 
 -- DEVICES
-INSERT INTO DeviceAdapter (name, short_description, long_description, protocol, client_id, agent_id) VALUES ("MSB", "MSB", "MSB", "NONE", 0, 0);
-INSERT INTO DeviceAdapter (name, short_description, long_description, protocol, client_id, agent_id) VALUES ("Workstation", "cenas da workstation", "mais cenas", "OPC", 1, 1);
-INSERT INTO DeviceAdapter (name, short_description, long_description, protocol, client_id, agent_id) VALUES ("AGV", "cenas do agv", "mais cenas", "DDS", 2, 2);
-INSERT INTO DeviceAdapter (name, short_description, long_description, protocol, client_id, agent_id) VALUES ("Device_3", "cenas do d3", "mais cenas", "OPC", 3, 3);
+INSERT INTO DeviceAdapter (name, short_description, long_description, protocol) VALUES ("MSB", "MSB", "MSB", "NONE");
+INSERT INTO DeviceAdapter (name, short_description, long_description, protocol) VALUES ("Workstation", "cenas da workstation", "mais cenas", "OPC");
+INSERT INTO DeviceAdapter (name, short_description, long_description, protocol) VALUES ("AGV", "cenas do agv", "mais cenas", "DDS");
+INSERT INTO DeviceAdapter (name, short_description, long_description, protocol) VALUES ("Device_3", "cenas do d3", "mais cenas", "OPC");
 
 
 -- SKILLS
@@ -29,18 +29,25 @@ INSERT INTO Skill (aml_id, name, description) VALUES ("abfe31de14", "PRODUTO_C",
 
 
 -- RECIPE DAS SKILLS DOS DA
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de1", 2, 10, 1, "Recipe Task_Full_A", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de2", 4, 11, 1, "Recipe Task_Full_C", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de3", 2, 9, 1, "Recipe Task_Full_B", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de4", 3, 6, 1, "Recipe TransportAB", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de5", 3, 7, 1, "Recipe TransportCB", "address");
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES("abae31de6", 3, 8, 1, "Recipe TransportBD", "address");
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES("abae31de1", 2, 10, 1, "Recipe Task_Full_A");
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES("abae31de2", 4, 11, 1, "Recipe Task_Full_C");
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES("abae31de3", 2, 9, 1, "Recipe Task_Full_B");
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES("abae31de4", 3, 6, 1, "Recipe TransportAB");
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES("abae31de5", 3, 7, 1, "Recipe TransportCB");
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES("abae31de6", 3, 8, 1, "Recipe TransportBD");
 
 -- RECIPE DOS PRODUTOS
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES ("abfe31de07", 1, 12, 1, "RECIPE_PRODUTO_A", "MSB"); 
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES ("abfe31de08", 1, 13, 1, "RECIPE_PRODUTO_B", "MSB"); 
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES ("abfe31de09", 1, 14, 1, "RECIPE_PRODUTO_C", "MSB"); 
-INSERT INTO Recipe (aml_id, da_id, sk_id, name, endpoint) VALUES ("abfe31de10", 1, 14, 0, "RECIPE_PRODUTO_C", "MSB"); 
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES ("abfe31de07", 1, 12, 1, "RECIPE_PRODUTO_A"); 
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES ("abfe31de08", 1, 13, 1, "RECIPE_PRODUTO_B"); 
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES ("abfe31de09", 1, 14, 1, "RECIPE_PRODUTO_C"); 
+INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) VALUES ("abfe31de10", 1, 14, 0, "RECIPE_PRODUTO_C"); 
+
+
+-- DEVICES 
+INSERT INTO Device (da_id, status, name, address) VALUES (2, 1, "PLC", "//aaa1");
+INSERT INTO Device (da_id, status, name, address) VALUES (2, 1, "Robot", "//aaa2");
+INSERT INTO Device (da_id, status, name, address) VALUES (2, 1, "Vision", "//aaa3");
+INSERT INTO Device (da_id, status, name, address) VALUES (2, 1, "Wago", "//aaa4");
 
 
 -- DeviceAdapter to SKILL
@@ -109,39 +116,9 @@ INSERT INTO SR (r_id, sk_id) VALUES (10, 10);
 INSERT INTO SR (r_id, sk_id) VALUES (10, 8);
 
 
--- ********************************************************************************************** 
--- TESTES DE PESQUISAS
-
--- Vê as skills que estão disponiveis no AGV
-SELECT DeviceAdapter.id, DeviceAdapter.name, Skill.name 
-FROM Skill, DeviceAdapter, DAS 
-WHERE DeviceAdapter.id = DAS.da_id AND Skill.id = DAS.sk_id AND DeviceAdapter.name = "AGV";
-
--- Associa a skill à receita
-SELECT Recipe.id, Recipe.name, Skill.name 
-FROM Skill, Recipe
-WHERE Recipe.sk_id = Skill.id AND Skill.name = "Task_Full_B";
-
--- Vê qual dos devices consegue executar determinada skill
-SELECT DeviceAdapter.name, DeviceAdapter.id
-FROM DeviceAdapter, DAS, Skill
-WHERE DAS.da_id = DeviceAdapter.id AND Skill.id = DAS.sk_id AND Skill.name = "Task_Full_A";
 
 
--- Através do nome da Skill, vai procurar qual a receita associada (falta ver se esta activa) e lista
--- as skill requirements dessa recetia
-SELECT Skill.id, Skill.name
-FROM Skill, SR, Recipe
-WHERE SR.r_id = Recipe.id 
-AND SR.sk_id = Skill.id 
-AND Recipe.sk_id = (SELECT Skill.id 
-                    FROM Recipe, Skill
-                    WHERE Skill.id = Recipe.sk_id 
-                    AND Skill.name = "PRODUTO_A")
 
 
--- A mesma coisa da de cima mas directamente através do nome da receita
-SELECT Skill.id, Skill.name
-FROM Skill, SR, Recipe
-WHERE SR.r_id = Recipe.id AND SR.sk_id = Skill.id AND Recipe.name = "RECIPE_PRODUTO_A"
+
 

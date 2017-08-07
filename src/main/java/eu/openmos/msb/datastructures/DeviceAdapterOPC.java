@@ -15,12 +15,20 @@ import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 public class DeviceAdapterOPC extends DeviceAdapter
 {
 
-  private MSB_MiloClientSubscription opcClientID = new MSB_MiloClientSubscription();
+  
+  
+  
+  private MSB_MiloClientSubscription opcClient;
+  
+  public DeviceAdapterOPC()
+  {
+      opcClient = new MSB_MiloClientSubscription();
+  }
   
   @Override
   public MSB_MiloClientSubscription getClient()
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return opcClient;
   }
   
 }

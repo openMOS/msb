@@ -7,7 +7,7 @@ package eu.openmos.msb.recipesmanagement;
 
 import eu.openmos.agentcloud.data.recipe.Recipe;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
-import eu.openmos.msb.datastructures.DAClientsManager;
+import eu.openmos.msb.datastructures.DACManager;
 import java.util.List;
 import java.util.Map;
 import javax.jws.WebService;
@@ -60,22 +60,11 @@ public class RecipesDeployerImpl implements RecipesDeployer
     System.out.println("recipes list = [" + recipes + "]");
 
     //send it to the device
-    Map<String, MSB_MiloClientSubscription> OPCclientMapper;
-    DAClientsManager mytest = DAClientsManager.getInstance();
-    OPCclientMapper = mytest.getOPCclientIDMaps();
-
-    MSB_MiloClientSubscription msbClientSub = null;
-    msbClientSub = OPCclientMapper.get(deviceName);
+    MSB_MiloClientSubscription opcClient = (MSB_MiloClientSubscription)DACManager.getInstance().getDeviceAdapter(deviceName).getClient();
     System.out.println("device name: " + deviceName);
 
-    System.out.println(" TAMANHO ->hashmap WEB: " + OPCclientMapper.size());
-    for (String key : OPCclientMapper.keySet())
-    {
-      System.out.println(key + " ->hashmap WEB<- - " + OPCclientMapper.get(key));
-    }
-
     String Recipes = "dummyRecipe and mode"; //TODO parse the received .aml
-    msbClientSub.SendRecipetoDevice(msbClientSub.getClientObject(), Recipes); //get the return code and check it
+    opcClient.SendRecipetoDevice(opcClient.getClientObject(), Recipes); //get the return code and check it
 
     return true;
   }

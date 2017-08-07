@@ -12,7 +12,6 @@ import eu.openmos.agentcloud.data.recipe.ParameterSetting;
 import eu.openmos.agentcloud.data.recipe.Recipe;
 import eu.openmos.agentcloud.data.recipe.Skill;
 import eu.openmos.agentcloud.data.recipe.SkillRequirement;
-import eu.openmos.agentcloud.utilities.Constants;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;

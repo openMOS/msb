@@ -97,7 +97,6 @@ public class ClientRunner
       try
       {
         uaClient.run(client, future);
-        //future.get(5, TimeUnit.SECONDS);
       }
       catch (Exception t)
       {

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>eu.openmos.msb.dds.dcpssaj</groupId>
+  <artifactId>dcpssaj</artifactId>
+  <versioning>
+    <release>6.4.140407</release>
+    <versions>
+      <version>6.4.140407</version>
+    </versions>
+    <lastUpdated>20170510104744</lastUpdated>
+  </versioning>
+</metadata>

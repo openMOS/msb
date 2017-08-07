@@ -20,10 +20,8 @@ import MSB2ADAPTER.StringMessage;
 import MSB2ADAPTER.StringMessageDataReader;
 import MSB2ADAPTER.StringMessageDataReaderImpl;
 import MSB2ADAPTER.StringMessageSeqHolder;
-import eu.openmos.msb.database.stateless.DeviceRegistry;
 import eu.openmos.msb.opcua.utils.OPCDeviceItf;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
@@ -136,9 +134,8 @@ public class ListenerDataListener implements DDS.DataReaderListener
               System.out.println("    args      : " + data[i].args);
               System.out.println("    ------------------------");
 
-              DeviceRegistry dbMSB = new DeviceRegistry();
-              ArrayList ArrayData = dbMSB.read_device_info(data[i].device);
-              dbMSB.register_device(data[i].device, "", "", data[i].device, "DDS");
+              
+              // TODO - af-silva add support again to DDS after changes to the MSB core
 
             }
           }

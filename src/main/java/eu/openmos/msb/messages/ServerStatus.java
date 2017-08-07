@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
-
 /**
  *
  * @author renato.martins
@@ -18,67 +17,42 @@ import javax.xml.bind.annotation.XmlElement;
 public class ServerStatus
 {
 
-  public ServerStatus()
-  {
-  }
-  @XmlElement(name = "Name")
-  private String Name = "";
-  @XmlElement(name = "URL")
-  private String URL = "";
-  @XmlElement(name = "Connected")
-  private Boolean Connected = false;
+    public ServerStatus() {
+    }
+    @XmlElement(name = "Name")
+    public String Name = "";
+    @XmlElement(name = "URL")
+    public String URL = "";
+    @XmlElement(name = "Connected")
+    public Boolean Connected = false;
 
+    public String getName()
+    {
+        return Name;
+    }
 
-  /**
-   * @return the Name
-   */
-  public String getName()
-  {
-    return Name;
-  }
+    public void setName(String Name)
+    {
+        this.Name = Name;
+    }
 
+    public String getURL()
+    {
+        return URL;
+    }
 
-  /**
-   * @param Name the Name to set
-   */
-  public void setName(String Name)
-  {
-    this.Name = Name;
-  }
+    public void setURL(String URL)
+    {
+        this.URL = URL;
+    }
 
+    public Boolean getConnected()
+    {
+        return Connected;
+    }
 
-  /**
-   * @return the URL
-   */
-  public String getURL()
-  {
-    return URL;
-  }
-
-
-  /**
-   * @param URL the URL to set
-   */
-  public void setURL(String URL)
-  {
-    this.URL = URL;
-  }
-
-
-  /**
-   * @return the Connected
-   */
-  public Boolean getConnected()
-  {
-    return Connected;
-  }
-
-
-  /**
-   * @param Connected the Connected to set
-   */
-  public void setConnected(Boolean Connected)
-  {
-    this.Connected = Connected;
-  }
+    public void setConnected(Boolean Connected)
+    {
+        this.Connected = Connected;
+    }
 }

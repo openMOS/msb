@@ -188,7 +188,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JTable" name="ProductsTable">
+        <Component class="javax.swing.JTable" name="recipesTable">
           <Properties>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -196,8 +196,7 @@
               </Border>
             </Property>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="4" rowCount="0">
-                <Column editable="false" title="Product" type="java.lang.String"/>
+              <Table columnCount="3" rowCount="0">
                 <Column editable="false" title="Recipe" type="java.lang.String"/>
                 <Column editable="true" title="Status" type="java.lang.Boolean"/>
                 <Column editable="false" title="WorkStation" type="java.lang.String"/>
@@ -205,11 +204,6 @@
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0">
-                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                   <Title/>
                   <Editor/>
@@ -236,7 +230,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Products Table"/>
+        <Property name="text" type="java.lang.String" value="Recipes Table"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
@@ -312,7 +306,7 @@
                 <Column editable="false" title="Name" type="java.lang.String"/>
                 <Column editable="false" title="Status" type="java.lang.Boolean"/>
                 <Column editable="false" title="Endpoint" type="java.lang.String"/>
-                <Column editable="false" title="WorkStation" type="java.lang.String"/>
+                <Column editable="false" title="DeviceAdapter" type="java.lang.String"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -521,7 +515,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="msb_opcua_servername">
               <Properties>
-                <Property name="text" type="java.lang.String" value="opc.tcp://172.18.1.119:12637/MSB-OPCUA-SERVER"/>
+                <Property name="text" type="java.lang.String" value="opc.tcp://172.18.2.56:12637/MSB-OPCUA-SERVER"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="msb_opcua_servernameActionPerformed"/>
@@ -604,7 +598,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="41" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">

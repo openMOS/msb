@@ -48,7 +48,7 @@ public class MSB_MiloClientSubscription implements Client
 {
 
   // GLOBAL VARIABLES
-  public OpcUaClient milo_client_instanceMSB = null;
+  private OpcUaClient milo_client_instanceMSB = null;
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
@@ -132,46 +132,6 @@ public class MSB_MiloClientSubscription implements Client
     System.out.println("SERVERTIME: " + ServerTime + " MSBTIME: " + MSBTime + " MSBDate: " + MSBDate);
     System.out.println("MSB_DateUTC: " + MSB_DateUTC + " ServerDateUTC: " + ServerDateUTC);
 
-  }
-
-
-  /**
-   *
-   * TODO - fabio Documentation
-   *
-   * @param client
-   * @param input
-   * @return
-   */
-  private CompletableFuture<String> DeviceXMLmethod(OpcUaClient client, String input)
-  {
-    NodeId objectId = NodeId.parse("ns=2;s=MyObjectsFolder_OPC_Device_id");
-    NodeId methodId = NodeId.parse("ns=2;s=DeviceXMLmethod");
-
-    System.out.println("Trying to call DeviceXMLmethod...");
-    CallMethodRequest request = new CallMethodRequest(
-      objectId, methodId, new Variant[]
-      {
-        new Variant(input)
-      });
-
-    return client.call(request).thenCompose(result
-      ->
-    {
-      StatusCode statusCode = result.getStatusCode();
-
-      if (statusCode.isGood())
-      {
-        String value = (String) l(result.getOutputArguments()).get(0).getValue().toString();
-        return CompletableFuture.completedFuture(value);
-      }
-      else
-      {
-        CompletableFuture<String> f = new CompletableFuture<>();
-        f.completeExceptionally(new UaException(statusCode));
-        return f;
-      }
-    });
   }
 
 

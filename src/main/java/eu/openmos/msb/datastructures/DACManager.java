@@ -7,10 +7,10 @@ package eu.openmos.msb.datastructures;
 
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
-import eu.openmos.msb.messages.ExecuteData;
+import eu.openmos.msb.messages.HelperDevicesInfo;
 import eu.openmos.msb.messages.ServerStatus;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,12 +20,12 @@ import java.util.Map;
  * @author fabio.miranda
  *
  */
-public class DAClientsManager
+public class DACManager
 {
 
   // Singleton specific objects
   private static final Object lock = new Object();
-  private static volatile DAClientsManager instance = null;
+  private static volatile DACManager instance = null;
 
   // [af-silva] TODO valdiate
   private final Map<Integer, DeviceAdapter> deviceAdapters;
@@ -34,7 +34,7 @@ public class DAClientsManager
   /**
    * @brief constructor
    */
-  protected DAClientsManager()
+  protected DACManager()
   {
     deviceAdapters = new HashMap<Integer, DeviceAdapter>();
   }
@@ -44,9 +44,9 @@ public class DAClientsManager
    * @brief obtain the Device Adapter Clients Manager unique instance
    * @return
    */
-  public static DAClientsManager getInstance()
+  public static DACManager getInstance()
   {
-    DAClientsManager i = instance;
+    DACManager i = instance;
     if (i == null)
     {
       synchronized (lock)
@@ -55,7 +55,7 @@ public class DAClientsManager
         i = instance; // thread may have instantiated the object.
         if (i == null)
         {
-          i = new DAClientsManager();
+          i = new DACManager();
           instance = i;
         }
       }
@@ -65,12 +65,12 @@ public class DAClientsManager
 
 
   /**
-   * @param deviceAdapter
+   * @param deviceAdapterName
    * @param device_protocol
    * @param short_info
    * @param long_info
    */
-  public void addDeviceAdapter(String deviceAdapter, Protocol device_protocol, String short_info, String long_info)
+  public void addDeviceAdapter(String deviceAdapterName, Protocol device_protocol, String short_info, String long_info)
   {
     String protocol = "";
     try
@@ -99,7 +99,7 @@ public class DAClientsManager
 
         }
       }
-      int id = DatabaseInteraction.getInstance().createDevice(deviceAdapter, protocol, short_info, long_info);
+      int id = DatabaseInteraction.getInstance().createDevice(deviceAdapterName, protocol, short_info, long_info);
       if (id != -1 && client != null) // the last condition should never happen
       {
         deviceAdapters.put(id, client);
@@ -112,16 +112,29 @@ public class DAClientsManager
   }
 
 
+  public DeviceAdapter getDeviceAdapter(String deviceAdapterName)
+  {
+    
+    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
+    if (id != -1 && deviceAdapters.containsKey(id))
+    {
+      return deviceAdapters.get(id);
+    }
+    return null;
+  }
+    
+  
+  
   /**
-   * @brief @param deviceAdapter
+   * @brief @param deviceAdapterName
    * @return
    */
-  public boolean deleteDeviceAdapter(String deviceAdapter)
+  public boolean deleteDeviceAdapter(String deviceAdapterName)
   {
     boolean ok = false;
     try
     {
-      int id = DatabaseInteraction.getInstance().removeDeviceById(deviceAdapter);
+      int id = DatabaseInteraction.getInstance().removeDeviceById(deviceAdapterName);
       if (id != -1 && deviceAdapters.containsKey(id))
       {
         deviceAdapters.remove(id);
@@ -137,12 +150,12 @@ public class DAClientsManager
 
 
   /**
-   * @brief @param deviceAdapter
+   * @brief @param deviceAdapterName
    * @param cpad
    */
-  public void setAgentDeviceIDMaps(String deviceAdapter, CyberPhysicalAgentDescription cpad)
+  public void setAgentDeviceIDMaps(String deviceAdapterName, CyberPhysicalAgentDescription cpad)
   {
-    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapter);
+    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
       deviceAdapters.get(id).setCyberPhysicalAgentDescription(cpad);
@@ -151,14 +164,14 @@ public class DAClientsManager
 
 
   /**
-   * @param deviceAdapter
+   * @param deviceAdapterName
    * @brief WORKSTATIONName vs DEVICE data MAPS
    * @return
    */
-  public List<ServerStatus> getDevicesNameDataMaps(String deviceAdapter)
+  public List<ServerStatus> getDevicesNameDataMaps(String deviceAdapterName)
   {
 
-    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapter);
+    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
       return deviceAdapters.get(id).getServerStatusMaps();
@@ -169,12 +182,12 @@ public class DAClientsManager
 
   /**
    *
-   * @param deviceAdapter
+   * @param deviceAdapterName
    * @param devices
    */
-  public void setDevicesDataMaps(String deviceAdapter, List<ServerStatus> devices)
+  public void setDevicesDataMaps(String deviceAdapterName, List<ServerStatus> devices)
   {
-    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapter);
+    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
       deviceAdapters.get(id).setServerStatusMaps(devices);
@@ -184,12 +197,12 @@ public class DAClientsManager
 
   /**
    *
-   * @param deviceAdapter
+   * @param deviceAdapterName
    * @param device
    */
-  public void addDeviceToDevicesDataMaps(String deviceAdapter, ServerStatus device)
+  public void addDeviceToDevicesDataMaps(String deviceAdapterName, ServerStatus device)
   {
-    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapter);
+    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
       deviceAdapters.get(id).getServerStatusMaps().add(device);
@@ -199,13 +212,13 @@ public class DAClientsManager
 
   /**
    *
-   * @param deviceAdapter
+   * @param deviceAdapterName
    * @param deviceName
    * @return 
    */
-  public boolean deleteDevicesNameDataMaps(String deviceAdapter, String deviceName)
+  public boolean deleteDevicesNameDataMaps(String deviceAdapterName, String deviceName)
   {
-    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapter);
+    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
       return deviceAdapters.get(id).removeServerStatusFromMaps(deviceName);
@@ -213,5 +226,51 @@ public class DAClientsManager
     return false;
   }
 
-
+  
+  public ArrayList<String> listDevicesByProtocol(Protocol p)
+  {
+    switch(p)
+    {
+      case DDS:
+        return DatabaseInteraction.getInstance().listDevicesByProtocol("DDS");        
+      case OPC:
+        return DatabaseInteraction.getInstance().listDevicesByProtocol("OPC");
+      default:
+        return null;
+    }
+  }
+  
+  /**
+   * @brief Wrapper
+   * @param deviceAdapterName
+   * @return 
+   */
+  public Map<String,String> getRecipesFromDevice(String deviceAdapterName)
+  {
+    return DatabaseInteraction.getInstance().getRecipesByDAName(deviceAdapterName);
+  }
+  
+  
+  public ArrayList<HelperDevicesInfo> getDevicesFromDeviceAdapter(String deviceAdatperName)
+  {
+    return DatabaseInteraction.getInstance().getDevicesFromDeviceAdapter(deviceAdatperName);
+  }
+  
+  public ArrayList<String> getDeviceAdapters()
+  {
+    return DatabaseInteraction.getInstance().getDeviceAdapters();
+  }
+  
+  public boolean registerRecipe(String deviceAdapterName, String aml_id, String name)
+  {
+    DatabaseInteraction instance = DatabaseInteraction.getInstance();
+    int id = instance.getDeviceIdByName(deviceAdapterName);
+    if(id!=-1)
+        return instance.registerRecipe(id, aml_id, name);
+    else
+        return false;
+  }
+  
+  
+  
 }
