@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS Skill;
 CREATE TABLE IF NOT EXISTS Skill (
 	id	         INTEGER       NOT NULL UNIQUE,
   aml_id       VARCHAR2(50)  NOT NULL UNIQUE,
-	name	       VARCHAR2(50)  NOT NULL,
+	name	       VARCHAR2(50)  NOT NULL UNIQUE,
 	description	 VARCHAR2(200) NOT NULL,
 	PRIMARY KEY(id)
 );
