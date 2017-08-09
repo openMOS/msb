@@ -26,6 +26,13 @@
     <dependencies>
         
         <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.20.0</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
             <version>2.3.0</version>
@@ -85,6 +92,11 @@
             <groupId>unknown.binary</groupId>
             <artifactId>AbsoluteLayout</artifactId>
             <version>SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>jdbc</groupId>
+            <artifactId>jdbc</artifactId>
+            <version>3.18.10</version>
         </dependency>
     </dependencies>
     <name>openMOSMSBWithDDS</name>

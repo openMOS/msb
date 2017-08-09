@@ -515,7 +515,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="msb_opcua_servername">
               <Properties>
-                <Property name="text" type="java.lang.String" value="opc.tcp://172.18.2.56:12637/MSB-OPCUA-SERVER"/>
+                <Property name="text" type="java.lang.String" value="opc.tcp://172.18.1.174:12637/MSB-OPCUA-SERVER"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="msb_opcua_servernameActionPerformed"/>

@@ -338,7 +338,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         jLabel1.setText("MSB OPCUA Server");
 
-        msb_opcua_servername.setText("opc.tcp://172.18.2.56:12637/MSB-OPCUA-SERVER");
+        msb_opcua_servername.setText("opc.tcp://172.18.1.174:12637/MSB-OPCUA-SERVER");
         msb_opcua_servername.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)

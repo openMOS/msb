@@ -5,7 +5,6 @@
  */
 package eu.openmos.msb.messages;
 
-import eu.openmos.agentcloud.data.recipe.Recipe;
 import java.util.HashMap;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,27 +15,102 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author renato.martins
  */
-@XmlRootElement(name = "Device")
+@XmlRootElement(name = "deviceAdapter")
 @XmlAccessorType(XmlAccessType.FIELD)
-
 public class RegFile
 {
 
-    public RegFile() {
+    @XmlElement(name = "name")
+    private String name = "";
+    @XmlElement(name = "type")
+    private String type = "";
+    @XmlElement(name = "physicalLocation")
+    private String physicalLocation = "";
+    @XmlElement(name = "logicalLocation")
+    private String logicalLocation = "";
+
+    @XmlElement(name = "devices")
+    private HashMap<String, DaDevice> devices = new HashMap<>();
+
+    @XmlElement(name = "skills")
+    private HashMap<String, DaSkill> skills = new HashMap<>();
+
+    @XmlElement(name = "recipes")
+    private HashMap<String, DaRecipe> recipes = new HashMap<>();
+
+    public RegFile()
+    {
+        // Empty
     }
-    @XmlElement(name = "Name")
-    public String Name = "";
-    @XmlElement(name = "Type")
-    public String Type = "";
-    @XmlElement(name = "PhysicalLocation")
-    public String PhysicalLocation = "";
-    @XmlElement(name = "LogicalLocation")
-    public String LogicalLocation = "";
-    
-    @XmlElement(name = "ExecuteTable")
-    public HashMap<String, ExecuteData> ExecuteTable = new HashMap<>();
-    @XmlElement(name = "ServerTable")
-    public HashMap<String, ServerStatus> ServerTable = new HashMap<>();
-    @XmlElement(name = "Recipes")
-    public HashMap<String, Recipe> Recipes = new HashMap<>();
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
+    }
+
+    public String getPhysicalLocation()
+    {
+        return physicalLocation;
+    }
+
+    public void setPhysicalLocation(String physicalLocation)
+    {
+        this.physicalLocation = physicalLocation;
+    }
+
+    public String getLogicalLocation()
+    {
+        return logicalLocation;
+    }
+
+    public void setLogicalLocation(String logicalLocation)
+    {
+        this.logicalLocation = logicalLocation;
+    }
+
+    public HashMap<String, DaDevice> getDevicesTable()
+    {
+        return devices;
+    }
+
+    public void setDevicesTable(HashMap<String, DaDevice> DevicesTable)
+    {
+        this.devices = DevicesTable;
+    }
+
+    public HashMap<String, DaSkill> getSkillsTable()
+    {
+        return skills;
+    }
+
+    public void setSkillsTable(HashMap<String, DaSkill> SkillsTable)
+    {
+        this.skills = SkillsTable;
+    }
+
+    public HashMap<String, DaRecipe> getRecipesTable()
+    {
+        return recipes;
+    }
+
+    public void setRecipesTable(HashMap<String, DaRecipe> RecipesTable)
+    {
+        this.recipes = RecipesTable;
+    }
+
 }

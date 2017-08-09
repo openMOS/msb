@@ -7,8 +7,8 @@ package eu.openmos.msb.datastructures;
 
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
+import eu.openmos.msb.messages.DaDevice;
 import eu.openmos.msb.messages.HelperDevicesInfo;
-import eu.openmos.msb.messages.ServerStatus;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -168,13 +168,13 @@ public class DACManager
    * @brief WORKSTATIONName vs DEVICE data MAPS
    * @return
    */
-  public List<ServerStatus> getDevicesNameDataMaps(String deviceAdapterName)
+  public List<DaDevice> getDevicesNameDataMaps(String deviceAdapterName)
   {
 
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      return deviceAdapters.get(id).getServerStatusMaps();
+      return deviceAdapters.get(id).getListOfDevices();
     }
     return null;
   }
@@ -185,12 +185,12 @@ public class DACManager
    * @param deviceAdapterName
    * @param devices
    */
-  public void setDevicesDataMaps(String deviceAdapterName, List<ServerStatus> devices)
+  public void setDevicesDataMaps(String deviceAdapterName, List<DaDevice> devices)
   {
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      deviceAdapters.get(id).setServerStatusMaps(devices);
+      deviceAdapters.get(id).setListOfDevices(devices);
     }
   }
 
@@ -200,12 +200,12 @@ public class DACManager
    * @param deviceAdapterName
    * @param device
    */
-  public void addDeviceToDevicesDataMaps(String deviceAdapterName, ServerStatus device)
+  public void addDeviceToDevicesDataMaps(String deviceAdapterName, DaDevice device)
   {
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      deviceAdapters.get(id).getServerStatusMaps().add(device);
+      deviceAdapters.get(id).addDevice(device);
     }
   }
 
@@ -261,16 +261,21 @@ public class DACManager
     return DatabaseInteraction.getInstance().getDeviceAdapters();
   }
   
-  public boolean registerRecipe(String deviceAdapterName, String aml_id, String name)
+  public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, boolean valid, String name)
   {
-    DatabaseInteraction instance = DatabaseInteraction.getInstance();
-    int id = instance.getDeviceIdByName(deviceAdapterName);
+    DatabaseInteraction db = DatabaseInteraction.getInstance();
+    int id = db.getDeviceIdByName(deviceAdapterName);
+    int sk_id = db.getSkillIdByName(skillName);
     if(id!=-1)
-        return instance.registerRecipe(id, aml_id, name);
+        return db.registerRecipe(aml_id, id, sk_id, valid, name);
     else
         return false;
   }
   
-  
+  public boolean registerSkill(String deviceAdapterName, String aml_id, String name, String description)
+  {
+      DatabaseInteraction db = DatabaseInteraction.getInstance();
+      return db.registerSkill(deviceAdapterName, aml_id, name, description);
+  }
   
 }

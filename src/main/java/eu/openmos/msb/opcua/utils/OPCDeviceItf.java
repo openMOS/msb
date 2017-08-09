@@ -27,14 +27,15 @@ import eu.openmos.msb.cloudinterface.WebSocketsReceiver;
 import eu.openmos.msb.cloudinterface.WebSocketsSender;
 import eu.openmos.msb.cloudinterface.WebSocketsSenderDraft;
 import eu.openmos.msb.messages.ChangedState;
-import eu.openmos.msb.messages.ExecuteData;
 import eu.openmos.msb.messages.RegFile;
-import eu.openmos.msb.messages.HelperDevicesInfo;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
-import eu.openmos.msb.messages.ServerStatus;
+import eu.openmos.msb.messages.DaDevice;
+import eu.openmos.msb.messages.DaRecipe;
+import eu.openmos.msb.messages.DaSkill;
+
 
 import io.vertx.core.Vertx;
 import java.io.File;
@@ -46,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Observable;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -746,8 +746,8 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
 
     try
     {
-      // TODO perguntar ao fabio o que é isto
-      //FiletoXMLtoObject("RegFile.xml");
+      
+      FiletoXMLtoObject("RegFile.xml");
 
       // Pass the XML file (RegFile) to java classes
       DocumentBuilderFactory dfctr = DocumentBuilderFactory.newInstance();
@@ -761,34 +761,47 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
       JAXBContext jaxbContext = JAXBContext.newInstance(RegFile.class);
       Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
       parsedClass = (RegFile) unmarshaller.unmarshal(docres);
-
-      String protocol = null;
       
       DeviceAdapter da = instance.getDeviceAdapter(senderName);
       
       
-      if (parsedClass.ServerTable.size() > 0)
+      
+      if (parsedClass.getDevicesTable().size() > 0)
       {
-        for (String key : parsedClass.ServerTable.keySet())
+          for (String key : parsedClass.getDevicesTable().keySet())
+          {
+              DaDevice device = parsedClass.getDevicesTable().get(key);
+              da.addDevice(device);
+          }
+          MSB_gui.fillDevicesTable();
+      }
+      
+      if (parsedClass.getSkillsTable().size() > 0)
+      {
+        for (String key : parsedClass.getSkillsTable().keySet())
         {          
-          ServerStatus SStat = parsedClass.ServerTable.get(key);
-          da.addToServerStatusMaps(SStat);
-          // visual
+          DaSkill skill = parsedClass.getSkillsTable().get(key);
+          instance.registerSkill(senderName, skill.getAmlId(), skill.getName(), skill.getDescription());
           MSB_gui.fillDevicesTable();
         }
       }
       
-      for (String key : parsedClass.Recipes.keySet())
+      for (String key : parsedClass.getRecipesTable().keySet())
       {
-        Recipe r = parsedClass.Recipes.get(key);
-        instance.registerRecipe(senderName, r.getUniqueId(), r.getName());
+        DaRecipe r = parsedClass.getRecipesTable().get(key);
+        instance.registerRecipe(senderName, r.getAmlId(), r.getSkill(), r.getValid().equals("1"), r.getName());
         MSB_gui.fillRecipesTable();
       }
                 
       
       
+      
+      
+      
+      
+      
       // --------------------------------------------------------------------------------------------------------------
-      System.out.println("\n\n\n Parsed class: " + parsedClass.Name + "\n\n\n");
+      System.out.println("\n\n\n Parsed class: " + parsedClass.getName() + "\n\n\n");
 
       if (withAGENTCloud)
       {
@@ -1075,11 +1088,11 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     String cpadAgentClass = "asdsa"; //what is this?
 
     String cpadType = null; //select the agent type according to the workstation info
-    if (datafromWorkStation.Type.equals("resource"))
+    if (datafromWorkStation.getType().equals("resource"))
     {
       cpadType = "resource_df_service";  //or transport_df_service
     }
-    else if (datafromWorkStation.Type.equals("transport"))
+    else if (datafromWorkStation.getType().equals("transport"))
     {
       cpadType = "transport_df_service";  //or transport_df_service
     }
@@ -1138,20 +1151,23 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
     s.setType(skillType);
 
     List<Skill> cpadSkills = new LinkedList<>(Arrays.asList(s));
-    List<Recipe> cpadRecipes = new LinkedList<>(); // (Arrays.asList(r));
-    List<SkillRequirement> cpadSkillRequirements = new LinkedList<>(); // (Arrays.asList(recipeSR));
+    List<Recipe> cpadRecipes = new LinkedList<>();
+    List<SkillRequirement> cpadSkillRequirements = new LinkedList<>(); 
 
-    for (String key : datafromWorkStation.Recipes.keySet())
+    
+    // af-silva changes made here, this should not work
+    for (String key : datafromWorkStation.getRecipesTable().keySet())
     {
-      Recipe recipe_inst = datafromWorkStation.Recipes.get(key);
+      Recipe recipe_inst = new Recipe();
+      DaRecipe temp = datafromWorkStation.getRecipesTable().get(key);
 
-      if (recipe_inst.getSkillRequirements() != null)
+      if (temp.getSkillRequirements() != null)
       {
-        for (int i = 0; i < recipe_inst.getSkillRequirements().size(); i++)
+        for (int i = 0; i < temp.getSkillRequirements().size(); i++)
         {
           // PROBLEM! TO SOLVE 
           // The class contains different data from the agents representation
-          cpadSkillRequirements.add(recipe_inst.getSkillRequirements().get(i));
+          //cpadSkillRequirements.add(temp.getSkillRequirements().get(i));
         }
       }
 
@@ -1211,7 +1227,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
 
     // LogicalLocation cpadLl = new LogicalLocation("asdad");
     LogicalLocation cpadLl = new LogicalLocation();
-    cpadLl.setLocation(datafromWorkStation.LogicalLocation);
+    cpadLl.setLocation(datafromWorkStation.getLogicalLocation());
 
     SkillRequirement cpadSR;
     String cpadSkillRequirementDescription = "asdsad";
@@ -1321,6 +1337,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
 
     //optional, but recommended
     //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+    // http://howtodoinjava.com/jaxb/jaxb-example-marshalling-and-unmarshalling-hashmap-in-java/
     doc.getDocumentElement().normalize();
     String message = doc.getDocumentElement().getTextContent();
 

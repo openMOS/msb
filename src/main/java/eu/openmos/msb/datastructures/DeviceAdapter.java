@@ -6,8 +6,7 @@
 package eu.openmos.msb.datastructures;
 
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-import eu.openmos.msb.messages.HelperDevicesInfo;
-import eu.openmos.msb.messages.ServerStatus;
+import eu.openmos.msb.messages.DaDevice;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public abstract class DeviceAdapter
   /*
    * device name || devices in the workstation and its data
    */
-  protected List<ServerStatus> serverStatusMaps;
+  protected List<DaDevice> listOfDevices;
   protected CyberPhysicalAgentDescription cpad;
 
 
@@ -42,26 +41,16 @@ public abstract class DeviceAdapter
     return bd_id;
   }
 
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(int id)
-  {
-    this.bd_id = id;
-  }
-
-
   /**
    * @param name
    * @return the ServerTableMaps
    */
-  public ServerStatus getServerStatusByDevice(String name)
+  public DaDevice getServerStatusByDevice(String name)
   {
-    Iterator<ServerStatus> it = this.serverStatusMaps.iterator();
+    Iterator<DaDevice> it = this.listOfDevices.iterator();
     while (it.hasNext())
     {
-      ServerStatus temp = it.next();
+      DaDevice temp = it.next();
       if (temp.getName().toUpperCase().equals(name.toUpperCase()))
       {
         return temp;
@@ -75,9 +64,9 @@ public abstract class DeviceAdapter
    *
    * @return
    */
-  public List<ServerStatus> serverStatusMaps()
+  public List<DaDevice> getListOfDevices()
   {
-    return serverStatusMaps;
+    return listOfDevices;
   }
 
 
@@ -85,39 +74,21 @@ public abstract class DeviceAdapter
    *
    * @param server
    */
-  public void addToServerStatusMaps(ServerStatus server)
+  public void addDevice(DaDevice server)
   {
-    this.serverStatusMaps.add(server);
+    this.listOfDevices.add(server);
   }
 
 
-  /**
-   *
-   * @return List of HelperDevicesInfo
-   */
-  public List<ServerStatus> getServerStatusMaps()
-  {
-    return this.serverStatusMaps;
-  }
 
 
   /**
    *
    * @param devices
    */
-  public void setServerStatusMaps(List<ServerStatus> devices)
+  public void setListOfDevices(List<DaDevice> devices)
   {
-    this.serverStatusMaps = devices;
-  }
-
-
-  /**
-   *
-   * @param ss
-   */
-  public void addServerStatusToMaps(ServerStatus ss)
-  {
-    this.serverStatusMaps.add(ss);
+    this.listOfDevices = devices;
   }
 
 
@@ -128,13 +99,13 @@ public abstract class DeviceAdapter
    */
   public boolean removeServerStatusFromMaps(String deviceName)
   {
-    Iterator<ServerStatus> it = this.serverStatusMaps.iterator();
+    Iterator<DaDevice> it = this.listOfDevices.iterator();
     while (it.hasNext())
     {
-      ServerStatus ss = it.next();
+      DaDevice ss = it.next();
       if (ss.getName().equals(deviceName))
       {
-        return this.serverStatusMaps.remove(ss);
+        return this.listOfDevices.remove(ss);
       }
     }
     return false;
