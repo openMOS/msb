@@ -8,7 +8,7 @@ package eu.openmos.msb.datastructures;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.messages.DaDevice;
-import eu.openmos.msb.messages.HelperDevicesInfo;
+import eu.openmos.msb.messages.DaRecipe;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +36,7 @@ public class DACManager
    */
   protected DACManager()
   {
-    deviceAdapters = new HashMap<Integer, DeviceAdapter>();
+    deviceAdapters = new HashMap<>();
   }
 
 
@@ -168,7 +168,7 @@ public class DACManager
    * @brief WORKSTATIONName vs DEVICE data MAPS
    * @return
    */
-  public List<DaDevice> getDevicesNameDataMaps(String deviceAdapterName)
+  public List<DaDevice> getDevicesFromDeviceAdapter(String deviceAdapterName)
   {
 
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
@@ -179,20 +179,6 @@ public class DACManager
     return null;
   }
 
-
-  /**
-   *
-   * @param deviceAdapterName
-   * @param devices
-   */
-  public void setDevicesDataMaps(String deviceAdapterName, List<DaDevice> devices)
-  {
-    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
-    if (id != -1 && deviceAdapters.containsKey(id))
-    {
-      deviceAdapters.get(id).setListOfDevices(devices);
-    }
-  }
 
 
   /**
@@ -245,17 +231,12 @@ public class DACManager
    * @param deviceAdapterName
    * @return 
    */
-  public Map<String,String> getRecipesFromDevice(String deviceAdapterName)
+  public ArrayList<DaRecipe> getRecipesFromDevice(String deviceAdapterName)
   {
     return DatabaseInteraction.getInstance().getRecipesByDAName(deviceAdapterName);
   }
   
-  
-  public ArrayList<HelperDevicesInfo> getDevicesFromDeviceAdapter(String deviceAdatperName)
-  {
-    return DatabaseInteraction.getInstance().getDevicesFromDeviceAdapter(deviceAdatperName);
-  }
-  
+ 
   public ArrayList<String> getDeviceAdapters()
   {
     return DatabaseInteraction.getInstance().getDeviceAdapters();

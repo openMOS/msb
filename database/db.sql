@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS Skill;
 CREATE TABLE IF NOT EXISTS Skill (
 	id	         INTEGER       NOT NULL UNIQUE,
   aml_id       VARCHAR2(50)  NOT NULL UNIQUE,
-	name	       VARCHAR2(50)  NOT NULL UNIQUE,
+	name	       VARCHAR2(50)  NOT NULL,
 	description	 VARCHAR2(200) NOT NULL,
 	PRIMARY KEY(id)
 );
@@ -30,11 +30,11 @@ CREATE TABLE IF NOT EXISTS Skill (
 DROP TABLE IF EXISTS Recipe;
 CREATE TABLE IF NOT EXISTS Recipe (
   id           INTEGER NOT NULL UNIQUE,
-	aml_id       VARCHAR2(50) NOT NULL UNIQUE,
-	da_id 	     INTEGER NOT NULL,
+  aml_id       VARCHAR2(50) NOT NULL UNIQUE,
+  da_id 	     INTEGER NOT NULL,
   sk_id 	     INTEGER NOT NULL,
   valid        BOOLEAN NOT NULL,
-	name         VARCHAR2(50) NOT NULL,
+  name         VARCHAR2(50) NOT NULL,
   PRIMARY KEY(id),
 	FOREIGN KEY(da_id) REFERENCES DeviceAdapter(id)
 );

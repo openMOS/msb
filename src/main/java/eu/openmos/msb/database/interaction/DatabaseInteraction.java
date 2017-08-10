@@ -7,6 +7,7 @@ package eu.openmos.msb.database.interaction;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.msb.messages.DaDevice;
+import eu.openmos.msb.messages.DaRecipe;
 import eu.openmos.msb.messages.HelperDevicesInfo;
 import java.io.BufferedReader;
 import java.io.File;
@@ -376,7 +377,27 @@ public class DatabaseInteraction
 
     public ArrayList<String> getDeviceAdapters()
     {
-        return DatabaseInteraction.getInstance().getDeviceAdapters();
+        try
+        {
+            Statement stmt = conn.createStatement();
+            ArrayList<String> myresult;
+            try (ResultSet query = stmt.executeQuery("SELECT name FROM DeviceAdapter"))
+            {
+                myresult = new ArrayList<>();
+                while (query.next())
+                {
+                    myresult.add(query.getString(1));
+                }
+            }
+            stmt.close();
+            return myresult;
+        } catch (SQLException ex)
+        {
+            System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
     }
 
     /**
@@ -443,8 +464,8 @@ public class DatabaseInteraction
         }
         return id;
     }
-    
-        /**
+
+    /**
      *
      * @param deviceName
      * @return
@@ -499,18 +520,18 @@ public class DatabaseInteraction
         {
             Statement stmt = conn.createStatement();
             {
-            String sql = "INSERT INTO Skill"
-                    + "(aml_id, name, description)"
-                    + " VALUES ("
-                    + "'" + aml_id +"','" + skill_name + "','" + description + "')";
-            skill_id = stmt.executeUpdate(sql);
+                String sql = "INSERT INTO Skill"
+                        + "(aml_id, name, description)"
+                        + " VALUES ("
+                        + "'" + aml_id + "','" + skill_name + "','" + description + "')";
+                skill_id = stmt.executeUpdate(sql);
             }
             {
-            String sql = "INSERT INTO DAS"
-                    + "(sk_id, da_id)"
-                    + " VALUES ("
-                    + "'" + skill_id + "','" + device_id + "')";
-            stmt.execute(sql);
+                String sql = "INSERT INTO DAS"
+                        + "(sk_id, da_id)"
+                        + " VALUES ("
+                        + "'" + skill_id + "','" + device_id + "')";
+                stmt.execute(sql);
             }
             stmt.close();
 
@@ -669,24 +690,40 @@ public class DatabaseInteraction
         return -1;
     }
 
-    public Map<String, String> getRecipesByDAName(String deviceAdapterName)
+    public ArrayList<DaRecipe> getRecipesByDAName(String deviceAdapterName)
     {
         try
         {
-            Map<String, String> resultArray;
+            ArrayList<DaRecipe> result = new ArrayList<>();
             Statement stmt = conn.createStatement();
-            ResultSet query = stmt.executeQuery("SELECT Recipe.aml_id, Recipe.name "
+            String recipe_sql_cmd = "SELECT Recipe.name, Recipe.aml_id, Recipe.valid, Recipe.sk_id, Recipe.da_id, DeviceAdapter.id, DeviceAdapter.name"
                     + "FROM Recipe, DeviceAdapter "
-                    + "WHERE Recipe.da_id = DeviceAdapter.id AND DeviceAdapter.name = '" + deviceAdapterName + "';");
+                    + "WHERE Recipe.da_id = DeviceAdapter.id AND DeviceAdapter.name = '" + deviceAdapterName + "';";
+            ResultSet recipe_query = stmt.executeQuery(recipe_sql_cmd);
             stmt.close();
-            resultArray = new HashMap<String, String>();
-            while (query.next())
+
+            while (recipe_query.next())
             {
-                resultArray.put(query.getString(1), query.getString(2));
+                DaRecipe recipe = new DaRecipe();
+                recipe.setAmlId(recipe_query.getString(1));
+                recipe.setName(recipe_query.getString(2));
+                recipe.setValid(recipe_query.getString(3));
+                int sk_id = Integer.valueOf(recipe_query.getString(4));
+                if (sk_id != -1)
+                {
+                    Statement stmts = conn.createStatement();
+                    String skill_sql_cmd = "SELECT Skill.name FROM Skill, Recipe WHERE Recipe.sk_id = '" + sk_id + "';";
+                    ResultSet skill_query = stmts.executeQuery(skill_sql_cmd);
+                    stmt.close();
+                    recipe.setSkill(skill_query.getString(1));
+                }
+                recipe.setDescription(recipe_query.getString(5));
+                result.add(recipe);
             }
-            return resultArray;
+            return result;
         } catch (SQLException ex)
         {
+            System.out.println("[ERROR] getRecipesByDAName " + ex.getMessage());
             Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;

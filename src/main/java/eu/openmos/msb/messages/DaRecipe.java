@@ -21,6 +21,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DaRecipe
 {
 
+    public DaRecipe()
+    {
+    }
+
     @XmlElement(name = "description")
     private String description;
     @XmlElement(name = "name")
