@@ -52,6 +52,7 @@ import eu.openmos.msb.dds.instance.DDSErrorHandler;
 import eu.openmos.msb.messages.DaDevice;
 import eu.openmos.msb.messages.DaRecipe;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observer;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
@@ -69,7 +70,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private static String MSB_OPCUA_SERVER_ADDRESS = null;
     private static eu.openmos.msb.opcua.milo.server.opcuaServerMSB opcuaServerInstanceMILO;
 
-    private static DefaultTableModel serversTableModel;
+    private static DefaultTableModel adaptersTableModel;
     private static DefaultTableModel recipesTableModel;
     private static DefaultTableModel devicesTableModel;
     private static ImageIcon redLight;
@@ -92,7 +93,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         this.isDDSRunning = false;
 
-        serversTableModel = (DefaultTableModel) TableServers.getModel();
+        adaptersTableModel = (DefaultTableModel) TableServers.getModel();
         recipesTableModel = (DefaultTableModel) recipesTable.getModel();
         devicesTableModel = (DefaultTableModel) devicesTable.getModel();
         pb_produceProduct.hide();
@@ -1405,7 +1406,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                       DACManager.getInstance().addDeviceAdapter(name, Protocol.OPC, "", "");
 
                       // visual
-                      addToTableServers(name, "opcua", app_uri);
+                      addToTableAdapters(name, "opcua", app_uri);
                       opc_comms_log.append("New Server found and registered: " + name + " " + app_uri + "\n");
                       System.out.println("onNewServer Registered Server: " + name + " " + app_uri);
 
@@ -1654,40 +1655,17 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     /**
      *
-     * @param serverName
-     * @param protocol
-     * @param serverUri
-     */
-    private void addToTableServers(String serverName, String protocol, String serverUri)
-    {
-        serversTableModel.addRow(new Object[]
-        {
-            serverName, protocol, serverUri
-        });
-
-        Object[] rowData = new Object[serversTableModel.getColumnCount()];
-        for (int i = 0; i < serversTableModel.getColumnCount(); i++)
-        {
-            rowData[i] = serversTableModel.getValueAt(0, i);
-            System.out.println("Server successfully added to table. Name: " + rowData.toString());
-        }
-        opc_comms_log.append("Server successfully added to table. Name: " + serverName + "URL: " + serverUri + "\n");
-
-    }
-
-    /**
-     *
      */
     public static void fillRecipesTable()
     {
         DACManager instance = DACManager.getInstance(); //singleton to access hashmaps in other classes
-        ArrayList<String> devices = instance.getDeviceAdapters();
-        for(String daName : devices)
+        List<String> devices = instance.getDeviceAdapters();
+        for (String daName : devices)
         {
             ArrayList<DaRecipe> list = instance.getRecipesFromDevice(daName);
-            for(DaRecipe r : list)
+            for (DaRecipe r : list)
             {
-                addToTableRecipes(r.getName(), r.getValid().equals("1"), daName); //add each product from the list for each workstation
+                addToTableRecipes(r.getName(), Boolean.parseBoolean(r.getValid()), daName); //add each product from the list for each workstation
             }
         }
     }
@@ -1724,17 +1702,40 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     public static void fillDevicesTable()
     {
         DACManager instance = DACManager.getInstance();
-        for (String deviceAdapterName : instance.getDeviceAdapters())
+        List<String> adapters = instance.getDeviceAdapters();
+        for (String adapter : adapters)
         {
-            for (DaDevice device : DACManager.getInstance().getDevicesFromDeviceAdapter(deviceAdapterName))
+            List<DaDevice> devices = instance.getDevicesFromDeviceAdapter(adapter);
+            for (DaDevice device : devices)
             {
-                addToTableDevice(device.getName(), (device.getStatus().equals("1")), device.getAddress() ,deviceAdapterName);
+                addToTableDevice(device.getName(), (device.getStatus().equals("1")), device.getAddress(), adapter);
             }
         }
     }
 
     /**
+     *
+     * @param serverName
+     * @param protocol
+     * @param serverUri
+     */
+    private void addToTableAdapters(String serverName, String protocol, String serverUri)
+    {
+        adaptersTableModel.addRow(new Object[]
+        {
+            serverName, protocol, serverUri
+        });
+        Object[] rowData = new Object[adaptersTableModel.getColumnCount()];
+        for (int i = 0; i < adaptersTableModel.getColumnCount(); i++)
+        {
+            rowData[i] = adaptersTableModel.getValueAt(0, i);
+        }
+        opc_comms_log.append("Server successfully added to table. Name: " + serverName + "URL: " + serverUri + "\n");
+    }
+
+    /**
      * add a row to tableProduct
+     *
      * @param recipeName
      * @param status
      * @param deviceAdapterName
@@ -1778,25 +1779,23 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     }
 
     /**
-     *
+     * @todo this is to use??????
      * @param serverName
      * @param protocol
      * @param serverUri
      */
-    private void deleteFromTableServers(String serverName, String protocol, String serverUri)
+    private void deleteFromTableAdapters(String serverName, String protocol, String serverUri)
     {
-
-        int rowcont = serversTableModel.getRowCount();
         int indexToRemove = -1;
-        for (int i = 0; i < serversTableModel.getRowCount(); i++)
+        for (int i = 0; i < adaptersTableModel.getRowCount(); i++)
         {//For each row
-            for (int j = 0; j < serversTableModel.getColumnCount(); j++)
+            for (int j = 0; j < adaptersTableModel.getColumnCount(); j++)
             {//For each column in that row
-                if (serversTableModel.getValueAt(i, j).equals(serverName))
+                if (adaptersTableModel.getValueAt(i, j).equals(serverName))
                 {//Search the model
-                    System.out.println("FOUND SERVER TO DELETE from table: " + serversTableModel.getValueAt(i, j));//Print if found string
+                    System.out.println("FOUND SERVER TO DELETE from table: " + adaptersTableModel.getValueAt(i, j));//Print if found string
                     indexToRemove = i;
-                    serversTableModel.removeRow(indexToRemove);
+                    adaptersTableModel.removeRow(indexToRemove);
                     i--;
                 }
             }//For inner loop 
@@ -1804,31 +1803,22 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         if (indexToRemove != -1)
         {
-
-            System.out.println("SERVER DELETED from table: " + serverName);//Print if server found 
             opc_comms_log.append("SERVER DELETED from table: " + serverName + "\n");
         } else
         {
-            System.out.println("SERVER TO DELETE NOT FOUND from table: " + serverName);//Print if server not found 
-            //opc_comms_log.append("SERVER TO DELETE NOT FOUND from table: " + serverName + "\n");
+            opc_comms_log.append("SERVER TO DELETE NOT FOUND from table: " + serverName + "\n");
         }
-
         comboServers.removeItem(serverName);
-
     }
 
     /**
-     *
+     * @todo this is to use??????
      * @param productID
      * @param recipeID
      * @param workstationName
      */
-    private static void deleteFromTableProducts(String productID, String recipeID, String workstationName)
+    private static void deleteFromTableRecipes(String productID, String recipeID, String workstationName)
     {
-        //delete from product ID? recipeID? or workstationName? or all?
-        //TODO
-
-        int rowcont = recipesTableModel.getRowCount();
         int indexToRemove = -1;
         for (int i = 0; i < recipesTableModel.getRowCount(); i++)
         {//For each row
@@ -1836,7 +1826,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
             {//For each column in that row
                 if (recipesTableModel.getValueAt(i, j).equals(workstationName))
                 {//Search the model
-                    System.out.println("FOUND PRODUCT TO DELETE from table: " + recipesTableModel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
                     indexToRemove = i;
                     recipesTableModel.removeRow(indexToRemove);
                     i--;
@@ -1846,18 +1835,15 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         if (indexToRemove != -1)
         {
-            System.out.println("PRODUCT DELETED from table: " + productID);//Print if server found 
-            opc_comms_log.append("PRODUCT DELETED from table: " + productID + "\n");
+            opc_comms_log.append("RECIPE DELETED from table: " + productID + "\n");
         } else
         {
-            System.out.println("PRODUCT TO DELETE NOT FOUND from table: " + productID);//Print if server not found 
-            //opc_comms_log.append("PRODUCT TO DELETE NOT FOUND from table: " + productID + "\n");
+            opc_comms_log.append("RECIPE TO DELETE NOT FOUND from table: " + productID + "\n");
         }
-
     }
 
     /**
-     *
+     * @todo this is to use??????
      * @param DeviceName
      * @param status
      * @param endpoint
@@ -1867,8 +1853,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
         //delete from DeviceName? status? or endpoint? or all?
         //TODO
-
-        int rowcount = devicesTableModel.getRowCount();
 
         int indexToRemove = -1;
         for (int i = 0; i < devicesTableModel.getRowCount(); i++)
@@ -2032,8 +2016,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     public String CleanTablesFromWorkstation(String WorkstationName)
     {
         deleteFromTableDevices(null, null, null, WorkstationName);
-        deleteFromTableProducts(null, null, WorkstationName);
-        deleteFromTableServers(WorkstationName, null, null);
+        deleteFromTableRecipes(null, null, WorkstationName);
+        deleteFromTableAdapters(WorkstationName, null, null);
 
         return "OK";
     }

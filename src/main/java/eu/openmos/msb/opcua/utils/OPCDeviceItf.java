@@ -769,7 +769,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
                 for (String key : parsedClass.getRecipesTable().keySet())
                 {
                     DaRecipe r = parsedClass.getRecipesTable().get(key);
-                    instance.registerRecipe(senderName, r.getAmlId(), r.getSkill(), r.getValid().equals("1"), r.getName());
+                    instance.registerRecipe(senderName, r.getAmlId(), r.getSkill(), r.getValid(), r.getName());
                 }
                 MSB_gui.fillRecipesTable();
             }

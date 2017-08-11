@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.msb.opcua.utils;
 
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
@@ -32,29 +27,32 @@ public class OpcUaServersDiscoverySnippet extends Thread
      */
     private final String LDS_uri;
     private final OPCDeviceDiscoveryItf servers_dynamic;
-    private final List<String> list_servers = new ArrayList<String>();
-    private final List<String> list_endpoints = new ArrayList<String>();
 
+    /**
+     * @brief TODO fabio
+     * @param _LDS_uri
+     * @param _servers_dynamic
+     */
     public OpcUaServersDiscoverySnippet(String _LDS_uri, OPCDeviceDiscoveryItf _servers_dynamic)
     {
         LDS_uri = _LDS_uri;
         servers_dynamic = _servers_dynamic;
     }
 
+    /**
+     * @brief TODO fabio
+     */
     @Override
     public void run()
     {
-
         while (true)
         {
             servers_dynamic.reset_tables();
-
             try
             {
                 discoverServer(LDS_uri);
                 CheckDBServersStatus();
                 sleep(discovery_period * 1000);
-                System.out.println("Sleeping...");
             } catch (InterruptedException ex)
             {
                 Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
@@ -62,36 +60,38 @@ public class OpcUaServersDiscoverySnippet extends Thread
         }
     }
 
+    /**
+     * @brief TODO fabio
+     * @param serverApp
+     * @param applicationUri
+     * @return
+     * @throws URISyntaxException
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws Exception
+     */
     protected EndpointDescription discoverEndpoints(org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription serverApp, String applicationUri) throws URISyntaxException, InterruptedException, ExecutionException, Exception
     {
         final String[] discoveryUrls = serverApp.getDiscoveryUrls(); //OLDMSB
-
         if (discoveryUrls != null)
         {
-
             int i = 0;
-            List<org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription> edList = new ArrayList<org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription>();
-
+            List<org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription> edList = new ArrayList<>();
             for (String url : discoveryUrls)
             {
-
                 try
                 {
-
                     for (org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get())
                     {
-
                         edList.add(ed);
                         System.out.println("EndPoints from: " + url + " = " + ed);
-
-                        servers_dynamic.on_new_endpoint(serverApp.getApplicationName().getText(), ed.getEndpointUrl()); //before 13-12-17 args-> app_uri , ed.getEndpointUrl()
-
+                        //before 13-12-17 args-> app_uri , ed.getEndpointUrl()
+                        servers_dynamic.on_new_endpoint(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
                     }
                 } catch (Exception e)
                 {
                     println("Cannot discover Endpoints from URL " + url + ": " + e.getMessage());
                     println("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + url + ": " + e.getMessage());
-
                     if (e.getCause().getMessage().contains("Connection refused"))
                     {
                         //DELETE SERVER FROM DATABASE AND HASHMAP
@@ -108,6 +108,11 @@ public class OpcUaServersDiscoverySnippet extends Thread
         return null;
     }
 
+    /**
+     *
+     * @param uri
+     * @return
+     */
     boolean discoverServer(String uri)
     {
         try
@@ -157,16 +162,32 @@ public class OpcUaServersDiscoverySnippet extends Thread
         return false;
     }
 
+    /**
+     *
+     * @param list
+     * @param element
+     * @return
+     */
     private boolean check_if_object_exists(List<String> list, String element)
     {
         return list.contains(element);
     }
 
+    /**
+     *
+     * @param in
+     */
     void println(String in)
     {
         System.out.println(in);
     }
 
+    /**
+     *
+     * @param name
+     * @param url
+     * @return
+     */
     boolean on_server_dissapeared(String name, String url)
     {
         System.out.println("url disapeared: " + url);
@@ -174,11 +195,14 @@ public class OpcUaServersDiscoverySnippet extends Thread
         return true;
     }
 
+    /**
+     *
+     * @return
+     */
     int CheckDBServersStatus()
     {
 
-        ArrayList<String> devices = DatabaseInteraction.getInstance().listAllDevices();
-        System.out.println("Verifying DB servers status...");
+        ArrayList<String> devices = DatabaseInteraction.getInstance().listAllDeviceAdapters();
         String address = null;
         org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription[] endpointsFromServer = null;
         int retMsg = 0;
@@ -190,12 +214,12 @@ public class OpcUaServersDiscoverySnippet extends Thread
             {
                 DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(device);
                 address = ((MSB_MiloClientSubscription) da.getClient()).getClientObject().getStackClient().getEndpointUrl();
-
-                // OPCUA Client TODO - Add DDS and MQTT
                 endpointsFromServer = UaTcpStackClient.getEndpoints(address).get();
+                   
+                // OPCUA Client TODO - Add DDS and MQTT af-silva
+
             } catch (InterruptedException | ExecutionException ex)
             {
-
                 Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
                 if (ex.getCause().getMessage().contains("Connection refused"))
                 {
@@ -206,10 +230,10 @@ public class OpcUaServersDiscoverySnippet extends Thread
                     {
                         DevicetoRemove = device;
                     }
-
                 }
             }
-
+            
+            
             if (endpointsFromServer == null)
             {
                 System.out.println("This server doens't have Endpoints available:  " + device);
@@ -232,6 +256,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
             }
         }
 
+        
         if (DevicetoRemove != null && address != null)
         {
             servers_dynamic.on_server_dissapeared(DevicetoRemove, address);
@@ -239,5 +264,4 @@ public class OpcUaServersDiscoverySnippet extends Thread
 
         return retMsg;
     }
-
 }
