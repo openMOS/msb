@@ -50,7 +50,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="38" max="32767" attributes="0"/>
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="302" max="-2" attributes="0"/>
                           </Group>
@@ -198,8 +198,8 @@
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
               <Table columnCount="3" rowCount="0">
                 <Column editable="false" title="Recipe" type="java.lang.String"/>
-                <Column editable="true" title="Status" type="java.lang.Boolean"/>
-                <Column editable="false" title="WorkStation" type="java.lang.String"/>
+                <Column editable="false" title="Status" type="java.lang.Boolean"/>
+                <Column editable="false" title="Device Adapter" type="java.lang.String"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -294,7 +294,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JTable" name="DevicesTable">
+        <Component class="javax.swing.JTable" name="devicesTable">
           <Properties>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -306,7 +306,7 @@
                 <Column editable="false" title="Name" type="java.lang.String"/>
                 <Column editable="false" title="Status" type="java.lang.Boolean"/>
                 <Column editable="false" title="Endpoint" type="java.lang.String"/>
-                <Column editable="false" title="DeviceAdapter" type="java.lang.String"/>
+                <Column editable="false" title="Device Adapter" type="java.lang.String"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -638,6 +638,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboServersActionPerformed"/>
               </Events>
               <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="comboServers.setModel(new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;No device adapters available!&quot;}));"/>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
             </Component>
@@ -675,6 +676,7 @@
             </Component>
             <Component class="javax.swing.JComboBox" name="ComboMSB">
               <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="ComboMSB.setModel(new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;No MSB available!&quot;}));"/>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
             </Component>
@@ -1042,8 +1044,8 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jComboBox2" linkSize="5" max="32767" attributes="0"/>
-                              <Component id="prodA" linkSize="5" pref="331" max="32767" attributes="0"/>
+                              <Component id="cb_productSelection" linkSize="5" max="32767" attributes="0"/>
+                              <Component id="pb_produceProduct" linkSize="5" pref="331" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -1057,21 +1059,21 @@
                   <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                   <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jComboBox2" linkSize="6" min="-2" max="-2" attributes="0"/>
+                  <Component id="cb_productSelection" linkSize="6" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="prodA" linkSize="6" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="pb_produceProduct" linkSize="6" min="-2" pref="37" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="prodA">
+        <Component class="javax.swing.JButton" name="pb_produceProduct">
           <Properties>
             <Property name="text" type="java.lang.String" value="Produce Product"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="prodAActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pb_produceProductActionPerformed"/>
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
@@ -1083,7 +1085,7 @@
             <Property name="text" type="java.lang.String" value="Product Execution"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox2">
+        <Component class="javax.swing.JComboBox" name="cb_productSelection">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection code="new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;No recipes available!&quot;})" type="code"/>

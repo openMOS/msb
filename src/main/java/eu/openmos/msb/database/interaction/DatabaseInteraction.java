@@ -7,6 +7,7 @@ package eu.openmos.msb.database.interaction;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.msb.messages.DaDevice;
+import eu.openmos.msb.messages.DaRecipe;
 import eu.openmos.msb.messages.HelperDevicesInfo;
 import java.io.BufferedReader;
 import java.io.File;
@@ -155,7 +156,7 @@ public class DatabaseInteraction
      * @param long_descriptor
      * @return
      */
-    public int createDevice(String device_name, String protocol, String short_descriptor, String long_descriptor)
+    public int createDeviceAdapter(String device_name, String protocol, String short_descriptor, String long_descriptor)
     {
         int ok_id = -1;
         try
@@ -173,7 +174,6 @@ public class DatabaseInteraction
         {
             System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
             Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
-            ok_id = -1; // make sure to return the -1 value
         }
         return ok_id;
     }
@@ -182,31 +182,25 @@ public class DatabaseInteraction
      *
      * @return
      */
-    public ArrayList<String> listAllDevices()
+    public ArrayList<String> listAllDeviceAdapters()
     {
+        ArrayList<String> list = new ArrayList<>();
         try
         {
             Statement stmt = conn.createStatement();
-            ArrayList<String> myresult;
-            try (
-                    ResultSet query = stmt.executeQuery("SELECT id, name FROM DeviceAdapter;"))
+            String sql = "SELECT id, name FROM DeviceAdapter;";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
             {
-                myresult = new ArrayList<>();
-                while (query.next())
-                {
-
-                    myresult.add(query.getString(2));
-                }
+                list.add(rs.getString(2));
             }
             stmt.close();
-            return myresult;
         } catch (SQLException ex)
         {
             System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
             Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return null;
+        return list;
     }
 
     /**
@@ -215,25 +209,24 @@ public class DatabaseInteraction
      */
     public ArrayList<String> listDevicesByProtocol(String protocol)
     {
+        ArrayList<String> list = new ArrayList<>();
         try
         {
             Statement stmt = conn.createStatement();
-            ResultSet query = stmt.executeQuery("SELECT name FROM DeviceAdapter WHERE protocol = '" + protocol + "';");
-            ArrayList<String> myresult = new ArrayList<>();
-            while (query.next())
+            String sql = "SELECT name FROM DeviceAdapter WHERE protocol = '" + protocol + "';";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
             {
-                myresult.add(query.getString(1));
+                list.add(rs.getString(1));
             }
-            query.close();
+            rs.close();
             stmt.close();
-            return myresult;
         } catch (SQLException ex)
         {
             System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
             Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return null;
+        return list;
     }
 
     /**
@@ -243,31 +236,29 @@ public class DatabaseInteraction
      */
     public ArrayList<String> readDeviceInfoByName(String deviceName)
     {
+        ArrayList<String> list = new ArrayList<>();
         try
         {
             Statement stmt = conn.createStatement();
-            ResultSet query = stmt.executeQuery("SELECT id, short_description, long_description, protocol FROM DeviceAdapter WHERE name = '" + deviceName + "'");
-            ArrayList<String> myresult = new ArrayList<>();
-            while (query.next())
+            String sql = "SELECT id, short_description, long_description, protocol FROM DeviceAdapter WHERE name = '" + deviceName + "'";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
             {
-                myresult.add(query.getString(1));
-                myresult.add(query.getString(2));
-                myresult.add(query.getString(3));
-                myresult.add(query.getString(4));
-                myresult.add(query.getString(5));
-                myresult.add(query.getString(6));
+                list.add(rs.getString(1));
+                list.add(rs.getString(2));
+                list.add(rs.getString(3));
+                list.add(rs.getString(4));
+                list.add(rs.getString(5));
+                list.add(rs.getString(6));
             }
-            query.close();
+            rs.close();
             stmt.close();
-
-            return myresult;
         } catch (SQLException ex)
         {
             System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
             Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return null;
+        return list;
     }
 
     /**
@@ -376,7 +367,27 @@ public class DatabaseInteraction
 
     public ArrayList<String> getDeviceAdapters()
     {
-        return DatabaseInteraction.getInstance().getDeviceAdapters();
+        try
+        {
+            Statement stmt = conn.createStatement();
+            ArrayList<String> myresult;
+            try (ResultSet query = stmt.executeQuery("SELECT name FROM DeviceAdapter"))
+            {
+                myresult = new ArrayList<>();
+                while (query.next())
+                {
+                    myresult.add(query.getString(1));
+                }
+            }
+            stmt.close();
+            return myresult;
+        } catch (SQLException ex)
+        {
+            System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
     }
 
     /**
@@ -443,8 +454,8 @@ public class DatabaseInteraction
         }
         return id;
     }
-    
-        /**
+
+    /**
      *
      * @param deviceName
      * @return
@@ -499,21 +510,24 @@ public class DatabaseInteraction
         {
             Statement stmt = conn.createStatement();
             {
-            String sql = "INSERT INTO Skill"
-                    + "(aml_id, name, description)"
-                    + " VALUES ("
-                    + "'" + aml_id +"','" + skill_name + "','" + description + "')";
-            skill_id = stmt.executeUpdate(sql);
+                String sql = "INSERT INTO Skill"
+                        + "(aml_id, name, description)"
+                        + " VALUES ("
+                        + "'" + aml_id + "','" + skill_name + "','" + description + "')";
+                stmt.execute(sql);
+                ResultSet r = stmt.getGeneratedKeys();
+                skill_id = r.getInt(1);
             }
             {
-            String sql = "INSERT INTO DAS"
-                    + "(sk_id, da_id)"
-                    + " VALUES ("
-                    + "'" + skill_id + "','" + device_id + "')";
-            stmt.execute(sql);
+                String sql = "INSERT INTO DAS"
+                        + "(sk_id, da_id)"
+                        + " VALUES ("
+                        + "'" + skill_id + "','" + device_id + "')";
+                stmt.execute(sql);
             }
             stmt.close();
-
+            System.out.println("REGISTER SKILL  " + skill_name + " " + device_name + " " + aml_id + " " + description);
+            return true;
         } catch (SQLException ex)
         {
             System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
@@ -553,11 +567,13 @@ public class DatabaseInteraction
     {
         try
         {
-            Statement stmt = conn.createStatement();
             ArrayList<String> myresult;
-            ResultSet query = stmt.executeQuery("SELECT DeviceAdapter.id, DeviceAdapter.name, Skill.name "
+
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT DeviceAdapter.id, DeviceAdapter.name, Skill.name "
                     + "FROM Skill, DeviceAdapter, DAS "
-                    + "WHERE DeviceAdapter.id = DAS.da_id AND Skill.id = DAS.sk_id AND DeviceAdapter.name =" + device_name + ";");
+                    + "WHERE DeviceAdapter.id = DAS.da_id AND Skill.id = DAS.sk_id AND DeviceAdapter.name =" + device_name + ";";
+            ResultSet query = stmt.executeQuery(sql);
             myresult = new ArrayList<>();
             while (query.next())
             {
@@ -581,8 +597,9 @@ public class DatabaseInteraction
      *
      * @param da_id
      * @param aml_id
+     * @param sk_id
+     * @param valid
      * @param name
-     * @param endpoint
      * @return
      */
     public boolean registerRecipe(String aml_id, int da_id, int sk_id, boolean valid, String name)
@@ -590,11 +607,12 @@ public class DatabaseInteraction
         try
         {
             Statement stmt = conn.createStatement();
-            String sql = "INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name) "
-                    + "VALUES(" + aml_id + "," + da_id + "," + sk_id + "," + valid + "," + name + ");";
+            String sql = "INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name)\n"
+                    + "VALUES('" + aml_id + "','" + Integer.toString(da_id) + "','" + Integer.toString(sk_id)
+                    + "','" + Boolean.toString(valid) + "','" + name + "');";
             stmt.execute(sql);
             stmt.close();
-
+            System.out.println("NEW RECIPE: " + name + " " + aml_id + " " + da_id + " " + sk_id + " " + valid);
             return true;
         } catch (SQLException ex)
         {
@@ -669,27 +687,62 @@ public class DatabaseInteraction
         return -1;
     }
 
-    public Map<String, String> getRecipesByDAName(String deviceAdapterName)
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public String getRecipeName(int id)
     {
+        String result = "";
         try
         {
-            Map<String, String> resultArray;
             Statement stmt = conn.createStatement();
-            ResultSet query = stmt.executeQuery("SELECT Recipe.aml_id, Recipe.name "
-                    + "FROM Recipe, DeviceAdapter "
-                    + "WHERE Recipe.da_id = DeviceAdapter.id AND DeviceAdapter.name = '" + deviceAdapterName + "';");
+            String sql = "Select Recipe.id FROM Recipe WHERE id = '" + id + "';";
+            ResultSet query = stmt.executeQuery(sql);
+            result = query.getString(1);
             stmt.close();
-            resultArray = new HashMap<String, String>();
-            while (query.next())
-            {
-                resultArray.put(query.getString(1), query.getString(2));
-            }
-            return resultArray;
         } catch (SQLException ex)
         {
+            System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
             Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return result;
+    }
+
+    /**
+     *
+     * @param deviceAdapterName
+     * @return
+     */
+    public ArrayList<DaRecipe> getRecipesByDAName(String deviceAdapterName)
+    {
+        ArrayList<DaRecipe> result = new ArrayList<>();
+        try
+        {
+            try (Statement stmt = conn.createStatement())
+            {
+                String sql = "SELECT Recipe.aml_id, Recipe.sk_id, Recipe.da_id, Recipe.valid, Recipe.name, DeviceAdapter.id, DeviceAdapter.name\n"
+                        + "FROM Recipe, DeviceAdapter\n"
+                        + "WHERE Recipe.da_id = DeviceAdapter.id AND DeviceAdapter.name = '" + deviceAdapterName + "';";
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next())
+                {
+                    DaRecipe recipe = new DaRecipe();
+                    recipe.setAmlId(rs.getString(1));
+                    recipe.setName(rs.getString(5));
+                    recipe.setValid(rs.getString(4));
+                    recipe.setSkill(getRecipeName(Integer.valueOf(rs.getString(2))));
+                    result.add(recipe);
+                }
+            }
+        } catch (SQLException ex)
+        {
+            System.out.println("[ERROR] getRecipesByDAName " + ex.getMessage());
+            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return result;
     }
 
     /**
@@ -705,39 +758,6 @@ public class DatabaseInteraction
             ResultSet query = stmt.executeQuery("SELECT Recipe.endpoint FROM Recipe WHERE name = '" + recipe_name + "'");
             stmt.close();
             return query.getString(1);
-        } catch (SQLException ex)
-        {
-            System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
-            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    /**
-     *
-     * @param devcieAdapterName
-     * @return
-     */
-    public ArrayList<HelperDevicesInfo> getDevicesFromDeviceAdapter(String devcieAdapterName)
-    {
-        try
-        {
-            ArrayList<HelperDevicesInfo> devicesInfo = new ArrayList<HelperDevicesInfo>();
-            Statement stmt = conn.createStatement();
-            ResultSet query = stmt.executeQuery("SELECT Device.name, Device.status, Device.address\n"
-                    + "FROM Device, DeviceAdapter\n"
-                    + "WHERE Device.da = DeviceAdapter.id AND DeviceAdapter.name = '" + devcieAdapterName + "';");
-            stmt.close();
-            while (query.next())
-            {
-                HelperDevicesInfo temp = new HelperDevicesInfo();
-                temp.setDeviceAdapter(devcieAdapterName);
-                temp.setName(query.getString(1));
-                temp.setStatus(Integer.parseInt(query.getString(2)));
-                temp.setAddress(query.getString(3));
-                devicesInfo.add(temp);
-            }
-            return devicesInfo;
         } catch (SQLException ex)
         {
             System.err.println(ex.getClass().getName() + ": " + ex.getMessage());

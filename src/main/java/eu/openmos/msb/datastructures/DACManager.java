@@ -8,11 +8,14 @@ package eu.openmos.msb.datastructures;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.messages.DaDevice;
-import eu.openmos.msb.messages.HelperDevicesInfo;
+import eu.openmos.msb.messages.DaRecipe;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -23,6 +26,7 @@ import java.util.Map;
 public class DACManager
 {
 
+  Set<String> trueSet = new HashSet<String>(Arrays.asList("1", "true", "True"));
   // Singleton specific objects
   private static final Object lock = new Object();
   private static volatile DACManager instance = null;
@@ -36,7 +40,7 @@ public class DACManager
    */
   protected DACManager()
   {
-    deviceAdapters = new HashMap<Integer, DeviceAdapter>();
+    deviceAdapters = new HashMap<>();
   }
 
 
@@ -99,7 +103,7 @@ public class DACManager
 
         }
       }
-      int id = DatabaseInteraction.getInstance().createDevice(deviceAdapterName, protocol, short_info, long_info);
+      int id = DatabaseInteraction.getInstance().createDeviceAdapter(deviceAdapterName, protocol, short_info, long_info);
       if (id != -1 && client != null) // the last condition should never happen
       {
         deviceAdapters.put(id, client);
@@ -168,7 +172,7 @@ public class DACManager
    * @brief WORKSTATIONName vs DEVICE data MAPS
    * @return
    */
-  public List<DaDevice> getDevicesNameDataMaps(String deviceAdapterName)
+  public List<DaDevice> getDevicesFromDeviceAdapter(String deviceAdapterName)
   {
 
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
@@ -179,20 +183,6 @@ public class DACManager
     return null;
   }
 
-
-  /**
-   *
-   * @param deviceAdapterName
-   * @param devices
-   */
-  public void setDevicesDataMaps(String deviceAdapterName, List<DaDevice> devices)
-  {
-    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
-    if (id != -1 && deviceAdapters.containsKey(id))
-    {
-      deviceAdapters.get(id).setListOfDevices(devices);
-    }
-  }
 
 
   /**
@@ -245,33 +235,49 @@ public class DACManager
    * @param deviceAdapterName
    * @return 
    */
-  public Map<String,String> getRecipesFromDevice(String deviceAdapterName)
+  public ArrayList<DaRecipe> getRecipesFromDevice(String deviceAdapterName)
   {
     return DatabaseInteraction.getInstance().getRecipesByDAName(deviceAdapterName);
   }
   
-  
-  public ArrayList<HelperDevicesInfo> getDevicesFromDeviceAdapter(String deviceAdatperName)
-  {
-    return DatabaseInteraction.getInstance().getDevicesFromDeviceAdapter(deviceAdatperName);
-  }
-  
-  public ArrayList<String> getDeviceAdapters()
+  /**
+   * 
+   * @return 
+   */
+  public List<String> getDeviceAdapters()
   {
     return DatabaseInteraction.getInstance().getDeviceAdapters();
   }
   
-  public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, boolean valid, String name)
+  /**
+   * 
+   * @param deviceAdapterName
+   * @param aml_id
+   * @param skillName
+   * @param recipeValid
+   * @param name
+   * @return 
+   */
+  public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, String recipeValid, String name)
   {
     DatabaseInteraction db = DatabaseInteraction.getInstance();
-    int id = db.getDeviceIdByName(deviceAdapterName);
+    int da_id = db.getDeviceIdByName(deviceAdapterName);
     int sk_id = db.getSkillIdByName(skillName);
-    if(id!=-1)
-        return db.registerRecipe(aml_id, id, sk_id, valid, name);
+    boolean valid = trueSet.contains(recipeValid);
+    if(da_id!=-1 && sk_id!=-1)
+        return db.registerRecipe(aml_id, da_id, sk_id, valid, name);
     else
         return false;
   }
   
+  /**
+   * 
+   * @param deviceAdapterName
+   * @param aml_id
+   * @param name
+   * @param description
+   * @return 
+   */
   public boolean registerSkill(String deviceAdapterName, String aml_id, String name, String description)
   {
       DatabaseInteraction db = DatabaseInteraction.getInstance();

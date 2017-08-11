@@ -7,6 +7,7 @@ package eu.openmos.msb.datastructures;
 
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.msb.messages.DaDevice;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,7 +30,8 @@ public abstract class DeviceAdapter
 
   public DeviceAdapter()
   {
-
+      listOfDevices = new ArrayList<DaDevice>();
+      cpad = new CyberPhysicalAgentDescription();
   }
 
 
@@ -77,18 +79,6 @@ public abstract class DeviceAdapter
   public void addDevice(DaDevice server)
   {
     this.listOfDevices.add(server);
-  }
-
-
-
-
-  /**
-   *
-   * @param devices
-   */
-  public void setListOfDevices(List<DaDevice> devices)
-  {
-    this.listOfDevices = devices;
   }
 
 
