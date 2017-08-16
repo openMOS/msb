@@ -74,7 +74,7 @@ public class DACManager
    * @param short_info
    * @param long_info
    */
-  public void addDeviceAdapter(String deviceAdapterName, Protocol device_protocol, String short_info, String long_info)
+  public void addDeviceAdapter(String deviceAdapterName, EProtocol device_protocol, String short_info, String long_info)
   {
     String protocol = "";
     try
@@ -217,7 +217,7 @@ public class DACManager
   }
 
   
-  public ArrayList<String> listDevicesByProtocol(Protocol p)
+  public ArrayList<String> listDevicesByProtocol(EProtocol p)
   {
     switch(p)
     {

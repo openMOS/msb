@@ -750,7 +750,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
                 for (String key : parsedClass.getDevicesTable().keySet())
                 {
                     DaDevice device = (DaDevice) parsedClass.getDevicesTable().get(key);
-                    da.addDevice(device);
+                     da.addDevice(device);
                 }
                 MSB_gui.fillDevicesTable();
             }
@@ -779,7 +779,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
 
             if (withAGENTCloud)
             {
-
+                // THIS CODE IS WORKING!! 
                 SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
                 SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
                 String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
@@ -791,7 +791,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
                 AgentStatus agentStatus = systemConfigurator.createNewAgent(cpad);
                 System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
                 String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
-                Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName()));
+                //Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName())); // TODO - DELETE THIS
 
                 //add the sender client object to the respective agentID
                 da.setCyberPhysicalAgentDescription(cpad);

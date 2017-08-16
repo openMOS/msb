@@ -9,7 +9,7 @@ package eu.openmos.msb.datastructures;
  * 
  * @author af-silva
  */
-public enum Protocol
+public enum EProtocol
 {
   OPC,
   DDS,

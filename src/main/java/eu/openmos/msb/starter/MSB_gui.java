@@ -47,7 +47,7 @@ import MSB2ADAPTER.StringMessageDataWriter;
 import MSB2ADAPTER.StringMessageDataWriterHelper;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
-import eu.openmos.msb.datastructures.Protocol;
+import eu.openmos.msb.datastructures.EProtocol;
 import eu.openmos.msb.dds.instance.DDSErrorHandler;
 import eu.openmos.msb.messages.DaDevice;
 import eu.openmos.msb.messages.DaRecipe;
@@ -1403,7 +1403,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               {
                   try
                   {
-                      DACManager.getInstance().addDeviceAdapter(name, Protocol.OPC, "", "");
+                      DACManager.getInstance().addDeviceAdapter(name, EProtocol.OPC, "", "");
 
                       // visual
                       addToTableAdapters(name, "opcua", app_uri);

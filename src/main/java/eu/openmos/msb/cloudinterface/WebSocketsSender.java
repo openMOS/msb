@@ -1,52 +1,49 @@
 package eu.openmos.msb.cloudinterface;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.agentcloud.data.recipe.KPISetting;
-import eu.openmos.agentcloud.data.recipe.ParameterSetting;
-import eu.openmos.agentcloud.data.recipe.Recipe;
-import eu.openmos.agentcloud.data.recipe.SkillRequirement;
-import eu.openmos.agentcloud.data.LogicalLocation;
 import eu.openmos.agentcloud.data.PhysicalLocation;
-import eu.openmos.agentcloud.data.AgentData;
 import eu.openmos.agentcloud.utilities.Constants;
-import eu.openmos.agentcloud.data.DataType;
-import eu.openmos.agentcloud.data.ValueType;
+import eu.openmos.agentcloud.data.RawEquipmentData;
+import eu.openmos.agentcloud.data.RecipeExecutionData;
+import eu.openmos.agentcloud.data.UnexpectedProductData;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.eventbus.EventBusOptions;
-import io.vertx.core.spi.cluster.ClusterManager;
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
-
+import java.util.Date;
+import java.util.logging.Level;
+import org.apache.log4j.Logger;
 
 public class WebSocketsSender extends AbstractVerticle
 {
 
+  private static final Logger logger = Logger.getLogger(WebSocketsSender.class.getName());
   String topic;
   // String ip;
-
+  int retryCount = 0;
+  private static final int MAX_RETRY = 5;
 
   public WebSocketsSender(String _topic)
   {
-    System.out.println("got topic [" + _topic + "]");
+    logger.debug("got topic [" + _topic + "]");
     topic = _topic;
     // ip = _ip;
   }
 
   EventBus eventBus = null;
 
-
   @Override
   public void start() throws Exception
   {
 
-    String myIP = "172.18.2.117";   //"192.168.15.1"; 172.20.11.105;
+    // String myIP = "localhost";   //"192.168.15.1";
+    // String myIP = "172.20.11.115";   //"192.168.15.1";
+    String myIP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
+    logger.debug("MSBEmulator runs on this machine = [" + myIP + "]");
 /////////////////////////////
 //        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
 //        logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");            
@@ -59,159 +56,149 @@ public class WebSocketsSender extends AbstractVerticle
       {
         vertx = res.result();
         eventBus = vertx.eventBus();
-        vertx.setPeriodic(7000, v ->
+        vertx.setPeriodic(21000, v ->
         {
           Long now = Calendar.getInstance().getTimeInMillis();
           String msgToSend = "";
           /*
-           * if (now % 7 == 0) msgToSend = "_SUICIDE_"; else
+                if (now % 7 == 0)
+                    msgToSend = "_SUICIDE_";
+                else
            */
           boolean messageOk = false;
-          /*
-           * if (now % 3 == 0) { msgToSend = Constants.MSB_MESSAGE_TYPE_LIFEBEAT + " current topic is [" + topic + "]
-           * and the message is of type A"; messageOk = true; } if (now % 2 == 0) {
-           */
-          AgentData ad = getTestObject(topic);
-          System.out.println("SENDING - " + ad.toString());
-          msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + ad.toString();
-          messageOk = true;
-          /*
-           * }
-           * / if (now % 5 == 0) { if (topic.startsWith("Transport")) { PhysicalLocation pl = new
-           * PhysicalLocation("physicallocation for agent " + topic, 1, 2, 3, 4, 5, 6); msgToSend =
-           * Constants.MSB_MESSAGE_TYPE_NEWLOCATION + pl.toString(); messageOk = true; } } if (now % 7 == 0) { if
-           * (topic.startsWith("Resource")) { AgentData ad = getTestObject(topic); Recipe r = ad.getRecipe();
-           * List<Recipe> cpadRecipes = new LinkedList<>(Arrays.asList(r)); msgToSend =
-           * Constants.MSB_MESSAGE_TYPE_APPLIEDRECIPES + cpadRecipes.toString(); messageOk = true; } } if (now % 17 ==
-           * 0) { msgToSend = Constants.MSB_MESSAGE_TYPE_SUICIDE + " current topic is [" + topic + "] and the message is
-           * of type B"; messageOk = true; }
-           */
+          if (now % 2 == 0)       // recipe execution data 
+          {
+            RecipeExecutionData red = RecipeExecutionDataTest.getTestObject();
+            logger.debug("SENDING - " + red.toString());
+            msgToSend = Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA + red.toString();
+            messageOk = true;
+          }
+          if (now % 7 == 0)
+          {
+            if (topic.startsWith("Resource"))
+            {
+              RawEquipmentData ad = RawEquipmentDataTest.getTestObject(topic);
+//                        Recipe r = ad.getRecipe();
+//                        List<Recipe> cpadRecipes = new LinkedList<>(Arrays.asList(r));
+//                        msgToSend = Constants.MSB_MESSAGE_TYPE_APPLIEDRECIPES + cpadRecipes.toString();
+// TO CHECK -> which recipes?!?!?!?!??
+              msgToSend = Constants.MSB_MESSAGE_TYPE_APPLIEDRECIPES + ad.toString();
+              messageOk = true;
+            }
+          }
+          if (now % 5 == 0)
+          {
+            if (topic.startsWith("Transport"))
+            {
+              // PhysicalLocation pl = new PhysicalLocation("physicallocation for agent " + topic, 1, 2, 3, 4, 5, 6);
+              PhysicalLocation pl = new PhysicalLocation("physicallocation for agent " + topic, 1, 2, 3, 4, 5, 6, "productId", new Date());
+              msgToSend = Constants.MSB_MESSAGE_TYPE_NEWLOCATION + pl.toString();
+              messageOk = true;
+            }
+          }
+          if (now % 4 == 0)       // unexpected product data
+          {
+            UnexpectedProductData upd = UnexpectedProductDataTest.getTestObject();
+            logger.debug("SENDING - " + upd.toString());
+            msgToSend = Constants.MSB_MESSAGE_TYPE_UNEXPECTED_PRODUCT_DATA + upd.toString();
+            messageOk = true;
+          }
+          if (now % 3 == 0)
+          {
+            msgToSend = Constants.MSB_MESSAGE_TYPE_LIFEBEAT + " current topic is [" + topic + "] and the message is of type A";
+            messageOk = true;
+          }
+          if (now % 6 == 0)
+          {
+//                    AgentData ad = getTestObject(topic);
+            RawEquipmentData ad = RawEquipmentDataTest.getTestObject(topic);
+            logger.debug("SENDING - " + ad.toString());
+            msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + ad.toString();
+            messageOk = true;
+          }
           if (!messageOk)
           {
             msgToSend = "ping! current topic is [" + topic + "]";
           }
-          eventBus.send(topic, msgToSend, reply ->
+
+          // emulation!
+          // check if the agent is into the agents list
+          // if yes, the message is sent
+          // if not, someone has killed the agent
+          String agentsListFile = ConfigurationLoader.getMandatoryProperty("openmos.msb.agents.list.file");
+          logger.debug("agentsListFile = [" + agentsListFile + "]");
+          String agentsList = new String();
+          try
           {
-            if (reply.succeeded())
+            agentsList = new String(Files.readAllBytes(Paths.get(agentsListFile)));
+          } catch (IOException ex)
+          {
+            logger.error("cant read file " + agentsListFile + ": " + ex.getMessage());
+          }
+          if (agentsList.indexOf(topic) != -1) // if agent still alive
+          {
+            eventBus.send(topic, msgToSend, reply ->
             {
-              System.out.println("Received reply: " + reply.result().body());
+              if (reply.succeeded())
+              {
+                logger.debug("Received reply: " + reply.result().body());
 
-              /*
-               * if (reply.result().body().toString().equalsIgnoreCase("STOP_SENDING")) { // TODO stop sending // next
-               * instruction is the one!!! this.getVertx().cancelTimer(v);
-               *
-               * this.getVertx().undeploy(this.deploymentID(), res1 -> { if (res1.succeeded()) {
-               * System.out.println("WebSocket undeployment succedeed! "); // Deployment id for agent " +
-               * this.getLocalName() + " is [" + websocketsDeploymentId + "]"); // System.out.println("Deployment id is:
-               * " + res.result()); } else { System.out.println("WebSocket undeployment failed!"); // for agent " +
-               * this.getLocalName() + " FAILED"); // System.out.println("Deployment failed!"); } } );
-               *
-               * }
-               */
-            }
-            else
+                /*if (reply.result().body().toString().equalsIgnoreCase("STOP_SENDING"))
+                        {
+                            // TODO stop sending
+                            // next instruction is the one!!!
+                            this.getVertx().cancelTimer(v);
+                                                        
+                            this.getVertx().undeploy(this.deploymentID(), res1 -> 
+                            {
+                                if (res1.succeeded()) {
+                                    System.out.println("WebSocket undeployment succedeed! "); // Deployment id for agent " + this.getLocalName() + " is [" + websocketsDeploymentId + "]");
+                                  // System.out.println("Deployment id is: " + res.result());
+                                } else {
+                                    System.out.println("WebSocket undeployment failed!"); // for agent " + this.getLocalName() + " FAILED");
+                                  // System.out.println("Deployment failed!");
+                                }
+                            }
+                            );
+
+                        }*/
+              } else
+              {
+                System.out.println("No reply");
+              }
+            });
+          } // if agent into agents list file    
+          else
+          {
+            logger.warn("agent " + topic + " no more into agents list");
+            retryCount++;
+
+            if (retryCount > MAX_RETRY)
             {
-              System.out.println("No reply");
-            }
+              logger.warn("agent " + topic + " no more into agents list - time to remove the socket sender stuff");
+              this.getVertx().cancelTimer(v);
 
-          });
+              this.getVertx().undeploy(this.deploymentID(), res1 ->
+              {
+                if (res1.succeeded())
+                {
+                  System.out.println("WebSocket undeployment succedeed! "); // Deployment id for agent " + this.getLocalName() + " is [" + websocketsDeploymentId + "]");
+                  // System.out.println("Deployment id is: " + res.result());
+                } else
+                {
+                  System.out.println("WebSocket undeployment failed!"); // for agent " + this.getLocalName() + " FAILED");
+                  // System.out.println("Deployment failed!");
+                }
+              }
+              );
+            }
+          }
         });
-        System.out.println("We now have a clustered event bus: " + eventBus);
-      }
-      else
+        logger.debug("We now have a clustered event bus: " + eventBus);
+      } else
       {
-        System.out.println("Failed: " + res.cause());
+        logger.debug("Failed: " + res.cause());
       }
     });
   }
-
-
-  @Override
-  public void stop() throws Exception
-  {
-    System.out.println("Verticle stopped");
-    super.stop(); //To change body of generated methods, choose Tools | Templates.
-  }
-
-
-  private AgentData getTestObject(String agentName)
-  {
-    AgentData ad = new AgentData();
-    ad.setAgentUniqueName(agentName);
-    ad.setDeviceTime("deviceTime");
-    ad.setMsbTime("msbTime");
-    ad.setValue("current value");
-
-    ad.setDataType(DataType.ORDER_UPDATE);
-    ad.setValueType(ValueType.FLOAT);
-
-    LogicalLocation ll = new LogicalLocation("lcgicallocation");
-    ad.setLogicalLocation(ll);
-
-    PhysicalLocation pl = new PhysicalLocation("physicallocation", 1, 2, 3, 4, 5, 6);
-    ad.setPhysicalLocation(pl);
-
-    Recipe r;
-    String recipeDescription = "asdsad";
-    String recipeUniqueId = "asda";
-    KPISetting recipeKpiSetting;
-    String kpiSettingDescription = "asdsad";
-    String kpiSettingId = "asda";
-    String kpiSettingName = "asdsa";
-    String kpiSettingValue = "asds";
-    // recipeKpiSetting = new KPISetting(kpiSettingDescription, 
-    // kpiSettingId, kpiSettingName, kpiSettingValue);
-    recipeKpiSetting = new KPISetting();
-    recipeKpiSetting.setDescription(kpiSettingDescription);
-    recipeKpiSetting.setId(kpiSettingId);
-    recipeKpiSetting.setName(kpiSettingName);
-    recipeKpiSetting.setValue(kpiSettingValue);
-
-    List<KPISetting> recipeKpiSettings = new LinkedList<>(Arrays.asList(recipeKpiSetting));
-    String recipeName = "asda";
-    ParameterSetting recipePS;
-    String parameterSettingDescription = "asdsad";
-    String parameterSettingId = "asda";
-    String parameterSettingName = "asdsa";
-    String parameterSettingValue = "asds";
-    // recipePS = new ParameterSetting(parameterSettingDescription, parameterSettingId, parameterSettingName, parameterSettingValue);
-    recipePS = new ParameterSetting();
-    recipePS.setDescription(parameterSettingDescription);
-    recipePS.setId(parameterSettingId);
-    recipePS.setName(parameterSettingName);
-    recipePS.setValue(parameterSettingValue);
-
-    List<ParameterSetting> recipeParameterSettings = new LinkedList<>(Arrays.asList(recipePS));
-    String recipeUniqueAgentName = "asdsad";
-    SkillRequirement recipeSR;
-    String skillRequirementDescription = "asdsad";
-    String skillRequirementUniqueId = "asda";
-    String skillRequirementName = "asdsa";
-    int skillRequirementType = 0;
-    // recipeSR = new SkillRequirement(skillRequirementDescription, skillRequirementUniqueId, skillRequirementName, skillRequirementType);
-    recipeSR = new SkillRequirement();
-    recipeSR.setDescription(skillRequirementDescription);
-    recipeSR.setUniqueId(skillRequirementUniqueId);
-    recipeSR.setName(skillRequirementName);
-    recipeSR.setType(skillRequirementType);
-
-    List<SkillRequirement> recipeSkillRequirements = new LinkedList<>(Arrays.asList(recipeSR));
-    // r = new Recipe(recipeDescription, recipeUniqueId, recipeKpiSettings, recipeName, recipeParameterSettings, recipeUniqueAgentName, recipeSkillRequirements);
-    r = new Recipe();
-    r.setDescription(recipeDescription);
-    r.setName(recipeName);
-    r.setUniqueAgentName(recipeUniqueAgentName);
-    r.setUniqueId(recipeUniqueId);
-    // r.getKpisSetting().addAll(recipeKpiSettings);
-    r.setKpisSetting(recipeKpiSettings);
-    // r.getParametersSetting().addAll(recipeParameterSettings);
-    r.setParametersSetting(recipeParameterSettings);
-    // r.getSkillRequirements().addAll(recipeSkillRequirements);
-    r.setSkillRequirements(recipeSkillRequirements);
-
-    ad.setRecipe(r);
-
-    return ad;
-  }
-
 }
