@@ -5,6 +5,7 @@
  */
 package eu.openmos.msb.messages;
 
+import eu.openmos.model.Equipment;
 import java.util.HashMap;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -29,8 +30,8 @@ public class RegFile
     @XmlElement(name = "logicalLocation")
     private String logicalLocation = "";
 
-    @XmlElement(name = "devices")
-    private HashMap<String, DaDevice> devices = new HashMap<>();
+    @XmlElement(name = "Equipment")
+    private HashMap<String, Equipment> devices = new HashMap<>();
 
     @XmlElement(name = "skills")
     private HashMap<String, DaSkill> skills = new HashMap<>();
@@ -83,12 +84,12 @@ public class RegFile
         this.logicalLocation = logicalLocation;
     }
 
-    public HashMap<String, DaDevice> getDevicesTable()
+    public HashMap<String, Equipment> getDevicesTable()
     {
         return devices;
     }
 
-    public void setDevicesTable(HashMap<String, DaDevice> DevicesTable)
+    public void setDevicesTable(HashMap<String, Equipment> DevicesTable)
     {
         this.devices = DevicesTable;
     }

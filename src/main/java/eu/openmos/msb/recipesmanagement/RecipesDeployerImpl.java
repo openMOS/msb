@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.recipesmanagement;
 
-import eu.openmos.agentcloud.data.recipe.Recipe;
+import eu.openmos.model.Recipe;
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 import eu.openmos.msb.datastructures.DACManager;
 import java.util.List;

@@ -10,19 +10,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import eu.openmos.agentcloud.cloudinterface.AgentStatus;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-import eu.openmos.agentcloud.data.LogicalLocation;
-import eu.openmos.agentcloud.data.PhysicalLocation;
-import eu.openmos.agentcloud.data.recipe.KPI;
-import eu.openmos.agentcloud.data.recipe.KPISetting;
-import eu.openmos.agentcloud.data.recipe.Parameter;
-import eu.openmos.agentcloud.data.recipe.ParameterSetting;
-import eu.openmos.agentcloud.data.recipe.Recipe;
-import eu.openmos.agentcloud.data.recipe.Skill;
-import eu.openmos.agentcloud.data.recipe.SkillRequirement;
+import eu.openmos.model.LogicalLocation;
+import eu.openmos.model.PhysicalLocation;
+import eu.openmos.model.KPI;
+import eu.openmos.model.KPISetting;
+import eu.openmos.model.Parameter;
+import eu.openmos.model.ParameterSetting;
+import eu.openmos.model.Recipe;
+import eu.openmos.model.Skill;
+import eu.openmos.model.SkillRequirement;
 import eu.openmos.agentcloud.utilities.Constants;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
+import eu.openmos.model.Equipment;
+import eu.openmos.model.SubSystem;
 import eu.openmos.msb.cloudinterface.WebSocketsReceiver;
 import eu.openmos.msb.cloudinterface.WebSocketsSender;
 import eu.openmos.msb.cloudinterface.WebSocketsSenderDraft;
@@ -32,10 +33,8 @@ import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
-import eu.openmos.msb.messages.DaDevice;
 import eu.openmos.msb.messages.DaRecipe;
 import eu.openmos.msb.messages.DaSkill;
-
 import io.vertx.core.Vertx;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -622,7 +621,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         if (withAGENTCloud)
         {
 
-            CyberPhysicalAgentDescription agentObj = da.getCyberPhysicalAgentDescription(); //get the  agentID for the respective sender client object
+            SubSystem agentObj = da.getSubSystem(); //get the  agentID for the respective sender client object
 
             //already deployed when agent is created ?
             Vertx.vertx().deployVerticle(new WebSocketsSender("5555")); //test! delete
@@ -631,7 +630,10 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
             //Send message on the respective AgentID topic/websocket
             String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + ";" + parsedClass.recipeID + ";" + parsedClass.productID + ";";
 
-            vertx.eventBus().send(agentObj.getUniqueName(), msgToSend, reply
+            // TODO - talk to pedro aboud the naming of this parameter it sould be something like adapter_id or other thing
+            // not Equipment
+            // missing uniqueId in the SubsSystem Class defenition
+            vertx.eventBus().send(agentObj.getName(), msgToSend, reply
                     ->
             {
                 if (reply.succeeded())
@@ -749,8 +751,8 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
             {
                 for (String key : parsedClass.getDevicesTable().keySet())
                 {
-                    DaDevice device = (DaDevice) parsedClass.getDevicesTable().get(key);
-                     da.addDevice(device);
+                    Equipment device = (Equipment) parsedClass.getDevicesTable().get(key);
+                     da.addEquipmentModule(device);
                 }
                 MSB_gui.fillDevicesTable();
             }
@@ -786,7 +788,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
                 BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
                 bindingProvider.getRequestContext().put(
                         BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-                CyberPhysicalAgentDescription cpad = DummyCPADgeneration(parsedClass);
+                SubSystem cpad = dummySubSystemGeneration(parsedClass);
 
                 AgentStatus agentStatus = systemConfigurator.createNewAgent(cpad);
                 System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
@@ -794,7 +796,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
                 //Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName())); // TODO - DELETE THIS
 
                 //add the sender client object to the respective agentID
-                da.setCyberPhysicalAgentDescription(cpad);
+                da.setSubSystem(cpad);
                 return agentStatus.getCode(); //OK? ou KO?
 
             } else
@@ -836,10 +838,10 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
      * @param datafromWorkStation
      * @return
      */
-    private CyberPhysicalAgentDescription DummyCPADgeneration(RegFile datafromWorkStation)
+    private SubSystem dummySubSystemGeneration(RegFile datafromWorkStation)
     {
 
-        CyberPhysicalAgentDescription cpad = new CyberPhysicalAgentDescription();
+        SubSystem cpad = new SubSystem();
         String myAgentId = "Resource_" + Calendar.getInstance().getTimeInMillis(); //or Transport_...
         String cpadUniqueName = myAgentId;
         String cpadAgentClass = "asdsa";
@@ -875,7 +877,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         String parameterUpperBound = "SkillParameterUpperBound";
         String parameterName = "SkillParameterName";
         String parameterUnit = "SkillParameterUnit";
-        // p = new Parameter(parameterDefaultValue, parameterDescription, parameterUniqueId, parameterLowerBound, parameterUpperBound, parameterName, parameterUnit);
+        
         p = new Parameter();
         p.setDefaultValue(parameterDefaultValue);
         p.setDescription(parameterDescription);
@@ -886,15 +888,13 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         p.setUnit(parameterUnit);
 
         List<Parameter> skillParameters = new LinkedList<>(Arrays.asList(p));
-        int skillType = 0;
-        // s = new Skill(skillDescription, skillUniqueId, skillKpis, skillName, skillParameters, skillType);
+        String skillType = "test";
+        
         s = new Skill();
         s.setDescription(skillDescription);
         s.setUniqueId(skillUniqueId);
-        // s.getKpis().addAll(skillKpis);
         s.setKpis(skillKpis);
         s.setName(skillName);
-        // s.getParameters().addAll(skillParameters);
         s.setParameters(skillParameters);
         s.setType(skillType);
 
@@ -907,8 +907,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         String kpiSettingId = "asda";
         String kpiSettingName = "asdsa";
         String kpiSettingValue = "asds";
-        // recipeKpiSetting = new KPISetting(kpiSettingDescription, 
-        // kpiSettingId, kpiSettingName, kpiSettingValue);
+        
         recipeKpiSetting = new KPISetting();
         recipeKpiSetting.setDescription(kpiSettingDescription);
         recipeKpiSetting.setId(kpiSettingId);
@@ -922,38 +921,35 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         String parameterSettingId = "asda";
         String parameterSettingName = "asdsa";
         String parameterSettingValue = "asds";
-        // recipePS = new ParameterSetting(parameterSettingDescription, parameterSettingId, parameterSettingName, parameterSettingValue);
+        
         recipePS = new ParameterSetting();
         recipePS.setDescription(parameterSettingDescription);
-        recipePS.setId(parameterSettingId);
+        recipePS.setUniqueId(parameterSettingId);
         recipePS.setName(parameterSettingName);
         recipePS.setValue(parameterSettingValue);
 
         List<ParameterSetting> recipeParameterSettings = new LinkedList<>(Arrays.asList(recipePS));
         String recipeUniqueAgentName = "asdsad";
         SkillRequirement recipeSR;
-        String skillRequirementDescription = "asdsad";
-        String skillRequirementUniqueId = "asda";
+        String skillRequirementDescription = "asdsad";        
         String skillRequirementName = "asdsa";
-        int skillRequirementType = 0;
-        // recipeSR = new SkillRequirement(skillRequirementDescription, skillRequirementUniqueId, skillRequirementName, skillRequirementType);
+        String skillRequirementType = "test";
         recipeSR = new SkillRequirement();
         recipeSR.setDescription(skillRequirementDescription);
-        recipeSR.setUniqueId(skillRequirementUniqueId);
+        
         recipeSR.setName(skillRequirementName);
         recipeSR.setType(skillRequirementType);
 
         List<SkillRequirement> recipeSkillRequirements = new LinkedList<>(Arrays.asList(recipeSR));
-        // r = new Recipe(recipeDescription, recipeUniqueId, recipeKpiSettings, recipeName, recipeParameterSettings, recipeUniqueAgentName, recipeSkillRequirements);
         r = new Recipe();
         r.setDescription(recipeDescription);
         r.setName(recipeName);
         r.setUniqueAgentName(recipeUniqueAgentName);
         r.setUniqueId(recipeUniqueId);
         // r.getKpisSetting().addAll(recipeKpiSettings);
-        r.setKpisSetting(recipeKpiSettings);
+        r.setKpiSettings(recipeKpiSettings);
         // r.getParametersSetting().addAll(recipeParameterSettings);
-        r.setParametersSetting(recipeParameterSettings);
+        r.setParameterSettings(recipeParameterSettings);
         // r.getSkillRequirements().addAll(recipeSkillRequirements);
         r.setSkillRequirements(recipeSkillRequirements);
 
@@ -966,7 +962,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         long physicalLocationAlpha = 0;
         long physicalLocationBeta = 0;
         long physicalLocationGamma = 0;
-        // cpadPl = new PhysicalLocation(physicalLocationReferenceFrameName, physicalLocationX, physicalLocationY, physicalLocationZ, physicalLocationAlpha, physicalLocationBeta, physicalLocationGamma);
+        
         cpadPl = new PhysicalLocation();
         cpadPl.setAlpha(physicalLocationAlpha);
         cpadPl.setBeta(physicalLocationBeta);
@@ -976,7 +972,6 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         cpadPl.setY(physicalLocationY);
         cpadPl.setZ(physicalLocationZ);
 
-        // LogicalLocation cpadLl = new LogicalLocation("asdad");
         LogicalLocation cpadLl = new LogicalLocation();
         cpadLl.setLocation("asdad");
 
@@ -984,37 +979,26 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         String cpadSkillRequirementDescription = "asdsad";
         String cpadSkillRequirementUniqueId = "asda";
         String cpadSkillRequirementName = "asdsa";
-        int cpadSkillRequirementType = 0;
-        // cpadSR = new SkillRequirement(cpadSkillRequirementDescription, cpadSkillRequirementUniqueId, cpadSkillRequirementName, cpadSkillRequirementType);
+        String cpadSkillRequirementType = "test";
+        
         cpadSR = new SkillRequirement();
         cpadSR.setDescription(cpadSkillRequirementDescription);
         cpadSR.setName(cpadSkillRequirementName);
         cpadSR.setType(cpadSkillRequirementType);
-        cpadSR.setUniqueId(cpadSkillRequirementUniqueId);
+        //cpadSR.setUniqueId(cpadSkillRequirementUniqueId); // its missing TOOD
 
         List<SkillRequirement> cpadSkillRequirements = new LinkedList<>(Arrays.asList(recipeSR));
-        // cpad = new CyberPhysicalAgentDescription(cpadUniqueName, cpadAgentClass,
-        // cpadType, cpadParameters, cpadSkills, cpadRecipes, cpadPl, cpadLl, cpadSkillRequirements);
-
-        cpad = new CyberPhysicalAgentDescription();
-        cpad.setAgentClass(cpadAgentClass);
+        
+        cpad = new SubSystem();
         cpad.setLogicalLocation(cpadLl);
         cpad.setPhysicalLocation(cpadPl);
         cpad.setType(cpadType);
-        cpad.setUniqueName(cpadUniqueName);
-        // cpad.getRecipes().addAll(cpadRecipes);
+        //cpad.setEquipmentId(cpadUniqueName);
         cpad.setRecipes(cpadRecipes);
-        // cpad.getSkillRequirements().addAll(cpadSkillRequirements);
-        cpad.setSkillRequirements(cpadSkillRequirements);
-        // cpad.getSkills().addAll(cpadSkills);
         cpad.setSkills(cpadSkills);
-        // cpad.getRecipes().addAll(cpadRecipes);
         cpad.setRecipes(cpadRecipes);
-        // cpad.getAgentParameters().addAll(cpadParameters);
-        cpad.setAgentParameters(cpadParameters);
-
+        
         return cpad;
-
     }
 
     /**
@@ -1045,7 +1029,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
      * @param datafromWorkStation
      * @return
      */
-    private CyberPhysicalAgentDescription WorkStationDataToCPAD(RegFile datafromWorkStation)
+    private SubSystem WorkStationDataToSubSystem(RegFile datafromWorkStation)
     {
 
         String myAgentId = "Resource_" + Calendar.getInstance().getTimeInMillis(); //or Transport_...
@@ -1074,8 +1058,6 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         String kpiDefaultLowerBound = "SkillKpiDefaultLowerBound";
         String kpiCurrentValue = "SkillKpiCurrentValue";
         String kpiUnit = "SkillKpiUnit";
-        // kpi = new Kpi(kpiDescription, kpiUniqueId, kpiName, kpiDefaultUpperBound, kpiDefaultLowerBound, kpiCurrentValue, kpiUnit);
-        // kpi = new Kpi(kpiDescription, kpiUniqueId, kpiName, kpiDefaultUpperBound, kpiDefaultLowerBound, kpiCurrentValue, kpiUnit);
         kpi = new KPI();
         kpi.setDescription(kpiDescription);
         kpi.setUniqueId(kpiUniqueId);
@@ -1106,7 +1088,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         p.setUnit(parameterUnit);
 
         List<Parameter> skillParameters = new LinkedList<>(Arrays.asList(p));
-        int skillType = 0;
+        String skillType = "test";
         s = new Skill();
         s.setDescription(skillDescription);
         s.setUniqueId(skillUniqueId);
@@ -1159,13 +1141,13 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
             // recipePS = new ParameterSetting(parameterSettingDescription, parameterSettingId, parameterSettingName, parameterSettingValue);
             recipePS = new ParameterSetting();
             recipePS.setDescription(parameterSettingDescription);
-            recipePS.setId(parameterSettingId);
+            recipePS.setUniqueId(parameterSettingId);
             recipePS.setName(parameterSettingName);
             recipePS.setValue(parameterSettingValue);
             List<ParameterSetting> recipeParameterSettings = new LinkedList<>(Arrays.asList(recipePS));
 
-            recipe_inst.setKpisSetting(recipeKpiSettings);
-            recipe_inst.setParametersSetting(recipeParameterSettings);
+            recipe_inst.setKpiSettings(recipeKpiSettings);
+            recipe_inst.setParameterSettings(recipeParameterSettings);
             cpadRecipes.add(recipe_inst); //add the received recipe to the list
 
         }
@@ -1197,36 +1179,26 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         String cpadSkillRequirementDescription = "asdsad";
         String cpadSkillRequirementUniqueId = "asda";
         String cpadSkillRequirementName = "asdsa";
-        int cpadSkillRequirementType = 0;
+        String cpadSkillRequirementType = "test";
         // cpadSR = new SkillRequirement(cpadSkillRequirementDescription, cpadSkillRequirementUniqueId, cpadSkillRequirementName, cpadSkillRequirementType);
         cpadSR = new SkillRequirement();
         cpadSR.setDescription(cpadSkillRequirementDescription);
         cpadSR.setName(cpadSkillRequirementName);
         cpadSR.setType(cpadSkillRequirementType);
-        cpadSR.setUniqueId(cpadSkillRequirementUniqueId);
+        //cpadSR.setUniqueId(cpadSkillRequirementUniqueId);
 
         // cpad = new CyberPhysicalAgentDescription(cpadUniqueName, cpadAgentClass,
         // cpadType, cpadParameters, cpadSkills, cpadRecipes, cpadPl, cpadLl, cpadSkillRequirements);
-        CyberPhysicalAgentDescription cpad = new CyberPhysicalAgentDescription();
-        cpad.setAgentClass(cpadAgentClass);
+        SubSystem cpad = new SubSystem();
+        
         cpad.setLogicalLocation(cpadLl);
         cpad.setPhysicalLocation(cpadPl);
         cpad.setType(cpadType);
-        cpad.setUniqueName(cpadUniqueName);
-        // cpad.getRecipes().addAll(cpadRecipes);
+        //cpad.setEquipmentId(cpadUniqueName);
         cpad.setRecipes(cpadRecipes);
-        // cpad.getSkillRequirements().addAll(cpadSkillRequirements);
-        cpad.setSkillRequirements(cpadSkillRequirements);
-        // cpad.getSkills().addAll(cpadSkills);
         cpad.setSkills(cpadSkills);
-        // cpad.getAgentParameters().addAll(cpadParameters);
-        cpad.setAgentParameters(cpadParameters);
-
-        //set received recipes on the cpad info
-        /*
-     * List<Recipe> recipes = null; for (String key : parsedClass.Recipes.keySet()) {
-     * recipes.add(parsedClass.Recipes.get(key)); } cpad.setRecipes(recipes);
-         */
+        
+       
         return cpad;
     }
 
@@ -1244,7 +1216,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         String SenderName = "someAdaptor"; //replace with workstation name in the received arguments
 
         DACManager instance = DACManager.getInstance();
-        CyberPhysicalAgentDescription agentObj = instance.getDeviceAdapter(SenderName).getCyberPhysicalAgentDescription();
+        SubSystem agentObj = instance.getDeviceAdapter(SenderName).getSubSystem();
 
         if (withAGENTCloud)
         {
@@ -1424,7 +1396,7 @@ public class OPCDeviceItf extends Observable implements DeviceInterface
         String SenderName = "someAdaptor"; //replace with workstation name in the received arguments
         DACManager instance = DACManager.getInstance();
 
-        CyberPhysicalAgentDescription agentObj = instance.getDeviceAdapter(SenderName).getCyberPhysicalAgentDescription();
+        SubSystem agentObj = instance.getDeviceAdapter(SenderName).getSubSystem();
 
         //already deployed when agent is created ?
         //Vertx.vertx().deployVerticle(new WebSocketsSender("5555")); //test! delete

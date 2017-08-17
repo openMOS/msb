@@ -7,7 +7,7 @@ package eu.openmos.msb.productionoptimizer;
 
 import eu.openmos.agentcloud.ws.productionoptimizer.wsimport.ProductionOptimizer;
 import eu.openmos.agentcloud.ws.productionoptimizer.wsimport.ProductionOptimizer_Service;
-import eu.openmos.agentcloud.data.recipe.Recipe;
+import eu.openmos.model.Recipe;
 import java.util.List;
 
 import org.apache.log4j.Logger;

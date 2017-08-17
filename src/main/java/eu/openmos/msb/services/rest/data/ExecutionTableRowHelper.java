@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.services.rest.data;
 
-import eu.openmos.agentcloud.data.recipe.ExecutionTableRow;
+import eu.openmos.model.ExecutionTableRow;
 
 
 /**

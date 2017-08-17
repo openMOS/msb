@@ -9,8 +9,8 @@ import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 import eu.openmos.agentcloud.cloudinterface.AgentStatus;
 import eu.openmos.agentcloud.cloudinterface.OrderStatus;
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-import eu.openmos.agentcloud.data.Order;
+import eu.openmos.model.SubSystem;
+import eu.openmos.model.Order;
 
 
 /**
@@ -40,7 +40,7 @@ public interface SystemConfigurator
 
   /**
    *
-   * @param cyberPhysicalAgentDescription
+   * @param subSystem
    * @return returns eu.openmos.agentcloud.cloudinterface.AgentStatus
    */
   @WebMethod
@@ -48,7 +48,7 @@ public interface SystemConfigurator
   @RequestWrapper(localName = "createNewAgent", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.CreateNewAgent")
   @ResponseWrapper(localName = "createNewAgentResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.CreateNewAgentResponse")
   public AgentStatus createNewAgent(
-    @WebParam(name = "cyberPhysicalAgentDescription", targetNamespace = "") CyberPhysicalAgentDescription cyberPhysicalAgentDescription);
+    @WebParam(name = "subSystem", targetNamespace = "") SubSystem subSystem);
 
 
   /**

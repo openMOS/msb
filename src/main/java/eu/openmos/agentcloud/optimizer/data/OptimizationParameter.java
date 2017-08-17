@@ -1,7 +1,7 @@
 
 package eu.openmos.agentcloud.optimizer.data;
 
-import eu.openmos.agentcloud.data.utilities.SerializationConstants;
+import eu.openmos.model.utilities.SerializationConstants;
 import java.util.StringTokenizer;
 
 /**

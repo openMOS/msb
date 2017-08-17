@@ -5,12 +5,14 @@
  */
 package eu.openmos.msb.datastructures;
 
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-import eu.openmos.msb.messages.DaDevice;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
+import eu.openmos.model.Equipment;
+import eu.openmos.model.ExecutionTable;
+import eu.openmos.model.Recipe;
+import eu.openmos.model.Skill;
+import eu.openmos.model.SubSystem;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -24,16 +26,14 @@ public abstract class DeviceAdapter
   /*
    * device name || devices in the workstation and its data
    */
-  protected List<DaDevice> listOfDevices;
-  protected CyberPhysicalAgentDescription cpad;
-
+  protected List<Equipment> listOfDevices;
+  protected SubSystem subSystem;
 
   public DeviceAdapter()
   {
-      listOfDevices = new ArrayList<DaDevice>();
-      cpad = new CyberPhysicalAgentDescription();
+    listOfDevices = new ArrayList<Equipment>();
+    subSystem = new SubSystem(); // will be depreceated
   }
-
 
   /**
    * @return the id
@@ -47,77 +47,84 @@ public abstract class DeviceAdapter
    * @param name
    * @return the ServerTableMaps
    */
-  public DaDevice getServerStatusByDevice(String name)
+  public String getEquipmentStatusByName(String name)
   {
-    Iterator<DaDevice> it = this.listOfDevices.iterator();
-    while (it.hasNext())
-    {
-      DaDevice temp = it.next();
-      if (temp.getName().toUpperCase().equals(name.toUpperCase()))
-      {
-        return temp;
-      }
-    }
-    return null;
+    throw new java.lang.UnsupportedOperationException("Not supported yet.");
   }
 
+  /**
+   * @param uniqueID
+   * @return the ServerTableMaps
+   */
+  public String getEquipmentStatusByID(String uniqueID)
+  {
+    throw new java.lang.UnsupportedOperationException("Not supported yet.");
+  }
 
   /**
    *
    * @return
    */
-  public List<DaDevice> getListOfDevices()
+  public List<Equipment> getListOfEquipments()
   {
-    return listOfDevices;
+    // TODO
+    throw new java.lang.UnsupportedOperationException("Not supported yet.");
   }
-
 
   /**
    *
-   * @param server
+   * @param module
    */
-  public void addDevice(DaDevice server)
+  public void addEquipmentModule(Equipment module)
   {
-    this.listOfDevices.add(server);
+    // TODO
+    throw new java.lang.UnsupportedOperationException("Not supported yet.");
   }
 
+  /**
+   *
+   * @param deviceName
+   * @return
+   */
+  public boolean removeEquipmentModule(String deviceName)
+  {
+    // TODO
+    throw new java.lang.UnsupportedOperationException("Not supported yet.");
+  }
+
+  /**
+   *
+   * @param system
+   */
+  public void setSubSystem(SubSystem system)
+  {
+    this.subSystem = system;
+  }
+
+  /**
+   *
+   * @return SubSystem
+   */
+  public SubSystem getSubSystem()
+  {
+    return this.subSystem;
+  }
+
+  public List<Recipe> getListOfRecipes()
+  {
+
+    Recipe r = new Recipe();
+    return null;
+
+  }
 
   /**
    * 
-   * @param deviceName
    * @return 
    */
-  public boolean removeServerStatusFromMaps(String deviceName)
+  public List<Skill> getListOfSkills()
   {
-    Iterator<DaDevice> it = this.listOfDevices.iterator();
-    while (it.hasNext())
-    {
-      DaDevice ss = it.next();
-      if (ss.getName().equals(deviceName))
-      {
-        return this.listOfDevices.remove(ss);
-      }
-    }
-    return false;
-  }
-
-
-  /**
-   * 
-   * @param agent 
-   */
-  public void setCyberPhysicalAgentDescription(CyberPhysicalAgentDescription agent)
-  {
-    this.cpad = agent;
-  }
-
-  /**
-   * 
-   * @return  CyberPhysicalAgentDescription 
-   */
-  public CyberPhysicalAgentDescription getCyberPhysicalAgentDescription()
-  {
-    return this.cpad;
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   /**
@@ -125,5 +132,25 @@ public abstract class DeviceAdapter
    * @return
    */
   public abstract Object getClient();
+
+  public ExecutionTable getExecutionTable()
+  {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  public List<Skill> addNewSkill(Skill newSkill)
+  {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  public List<Recipe> addNewRecipe(Recipe newRecipe)
+  {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  public ExecutionTable setExecutionTable(ExecutionTable executionTable)
+  {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 
 }

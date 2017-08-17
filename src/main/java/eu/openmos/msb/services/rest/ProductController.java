@@ -5,8 +5,8 @@
  */
 package eu.openmos.msb.services.rest;
 
-import eu.openmos.agentcloud.data.Product;
-import eu.openmos.agentcloud.data.recipe.SkillRequirement;
+import eu.openmos.model.Product;
+import eu.openmos.model.SkillRequirement;
 import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.GET;

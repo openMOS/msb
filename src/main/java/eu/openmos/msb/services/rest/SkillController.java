@@ -5,11 +5,11 @@
  */
 package eu.openmos.msb.services.rest;
 
-import eu.openmos.agentcloud.data.recipe.Equipment;
-import eu.openmos.agentcloud.data.recipe.KPI;
-import eu.openmos.agentcloud.data.recipe.Parameter;
-import eu.openmos.agentcloud.data.recipe.Recipe;
-import eu.openmos.agentcloud.data.recipe.Skill;
+import eu.openmos.model.Equipment;
+import eu.openmos.model.KPI;
+import eu.openmos.model.Parameter;
+import eu.openmos.model.Recipe;
+import eu.openmos.model.Skill;
 import eu.openmos.fakemsb.cloudinterface.test.EquipmentTest;
 import eu.openmos.fakemsb.cloudinterface.test.KPITest;
 import eu.openmos.fakemsb.cloudinterface.test.ParameterTest;

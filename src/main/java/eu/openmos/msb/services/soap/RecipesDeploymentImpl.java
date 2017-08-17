@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.services.soap;
 
-import eu.openmos.agentcloud.data.recipe.Recipe;
+import eu.openmos.model.Recipe;
 import java.util.List;
 import javax.jws.WebService;
 import org.apache.log4j.Logger;

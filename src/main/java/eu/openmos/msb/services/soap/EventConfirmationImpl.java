@@ -6,13 +6,12 @@
 package eu.openmos.msb.services.soap;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.fakemsb.cloudinterface.WebSocketsSender;
+import eu.openmos.msb.cloudinterface.WebSocketsSender;
 import io.vertx.core.Vertx;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.logging.Level;
 import javax.jws.WebService;
 import org.apache.log4j.Logger;
 

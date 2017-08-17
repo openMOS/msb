@@ -5,9 +5,8 @@
  */
 package eu.openmos.msb.datastructures;
 
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
+import eu.openmos.model.Equipment;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
-import eu.openmos.msb.messages.DaDevice;
 import eu.openmos.msb.messages.DaRecipe;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,18 +152,18 @@ public class DACManager
   }
 
 
-  /**
-   * @brief @param deviceAdapterName
-   * @param cpad
-   */
-  public void setAgentDeviceIDMaps(String deviceAdapterName, CyberPhysicalAgentDescription cpad)
-  {
-    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
-    if (id != -1 && deviceAdapters.containsKey(id))
-    {
-      deviceAdapters.get(id).setCyberPhysicalAgentDescription(cpad);
-    }
-  }
+//  /**
+//   * @brief @param deviceAdapterName
+//   * @param cpad
+//   */
+//  public void setAgentDeviceIDMaps(String deviceAdapterName, CyberPhysicalAgentDescription cpad)
+//  {
+//    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
+//    if (id != -1 && deviceAdapters.containsKey(id))
+//    {
+//      deviceAdapters.get(id).setCyberPhysicalAgentDescription(cpad);
+//    }
+//  }
 
 
   /**
@@ -172,13 +171,13 @@ public class DACManager
    * @brief WORKSTATIONName vs DEVICE data MAPS
    * @return
    */
-  public List<DaDevice> getDevicesFromDeviceAdapter(String deviceAdapterName)
+  public List<Equipment> getDevicesFromDeviceAdapter(String deviceAdapterName)
   {
 
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      return deviceAdapters.get(id).getListOfDevices();
+      return deviceAdapters.get(id).getListOfEquipments();
     }
     return null;
   }
@@ -190,12 +189,12 @@ public class DACManager
    * @param deviceAdapterName
    * @param device
    */
-  public void addDeviceToDevicesDataMaps(String deviceAdapterName, DaDevice device)
+  public void addEquipmentModuleToList(String deviceAdapterName, Equipment device)
   {
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      deviceAdapters.get(id).addDevice(device);
+      deviceAdapters.get(id).addEquipmentModule(device);
     }
   }
 
@@ -206,12 +205,12 @@ public class DACManager
    * @param deviceName
    * @return 
    */
-  public boolean deleteDevicesNameDataMaps(String deviceAdapterName, String deviceName)
+  public boolean deleteEquipmentModuleFromList(String deviceAdapterName, String deviceName)
   {
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      return deviceAdapters.get(id).removeServerStatusFromMaps(deviceName);
+      return deviceAdapters.get(id).removeEquipmentModule(deviceName);
     }
     return false;
   }

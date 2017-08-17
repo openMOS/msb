@@ -5,12 +5,14 @@
  */
 package eu.openmos.msb.services.rest;
 
-import eu.openmos.agentcloud.data.recipe.Equipment;
-import eu.openmos.agentcloud.data.recipe.Skill;
-import eu.openmos.fakemsb.cloudinterface.test.EquipmentTest;
-import eu.openmos.fakemsb.cloudinterface.test.SkillTest;
+import eu.openmos.model.Equipment;
+import eu.openmos.model.Recipe;
+import eu.openmos.model.Skill;
+import eu.openmos.msb.datastructures.DACManager;
 import java.util.List;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -23,42 +25,117 @@ import org.apache.log4j.Logger;
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
 @Path("/api/v1/equipments")
-public class EquipmentController {
-    private final Logger logger = Logger.getLogger(EquipmentController.class.getName());
-    
-    /**
-     * Returns the equipment object given its unique identifier.
-     * Fills the equipment view page (slide 15 of 34). 
-     * 
-     * @return detail of equipment
-     * 
-     * @param equipmentId the unique id of the equipment
-     * @return equipment object, or null if not existing
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{equipmentId}")
-    public Equipment getDetail(@PathParam("equipmentId") String equipmentId) {
-        logger.debug("equipment getDetail - equipmentId = " + equipmentId);
-        return EquipmentTest.getTestObject(equipmentId, -1);
-   }
+public class EquipmentController
+{
 
-   /**
-     * Returns the list of skills associated to the given equipment.
-     * Fills the skills list view page (slide 16 of 34).
-     * This method is exposed via a "/equipments/{equipmentId}/skills" service call.
-     * 
-     * @param equipmentId   equipmentId id, i.e. the equipment unique identifier.
-     * @return list of skills objects. List can be empty, cannot be null.
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{equipmentId}/skills")    
-    public List<Skill> getSkillsList(@PathParam("equipmentId") String equipmentId)
-    {
-        logger.debug("equipment - getSkillsList - cpadId = " + equipmentId);
-        logger.debug("equipment getSkillsList - of the cpad = " + equipmentId);
-        return SkillTest.getTestList();
-    }
- 
+  private final Logger logger = Logger.getLogger(EquipmentController.class.getName());
+
+  /**
+   * Returns the equipment object given its unique identifier. Fills the equipment view page (slide 15 of 34).
+   *
+   * @param uniqueId
+   * @return detail of equipment
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{uniqueId}")
+  public Equipment getDetail(@PathParam("uniqueId") String uniqueId)
+  {
+    logger.debug("equipment getDetail - uniqueId = " + uniqueId);
+    //return DACManager.getInstance().getEquipment();
+    return null;
+  }
+
+  /**
+   * Returns the list of skills associated to the given equipment. Fills the skills list view page (slide 16 of 34).
+   * This method is exposed via a "/equipments/{equipmentId}/skills" service call.
+   *
+   * @param uniqueId
+   * @return list of skills objects. List can be empty, cannot be null.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{uniqueId}/skills")
+  public List<Skill> getSkillsList(@PathParam("uniqueId") String uniqueId)
+  {
+    logger.debug("equipment - getSkillsList - uniqueId = " + uniqueId);
+    return DACManager.getInstance().getDeviceAdapter(uniqueId).getListOfSkills();
+  }
+
+  /**
+   * Returns the list of recipes associated to a workstation or a transport. Fills the skills recipe list (slide 22 of
+   * 34) This method is exposed via a "/cpads/{cpadId}/recipes" service call.
+   *
+   * @param uniqueId
+   * @return list of recipe objects. List can be empty, cannot be null.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{uniqueId}/recipes")
+  public List<Recipe> getRecipesList(@PathParam("uniqueId") String uniqueId)
+  {
+    logger.debug("cpad - getRecipesList - uniqueId = " + uniqueId);
+
+    return DACManager.getInstance().getDeviceAdapter(uniqueId).getListOfRecipes(); //TODO this needs to be tested
+  }
+
+  /**
+   * Allows to insert a new recipe associated to a workstation or a transport. Returns the updated list of recipes
+   * associated to the same workstation or transport. Fills the skills recipe creation view (slide 23 of 34) This method
+   * is exposed via a POST to "/cpads/{cpadId}/recipes" service call.
+   *
+   * @param uniqueId
+   * @param newRecipe the recipe to be inserted.
+   * @return list of recipe objects associated to the same equipment (workstation or transport). List can be empty,
+   * cannot be null.
+   */
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{uniqueId}/recipes")
+  public List<Recipe> newRecipe(@PathParam("uniqueId") String uniqueId, Recipe newRecipe)
+  {
+    logger.debug("cpad - newRecipe - uniqueId = " + uniqueId);
+    return DACManager.getInstance().getDeviceAdapter(uniqueId).addNewRecipe(newRecipe);
+  }
+
+  /**
+   * Returns the list of sub-equipments associated to a workstation or a transport. Fills the sub system view page
+   * (slide 14 of 34) because there's no sub-system object into openmos project, and the chain implemented is
+   * workstation->equipments, is not workstation-subsystems-equipments. This method is exposed via a
+   * "/cpads/{cpadId}/equipments" service call.
+   *
+   * @param cpadId cpad id, i.e. the agent unique identifier.
+   * @return list of equipments objects. List can be empty, cannot be null.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{uniqueId}/equipments")
+  public List<Equipment> getEquipmentsList(@PathParam("uniqueId") String uniqueId)
+  {
+    logger.debug("cpad - getEquipmentsList - uniqueId = " + uniqueId);
+    return DACManager.getInstance().getDeviceAdapter(uniqueId).getListOfEquipments();
+  }
+
+  /**
+   * Allows to insert a new skill associated to a workstation or a transport. Returns the updated list of skills
+   * associated to the same workstation or transport. Fills the composite skill creation view (slide 21 of 34) This
+   * method is exposed via a POST to "/cpads/{cpadId}/skills" service call.
+   *
+   * @param uniqueId
+   * @param newSkill the skill to be inserted.
+   * @return list of skill objects associated to the same equipment (workstation or transport). List can be empty,
+   * cannot be null.
+   */
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{uniqueId}/skills")
+  public List<Skill> newCompositeSkill(@PathParam("uniqueId") String uniqueId, Skill newSkill)
+  {
+    logger.debug("cpad - newCompositeSkill - uniqueId = " + uniqueId);
+    logger.debug("cpad newCompositeSkill - skill to insert = " + newSkill.toString());
+    return DACManager.getInstance().getDeviceAdapter(uniqueId).addNewSkill(newSkill);
+  }
+
 }

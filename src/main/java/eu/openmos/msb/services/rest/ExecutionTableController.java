@@ -5,11 +5,12 @@
  */
 package eu.openmos.msb.services.rest;
 
-import eu.openmos.agentcloud.data.recipe.ExecutionTable;
-import eu.openmos.agentcloud.data.recipe.ExecutionTableRow;
-import eu.openmos.fakemsb.cloudinterface.test.ExecutionTableTest;
+
+
 import eu.openmos.msb.services.rest.data.ExecutionTableRowHelper;
-import java.util.concurrent.ThreadLocalRandom;
+import eu.openmos.model.ExecutionTable;
+import eu.openmos.model.ExecutionTableRow;
+import eu.openmos.msb.datastructures.DACManager;
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -38,14 +39,13 @@ public class ExecutionTableController {
      * @return detail of execution table
      * 
      * @param uniqueId the unique id of the execution table
-     * @return executiontable object, or null if not existing
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}")
-    public ExecutionTable getDetail(@PathParam("executionTableId") String executionTableId) {
-        logger.debug("execution table getDetail - executionTableId = " + executionTableId);
-        return ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1));
+    @Path(value = "/{uniqueId}")
+    public ExecutionTable getDetail(@PathParam("uniqueId") String uniqueId) {
+        logger.debug("execution table getDetail - uniqueId = " + uniqueId);
+        return DACManager.getInstance().getDeviceAdapter(uniqueId).getExecutionTable();
    }
 
 
@@ -53,38 +53,35 @@ public class ExecutionTableController {
      * Updates the whole execution table.
      * Matches with the execution table update pages (slide 9 to 12 of 34). 
      * 
+   * @param uniqueId
+   * @param executionTable
      * @return updated execution table
-     * 
-     * @param executiontable   the execution table to update
-     * @return executiontable updated object, or null if not existing
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}")
-    public ExecutionTable update(@PathParam("executionTableId") String executionTableId, ExecutionTable executionTable) {
-        logger.debug("execution table update - executionTableId = " + executionTableId);
+    @Path(value = "/{uniqueId}")
+    public ExecutionTable update(@PathParam("uniqueId") String uniqueId, ExecutionTable executionTable) {
+        logger.debug("execution table update - uniqueId = " + uniqueId);
         logger.debug("execution table update - uniqueId to update = " + executionTable.getUniqueId());
         logger.debug("execution table update - full table to update = " + executionTable.toString());
-        return executionTable;
+        return DACManager.getInstance().getDeviceAdapter(uniqueId).setExecutionTable(executionTable);
    }   
 
     /**
      * Insert the given row into the execution table.
      * Matches with the execution table update pages (slide 9 to 12 of 34). 
      * 
+   * @param uniqueId
      * @return updated execution table
-     * 
-     * @param executionTableId   unique identifier of the execution table to update
      * @param rowToInsert   the execution table row to insert in which position in which execution table
-     * @return executiontable updated object, or null if not existing
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}/newRow")
-    public ExecutionTable insertRow(@PathParam("executionTableId") String executionTableId, ExecutionTableRowHelper rowToInsert) {
-        logger.debug("execution table insertRow - executionTableId = " + executionTableId);
+    @Path(value = "/{uniqueId}/newRow")
+    public ExecutionTable insertRow(@PathParam("uniqueId") String uniqueId, ExecutionTableRowHelper rowToInsert) {
+        logger.debug("execution table insertRow - uniqueId = " + uniqueId);
         logger.debug("execution table insertRow - uniqueId to update = " + rowToInsert.getExecutionTableId());
         logger.debug("execution table insertRow - position for insert = " + rowToInsert.getRowPosition());
         logger.debug("execution table insertRow - row to insert = " + rowToInsert.getRow());
@@ -92,44 +89,41 @@ public class ExecutionTableController {
         // TODO insert new line
         logger.debug("execution table insertRow - table updated - line inserted");
         
-        return getDetail(executionTableId);
+        return DACManager.getInstance().getDeviceAdapter(uniqueId).getExecutionTable().addRow(rowToInsert);
    }   
 
     /**
      * Returns list of rows of the given execution table.
      * 
+   * @param uniqueId
      * @return list of execution table rows
-     * 
-     * @param uniqueId the unique id of the execution table
-     * @return list of executiontable rows object, or null if not existing
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}/rows")
-    public List<ExecutionTableRow> getRows(@PathParam("executionTableId") String executionTableId) {
-        logger.debug("execution table getRows - executionTableId = " + executionTableId);
-        return ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1)).getRows();
+    @Path(value = "/{uniqueId}/rows")
+    public List<ExecutionTableRow> getRows(@PathParam("uniqueId") String uniqueId) {
+        logger.debug("execution table getRows - uniqueId = " + uniqueId);
+        return DACManager.getInstance().getDeviceAdapter(uniqueId).getExecutionTable().getRows();
    }
 
     /**
      * Returns selected row of the given execution table.
      * 
+   * @param executionTableRowId
      * @return one execution table row
      * 
      * @param uniqueId the unique id of the execution table
-     * @param rowId the unique id of the execution table row
-     * @return selected executiontable row object, or null if not existing
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}/rows/{executionTableRowId}")
+    @Path(value = "/{uniqueId}/rows/{executionTableRowId}")
     public ExecutionTableRow getRow(
-            @PathParam("executionTableId") String executionTableId,
+            @PathParam("uniqueId") String uniqueId,
             @PathParam("executionTableRowId") String executionTableRowId) {
-        logger.debug("execution table getRow - executionTableId = " + executionTableId);
+        logger.debug("execution table getRow - uniqueId = " + uniqueId);
         logger.debug("execution table getRow - executionTableRowId = " + executionTableRowId);
         
-        List<ExecutionTableRow> rows = ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1)).getRows();
+        List<ExecutionTableRow> rows = DACManager.getInstance().getDeviceAdapter(uniqueId).getExecutionTable().getRows();
         for (ExecutionTableRow row : rows)
             if (row.getUniqueId().equalsIgnoreCase(executionTableRowId))
                     return row;
@@ -140,49 +134,48 @@ public class ExecutionTableController {
     /**
      * Deletes selected row of the given execution table.
      * 
+   * @param executionTableRowId
      * @return updated execution table
      * 
      * @param uniqueId  unique id of the execution table
-     * @param rowId  unique id of the execution table row to be deleted
-     * @return updated executiontable, or null if not existing
      */
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}/rows/{executionTableRowId}")
+    @Path(value = "/{uniqueId}/rows/{executionTableRowId}")
     public ExecutionTable deleteRow(
-            @PathParam("executionTableId") String executionTableId,
+            @PathParam("uniqueId") String uniqueId,
             @PathParam("executionTableRowId") String executionTableRowId) {
-        logger.debug("execution table deleteRow - executionTableId = " + executionTableId);
+        logger.debug("execution table deleteRow - executionTableId = " + uniqueId);
         logger.debug("execution table deleteRow - executionTableRowId = " + executionTableRowId);
         
-        List<ExecutionTableRow> rows = ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1)).getRows();
+        List<ExecutionTableRow> rows = DACManager.getInstance().getDeviceAdapter(uniqueId).getExecutionTable().getRows();
         for (ExecutionTableRow row : rows)
             if (row.getUniqueId().equalsIgnoreCase(executionTableRowId))
                     rows.remove(row);
 
-        return ExecutionTableTest.getTestObject(executionTableId, rows.size());
+        return DACManager.getInstance().getDeviceAdapter(uniqueId).getExecutionTable();
    }
 
     /**
      * Updates selected row of the given execution table.
      * 
+   * @param executionTableRowId
+   * @param rowToUpdate
      * @return updated execution table
      * 
      * @param uniqueId  unique id of the execution table
-     * @param rowId  unique id of the execution table row to be updated
-     * @return updated executiontable, or null if not existing
      */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}/rows/{executionTableRowId}")
+    @Path(value = "/{uniqueId}/rows/{executionTableRowId}")
     public ExecutionTable updateRow(
-            @PathParam("executionTableId") String executionTableId,
+            @PathParam("executionTableId") String uniqueId,
             @PathParam("executionTableRowId") String executionTableRowId,
             ExecutionTableRow rowToUpdate) {
-        logger.debug("execution table updateRow - executionTableId = " + executionTableId);
+        logger.debug("execution table updateRow - executionTableId = " + uniqueId);
         logger.debug("execution table updateRow - executionTableRowId = " + executionTableRowId);
         logger.debug("execution table updateRow - rowToUpdate = " + rowToUpdate);
         
-        return ExecutionTableTest.getTestObject(executionTableId, 6);
+        return DACManager.getInstance().getDeviceAdapter(uniqueId).getExecutionTable().updateRow(executionTableRowId, rowToUpdate);
    }
 }

@@ -3,7 +3,7 @@ package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
+import eu.openmos.model.SubSystem;
 
 
 /**
@@ -18,7 +18,7 @@ import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="cyberPhysicalAgentDescription" type="{http://cloudinterface.agentcloud.openmos.eu/}cyberPhysicalAgentDescription" minOccurs="0"/>
+ *         &lt;element name="subSystem" type="{http://cloudinterface.agentcloud.openmos.eu/}subSystem" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -30,35 +30,35 @@ import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "createNewAgent", propOrder =
 {
-  "cyberPhysicalAgentDescription"
+  "subSystem"
 })
 public class CreateNewAgent
 {
 
-  protected CyberPhysicalAgentDescription cyberPhysicalAgentDescription;
+  protected SubSystem subSystem;
 
 
   /**
-   * Gets the value of the cyberPhysicalAgentDescription property.
+   * Gets the value of the SubSystem property.
    *
-   * @return possible object is {@link CyberPhysicalAgentDescription }
+   * @return possible object is {@link SubSystem }
    *
    */
-  public CyberPhysicalAgentDescription getCyberPhysicalAgentDescription()
+  public SubSystem getSubSystem()
   {
-    return cyberPhysicalAgentDescription;
+    return subSystem;
   }
 
 
   /**
-   * Sets the value of the cyberPhysicalAgentDescription property.
+   * Sets the value of the SubSystem property.
    *
-   * @param value allowed object is {@link CyberPhysicalAgentDescription }
+   * @param value allowed object is {@link SubSystem }
    *
    */
-  public void setCyberPhysicalAgentDescription(CyberPhysicalAgentDescription value)
+  public void setSubSystem(SubSystem value)
   {
-    this.cyberPhysicalAgentDescription = value;
+    this.subSystem = value;
   }
 
 }

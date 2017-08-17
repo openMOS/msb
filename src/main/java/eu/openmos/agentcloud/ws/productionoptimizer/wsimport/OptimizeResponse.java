@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import eu.openmos.agentcloud.data.recipe.Recipe;
+import eu.openmos.model.Recipe;
 
 
 /**

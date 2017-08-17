@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.messages;
 
-import eu.openmos.agentcloud.data.recipe.KPISetting;
+import eu.openmos.model.KPISetting;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

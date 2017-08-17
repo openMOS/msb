@@ -5,13 +5,13 @@
  */
 package eu.openmos.msb.services.rest;
 
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-import eu.openmos.agentcloud.data.Order;
-import eu.openmos.agentcloud.data.recipe.KPISetting;
-import eu.openmos.agentcloud.data.recipe.Parameter;
-import eu.openmos.agentcloud.data.recipe.ParameterSetting;
-import eu.openmos.agentcloud.data.recipe.Recipe;
-import eu.openmos.agentcloud.data.recipe.SkillRequirement;
+import eu.openmos.model.CyberPhysicalAgentDescription;
+import eu.openmos.model.Order;
+import eu.openmos.model.KPISetting;
+import eu.openmos.model.Parameter;
+import eu.openmos.model.ParameterSetting;
+import eu.openmos.model.Recipe;
+import eu.openmos.model.SkillRequirement;
 import eu.openmos.fakemsb.cloudinterface.test.CyberPhysicalAgentDescriptionTest;
 import eu.openmos.fakemsb.cloudinterface.test.KPISettingTest;
 import eu.openmos.fakemsb.cloudinterface.test.OrderTest;

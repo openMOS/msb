@@ -45,6 +45,7 @@ import DDS.HANDLE_NIL;
 import MSB2ADAPTER.StringMessage;
 import MSB2ADAPTER.StringMessageDataWriter;
 import MSB2ADAPTER.StringMessageDataWriterHelper;
+import eu.openmos.model.Equipment;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
@@ -1705,8 +1706,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         List<String> adapters = instance.getDeviceAdapters();
         for (String adapter : adapters)
         {
-            List<DaDevice> devices = instance.getDevicesFromDeviceAdapter(adapter);
-            for (DaDevice device : devices)
+            List<Equipment> devices = instance.getDevicesFromDeviceAdapter(adapter);
+            for (Equipment device : devices)
             {
                 addToTableDevice(device.getName(), (device.getStatus().equals("1")), device.getAddress(), adapter);
             }

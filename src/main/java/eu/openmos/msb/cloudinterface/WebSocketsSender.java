@@ -1,11 +1,11 @@
 package eu.openmos.msb.cloudinterface;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.agentcloud.data.PhysicalLocation;
+import eu.openmos.model.PhysicalLocation;
 import eu.openmos.agentcloud.utilities.Constants;
-import eu.openmos.agentcloud.data.RawEquipmentData;
-import eu.openmos.agentcloud.data.RecipeExecutionData;
-import eu.openmos.agentcloud.data.UnexpectedProductData;
+import eu.openmos.model.RawEquipmentData;
+import eu.openmos.model.RecipeExecutionData;
+import eu.openmos.model.UnexpectedProductData;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 public class WebSocketsSender extends AbstractVerticle
@@ -68,7 +67,7 @@ public class WebSocketsSender extends AbstractVerticle
           boolean messageOk = false;
           if (now % 2 == 0)       // recipe execution data 
           {
-            RecipeExecutionData red = RecipeExecutionDataTest.getTestObject();
+            RecipeExecutionData red = new RecipeExecutionData(); // TODO
             logger.debug("SENDING - " + red.toString());
             msgToSend = Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA + red.toString();
             messageOk = true;
@@ -77,11 +76,12 @@ public class WebSocketsSender extends AbstractVerticle
           {
             if (topic.startsWith("Resource"))
             {
-              RawEquipmentData ad = RawEquipmentDataTest.getTestObject(topic);
-//                        Recipe r = ad.getRecipe();
-//                        List<Recipe> cpadRecipes = new LinkedList<>(Arrays.asList(r));
-//                        msgToSend = Constants.MSB_MESSAGE_TYPE_APPLIEDRECIPES + cpadRecipes.toString();
-// TO CHECK -> which recipes?!?!?!?!??
+              RawEquipmentData ad = new RawEquipmentData(); // TODO 
+//              Recipe r = ad.getRecipe();
+//              List<Recipe> cpadRecipes = new LinkedList<>(Arrays.asList(r));
+//              msgToSend = Constants.MSB_MESSAGE_TYPE_APPLIEDRECIPES + cpadRecipes.toString();
+             
+              //TO CHECK -> which recipes?!?!?!?!??
               msgToSend = Constants.MSB_MESSAGE_TYPE_APPLIEDRECIPES + ad.toString();
               messageOk = true;
             }
@@ -98,7 +98,7 @@ public class WebSocketsSender extends AbstractVerticle
           }
           if (now % 4 == 0)       // unexpected product data
           {
-            UnexpectedProductData upd = UnexpectedProductDataTest.getTestObject();
+            UnexpectedProductData upd = new UnexpectedProductData(); // TODO
             logger.debug("SENDING - " + upd.toString());
             msgToSend = Constants.MSB_MESSAGE_TYPE_UNEXPECTED_PRODUCT_DATA + upd.toString();
             messageOk = true;
@@ -111,7 +111,7 @@ public class WebSocketsSender extends AbstractVerticle
           if (now % 6 == 0)
           {
 //                    AgentData ad = getTestObject(topic);
-            RawEquipmentData ad = RawEquipmentDataTest.getTestObject(topic);
+            RawEquipmentData ad = new RawEquipmentData(); // TODO
             logger.debug("SENDING - " + ad.toString());
             msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + ad.toString();
             messageOk = true;

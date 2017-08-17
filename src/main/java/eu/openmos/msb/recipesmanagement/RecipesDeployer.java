@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.recipesmanagement;
 
-import eu.openmos.agentcloud.data.recipe.Recipe;
+import eu.openmos.model.Recipe;
 import java.util.List;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
