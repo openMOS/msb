@@ -5,7 +5,6 @@
  */
 package eu.openmos.msb.mqtt;
 
-
 /**
  *
  * @author andre

@@ -19,43 +19,43 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DaSkill
 {
 
-    public DaSkill()
-    {
-    }
-    @XmlElement(name = "amlId")
-    private String amlId = "";
-    @XmlElement(name = "name")
-    private String name = "";
-    @XmlElement(name = "description")
-    private String description = "";
+  public DaSkill()
+  {
+  }
+  @XmlElement(name = "amlId")
+  private String amlId = "";
+  @XmlElement(name = "name")
+  private String name = "";
+  @XmlElement(name = "description")
+  private String description = "";
 
-    public String getAmlId()
-    {
-        return amlId;
-    }
+  public String getAmlId()
+  {
+    return amlId;
+  }
 
-    public void setAmlId(String amlId)
-    {
-        this.amlId = amlId;
-    }
+  public void setAmlId(String amlId)
+  {
+    this.amlId = amlId;
+  }
 
-    public String getName()
-    {
-        return name;
-    }
+  public String getName()
+  {
+    return name;
+  }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+  public void setName(String name)
+  {
+    this.name = name;
+  }
 
-    public String getDescription()
-    {
-        return description;
-    }
+  public String getDescription()
+  {
+    return description;
+  }
 
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
 }

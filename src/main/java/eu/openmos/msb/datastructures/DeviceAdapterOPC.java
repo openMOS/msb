@@ -7,7 +7,6 @@ package eu.openmos.msb.datastructures;
 
 import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 
-
 /**
  *
  * @author andre
@@ -15,20 +14,17 @@ import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
 public class DeviceAdapterOPC extends DeviceAdapter
 {
 
-  
-  
-  
   private MSB_MiloClientSubscription opcClient;
-  
+
   public DeviceAdapterOPC()
   {
-      opcClient = new MSB_MiloClientSubscription();
+    opcClient = new MSB_MiloClientSubscription();
   }
-  
+
   @Override
   public MSB_MiloClientSubscription getClient()
   {
     return opcClient;
   }
-  
+
 }

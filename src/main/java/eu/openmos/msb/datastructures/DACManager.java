@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 /**
  *
  * @author fabio.miranda
@@ -33,7 +32,6 @@ public class DACManager
   // [af-silva] TODO valdiate
   private final Map<Integer, DeviceAdapter> deviceAdapters;
 
-
   /**
    * @brief constructor
    */
@@ -41,7 +39,6 @@ public class DACManager
   {
     deviceAdapters = new HashMap<>();
   }
-
 
   /**
    * @brief obtain the Device Adapter Clients Manager unique instance
@@ -65,7 +62,6 @@ public class DACManager
     }
     return i;
   }
-
 
   /**
    * @param deviceAdapterName
@@ -107,17 +103,15 @@ public class DACManager
       {
         deviceAdapters.put(id, client);
       }
-    }
-    catch (UnsupportedOperationException ex)
+    } catch (UnsupportedOperationException ex)
     {
       System.out.println("[ERRO] at addDeviceAdapter" + ex.getMessage());
     }
   }
 
-
   public DeviceAdapter getDeviceAdapter(String deviceAdapterName)
   {
-    
+
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
@@ -125,9 +119,7 @@ public class DACManager
     }
     return null;
   }
-    
-  
-  
+
   /**
    * @brief @param deviceAdapterName
    * @return
@@ -143,14 +135,12 @@ public class DACManager
         deviceAdapters.remove(id);
         ok = true;
       }
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       System.out.println("[Error] at deleteDeviceAdapter" + ex);
     }
     return ok;
   }
-
 
 //  /**
 //   * @brief @param deviceAdapterName
@@ -164,8 +154,6 @@ public class DACManager
 //      deviceAdapters.get(id).setCyberPhysicalAgentDescription(cpad);
 //    }
 //  }
-
-
   /**
    * @param deviceAdapterName
    * @brief WORKSTATIONName vs DEVICE data MAPS
@@ -182,8 +170,6 @@ public class DACManager
     return null;
   }
 
-
-
   /**
    *
    * @param deviceAdapterName
@@ -198,12 +184,11 @@ public class DACManager
     }
   }
 
-
   /**
    *
    * @param deviceAdapterName
    * @param deviceName
-   * @return 
+   * @return
    */
   public boolean deleteEquipmentModuleFromList(String deviceAdapterName, String deviceName)
   {
@@ -215,47 +200,46 @@ public class DACManager
     return false;
   }
 
-  
   public ArrayList<String> listDevicesByProtocol(EProtocol p)
   {
-    switch(p)
+    switch (p)
     {
       case DDS:
-        return DatabaseInteraction.getInstance().listDevicesByProtocol("DDS");        
+        return DatabaseInteraction.getInstance().listDevicesByProtocol("DDS");
       case OPC:
         return DatabaseInteraction.getInstance().listDevicesByProtocol("OPC");
       default:
         return null;
     }
   }
-  
+
   /**
    * @brief Wrapper
    * @param deviceAdapterName
-   * @return 
+   * @return
    */
   public ArrayList<DaRecipe> getRecipesFromDevice(String deviceAdapterName)
   {
     return DatabaseInteraction.getInstance().getRecipesByDAName(deviceAdapterName);
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public List<String> getDeviceAdapters()
   {
     return DatabaseInteraction.getInstance().getDeviceAdapters();
   }
-  
+
   /**
-   * 
+   *
    * @param deviceAdapterName
    * @param aml_id
    * @param skillName
    * @param recipeValid
    * @param name
-   * @return 
+   * @return
    */
   public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, String recipeValid, String name)
   {
@@ -263,24 +247,27 @@ public class DACManager
     int da_id = db.getDeviceIdByName(deviceAdapterName);
     int sk_id = db.getSkillIdByName(skillName);
     boolean valid = trueSet.contains(recipeValid);
-    if(da_id!=-1 && sk_id!=-1)
-        return db.registerRecipe(aml_id, da_id, sk_id, valid, name);
-    else
-        return false;
+    if (da_id != -1 && sk_id != -1)
+    {
+      return db.registerRecipe(aml_id, da_id, sk_id, valid, name);
+    } else
+    {
+      return false;
+    }
   }
-  
+
   /**
-   * 
+   *
    * @param deviceAdapterName
    * @param aml_id
    * @param name
    * @param description
-   * @return 
+   * @return
    */
   public boolean registerSkill(String deviceAdapterName, String aml_id, String name, String description)
   {
-      DatabaseInteraction db = DatabaseInteraction.getInstance();
-      return db.registerSkill(deviceAdapterName, aml_id, name, description);
+    DatabaseInteraction db = DatabaseInteraction.getInstance();
+    return db.registerSkill(deviceAdapterName, aml_id, name, description);
   }
-  
+
 }

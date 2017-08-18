@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
 /**
  *
  * @author renato.martins
@@ -19,6 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DaDevice
 {
+
   //
   @XmlElement(name = "amlId")
   private String amlId = "";
@@ -28,50 +28,49 @@ public class DaDevice
   private String address = "";
   @XmlElement(name = "status")
   private String status = "";
-  
-    public DaDevice()
-    {
-    }
 
-    public String getAmlId()
-    {
-        return amlId;
-    }
+  public DaDevice()
+  {
+  }
 
-    public void setAmlId(String amlId)
-    {
-        this.amlId = amlId;
-    }
+  public String getAmlId()
+  {
+    return amlId;
+  }
 
-    public String getName()
-    {
-        return name;
-    }
+  public void setAmlId(String amlId)
+  {
+    this.amlId = amlId;
+  }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+  public String getName()
+  {
+    return name;
+  }
 
-    public String getAddress()
-    {
-        return address;
-    }
+  public void setName(String name)
+  {
+    this.name = name;
+  }
 
-    public void setAddress(String address)
-    {
-        this.address = address;
-    }
+  public String getAddress()
+  {
+    return address;
+  }
 
-    public String getStatus()
-    {
-        return status;
-    }
+  public void setAddress(String address)
+  {
+    this.address = address;
+  }
 
-    public void setStatus(String status)
-    {
-        this.status = status;
-    }
+  public String getStatus()
+  {
+    return status;
+  }
 
+  public void setStatus(String status)
+  {
+    this.status = status;
+  }
 
 }

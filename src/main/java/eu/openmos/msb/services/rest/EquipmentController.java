@@ -33,15 +33,15 @@ public class EquipmentController
   /**
    * Returns the equipment object given its unique identifier. Fills the equipment view page (slide 15 of 34).
    *
-   * @param uniqueId
+   * @param equipmentId
    * @return detail of equipment
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Path(value = "/{uniqueId}")
-  public Equipment getDetail(@PathParam("uniqueId") String uniqueId)
+  @Path(value = "/{equipmentId}")
+  public Equipment getDetail(@PathParam("equipmentId") String equipmentId)
   {
-    logger.debug("equipment getDetail - uniqueId = " + uniqueId);
+    logger.debug("equipment getDetail - equipmentId = " + equipmentId);
     //return DACManager.getInstance().getEquipment();
     return null;
   }
@@ -50,33 +50,33 @@ public class EquipmentController
    * Returns the list of skills associated to the given equipment. Fills the skills list view page (slide 16 of 34).
    * This method is exposed via a "/equipments/{equipmentId}/skills" service call.
    *
-   * @param uniqueId
+   * @param equipmentId
    * @return list of skills objects. List can be empty, cannot be null.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("/{uniqueId}/skills")
-  public List<Skill> getSkillsList(@PathParam("uniqueId") String uniqueId)
+  @Path("/{equipmentId}/skills")
+  public List<Skill> getSkillsList(@PathParam("equipmentId") String equipmentId)
   {
-    logger.debug("equipment - getSkillsList - uniqueId = " + uniqueId);
-    return DACManager.getInstance().getDeviceAdapter(uniqueId).getListOfSkills();
+    logger.debug("equipment - getSkillsList - equipmentId = " + equipmentId);
+    return DACManager.getInstance().getDeviceAdapter(equipmentId).getListOfSkills();
   }
 
   /**
    * Returns the list of recipes associated to a workstation or a transport. Fills the skills recipe list (slide 22 of
    * 34) This method is exposed via a "/cpads/{cpadId}/recipes" service call.
    *
-   * @param uniqueId
+   * @param equipmentId
    * @return list of recipe objects. List can be empty, cannot be null.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("/{uniqueId}/recipes")
-  public List<Recipe> getRecipesList(@PathParam("uniqueId") String uniqueId)
+  @Path("/{equipmentId}/recipes")
+  public List<Recipe> getRecipesList(@PathParam("equipmentId") String equipmentId)
   {
-    logger.debug("cpad - getRecipesList - uniqueId = " + uniqueId);
+    logger.debug("cpad - getRecipesList - equipmentId = " + equipmentId);
 
-    return DACManager.getInstance().getDeviceAdapter(uniqueId).getListOfRecipes(); //TODO this needs to be tested
+    return DACManager.getInstance().getDeviceAdapter(equipmentId).getListOfRecipes(); //TODO this needs to be tested
   }
 
   /**
@@ -84,7 +84,7 @@ public class EquipmentController
    * associated to the same workstation or transport. Fills the skills recipe creation view (slide 23 of 34) This method
    * is exposed via a POST to "/cpads/{cpadId}/recipes" service call.
    *
-   * @param uniqueId
+   * @param equipmentId
    * @param newRecipe the recipe to be inserted.
    * @return list of recipe objects associated to the same equipment (workstation or transport). List can be empty,
    * cannot be null.
@@ -92,11 +92,11 @@ public class EquipmentController
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("/{uniqueId}/recipes")
-  public List<Recipe> newRecipe(@PathParam("uniqueId") String uniqueId, Recipe newRecipe)
+  @Path("/{equipmentId}/recipes")
+  public List<Recipe> newRecipe(@PathParam("equipmentId") String equipmentId, Recipe newRecipe)
   {
-    logger.debug("cpad - newRecipe - uniqueId = " + uniqueId);
-    return DACManager.getInstance().getDeviceAdapter(uniqueId).addNewRecipe(newRecipe);
+    logger.debug("cpad - newRecipe - equipmentId = " + equipmentId);
+    return DACManager.getInstance().getDeviceAdapter(equipmentId).addNewRecipe(newRecipe);
   }
 
   /**
@@ -105,16 +105,16 @@ public class EquipmentController
    * workstation->equipments, is not workstation-subsystems-equipments. This method is exposed via a
    * "/cpads/{cpadId}/equipments" service call.
    *
-   * @param cpadId cpad id, i.e. the agent unique identifier.
+   * @param equipmentId
    * @return list of equipments objects. List can be empty, cannot be null.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("/{uniqueId}/equipments")
-  public List<Equipment> getEquipmentsList(@PathParam("uniqueId") String uniqueId)
+  @Path("/{equipmentId}/equipments")
+  public List<Equipment> getEquipmentsList(@PathParam("equipmentId") String equipmentId)
   {
-    logger.debug("cpad - getEquipmentsList - uniqueId = " + uniqueId);
-    return DACManager.getInstance().getDeviceAdapter(uniqueId).getListOfEquipments();
+    logger.debug("cpad - getEquipmentsList - equipmentId = " + equipmentId);
+    return DACManager.getInstance().getDeviceAdapter(equipmentId).getListOfEquipments();
   }
 
   /**
@@ -122,7 +122,7 @@ public class EquipmentController
    * associated to the same workstation or transport. Fills the composite skill creation view (slide 21 of 34) This
    * method is exposed via a POST to "/cpads/{cpadId}/skills" service call.
    *
-   * @param uniqueId
+   * @param equipmentId
    * @param newSkill the skill to be inserted.
    * @return list of skill objects associated to the same equipment (workstation or transport). List can be empty,
    * cannot be null.
@@ -130,12 +130,12 @@ public class EquipmentController
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("/{uniqueId}/skills")
-  public List<Skill> newCompositeSkill(@PathParam("uniqueId") String uniqueId, Skill newSkill)
+  @Path("/{equipmentId}/skills")
+  public List<Skill> newCompositeSkill(@PathParam("equipmentId") String equipmentId, Skill newSkill)
   {
-    logger.debug("cpad - newCompositeSkill - uniqueId = " + uniqueId);
+    logger.debug("cpad - newCompositeSkill - equipmentId = " + equipmentId);
     logger.debug("cpad newCompositeSkill - skill to insert = " + newSkill.toString());
-    return DACManager.getInstance().getDeviceAdapter(uniqueId).addNewSkill(newSkill);
+    return DACManager.getInstance().getDeviceAdapter(equipmentId).addNewSkill(newSkill);
   }
 
 }

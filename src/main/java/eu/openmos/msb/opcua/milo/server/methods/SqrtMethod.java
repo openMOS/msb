@@ -20,22 +20,20 @@ import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler.O
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SqrtMethod
 {
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-
   @UaMethod
   public void invoke(
-    InvocationContext context,
-    @UaInputArgument(
-      name = "x",
-      description = "A value.") Double x,
-    @UaOutputArgument(
-      name = "x_sqrt",
-      description = "The positive square root of x. If the argument is NaN or less than zero, the result is NaN.") Out<Double> xSqrt)
+          InvocationContext context,
+          @UaInputArgument(
+                  name = "x",
+                  description = "A value.") Double x,
+          @UaOutputArgument(
+                  name = "x_sqrt",
+                  description = "The positive square root of x. If the argument is NaN or less than zero, the result is NaN.") Out<Double> xSqrt)
   {
 
     System.out.println("sqrt(" + x.toString() + ")");

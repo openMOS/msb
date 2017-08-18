@@ -1,11 +1,11 @@
 package eu.openmos.msb.cloudinterface;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.model.PhysicalLocation;
+import eu.openmos.agentcloud.data.PhysicalLocation;
 import eu.openmos.agentcloud.utilities.Constants;
-import eu.openmos.model.RawEquipmentData;
-import eu.openmos.model.RecipeExecutionData;
-import eu.openmos.model.UnexpectedProductData;
+import eu.openmos.agentcloud.data.RawEquipmentData;
+import eu.openmos.agentcloud.data.RecipeExecutionData;
+import eu.openmos.agentcloud.data.UnexpectedProductData;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -80,7 +80,7 @@ public class WebSocketsSender extends AbstractVerticle
 //              Recipe r = ad.getRecipe();
 //              List<Recipe> cpadRecipes = new LinkedList<>(Arrays.asList(r));
 //              msgToSend = Constants.MSB_MESSAGE_TYPE_APPLIEDRECIPES + cpadRecipes.toString();
-             
+
               //TO CHECK -> which recipes?!?!?!?!??
               msgToSend = Constants.MSB_MESSAGE_TYPE_APPLIEDRECIPES + ad.toString();
               messageOk = true;

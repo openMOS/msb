@@ -39,7 +39,6 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.toList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  *
  * @author fabio.miranda
@@ -50,7 +49,6 @@ public class MSB_MiloClientSubscription implements Client
   // GLOBAL VARIABLES
   private OpcUaClient milo_client_instanceMSB = null;
   private final Logger logger = LoggerFactory.getLogger(getClass());
-
 
   /**
    *
@@ -69,7 +67,6 @@ public class MSB_MiloClientSubscription implements Client
       new ClientRunner(endpointUrl, this).run();
     }
   }
-
 
   /**
    *
@@ -93,8 +90,8 @@ public class MSB_MiloClientSubscription implements Client
     // UaSubscription subscription = client.getSubscriptionManager().createSubscription(100.0).get();
     // Get a typed reference to the Server object: ServerNode
     ServerNode serverNode = client.getAddressSpace().getObjectNode(
-      Identifiers.Server,
-      ServerNode.class
+            Identifiers.Server,
+            ServerNode.class
     ).get();
 
     // Read properties of the Server object...
@@ -134,7 +131,6 @@ public class MSB_MiloClientSubscription implements Client
 
   }
 
-
   /**
    * TODO - fabio Documentation
    *
@@ -148,13 +144,13 @@ public class MSB_MiloClientSubscription implements Client
     NodeId methodId = NodeId.parse("ns=2;s=OPC_Device/SendServerURL");
 
     CallMethodRequest request = new CallMethodRequest(
-      objectId, methodId, new Variant[]
-      {
-        new Variant(input)
-      });
+            objectId, methodId, new Variant[]
+            {
+              new Variant(input)
+            });
 
     return client.call(request).thenCompose(result
-      ->
+            ->
     {
       StatusCode statusCode = result.getStatusCode();
 
@@ -162,8 +158,7 @@ public class MSB_MiloClientSubscription implements Client
       {
         String value = (String) l(result.getOutputArguments()).get(0).getValue();
         return CompletableFuture.completedFuture(value);
-      }
-      else
+      } else
       {
         CompletableFuture<String> f = new CompletableFuture<>();
         f.completeExceptionally(new UaException(statusCode));
@@ -171,7 +166,6 @@ public class MSB_MiloClientSubscription implements Client
       }
     });
   }
-
 
   /**
    * TODO - fabio Documentation
@@ -185,10 +179,10 @@ public class MSB_MiloClientSubscription implements Client
   {
 
     CallMethodRequest request = new CallMethodRequest(
-      objectId, methodId, null); //new Variant[]{new Variant(null)}
+            objectId, methodId, null); //new Variant[]{new Variant(null)}
 
     return client.call(request).thenCompose(result
-      ->
+            ->
     {
       StatusCode statusCode = result.getStatusCode();
 
@@ -196,8 +190,7 @@ public class MSB_MiloClientSubscription implements Client
       {
         String value = (String) l(result.getOutputArguments()).get(0).getValue();
         return CompletableFuture.completedFuture(value);
-      }
-      else
+      } else
       {
         CompletableFuture<String> f = new CompletableFuture<>();
         f.completeExceptionally(new UaException(statusCode));
@@ -205,7 +198,6 @@ public class MSB_MiloClientSubscription implements Client
       }
     });
   }
-
 
   /**
    * TODO - fabio Documentation
@@ -221,13 +213,13 @@ public class MSB_MiloClientSubscription implements Client
 
     System.out.println("Trying to call SendRecipetoDevice...");
     CallMethodRequest request = new CallMethodRequest(
-      objectId, methodId, new Variant[]
-      {
-        new Variant(input)
-      });
+            objectId, methodId, new Variant[]
+            {
+              new Variant(input)
+            });
 
     return client.call(request).thenCompose(result
-      ->
+            ->
     {
       StatusCode statusCode = result.getStatusCode();
 
@@ -236,8 +228,7 @@ public class MSB_MiloClientSubscription implements Client
         String value = (String) l(result.getOutputArguments()).get(0).getValue();
         System.out.println("SendRecipetoDevice returned: " + value);
         return CompletableFuture.completedFuture(value);
-      }
-      else
+      } else
       {
         CompletableFuture<String> f = new CompletableFuture<>();
         f.completeExceptionally(new UaException(statusCode));
@@ -245,7 +236,6 @@ public class MSB_MiloClientSubscription implements Client
       }
     });
   }
-
 
   /**
    * TODO - fabio Documentation
@@ -261,13 +251,13 @@ public class MSB_MiloClientSubscription implements Client
 
     System.out.println("Trying to call RequestProduct...");
     CallMethodRequest request = new CallMethodRequest(
-      objectId, methodId, new Variant[]
-      {
-        new Variant(ProductID)
-      });
+            objectId, methodId, new Variant[]
+            {
+              new Variant(ProductID)
+            });
 
     return client.call(request).thenCompose(result
-      ->
+            ->
     {
       StatusCode statusCode = result.getStatusCode();
 
@@ -276,8 +266,7 @@ public class MSB_MiloClientSubscription implements Client
         String value = (String) l(result.getOutputArguments()).get(0).getValue();
         System.out.println("RequestProduct returned: " + value);
         return CompletableFuture.completedFuture(value);
-      }
-      else
+      } else
       {
         CompletableFuture<String> f = new CompletableFuture<>();
         f.completeExceptionally(new UaException(statusCode));
@@ -285,7 +274,6 @@ public class MSB_MiloClientSubscription implements Client
       }
     });
   }
-
 
   /**
    * Function to list namespaces of the respective Device methods.
@@ -320,15 +308,13 @@ public class MSB_MiloClientSubscription implements Client
         nodes1.put(nodes.get(i).getBrowseName().get().getName(), nodes.get(i).getNodeId().get());
       }
       return nodes1;
-    }
-    catch (InterruptedException | ExecutionException e)
+    } catch (InterruptedException | ExecutionException e)
     {
       // logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
       logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage());
       return nodes1;
     }
   }
-
 
   /**
    * Function to call the selected device method
@@ -351,7 +337,7 @@ public class MSB_MiloClientSubscription implements Client
     });
 
     return client.call(request).thenCompose(result
-      ->
+            ->
     {
       StatusCode statusCode = result.getStatusCode();
 
@@ -359,8 +345,7 @@ public class MSB_MiloClientSubscription implements Client
       {
         String value = (String) l(result.getOutputArguments()).get(0).getValue().toString();
         return CompletableFuture.completedFuture(value);
-      }
-      else
+      } else
       {
         CompletableFuture<String> f = new CompletableFuture<>();
         f.completeExceptionally(new UaException(statusCode));
@@ -368,7 +353,6 @@ public class MSB_MiloClientSubscription implements Client
       }
     });
   }
-
 
   /**
    *
@@ -381,12 +365,12 @@ public class MSB_MiloClientSubscription implements Client
     System.out.println("****Browse node with filter****");
 
     BrowseDescription browse = new BrowseDescription(
-      browseRoot,
-      BrowseDirection.Forward,
-      Identifiers.References,
-      true,
-      uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
-      uint(BrowseResultMask.All.getValue())
+            browseRoot,
+            BrowseDirection.Forward,
+            Identifiers.References,
+            true,
+            uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
+            uint(BrowseResultMask.All.getValue())
     );
 
     try
@@ -401,14 +385,12 @@ public class MSB_MiloClientSubscription implements Client
         // recursively browse to children
         rd.getNodeId().local().ifPresent(nodeId -> browseNode(indent + "  ", client, nodeId));
       }
-    }
-    catch (InterruptedException | ExecutionException e)
+    } catch (InterruptedException | ExecutionException e)
     {
       // logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
       logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage());
     }
   }
-
 
   /**
    *
@@ -420,7 +402,6 @@ public class MSB_MiloClientSubscription implements Client
       milo_client_instanceMSB.disconnect();
     }
   }
-
 
   /**
    *

@@ -29,7 +29,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
-
 public class ListenerDataListener implements DDS.DataReaderListener
 {
 
@@ -49,12 +48,12 @@ public class ListenerDataListener implements DDS.DataReaderListener
       SampleInfoSeqHolder infoSeq = new SampleInfoSeqHolder();
 
       status = ((GeneralMethodMessageDataReader) arg0).take(
-        msgList,
-        infoSeq,
-        LENGTH_UNLIMITED.value,
-        NOT_READ_SAMPLE_STATE.value,
-        NEW_VIEW_STATE.value,
-        ANY_INSTANCE_STATE.value);
+              msgList,
+              infoSeq,
+              LENGTH_UNLIMITED.value,
+              NOT_READ_SAMPLE_STATE.value,
+              NEW_VIEW_STATE.value,
+              ANY_INSTANCE_STATE.value);
 
       DDSErrorHandler.checkStatus(status, "MsgDataReader.read");
 
@@ -82,22 +81,19 @@ public class ListenerDataListener implements DDS.DataReaderListener
             {
               String s = data[i].device + ":" + data[i].args;
               deviceItf.AllCases(data[i].function, s);
-            }
-            catch (ParserConfigurationException | SAXException | IOException | JAXBException | TransformerException ex)
+            } catch (ParserConfigurationException | SAXException | IOException | JAXBException | TransformerException ex)
             {
               Logger.getLogger(ListenerDataListener.class.getName()).log(Level.SEVERE, null, ex);
             }
 
           }
-        }
-        while (++i < data.length);
+        } while (++i < data.length);
 
         status = ((GeneralMethodMessageDataReader) arg0).return_loan(msgList, infoSeq);
         DDSErrorHandler.checkStatus(status, "MsgDataReader.return_loan");
 
       }
-    }
-    else if (arg0 instanceof StringMessageDataReaderImpl)
+    } else if (arg0 instanceof StringMessageDataReaderImpl)
     {
 
       if (((StringMessageDataReaderImpl) arg0).get_topicdescription().get_name().compareTo("registo_fabio") == 0)
@@ -107,12 +103,12 @@ public class ListenerDataListener implements DDS.DataReaderListener
         SampleInfoSeqHolder infoSeq = new SampleInfoSeqHolder();
 
         status = ((StringMessageDataReader) arg0).take(
-          msgList,
-          infoSeq,
-          LENGTH_UNLIMITED.value,
-          NOT_READ_SAMPLE_STATE.value,
-          NEW_VIEW_STATE.value,
-          ANY_INSTANCE_STATE.value);
+                msgList,
+                infoSeq,
+                LENGTH_UNLIMITED.value,
+                NOT_READ_SAMPLE_STATE.value,
+                NEW_VIEW_STATE.value,
+                ANY_INSTANCE_STATE.value);
 
         DDSErrorHandler.checkStatus(status, "MsgDataReader.read");
 
@@ -134,19 +130,15 @@ public class ListenerDataListener implements DDS.DataReaderListener
               System.out.println("    args      : " + data[i].args);
               System.out.println("    ------------------------");
 
-              
               // TODO - af-silva add support again to DDS after changes to the MSB core
-
             }
-          }
-          while (++i < data.length);
+          } while (++i < data.length);
         }
 
       }
 
     }
   }
-
 
   @Override
   public void on_liveliness_changed(DataReader arg0, LivelinessChangedStatus arg1)
@@ -155,7 +147,6 @@ public class ListenerDataListener implements DDS.DataReaderListener
     System.out.println("=== [ListenerDataListener.on_liveliness_changed] : triggered");
 
   }
-
 
   @Override
   public void on_requested_deadline_missed(DataReader arg0, RequestedDeadlineMissedStatus arg1)
@@ -166,7 +157,6 @@ public class ListenerDataListener implements DDS.DataReaderListener
 
   }
 
-
   @Override
   public void on_requested_incompatible_qos(DataReader arg0, RequestedIncompatibleQosStatus arg1)
   {
@@ -174,7 +164,6 @@ public class ListenerDataListener implements DDS.DataReaderListener
     System.out.println("=== [ListenerDataListener.on_requested_incompatible_qos] : triggered");
 
   }
-
 
   @Override
   public void on_sample_lost(DataReader arg0, SampleLostStatus arg1)
@@ -184,7 +173,6 @@ public class ListenerDataListener implements DDS.DataReaderListener
 
   }
 
-
   @Override
   public void on_sample_rejected(DataReader arg0, SampleRejectedStatus arg1)
   {
@@ -192,7 +180,6 @@ public class ListenerDataListener implements DDS.DataReaderListener
     System.out.println("=== [ListenerDataListener.on_sample_rejected] : triggered");
 
   }
-
 
   @Override
   public void on_subscription_matched(DataReader arg0, SubscriptionMatchedStatus arg1)

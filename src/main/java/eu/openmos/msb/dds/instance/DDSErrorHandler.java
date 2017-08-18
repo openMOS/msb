@@ -19,7 +19,6 @@ package eu.openmos.msb.dds.instance;
  */
 import DDS.*;
 
-
 public class DDSErrorHandler
 {
 
@@ -29,7 +28,6 @@ public class DDSErrorHandler
    * Array to hold the names for all ReturnCodes.
    */
   public static String[] RetCodeName = new String[NR_ERROR_CODES];
-
 
   static
   {
@@ -48,7 +46,6 @@ public class DDSErrorHandler
     RetCodeName[12] = "DDS_RETCODE_ILLEGAL_OPERATION";
   }
 
-
   /**
    * Returns the name of an error code.
    *
@@ -59,7 +56,6 @@ public class DDSErrorHandler
   {
     return RetCodeName[status];
   }
-
 
   /**
    * Check the return status for errors. If there is an error, then terminate.
@@ -75,7 +71,6 @@ public class DDSErrorHandler
       System.exit(-1);
     }
   }
-
 
   /**
    * Check whether a valid handle has been returned. If not, then terminate.

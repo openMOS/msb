@@ -25,7 +25,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 import org.slf4j.LoggerFactory;
 
-
 /**
  *
  * @author fabio.miranda
@@ -40,14 +39,12 @@ public class CheckOPCServers
   private final Map<String, Object> clientObjectsList;
   private Map<String, String> ServersDisconectedList;
 
-
   public CheckOPCServers(Map<String, Object> clientObjects)
   {
     clientObjectsList = clientObjects;
   }
 
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
-
 
   public Map<String, String> run()
   {
@@ -104,20 +101,17 @@ public class CheckOPCServers
           System.out.println("SERVERTIME: " + ServerTime + " MSBTIME: " + MSBTime + " MSBDate: " + MSBDate);
           System.out.println("MSB_DateUTC: " + MSB_DateUTC + " ServerDateUTC: " + ServerDateUTC);
 
-        }
-        else
+        } else
         {
           System.out.println("null :c");
         }
-      }
-      catch (InterruptedException ex)
+      } catch (InterruptedException ex)
       {
         Logger.getLogger(CheckOPCServers.class.getName()).log(Level.SEVERE, null, ex);
         System.out.println("what is the problem? interrupt " + ex.getMessage());
         //return ex.getMessage();
         //ServersDisconectedList.put(key, ex.getMessage());
-      }
-      catch (ExecutionException ex)
+      } catch (ExecutionException ex)
       {
         Logger.getLogger(CheckOPCServers.class.getName()).log(Level.SEVERE, null, ex);
         System.out.println("what is the problem? execution " + ex.getMessage() + " name: " + key);
@@ -130,8 +124,7 @@ public class CheckOPCServers
     {
       sleep(polling_period * 1000);
       System.out.println("Sleeping...");
-    }
-    catch (InterruptedException ex)
+    } catch (InterruptedException ex)
     {
       Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
     }

@@ -21,83 +21,81 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DaRecipe
 {
 
-    public DaRecipe()
-    {
-    }
+  public DaRecipe()
+  {
+  }
 
-    @XmlElement(name = "description")
-    private String description;
-    @XmlElement(name = "name")
-    private String name;
-    @XmlElement(name = "amlId")
-    private String amlId;
-    @XmlElement(name = "skill")
-    private String skill;
-    @XmlElement(name = "valid")
-    private String valid;
-    @XmlElement(name = "skillRequirements")
-    private List<DaSkillRequirement> skillRequirements = new ArrayList<>();
+  @XmlElement(name = "description")
+  private String description;
+  @XmlElement(name = "name")
+  private String name;
+  @XmlElement(name = "amlId")
+  private String amlId;
+  @XmlElement(name = "skill")
+  private String skill;
+  @XmlElement(name = "valid")
+  private String valid;
+  @XmlElement(name = "skillRequirements")
+  private List<DaSkillRequirement> skillRequirements = new ArrayList<>();
 
-    public String getDescription()
-    {
-        return description;
-    }
+  public String getDescription()
+  {
+    return description;
+  }
 
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
 
-    public String getName()
-    {
-        return name;
-    }
+  public String getName()
+  {
+    return name;
+  }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+  public void setName(String name)
+  {
+    this.name = name;
+  }
 
-    public String getAmlId()
-    {
-        return amlId;
-    }
+  public String getAmlId()
+  {
+    return amlId;
+  }
 
-    public void setAmlId(String amlId)
-    {
-        this.amlId = amlId;
-    }
+  public void setAmlId(String amlId)
+  {
+    this.amlId = amlId;
+  }
 
-    public String getSkill()
-    {
-        return skill;
-    }
+  public String getSkill()
+  {
+    return skill;
+  }
 
-    public void setSkill(String skill)
-    {
-        this.skill = skill;
-    }
+  public void setSkill(String skill)
+  {
+    this.skill = skill;
+  }
 
-    public String getValid()
-    {
-        return valid;
-    }
+  public String getValid()
+  {
+    return valid;
+  }
 
-    public void setValid(String valid)
-    {
-        this.valid = valid;
-    }
+  public void setValid(String valid)
+  {
+    this.valid = valid;
+  }
 
-    public List<DaSkillRequirement> getSkillRequirements()
-    {
-        return skillRequirements;
-    }
+  public List<DaSkillRequirement> getSkillRequirements()
+  {
+    return skillRequirements;
+  }
 
-    public void setSkillRequirements(List<DaSkillRequirement> skillRequirements)
-    {
-        this.skillRequirements = skillRequirements;
-    }
-
-
+  public void setSkillRequirements(List<DaSkillRequirement> skillRequirements)
+  {
+    this.skillRequirements = skillRequirements;
+  }
 
 }

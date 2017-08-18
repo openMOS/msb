@@ -5,7 +5,6 @@
  */
 package eu.openmos.msb.datastructures;
 
-
 /**
  *
  * @author andre
@@ -13,12 +12,10 @@ package eu.openmos.msb.datastructures;
 public class DeviceAdapterDDS extends DeviceAdapter
 {
 
-  
-  
   @Override
   public Object getClient()
   {
-    throw new UnsupportedOperationException("Not supported yet."); 
+    throw new UnsupportedOperationException("Not supported yet.");
   }
-  
+
 }

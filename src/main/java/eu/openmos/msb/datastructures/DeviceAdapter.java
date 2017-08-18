@@ -5,14 +5,15 @@
  */
 package eu.openmos.msb.datastructures;
 
-
 import eu.openmos.model.Equipment;
 import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SubSystem;
+import io.vertx.core.Vertx;
 import java.util.ArrayList;
 import java.util.List;
+import sun.security.provider.certpath.Vertex;
 
 /**
  *
@@ -28,11 +29,13 @@ public abstract class DeviceAdapter
    */
   protected List<Equipment> listOfDevices;
   protected SubSystem subSystem;
+  protected Vertx vert;
 
   public DeviceAdapter()
   {
     listOfDevices = new ArrayList<Equipment>();
     subSystem = new SubSystem(); // will be depreceated
+    vert = Vertx.vertx();
   }
 
   /**
@@ -119,8 +122,8 @@ public abstract class DeviceAdapter
   }
 
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public List<Skill> getListOfSkills()
   {

@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  *
  * @author fabio.miranda
@@ -29,13 +28,12 @@ public class SumMethod
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-
   @UaMethod
   public void invoke(
-    AnnotationBasedInvocationHandler.InvocationContext context,
-    @UaOutputArgument(
-      name = "xy_SUM",
-      description = "The sum result of two values") AnnotationBasedInvocationHandler.Out<Double> xySum)
+          AnnotationBasedInvocationHandler.InvocationContext context,
+          @UaOutputArgument(
+                  name = "xy_SUM",
+                  description = "The sum result of two values") AnnotationBasedInvocationHandler.Out<Double> xySum)
   {
 
     //System.out.println("sum " + y.toString() + x.toString() + ")");

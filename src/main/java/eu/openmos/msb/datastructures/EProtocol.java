@@ -6,7 +6,7 @@
 package eu.openmos.msb.datastructures;
 
 /**
- * 
+ *
  * @author af-silva
  */
 public enum EProtocol

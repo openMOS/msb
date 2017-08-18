@@ -65,7 +65,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.slf4j.Logger;
 
-
 /**
  *
  * @author fabio.miranda
@@ -106,7 +105,6 @@ public class opcuaServerMSB
   protected String productUri = "";
   protected String applicationName = "";
 
-
   public opcuaServerMSB(String serverURL) throws Exception
   {
 
@@ -130,8 +128,7 @@ public class opcuaServerMSB
     try
     {
       fullDiscoveryUrl = new URL(serverURL);
-    }
-    catch (MalformedURLException e)
+    } catch (MalformedURLException e)
     {
       e.printStackTrace();
       //return;
@@ -143,8 +140,7 @@ public class opcuaServerMSB
     if (serverName.startsWith("/") && serverName.length() > 1)
     {
       serverName = serverName.substring(1);
-    }
-    else
+    } else
     {
       serverName = "";
     }
@@ -165,11 +161,11 @@ public class opcuaServerMSB
     KeyStoreLoader loader = new KeyStoreLoader().load();
 
     LoggerFactory.getLogger(getClass())
-      .info("security temp dir: {}", securityDir.getAbsolutePath());
+            .info("security temp dir: {}", securityDir.getAbsolutePath());
 
     UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(true, // allow
-      // access
-      challenge ->
+            // access
+            challenge ->
     {
       String user0 = "user";
       String pass0 = "password";
@@ -187,45 +183,45 @@ public class opcuaServerMSB
     });
 
     List<UserTokenPolicy> userTokenPolicies = newArrayList(OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS,
-      OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME);
+            OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME);
 
     CertificateManager certificateManager = new DefaultCertificateManager();
     CertificateValidator certificateValidator = new DefaultCertificateValidator(securityDir);
 
     OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
-      .setApplicationUri(applicationUri)
-      .setApplicationName(LocalizedText.english(applicationName))
-      .setBindAddresses(newArrayList(bindingIP))
-      .setBindPort(Integer.parseInt(bindingPort))
-      .setBuildInfo(
-        new BuildInfo(
-          productUri,
-          "eclipse",
-          "eclipse milo msb server",
-          OpcUaServer.SDK_VERSION,
-          "", DateTime.now()))
-      .setCertificateManager(certificateManager)
-      .setCertificateValidator(certificateValidator)
-      .setIdentityValidator(identityValidator)
-      .setProductUri(productUri)
-      .setServerName(serverName)
-      .setSecurityPolicies(
-        EnumSet.of(
-          SecurityPolicy.None,
-          SecurityPolicy.Basic128Rsa15,
-          SecurityPolicy.Basic256,
-          SecurityPolicy.Basic256Sha256))
-      .setUserTokenPolicies(
-        ImmutableList.of(
-          USER_TOKEN_POLICY_ANONYMOUS,
-          USER_TOKEN_POLICY_USERNAME))
-      .build();
+            .setApplicationUri(applicationUri)
+            .setApplicationName(LocalizedText.english(applicationName))
+            .setBindAddresses(newArrayList(bindingIP))
+            .setBindPort(Integer.parseInt(bindingPort))
+            .setBuildInfo(
+                    new BuildInfo(
+                            productUri,
+                            "eclipse",
+                            "eclipse milo msb server",
+                            OpcUaServer.SDK_VERSION,
+                            "", DateTime.now()))
+            .setCertificateManager(certificateManager)
+            .setCertificateValidator(certificateValidator)
+            .setIdentityValidator(identityValidator)
+            .setProductUri(productUri)
+            .setServerName(serverName)
+            .setSecurityPolicies(
+                    EnumSet.of(
+                            SecurityPolicy.None,
+                            SecurityPolicy.Basic128Rsa15,
+                            SecurityPolicy.Basic256,
+                            SecurityPolicy.Basic256Sha256))
+            .setUserTokenPolicies(
+                    ImmutableList.of(
+                            USER_TOKEN_POLICY_ANONYMOUS,
+                            USER_TOKEN_POLICY_USERNAME))
+            .build();
 
     server = new OpcUaServer(serverConfig);
 
     server.getNamespaceManager().registerAndAdd(
-      opcuaServerNamespaceMSB.NAMESPACE_URI,
-      idx -> new opcuaServerNamespaceMSB(server, idx));
+            opcuaServerNamespaceMSB.NAMESPACE_URI,
+            idx -> new opcuaServerNamespaceMSB(server, idx));
 
     server.getServer().addRequestHandler(TestStackRequest.class, service ->
     {
@@ -247,12 +243,10 @@ public class opcuaServerMSB
 
   }
 
-
   public OpcUaServer getServer()
   {
     return server;
   }
-
 
   public CompletableFuture<OpcUaServer> startup()
   {
@@ -260,12 +254,10 @@ public class opcuaServerMSB
     return server.startup();
   }
 
-
   public CompletableFuture<OpcUaServer> shutdown()
   {
     return server.shutdown();
   }
-
 
   public int register(String discoveryEndpoint)
   {
@@ -278,8 +270,7 @@ public class opcuaServerMSB
       periodicRegisterTimer = new Timer();
       periodicRegisterTimer.schedule(new PeriodicRegistrationManager(), 0, PERIODIC_REGISTER_TIME_IN_SEC * 1000);
       return 1;
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       java.util.logging.Logger.getLogger(opcuaServerMSB.class.getName()).log(Level.SEVERE, null, ex);
       return -1;
@@ -287,42 +278,35 @@ public class opcuaServerMSB
 
   }
 
-
   void setApplicationUri(String appURI)
   {
     applicationUri = appURI;
   }
-
 
   void setProductUri(String prodURI)
   {
     productUri = prodURI;
   }
 
-
   void setApplicationName(String appName)
   {
     applicationName = appName;
   }
-
 
   public String getApplicationUri()
   {
     return applicationUri;
   }
 
-
   public String getProductUri()
   {
     return productUri;
   }
 
-
   public LocalizedText getApplicationName()
   {
     return LocalizedText.english(applicationName);
   }
-
 
   void createRegisterServerData(String discoveryEndpoint) throws Exception
   {
@@ -334,23 +318,23 @@ public class opcuaServerMSB
     // EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://fmoranda-pc.introsys.lan:4840").get();
 
     EndpointDescription endpoint = Arrays.stream(endpoints)
-      .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))//
-      .filter(e -> e.getSecurityMode().toString().compareTo(securityMode) == 0)//
-      .findFirst()//
-      .orElseThrow(() -> new Exception("no desired endpoints returned"));
+            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))//
+            .filter(e -> e.getSecurityMode().toString().compareTo(securityMode) == 0)//
+            .findFirst()//
+            .orElseThrow(() -> new Exception("no desired endpoints returned"));
     X509IdentityProvider x509IdentityProvider = new X509IdentityProvider("openssl_crt.der",
-      "herong.key");
+            "herong.key");
     X509Certificate cert = x509IdentityProvider.getCertificate();
     KeyPair keyPair = new KeyPair(cert.getPublicKey(), x509IdentityProvider.getPrivateKey());
     OpcUaClientConfig clientConfig = OpcUaClientConfig.builder().setApplicationName(LocalizedText.english("opc-ua client"))//
-      .setApplicationUri("urn:opcua client")//
-      .setCertificate(cert)//
-      .setKeyPair(keyPair)//
-      .setEndpoint(endpoint)//
-      .setIdentityProvider(x509IdentityProvider)//
-      // .setIdentityProvider(clientExample.getIdentityProvider())//
-      .setRequestTimeout(uint(10000))//
-      .build();
+            .setApplicationUri("urn:opcua client")//
+            .setCertificate(cert)//
+            .setKeyPair(keyPair)//
+            .setEndpoint(endpoint)//
+            .setIdentityProvider(x509IdentityProvider)//
+            // .setIdentityProvider(clientExample.getIdentityProvider())//
+            .setRequestTimeout(uint(10000))//
+            .build();
     client = new OpcUaClient(clientConfig);
 
     // KeyStoreLoader loader = new KeyStoreLoader().load();
@@ -361,15 +345,15 @@ public class opcuaServerMSB
     //        .setKeyPair(loader.getClientKeyPair())
     //		.setEndpointUrl(discoveryEndpoint).build();
     UaTcpStackClientConfig config = UaTcpStackClientConfig.builder()
-      .setApplicationName(LocalizedText.english(applicationName))
-      .setApplicationUri(String.format("urn:example-client:%s", UUID.randomUUID()))
-      .setCertificate(cert)
-      .setKeyPair(keyPair)
-      .setEndpointUrl(discoveryEndpoint).build();
+            .setApplicationName(LocalizedText.english(applicationName))
+            .setApplicationUri(String.format("urn:example-client:%s", UUID.randomUUID()))
+            .setCertificate(cert)
+            .setKeyPair(keyPair)
+            .setEndpointUrl(discoveryEndpoint).build();
 
     // stackClient = new UaTcpStackClient(config);
     RequestHeader header = new RequestHeader(NodeId.NULL_VALUE, DateTime.now(),
-      uint(requestHandle.getAndIncrement()), uint(0), null, uint(60), null);
+            uint(requestHandle.getAndIncrement()), uint(0), null, uint(60), null);
 
     LocalizedText[] serverNames = new LocalizedText[1];
     serverNames[0] = getApplicationName();
@@ -380,11 +364,10 @@ public class opcuaServerMSB
     String semaphoreFilePath = null;
     Boolean isOnline = true;
     RegisteredServer serverToBeRegistered = new RegisteredServer(getApplicationUri(), getProductUri(), serverNames,
-      serverType, gatewayServerUri, discoveryUrls, semaphoreFilePath, isOnline);
+            serverType, gatewayServerUri, discoveryUrls, semaphoreFilePath, isOnline);
 
     periodicRegServerRequest = new RegisterServerRequest(header, serverToBeRegistered);
   }
-
 
   class PeriodicRegistrationManager extends TimerTask
   {
@@ -398,8 +381,7 @@ public class opcuaServerMSB
         if (response != null)
         {
           logger.info("Received RegisterServerResponse output={}", response.getResponseHeader().toString());
-        }
-        else
+        } else
         {
           logger.error("Error: {}", ex.getMessage(), ex);
         }

@@ -1,329 +1,345 @@
 <wsdl:definitions name="SystemConfigurator" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <wsdl:types>
-<xs:schema elementFormDefault="unqualified" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-<xs:element name="acceptNewOrder" type="tns:acceptNewOrder" />
-<xs:element name="acceptNewOrderResponse" type="tns:acceptNewOrderResponse" />
-<xs:element name="createNewRecipe" type="tns:createNewRecipe" />
-<xs:element name="createNewRecipeResponse" type="tns:createNewRecipeResponse" />
-<xs:element name="createNewResourceAgent" type="tns:createNewResourceAgent" />
-<xs:element name="createNewResourceAgentResponse" type="tns:createNewResourceAgentResponse" />
-<xs:element name="createNewSkill" type="tns:createNewSkill" />
-<xs:element name="createNewSkillResponse" type="tns:createNewSkillResponse" />
-<xs:element name="createNewTransportAgent" type="tns:createNewTransportAgent" />
-<xs:element name="createNewTransportAgentResponse" type="tns:createNewTransportAgentResponse" />
-<xs:element name="finishedProduct" type="tns:finishedProduct" />
-<xs:element name="finishedProductResponse" type="tns:finishedProductResponse" />
-<xs:element name="initializePlatform" type="tns:initializePlatform" />
-<xs:element name="initializePlatformResponse" type="tns:initializePlatformResponse" />
-<xs:element name="orderRemoval" type="tns:orderRemoval" />
-<xs:element name="orderRemovalResponse" type="tns:orderRemovalResponse" />
-<xs:element name="orderUpdate" type="tns:orderUpdate" />
-<xs:element name="orderUpdateResponse" type="tns:orderUpdateResponse" />
-<xs:element name="removeAgent" type="tns:removeAgent" />
-<xs:element name="removeAgentResponse" type="tns:removeAgentResponse" />
-<xs:complexType name="createNewRecipe">
-<xs:sequence>
-<xs:element minOccurs="0" name="recipe" type="tns:recipe" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="recipe">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="equipment" type="tns:equipment" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="kpisSetting" nillable="true" type="tns:kpiSetting" />
-<xs:element minOccurs="0" name="lastOptimizationTimestamp" type="xs:dateTime" />
-<xs:element minOccurs="0" name="msbProtocolEndpoint" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element name="optimized" type="xs:boolean" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="parameterSettings" nillable="true" type="tns:parameterSetting" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element minOccurs="0" name="skill" type="tns:skill" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
-<xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="equipment">
-<xs:sequence>
-<xs:element name="connected" type="xs:boolean" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="executionTable" type="tns:executionTable" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skills" nillable="true" type="tns:skill" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="executionTable">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:executionTableRow" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="executionTableRow">
-<xs:sequence>
-<xs:element name="activityStatus" type="xs:boolean" />
-<xs:element minOccurs="0" name="frequency" type="xs:string" />
-<xs:element minOccurs="0" name="productId" type="xs:string" />
-<xs:element minOccurs="0" name="recipeId" type="xs:string" />
-<xs:element name="recipeValidity" type="xs:boolean" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="skill">
-<xs:sequence>
-<xs:element name="classificationType" type="xs:int" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="kpis" nillable="true" type="tns:kpi" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="parameters" nillable="true" type="tns:parameter" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="recipeIds" nillable="true" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="kpi">
-<xs:sequence>
-<xs:element minOccurs="0" name="currentValue" type="xs:string" />
-<xs:element minOccurs="0" name="defaultLowerBound" type="xs:string" />
-<xs:element minOccurs="0" name="defaultUpperBound" type="xs:string" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="unit" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="parameter">
-<xs:sequence>
-<xs:element minOccurs="0" name="defaultValue" type="xs:string" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="lowerBound" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="unit" type="xs:string" />
-<xs:element minOccurs="0" name="upperBound" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="skillRequirement">
-<xs:sequence>
-<xs:element minOccurs="0" name="classificationType" type="xs:string" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element name="type" type="xs:int" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="kpiSetting">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="id" type="xs:string" />
-<xs:element minOccurs="0" name="kpi" type="tns:kpi" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element minOccurs="0" name="value" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="parameterSetting">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="parameter" type="tns:parameter" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="value" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="createNewRecipeResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="serviceCallStatus">
-<xs:sequence>
-<xs:element minOccurs="0" name="className" type="xs:string" />
-<xs:element minOccurs="0" name="code" type="xs:string" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="operationName" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="createNewResourceAgent">
-<xs:sequence>
-<xs:element minOccurs="0" name="cyberPhysicalAgentDescription" type="tns:cyberPhysicalAgentDescription" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="cyberPhysicalAgentDescription">
-<xs:sequence>
-<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="equipments" nillable="true" type="tns:equipment" />
-<xs:element minOccurs="0" name="executionTable" type="tns:executionTable" />
-<xs:element minOccurs="0" name="logicalLocation" type="tns:logicalLocation" />
-<xs:element minOccurs="0" name="physicalLocation" type="tns:physicalLocation" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" nillable="true" type="tns:recipe" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skills" nillable="true" type="tns:skill" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="logicalLocation">
-<xs:complexContent>
-<xs:extension base="tns:location">
-<xs:sequence>
-<xs:element minOccurs="0" name="location" type="xs:string" />
-<xs:element minOccurs="0" name="productId" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType abstract="true" name="location">
-<xs:sequence />
-</xs:complexType>
-<xs:complexType name="physicalLocation">
-<xs:complexContent>
-<xs:extension base="tns:location">
-<xs:sequence>
-<xs:element name="alpha" type="xs:long" />
-<xs:element name="beta" type="xs:long" />
-<xs:element name="gamma" type="xs:long" />
-<xs:element minOccurs="0" name="productId" type="xs:string" />
-<xs:element minOccurs="0" name="referenceFrameName" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element name="x" type="xs:long" />
-<xs:element name="y" type="xs:long" />
-<xs:element name="z" type="xs:long" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="createNewResourceAgentResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="orderRemoval">
-<xs:sequence>
-<xs:element minOccurs="0" name="orderId" type="xs:string" />
-<xs:element minOccurs="0" name="operationTimestamp" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="orderRemovalResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="orderUpdate">
-<xs:sequence>
-<xs:element minOccurs="0" name="order" type="tns:order" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="order">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element name="priority" type="xs:int" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="productDescriptions" nillable="true" type="tns:productDescription" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="productDescription">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="components" nillable="true" type="tns:component" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="modelId" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="orderId" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="component">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="orderUpdateResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="acceptNewOrder">
-<xs:sequence>
-<xs:element minOccurs="0" name="newOrder" type="tns:order" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="acceptNewOrderResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="createNewTransportAgent">
-<xs:sequence>
-<xs:element minOccurs="0" name="cyberPhysicalAgentDescription" type="tns:cyberPhysicalAgentDescription" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="createNewTransportAgentResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="finishedProduct">
-<xs:sequence>
-<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
-<xs:element minOccurs="0" name="productId" type="xs:string" />
-<xs:element minOccurs="0" name="operationTimestamp" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="finishedProductResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="initializePlatform">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="cyberPhysicalAgentDescriptions" type="tns:cyberPhysicalAgentDescription" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="orders" type="tns:order" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="initializePlatformResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="createNewSkill">
-<xs:sequence>
-<xs:element minOccurs="0" name="skill" type="tns:skill" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="createNewSkillResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="removeAgent">
-<xs:sequence>
-<xs:element minOccurs="0" name="agentUniqueName" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="removeAgentResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-</xs:schema>
+    <xs:schema elementFormDefault="unqualified" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="acceptNewOrder" type="tns:acceptNewOrder" />
+      <xs:element name="acceptNewOrderResponse" type="tns:acceptNewOrderResponse" />
+      <xs:element name="createNewRecipe" type="tns:createNewRecipe" />
+      <xs:element name="createNewRecipeResponse" type="tns:createNewRecipeResponse" />
+      <xs:element name="createNewResourceAgent" type="tns:createNewResourceAgent" />
+      <xs:element name="createNewResourceAgentResponse" type="tns:createNewResourceAgentResponse" />
+      <xs:element name="createNewSkill" type="tns:createNewSkill" />
+      <xs:element name="createNewSkillResponse" type="tns:createNewSkillResponse" />
+      <xs:element name="createNewTransportAgent" type="tns:createNewTransportAgent" />
+      <xs:element name="createNewTransportAgentResponse" type="tns:createNewTransportAgentResponse" />
+      <xs:element name="device" type="tns:equipment" />
+      <xs:element name="deviceAdapter" type="tns:subSystem" />
+      <xs:element name="finishedProduct" type="tns:finishedProduct" />
+      <xs:element name="finishedProductResponse" type="tns:finishedProductResponse" />
+      <xs:element name="initializePlatform" type="tns:initializePlatform" />
+      <xs:element name="initializePlatformResponse" type="tns:initializePlatformResponse" />
+      <xs:element name="orderRemoval" type="tns:orderRemoval" />
+      <xs:element name="orderRemovalResponse" type="tns:orderRemovalResponse" />
+      <xs:element name="orderUpdate" type="tns:orderUpdate" />
+      <xs:element name="orderUpdateResponse" type="tns:orderUpdateResponse" />
+      <xs:element name="recipe" type="tns:recipe" />
+      <xs:element name="removeAgent" type="tns:removeAgent" />
+      <xs:element name="removeAgentResponse" type="tns:removeAgentResponse" />
+      <xs:element name="skill" type="tns:skill" />
+      <xs:element name="skillRequirement" type="tns:skillRequirement" />
+      <xs:complexType name="createNewRecipe">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="recipe" type="tns:recipe" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="recipe">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="amlId" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="parameterSettings" nillable="true" type="tns:parameterSetting" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" type="tns:skillRequirement" />
+          <xs:element minOccurs="0" name="skill" type="tns:skill" />
+          <xs:element minOccurs="0" name="equipment" type="tns:equipment" />
+          <xs:element name="optimized" type="xs:boolean" />
+          <xs:element minOccurs="0" name="lastOptimizationTimestamp" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element name="valid" type="xs:boolean" />
+          <xs:element minOccurs="0" name="msbProtocolEndpoint" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="kpiSetting">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="id" type="xs:string" />
+          <xs:element minOccurs="0" name="kpi" type="tns:kpi" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="value" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="kpi">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="currentValue" type="xs:string" />
+          <xs:element minOccurs="0" name="defaultLowerBound" type="xs:string" />
+          <xs:element minOccurs="0" name="defaultUpperBound" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="type" type="xs:string" />
+          <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+          <xs:element minOccurs="0" name="unit" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="parameterSetting">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="parameter" type="tns:parameter" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+          <xs:element minOccurs="0" name="value" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="parameter">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="defaultValue" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="lowerBound" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="type" type="xs:string" />
+          <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+          <xs:element minOccurs="0" name="unit" type="xs:string" />
+          <xs:element minOccurs="0" name="upperBound" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="skillRequirement">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="type" type="xs:string" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="precedents" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="skill">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="amlId" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="type" type="xs:string" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="kpis" nillable="true" type="tns:kpi" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="parameters" nillable="true" type="tns:parameter" />
+          <xs:element name="classificationType" type="xs:int" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="recipeIds" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="label" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="equipment">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="amlId" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="executionTable" type="tns:executionTable" />
+          <xs:element name="connected" type="xs:boolean" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="skills" nillable="true" type="tns:skill" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="address" type="xs:string" />
+          <xs:element minOccurs="0" name="status" type="xs:string" />
+          <xs:element minOccurs="0" name="manifacturer" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="executionTable">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:executionTableRow" />
+          <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="executionTableRow">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="nextRecipeId" type="xs:string" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="possibleRecipeChoices" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="productId" type="xs:string" />
+          <xs:element minOccurs="0" name="recipeId" type="xs:string" />
+          <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createNewRecipeResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="serviceCallStatus">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="className" type="xs:string" />
+          <xs:element minOccurs="0" name="code" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="operationName" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createNewResourceAgent">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="cyberPhysicalAgentDescription" type="tns:cyberPhysicalAgentDescription" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="cyberPhysicalAgentDescription">
+        <xs:complexContent>
+          <xs:extension base="tns:subSystem">
+            <xs:sequence />
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="subSystem">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="executionTable" type="tns:executionTable" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="skills" type="tns:skill" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" type="tns:recipe" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="devices" type="tns:equipment" />
+          <xs:element minOccurs="0" name="physicalLocation" type="tns:physicalLocation" />
+          <xs:element minOccurs="0" name="logicalLocation" type="tns:logicalLocation" />
+          <xs:element minOccurs="0" name="type" type="xs:string" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="physicalLocation">
+        <xs:complexContent>
+          <xs:extension base="tns:location">
+            <xs:sequence>
+              <xs:element name="alpha" type="xs:long" />
+              <xs:element name="beta" type="xs:long" />
+              <xs:element name="gamma" type="xs:long" />
+              <xs:element minOccurs="0" name="productId" type="xs:string" />
+              <xs:element minOccurs="0" name="referenceFrameName" type="xs:string" />
+              <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+              <xs:element name="x" type="xs:long" />
+              <xs:element name="y" type="xs:long" />
+              <xs:element name="z" type="xs:long" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType abstract="true" name="location">
+        <xs:sequence />
+      </xs:complexType>
+      <xs:complexType name="logicalLocation">
+        <xs:complexContent>
+          <xs:extension base="tns:location">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="location" type="xs:string" />
+              <xs:element minOccurs="0" name="productId" type="xs:string" />
+              <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="createNewResourceAgentResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="orderRemoval">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="orderId" type="xs:string" />
+          <xs:element minOccurs="0" name="operationTimestamp" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="orderRemovalResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="orderUpdate">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="order" type="tns:order" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="order">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element name="priority" type="xs:int" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="productDescriptions" nillable="true" type="tns:productInstance" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="productInstance">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="modelId" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="orderId" type="xs:string" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="parts" nillable="true" type="tns:part" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+          <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="part">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="registeredTimestamp" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="orderUpdateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="acceptNewOrder">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="newOrder" type="tns:order" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="acceptNewOrderResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createNewTransportAgent">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="cyberPhysicalAgentDescription" type="tns:cyberPhysicalAgentDescription" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createNewTransportAgentResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="finishedProduct">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+          <xs:element minOccurs="0" name="productId" type="xs:string" />
+          <xs:element minOccurs="0" name="operationTimestamp" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="finishedProductResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="initializePlatform">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="cyberPhysicalAgentDescriptions" type="tns:cyberPhysicalAgentDescription" />
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="orders" type="tns:order" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="initializePlatformResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createNewSkill">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="skill" type="tns:skill" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createNewSkillResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="removeAgent">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="agentUniqueName" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="removeAgentResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
   </wsdl:types>
   <wsdl:message name="createNewRecipe">
     <wsdl:part element="tns:createNewRecipe" name="parameters">
@@ -408,63 +424,63 @@
   <wsdl:portType name="SystemConfigurator">
     <wsdl:operation name="createNewRecipe">
       <wsdl:input message="tns:createNewRecipe" name="createNewRecipe">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:createNewRecipeResponse" name="createNewRecipeResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="createNewResourceAgent">
       <wsdl:input message="tns:createNewResourceAgent" name="createNewResourceAgent">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:createNewResourceAgentResponse" name="createNewResourceAgentResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="orderRemoval">
       <wsdl:input message="tns:orderRemoval" name="orderRemoval">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:orderRemovalResponse" name="orderRemovalResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="orderUpdate">
       <wsdl:input message="tns:orderUpdate" name="orderUpdate">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:orderUpdateResponse" name="orderUpdateResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="acceptNewOrder">
       <wsdl:input message="tns:acceptNewOrder" name="acceptNewOrder">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:acceptNewOrderResponse" name="acceptNewOrderResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="createNewTransportAgent">
       <wsdl:input message="tns:createNewTransportAgent" name="createNewTransportAgent">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:createNewTransportAgentResponse" name="createNewTransportAgentResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="finishedProduct">
       <wsdl:input message="tns:finishedProduct" name="finishedProduct">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:finishedProductResponse" name="finishedProductResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="initializePlatform">
       <wsdl:input message="tns:initializePlatform" name="initializePlatform">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:initializePlatformResponse" name="initializePlatformResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="createNewSkill">
       <wsdl:input message="tns:createNewSkill" name="createNewSkill">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:createNewSkillResponse" name="createNewSkillResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="removeAgent">
       <wsdl:input message="tns:removeAgent" name="removeAgent">
-    </wsdl:input>
+      </wsdl:input>
       <wsdl:output message="tns:removeAgentResponse" name="removeAgentResponse">
-    </wsdl:output>
+      </wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SystemConfiguratorSoapBinding" type="tns:SystemConfigurator">

@@ -8,7 +8,6 @@ package eu.openmos.msb.cloudinterface;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 
-
 /**
  *
  * @author fabio.miranda

@@ -31,7 +31,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 //import com.introsys.mavenprojectxmltest;
-
 /**
  *
  * @author fabio.miranda
@@ -52,13 +51,11 @@ public class XMLutils
     try
     {
       FiletoXMLtoObject("RegFile.xml");
-    }
-    catch (ParserConfigurationException | SAXException | IOException | JAXBException ex)
+    } catch (ParserConfigurationException | SAXException | IOException | JAXBException ex)
     {
       Logger.getLogger(XMLutils.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
-
 
   public static void FileToStringToObject(String regFilexml)
   {
@@ -73,7 +70,6 @@ public class XMLutils
      * StreamResult(sw)); return sw.toString();
      */
   }
-
 
   public static String XMLtoString(String path)
   {
@@ -94,13 +90,11 @@ public class XMLutils
       transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
       transformer.transform(new DOMSource((Node) doc), new StreamResult(sw));
       return sw.toString();
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       throw new RuntimeException("Error converting to String", ex);
     }
   }
-
 
   public static String StringtoXML(String stringFile)
   {
@@ -123,22 +117,19 @@ public class XMLutils
 
         RegFile aux = (RegFile) unmar.unmarshal(doc);
         int i = 0;
-      }
-      catch (Exception e)
+      } catch (Exception e)
       {
         // handle SAXException
       }
-    }
-    catch (Exception e1)
+    } catch (Exception e1)
     {
       // handle ParserConfigurationException
     }
     return "";
   }
 
-
   public static void stringToDom(String xmlSource)
-    throws SAXException, ParserConfigurationException, IOException, TransformerConfigurationException, TransformerException, JAXBException
+          throws SAXException, ParserConfigurationException, IOException, TransformerConfigurationException, TransformerException, JAXBException
   {
     // Parse the given input
     /*
@@ -155,7 +146,6 @@ public class XMLutils
     FiletoXMLtoObject("RegFile.xml");
     FileToStringToObject("RegFile.xml");
   }
-
 
   public static String FiletoXMLtoObject(String filepath) throws ParserConfigurationException, SAXException, IOException, JAXBException
   {

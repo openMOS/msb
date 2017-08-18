@@ -8,7 +8,6 @@ package eu.openmos.msb.recipesmanagement;
 import javax.xml.ws.Endpoint;
 import org.apache.log4j.Logger;
 
-
 /**
  *
  * @author valerio.gentile
@@ -17,7 +16,6 @@ public class RD_startws
 {
 
   private static final Logger logger = Logger.getLogger(RD_startws.class.getName());
-
 
   public static void main(String[] args)
   {

@@ -25,7 +25,6 @@ import MSB2ADAPTER.StringMessageTypeSupport;
 import java.util.HashMap;
 import org.opensplice.dds.dcps.TypeSupportImpl;
 
-
 /**
  *
  * @author andre
@@ -56,7 +55,6 @@ public class DDSDevice
 
   private final HashMap<String, DDSTopicHelper> topicInstances;
 
-
   /**
    * DDSDevice constructor. Receives the deviceName and the domain to which will belong
    *
@@ -84,7 +82,6 @@ public class DDSDevice
 
   }
 
-
   /**
    * Crate a new Topic for reading information from the network
    *
@@ -98,15 +95,13 @@ public class DDSDevice
     {
       createTopic(topicName, gmmts);
       createReader(topicName);
-    }
-    else if (topicType == TopicType.STRINGMESSAGE)
+    } else if (topicType == TopicType.STRINGMESSAGE)
     {
       createTopic(topicName, smts);
       createReader(topicName);
     }
 
   }
-
 
   /**
    * Crate a new Topic to read information from the network
@@ -125,7 +120,6 @@ public class DDSDevice
     createQueryCondition(topicName, query, query_args);
   }
 
-
   /**
    * Create a new Topic to write information to the network
    *
@@ -138,8 +132,7 @@ public class DDSDevice
     {
       createTopic(topicName, gmmts);
       createWriter(topicName);
-    }
-    else if (topicType == TopicType.STRINGMESSAGE)
+    } else if (topicType == TopicType.STRINGMESSAGE)
     {
 
       createTopic(topicName, smts);
@@ -147,7 +140,6 @@ public class DDSDevice
     }
 
   }
-
 
   /**
    * Create a new Topic to write information to the network
@@ -166,7 +158,6 @@ public class DDSDevice
     createQueryCondition(topicName, query, query_args);
   }
 
-
   /**
    * Obtain all the available topics registered in this device
    *
@@ -177,7 +168,6 @@ public class DDSDevice
 
     return (String[]) topics.keySet().toArray();
   }
-
 
   /**
    * PRIVATE FUNCTIONS *
@@ -204,18 +194,17 @@ public class DDSDevice
     DDSErrorHandler.checkStatus(status, "DomainParticipant.set_default_topic_qos");
 
     Topic topic = this.participant.create_topic(
-      topicName,
-      ts.get_type_name(),
-      topicQos.value,
-      null,
-      STATUS_MASK_NONE.value
+            topicName,
+            ts.get_type_name(),
+            topicQos.value,
+            null,
+            STATUS_MASK_NONE.value
     );
     DDSErrorHandler.checkHandle(topic, "DomainParticipant.create_topic");
 
     topicInstances.get(topicName).setTopic(topic);
     topicInstances.get(topicName).setTopicQos(topicQos);
   }
-
 
   /**
    * Create QueryCondition
@@ -230,15 +219,14 @@ public class DDSDevice
   private void createQueryCondition(String topicName, String query, String[] query_args)
   {
     QueryCondition qc = topicInstances.get(topicName).getDataReader().create_querycondition(
-      ANY_SAMPLE_STATE.value,
-      ANY_VIEW_STATE.value,
-      ANY_INSTANCE_STATE.value,
-      query,
-      query_args
+            ANY_SAMPLE_STATE.value,
+            ANY_VIEW_STATE.value,
+            ANY_INSTANCE_STATE.value,
+            query,
+            query_args
     );
     topicInstances.get(topicName).setTopicQueryCondition(qc);
   }
-
 
   /**
    * Create a new publisher
@@ -258,27 +246,24 @@ public class DDSDevice
         pubQos.value.partition.name = new String[1];
         pubQos.value.partition.name[0] = partition;
         this.publisher = this.participant.create_publisher(
-          pubQos.value,
-          null,
-          STATUS_MASK_NONE.value
+                pubQos.value,
+                null,
+                STATUS_MASK_NONE.value
         );
         DDSErrorHandler.checkHandle(this.publisher, "DomainParticipant.create_publisher");
         return 0;
-      }
-      else
+      } else
       {
         deletePublisher();
         createPublisher(partition);
         return 1;
       }
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       System.out.println("[ERROR] on createPublisher" + ex.getMessage());
       return -1;
     }
   }
-
 
   /**
    * Create a new subscriber
@@ -300,28 +285,25 @@ public class DDSDevice
         subQos.value.partition.name = new String[1];
         subQos.value.partition.name[0] = partition;
         this.subscriber = this.participant.create_subscriber(
-          subQos.value,
-          null,
-          STATUS_MASK_NONE.value
+                subQos.value,
+                null,
+                STATUS_MASK_NONE.value
         );
         DDSErrorHandler.checkHandle(this.subscriber, "DomainParticipant.create_subscriber");
 
         return 0;
-      }
-      else
+      } else
       {
         deleteSubscriber();
         createSubscriber(partition);
         return 1;
       }
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       System.out.println("[Error] on createSubscriber" + ex.getMessage());
       return -1;
     }
   }
-
 
   /**
    * Create a new writer, responsible to publish messages at the given topic. A topic with the same name has to be
@@ -340,29 +322,26 @@ public class DDSDevice
         publisher.copy_from_topic_qos(WQosH, topicInstances.get(topicName).getTopicQos().value);
         WQosH.value.writer_data_lifecycle.autodispose_unregistered_instances = false;
         DataWriter writer = publisher.create_datawriter(
-          topicInstances.get(topicName).getTopic(),
-          WQosH.value,
-          null,
-          STATUS_MASK_NONE.value
+                topicInstances.get(topicName).getTopic(),
+                WQosH.value,
+                null,
+                STATUS_MASK_NONE.value
         );
         DDSErrorHandler.checkHandle(writer, "Publisher.create_datawriter");
         topicInstances.get(topicName).setDataWriter(writer);
         return 1;
-      }
-      else
+      } else
       {
         System.out.println("[createWriter] The given topic does not exists!");
         return 0;
       }
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       System.out.println("[ERROR] on createWriter" + ex.getMessage());
       return -1;
     }
 
   }
-
 
   /**
    * Create a new reader, responsible to subscribe messages at the given topic. A topic with the same name has to be
@@ -380,30 +359,27 @@ public class DDSDevice
         subscriber.get_default_datareader_qos(RQosH);
         subscriber.copy_from_topic_qos(RQosH, topicInstances.get(topicName).getTopicQos().value);
         DataReader reader = subscriber.create_datareader(
-          topicInstances.get(topicName).getTopic(),
-          RQosH.value,
-          new ListenerDataListener(),
-          DDS.DATA_AVAILABLE_STATUS.value
+                topicInstances.get(topicName).getTopic(),
+                RQosH.value,
+                new ListenerDataListener(),
+                DDS.DATA_AVAILABLE_STATUS.value
         );
         DDSErrorHandler.checkHandle(reader, "Subscriber.create_datareader");
 
         topicInstances.get(topicName).setDataReader(reader);
         return 0;
-      }
-      else
+      } else
       {
         System.out.println("[createReader] The given topic does not exists.");
         return 1;
       }
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       System.out.println("[ERROR] on createReader");
       return -1;
     }
 
   }
-
 
   /**
    * Delete Topic
@@ -417,7 +393,6 @@ public class DDSDevice
     topicInstances.remove(topicName);
   }
 
-
   /**
    * Delete the publisher associated with this device
    */
@@ -427,7 +402,6 @@ public class DDSDevice
     this.publisher = null;
   }
 
-
   /**
    * Delete the subscriber associated with this device
    */
@@ -436,7 +410,6 @@ public class DDSDevice
     this.participant.delete_subscriber(subscriber);
     this.subscriber = null;
   }
-
 
   /**
    * Get the Data Reader of the topic
@@ -449,7 +422,6 @@ public class DDSDevice
     return topicInstances.get(topicName).getDataReader();
   }
 
-
   /**
    * Get the Data Writer of the Topic
    *
@@ -461,7 +433,6 @@ public class DDSDevice
     return topicInstances.get(topicName).getDataWriter();
   }
 
-
   /**
    * Get the publisher associated with this device
    *
@@ -472,7 +443,6 @@ public class DDSDevice
     return publisher;
   }
 
-
   /**
    * Get the subscriber associated with this device
    *
@@ -482,7 +452,6 @@ public class DDSDevice
   {
     return subscriber;
   }
-
 
   /**
    * Get the Topic object of a given topic
@@ -495,7 +464,6 @@ public class DDSDevice
     return topicInstances.get(topicName).getTopic();
   }
 
-
   /**
    * Get the Query Condition of a given topic
    *
@@ -506,7 +474,6 @@ public class DDSDevice
   {
     return topicInstances.get(topicName).getTopicQueryCondition();
   }
-
 
   /**
    * Get the DDS Participant associated with this device

@@ -12,7 +12,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
-
 public class KeyStoreLoader
 {
 
@@ -24,7 +23,6 @@ public class KeyStoreLoader
   private KeyPair clientKeyPair;
   private X509Certificate serverCertificate;
   private KeyPair serverKeyPair;
-
 
   public KeyStoreLoader load() throws Exception
   {
@@ -50,24 +48,20 @@ public class KeyStoreLoader
     return this;
   }
 
-
   public X509Certificate getClientCertificate()
   {
     return clientCertificate;
   }
-
 
   public KeyPair getClientKeyPair()
   {
     return clientKeyPair;
   }
 
-
   public X509Certificate getServerCertificate()
   {
     return serverCertificate;
   }
-
 
   public KeyPair getServerKeyPair()
   {

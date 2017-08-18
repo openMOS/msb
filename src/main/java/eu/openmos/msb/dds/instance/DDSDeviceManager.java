@@ -12,7 +12,6 @@ import DDS.PARTICIPANT_QOS_DEFAULT;
 import DDS.STATUS_MASK_NONE;
 import java.util.HashMap;
 
-
 /**
  * DDS Device Manager Class
  *
@@ -28,7 +27,6 @@ public class DDSDeviceManager implements Runnable
   private final DomainParticipantFactory dpf;
   // future implementation could enable multiple participants!
   private final DomainParticipant participant;
-
 
   /**
    * Crates a global instance for this object
@@ -47,7 +45,6 @@ public class DDSDeviceManager implements Runnable
     return dmInstance;
   }
 
-
   /**
    * Singleton protected constructor for creating the instance This constructor is responsible to obtained the
    * DomainParticipantFactory and create a new participant (DDS Domain)
@@ -61,14 +58,13 @@ public class DDSDeviceManager implements Runnable
     dpf = DomainParticipantFactory.get_instance();
     DDSErrorHandler.checkHandle(dpf, "DomainParticipantFactory.get_instance");
     participant = dpf.create_participant(
-      domainId,
-      PARTICIPANT_QOS_DEFAULT.value,
-      null,
-      STATUS_MASK_NONE.value
+            domainId,
+            PARTICIPANT_QOS_DEFAULT.value,
+            null,
+            STATUS_MASK_NONE.value
     );
     DDSErrorHandler.checkHandle(dpf, "DomainParticipantFactory.create_participant");
   }
-
 
   /**
    * This operation deletes all the Entity objects that were created on the Domain Participant
@@ -79,7 +75,6 @@ public class DDSDeviceManager implements Runnable
     DDSErrorHandler.checkStatus(status, "delete_contained_entities");
   }
 
-
   /**
    * Delete the DDS Domain Participant associated with this instance
    */
@@ -88,7 +83,6 @@ public class DDSDeviceManager implements Runnable
     int status = dpf.delete_participant(participant);
     DDSErrorHandler.checkStatus(status, "delete_participant");
   }
-
 
   /**
    * Function to register a device in the Device Manater
@@ -104,7 +98,6 @@ public class DDSDeviceManager implements Runnable
     }
     return -1;
   }
-
 
   /**
    * Function to remove a specific device registered in the Device Manager
@@ -122,7 +115,6 @@ public class DDSDeviceManager implements Runnable
     return -1;
   }
 
-
   /**
    * Function to retrieve a specific device registered in the Device Manager
    *
@@ -138,7 +130,6 @@ public class DDSDeviceManager implements Runnable
     return null;
   }
 
-
   /**
    * Get the devices list by names
    *
@@ -148,7 +139,6 @@ public class DDSDeviceManager implements Runnable
   {
     return (String[]) this.devices.keySet().toArray();
   }
-
 
   /**
    * TODO

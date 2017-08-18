@@ -17,42 +17,43 @@ import javax.xml.bind.annotation.XmlElement;
 public class ServerStatus
 {
 
-    public ServerStatus() {
-    }
-    @XmlElement(name = "Name")
-    public String Name = "";
-    @XmlElement(name = "URL")
-    public String URL = "";
-    @XmlElement(name = "Connected")
-    public Boolean Connected = false;
+  public ServerStatus()
+  {
+  }
+  @XmlElement(name = "Name")
+  public String Name = "";
+  @XmlElement(name = "URL")
+  public String URL = "";
+  @XmlElement(name = "Connected")
+  public Boolean Connected = false;
 
-    public String getName()
-    {
-        return Name;
-    }
+  public String getName()
+  {
+    return Name;
+  }
 
-    public void setName(String Name)
-    {
-        this.Name = Name;
-    }
+  public void setName(String Name)
+  {
+    this.Name = Name;
+  }
 
-    public String getURL()
-    {
-        return URL;
-    }
+  public String getURL()
+  {
+    return URL;
+  }
 
-    public void setURL(String URL)
-    {
-        this.URL = URL;
-    }
+  public void setURL(String URL)
+  {
+    this.URL = URL;
+  }
 
-    public Boolean getConnected()
-    {
-        return Connected;
-    }
+  public Boolean getConnected()
+  {
+    return Connected;
+  }
 
-    public void setConnected(Boolean Connected)
-    {
-        this.Connected = Connected;
-    }
+  public void setConnected(Boolean Connected)
+  {
+    this.Connected = Connected;
+  }
 }

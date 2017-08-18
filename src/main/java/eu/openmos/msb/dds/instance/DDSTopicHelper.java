@@ -12,7 +12,6 @@ import DDS.QueryCondition;
 import DDS.Topic;
 import DDS.TopicQosHolder;
 
-
 /**
  *
  * @author andre
@@ -28,7 +27,6 @@ public class DDSTopicHelper
   private DataReader dataReader;
   private DataWriter dataWriter;
 
-
   /**
    *
    * @return
@@ -37,7 +35,6 @@ public class DDSTopicHelper
   {
     return publisher;
   }
-
 
   /**
    *
@@ -49,7 +46,6 @@ public class DDSTopicHelper
   }
   private Publisher publisher;
 
-
   /**
    *
    * @return
@@ -58,7 +54,6 @@ public class DDSTopicHelper
   {
     return topic;
   }
-
 
   /**
    *
@@ -69,7 +64,6 @@ public class DDSTopicHelper
     this.topic = topic;
   }
 
-
   /**
    *
    * @return
@@ -78,7 +72,6 @@ public class DDSTopicHelper
   {
     return topicQos;
   }
-
 
   /**
    *
@@ -89,7 +82,6 @@ public class DDSTopicHelper
     this.topicQos = topicQos;
   }
 
-
   /**
    *
    * @return
@@ -98,7 +90,6 @@ public class DDSTopicHelper
   {
     return topicQueryCondition;
   }
-
 
   /**
    *
@@ -109,7 +100,6 @@ public class DDSTopicHelper
     this.topicQueryCondition = topicQueryCondition;
   }
 
-
   /**
    *
    * @return
@@ -118,7 +108,6 @@ public class DDSTopicHelper
   {
     return WQosH;
   }
-
 
   /**
    *
@@ -129,7 +118,6 @@ public class DDSTopicHelper
     this.WQosH = WQosH;
   }
 
-
   /**
    *
    * @return
@@ -138,7 +126,6 @@ public class DDSTopicHelper
   {
     return RQosH;
   }
-
 
   /**
    *
@@ -149,7 +136,6 @@ public class DDSTopicHelper
     this.RQosH = RQosH;
   }
 
-
   /**
    *
    * @return
@@ -158,7 +144,6 @@ public class DDSTopicHelper
   {
     return dataReader;
   }
-
 
   /**
    *
@@ -169,7 +154,6 @@ public class DDSTopicHelper
     this.dataReader = dataReader;
   }
 
-
   /**
    *
    * @return
@@ -178,7 +162,6 @@ public class DDSTopicHelper
   {
     return dataWriter;
   }
-
 
   /**
    *

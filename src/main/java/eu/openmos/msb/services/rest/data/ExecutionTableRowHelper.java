@@ -7,40 +7,45 @@ package eu.openmos.msb.services.rest.data;
 
 import eu.openmos.model.ExecutionTableRow;
 
-
 /**
  *
  * @author valerio.gentile
  */
-public class ExecutionTableRowHelper {
-    
-    private String executionTableId;
-    private int rowPosition;
-    private ExecutionTableRow row;
+public class ExecutionTableRowHelper
+{
 
-    public String getExecutionTableId() {
-        return executionTableId;
-    }
+  private String executionTableId;
+  private int rowPosition;
+  private ExecutionTableRow row;
 
-    public void setExecutionTableId(String executionTableId) {
-        this.executionTableId = executionTableId;
-    }
+  public String getExecutionTableId()
+  {
+    return executionTableId;
+  }
 
-    public int getRowPosition() {
-        return rowPosition;
-    }
+  public void setExecutionTableId(String executionTableId)
+  {
+    this.executionTableId = executionTableId;
+  }
 
-    public void setRowPosition(int rowPosition) {
-        this.rowPosition = rowPosition;
-    }
+  public int getRowPosition()
+  {
+    return rowPosition;
+  }
 
-    public ExecutionTableRow getRow() {
-        return row;
-    }
+  public void setRowPosition(int rowPosition)
+  {
+    this.rowPosition = rowPosition;
+  }
 
-    public void setRow(ExecutionTableRow row) {
-        this.row = row;
-    }
+  public ExecutionTableRow getRow()
+  {
+    return row;
+  }
 
-    
+  public void setRow(ExecutionTableRow row)
+  {
+    this.row = row;
+  }
+
 }

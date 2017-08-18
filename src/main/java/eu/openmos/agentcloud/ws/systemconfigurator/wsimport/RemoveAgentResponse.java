@@ -1,64 +1,61 @@
+
 package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import eu.openmos.agentcloud.cloudinterface.AgentStatus;
+import eu.openmos.agentcloud.cloudinterface.ServiceCallStatus;
 
 
 /**
- * <p>
- * Java class for removeAgentResponse complex type.
- *
- * <p>
- * The following schema fragment specifies the expected content contained within this class.
- *
+ * <p>Java class for removeAgentResponse complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
  * <pre>
  * &lt;complexType name="removeAgentResponse">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="agentStatus" type="{http://cloudinterface.agentcloud.openmos.eu/}agentStatus" minOccurs="0"/>
+ *         &lt;element name="serviceCallStatus" type="{http://cloudinterface.agentcloud.openmos.eu/}serviceCallStatus" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "removeAgentResponse", propOrder =
-{
-  "agentStatus"
+@XmlType(name = "removeAgentResponse", propOrder = {
+    "serviceCallStatus"
 })
-public class RemoveAgentResponse
-{
+public class RemoveAgentResponse {
 
-  protected AgentStatus agentStatus;
+    protected ServiceCallStatus serviceCallStatus;
 
+    /**
+     * Gets the value of the serviceCallStatus property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ServiceCallStatus }
+     *     
+     */
+    public ServiceCallStatus getServiceCallStatus() {
+        return serviceCallStatus;
+    }
 
-  /**
-   * Gets the value of the agentStatus property.
-   *
-   * @return possible object is {@link AgentStatus }
-   *
-   */
-  public AgentStatus getAgentStatus()
-  {
-    return agentStatus;
-  }
-
-
-  /**
-   * Sets the value of the agentStatus property.
-   *
-   * @param value allowed object is {@link AgentStatus }
-   *
-   */
-  public void setAgentStatus(AgentStatus value)
-  {
-    this.agentStatus = value;
-  }
+    /**
+     * Sets the value of the serviceCallStatus property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ServiceCallStatus }
+     *     
+     */
+    public void setServiceCallStatus(ServiceCallStatus value) {
+        this.serviceCallStatus = value;
+    }
 
 }

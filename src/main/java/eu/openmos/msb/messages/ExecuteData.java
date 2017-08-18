@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
-
 /**
  *
  * @author renato.martins
@@ -40,12 +39,10 @@ public class ExecuteData
   @XmlElement(name = "methodID")
   private String methodID = "";
 
-
   public ExecuteData()
   {
     // EMPTY
   }
-
 
   /**
    * @return the productID
@@ -55,7 +52,6 @@ public class ExecuteData
     return productID;
   }
 
-
   /**
    * @param productID the productID to set
    */
@@ -63,7 +59,6 @@ public class ExecuteData
   {
     this.productID = productID;
   }
-
 
   /**
    * @return the recipeID
@@ -73,7 +68,6 @@ public class ExecuteData
     return recipeID;
   }
 
-
   /**
    * @param recipeID the recipeID to set
    */
@@ -81,7 +75,6 @@ public class ExecuteData
   {
     this.recipeID = recipeID;
   }
-
 
   /**
    * @return the status
@@ -91,7 +84,6 @@ public class ExecuteData
     return status;
   }
 
-
   /**
    * @param status the status to set
    */
@@ -99,7 +91,6 @@ public class ExecuteData
   {
     this.status = status;
   }
-
 
   /**
    * @return the objectID
@@ -109,7 +100,6 @@ public class ExecuteData
     return objectID;
   }
 
-
   /**
    * @param objectID the objectID to set
    */
@@ -118,7 +108,6 @@ public class ExecuteData
     this.objectID = objectID;
   }
 
-
   /**
    * @return the methodID
    */
@@ -126,7 +115,6 @@ public class ExecuteData
   {
     return methodID;
   }
-
 
   /**
    * @param methodID the methodID to set

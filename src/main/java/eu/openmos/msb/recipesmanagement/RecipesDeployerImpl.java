@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.jws.WebService;
 import org.apache.log4j.Logger;
 
-
 /**
  *
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
@@ -27,7 +26,6 @@ public class RecipesDeployerImpl implements RecipesDeployer
   public static int ACTIVATION = 3;
   private static final Logger logger = Logger.getLogger(RecipesDeployerImpl.class.getName());
 
-
   @Override
   public boolean sendRecipes(String deviceName, int mode, List<Recipe> recipes)
   {
@@ -39,18 +37,15 @@ public class RecipesDeployerImpl implements RecipesDeployer
     {
       logger.debug("suggested recipes mode");
       System.out.println("suggested recipes mode");
-    }
-    else if (mode == RecipesDeployerImpl.ACTUAL)
+    } else if (mode == RecipesDeployerImpl.ACTUAL)
     {
       logger.debug("actual recipes mode");
       System.out.println("actual recipes mode");
-    }
-    else if (RecipesDeployerImpl.ACTIVATION == mode)
+    } else if (RecipesDeployerImpl.ACTIVATION == mode)
     {
       logger.debug("activation of already sent recipes mode");
       System.out.println("activation of already sent recipes mode");
-    }
-    else
+    } else
     {
       logger.debug("unknown mode");
       System.out.println("unknown mode");
@@ -60,7 +55,7 @@ public class RecipesDeployerImpl implements RecipesDeployer
     System.out.println("recipes list = [" + recipes + "]");
 
     //send it to the device
-    MSB_MiloClientSubscription opcClient = (MSB_MiloClientSubscription)DACManager.getInstance().getDeviceAdapter(deviceName).getClient();
+    MSB_MiloClientSubscription opcClient = (MSB_MiloClientSubscription) DACManager.getInstance().getDeviceAdapter(deviceName).getClient();
     System.out.println("device name: " + deviceName);
 
     String Recipes = "dummyRecipe and mode"; //TODO parse the received .aml

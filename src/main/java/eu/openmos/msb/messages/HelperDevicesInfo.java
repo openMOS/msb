@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
-
 /**
  *
  * @author renato.martins
@@ -30,7 +29,6 @@ public class HelperDevicesInfo
 
   private String DeviceAdapter = "";
 
-
   /**
    * @return the Name
    */
@@ -38,7 +36,6 @@ public class HelperDevicesInfo
   {
     return Name;
   }
-
 
   /**
    * @param Name the Name to set
@@ -48,7 +45,6 @@ public class HelperDevicesInfo
     this.Name = Name;
   }
 
-
   /**
    * @return the URL
    */
@@ -56,7 +52,6 @@ public class HelperDevicesInfo
   {
     return Address;
   }
-
 
   /**
    * @param address
@@ -66,24 +61,20 @@ public class HelperDevicesInfo
     this.Address = address;
   }
 
-
   public int getStatus()
   {
     return Status;
   }
-
 
   public void setStatus(int Status)
   {
     this.Status = Status;
   }
 
-
   public String getDeviceAdapter()
   {
     return DeviceAdapter;
   }
-
 
   public void setDeviceAdapter(String DeviceAdapter)
   {

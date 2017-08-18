@@ -1,3 +1,4 @@
+
 package eu.openmos.agentcloud.ws.productionoptimizer.wsimport;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,12 +7,10 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>
- * Java class for productionOptimizerResponseBean complex type.
- *
- * <p>
- * The following schema fragment specifies the expected content contained within this class.
- *
+ * <p>Java class for productionOptimizerResponseBean complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
  * <pre>
  * &lt;complexType name="productionOptimizerResponseBean">
  *   &lt;complexContent>
@@ -24,67 +23,65 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "productionOptimizerResponseBean", propOrder =
-{
-  "code",
-  "description"
+@XmlType(name = "productionOptimizerResponseBean", propOrder = {
+    "code",
+    "description"
 })
-public class ProductionOptimizerResponseBean
-{
+public class ProductionOptimizerResponseBean {
 
-  protected String code;
-  protected String description;
+    protected String code;
+    protected String description;
 
+    /**
+     * Gets the value of the code property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCode() {
+        return code;
+    }
 
-  /**
-   * Gets the value of the code property.
-   *
-   * @return possible object is {@link String }
-   *
-   */
-  public String getCode()
-  {
-    return code;
-  }
+    /**
+     * Sets the value of the code property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCode(String value) {
+        this.code = value;
+    }
 
+    /**
+     * Gets the value of the description property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescription() {
+        return description;
+    }
 
-  /**
-   * Sets the value of the code property.
-   *
-   * @param value allowed object is {@link String }
-   *
-   */
-  public void setCode(String value)
-  {
-    this.code = value;
-  }
-
-
-  /**
-   * Gets the value of the description property.
-   *
-   * @return possible object is {@link String }
-   *
-   */
-  public String getDescription()
-  {
-    return description;
-  }
-
-
-  /**
-   * Sets the value of the description property.
-   *
-   * @param value allowed object is {@link String }
-   *
-   */
-  public void setDescription(String value)
-  {
-    this.description = value;
-  }
+    /**
+     * Sets the value of the description property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescription(String value) {
+        this.description = value;
+    }
 
 }

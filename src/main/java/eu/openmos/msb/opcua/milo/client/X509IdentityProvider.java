@@ -40,7 +40,6 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class X509IdentityProvider implements IdentityProvider
 {
 
@@ -48,25 +47,21 @@ public class X509IdentityProvider implements IdentityProvider
   private final X509Certificate certificate;
   private final PrivateKey privateKey;
 
-
   public X509Certificate getCertificate()
   {
     return certificate;
   }
-
 
   public PrivateKey getPrivateKey()
   {
     return privateKey;
   }
 
-
   public X509IdentityProvider(X509Certificate certificate, PrivateKey privateKey)
   {
     this.certificate = certificate;
     this.privateKey = privateKey;
   }
-
 
   public X509IdentityProvider(String certificate, String privateKey)
   {
@@ -79,8 +74,7 @@ public class X509IdentityProvider implements IdentityProvider
     {
       kf = KeyFactory.getInstance("RSA", "BC");
       privateKeyTmp = loadPrivateKeyFromPemFile(kf, privateKey);
-    }
-    catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException | IOException e)
+    } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException | IOException e)
     {
       e.printStackTrace();
     }
@@ -88,14 +82,13 @@ public class X509IdentityProvider implements IdentityProvider
 
   }
 
-
   @Override
   public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(EndpointDescription endpoint,
-    ByteString serverNonce) throws Exception
+          ByteString serverNonce) throws Exception
   {
     UserTokenPolicy tokenPolicy = Arrays.stream(endpoint.getUserIdentityTokens())
-      .filter(t -> t.getTokenType() == UserTokenType.Certificate).findFirst()
-      .orElseThrow(() -> new Exception("no x509 certificate token policy found"));
+            .filter(t -> t.getTokenType() == UserTokenType.Certificate).findFirst()
+            .orElseThrow(() -> new Exception("no x509 certificate token policy found"));
     String policyId = tokenPolicy.getPolicyId();
     SecurityPolicy securityPolicy = SecurityPolicy.Basic256;
     String securityPolicyUri = tokenPolicy.getSecurityPolicyUri();
@@ -104,14 +97,12 @@ public class X509IdentityProvider implements IdentityProvider
       if (securityPolicyUri != null && !securityPolicyUri.isEmpty())
       {
         securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
-      }
-      else
+      } else
       {
         securityPolicyUri = endpoint.getSecurityPolicyUri();
         securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
       }
-    }
-    catch (Throwable t)
+    } catch (Throwable t)
     {
       logger.warn("Error parsing SecurityPolicy for uri={}", securityPolicyUri);
     }
@@ -123,12 +114,11 @@ public class X509IdentityProvider implements IdentityProvider
     assert serverCertificateBytes != null;
     assert serverNonceBytes != null;
     byte[] signature = SignatureUtil.sign(securityPolicy.getAsymmetricSignatureAlgorithm(), privateKey,
-      ByteBuffer.wrap(serverCertificateBytes), ByteBuffer.wrap(serverNonceBytes));
+            ByteBuffer.wrap(serverCertificateBytes), ByteBuffer.wrap(serverNonceBytes));
     signatureData = new SignatureData(securityPolicy.getAsymmetricSignatureAlgorithm().getUri(),
-      ByteString.of(signature));
+            ByteString.of(signature));
     return new Tuple2<>(token, signatureData);
   }
-
 
   private static X509Certificate loadCertificateFromDerFile(String filename)
   {
@@ -145,8 +135,7 @@ public class X509IdentityProvider implements IdentityProvider
        * byte[] keyBytes = Files.readAllBytes(new File(filename).toPath()); X509EncodedKeySpec spec = new
        * X509EncodedKeySpec(keyBytes); KeyFactory kf = KeyFactory.getInstance("RSA"); return kf.generatePublic(spec);
        */
-    }
-    catch (FileNotFoundException | CertificateException e)
+    } catch (FileNotFoundException | CertificateException e)
     {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -154,9 +143,8 @@ public class X509IdentityProvider implements IdentityProvider
     return cert;
   }
 
-
   private static PrivateKey loadPrivateKeyFromPemFile(KeyFactory factory, String filename)
-    throws InvalidKeySpecException, FileNotFoundException, IOException, NoSuchAlgorithmException
+          throws InvalidKeySpecException, FileNotFoundException, IOException, NoSuchAlgorithmException
   {
     PemFile pemFile = new PemFile(filename);
     byte[] content = pemFile.getPemObject().getContent();

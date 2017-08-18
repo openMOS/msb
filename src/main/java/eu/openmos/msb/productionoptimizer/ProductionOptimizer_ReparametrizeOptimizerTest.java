@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-
 /**
  *
  * @author valerio.gentile
@@ -23,7 +22,6 @@ public class ProductionOptimizer_ReparametrizeOptimizerTest
 {
 
   private static final Logger logger = Logger.getLogger(ProductionOptimizer_ReparametrizeOptimizerTest.class.getName());
-
 
   public static void main(String[] args)
   {

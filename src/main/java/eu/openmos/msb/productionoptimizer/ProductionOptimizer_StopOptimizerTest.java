@@ -10,7 +10,6 @@ import eu.openmos.agentcloud.ws.productionoptimizer.wsimport.ProductionOptimizer
 import eu.openmos.agentcloud.ws.productionoptimizer.wsimport.ProductionOptimizer_Service;
 import org.apache.log4j.Logger;
 
-
 /**
  *
  * @author valerio.gentile
@@ -19,7 +18,6 @@ public class ProductionOptimizer_StopOptimizerTest
 {
 
   private static final Logger logger = Logger.getLogger(ProductionOptimizer_StopOptimizerTest.class.getName());
-
 
   public static void main(String[] args)
   {
