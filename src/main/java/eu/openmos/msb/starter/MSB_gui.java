@@ -11,7 +11,6 @@ import eu.openmos.msb.dds.DDSDevice;
 import eu.openmos.msb.opcua.milo.server.opcuaServerMSB;
 import eu.openmos.msb.opcua.utils.OPCDevice;
 import eu.openmos.msb.opcua.utils.OpcUaServersDiscoverySnippet;
-import eu.openmos.msb.recipesmanagement.RecipesDeployerImpl;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
@@ -50,7 +49,6 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
 import eu.openmos.msb.dds.DDSErrorHandler;
-import eu.openmos.msb.messages.DaDevice;
 import eu.openmos.msb.messages.DaRecipe;
 import eu.openmos.msb.services.rest.CORSFilter;
 import eu.openmos.msb.services.rest.CPADController;
@@ -66,7 +64,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
-import javax.ws.rs.core.UriBuilder;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
@@ -103,7 +100,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private boolean isDDSRunning;
 
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
-  
+
   /**
    *
    * @throws Exception
@@ -126,7 +123,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     OnOffLDS.setLayout(new FlowLayout());
     OnOffSOAP.setLayout(new FlowLayout());
     OnOffREST.setLayout(new FlowLayout());
-    
 
     //faz o setup das imagens e dimensiona para o tamanho pretendido
     setImage();
@@ -145,12 +141,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     labelSOAP = new JLabel(redLight);
     OnOffSOAP.add(labelSOAP);
     OnOffSOAP.setMaximumSize(new Dimension(32, 32));
-    
+
     labelREST = new JLabel(redLight);
     OnOffREST.add(labelREST);
     OnOffREST.setMaximumSize(new Dimension(32, 32));
-    
-    
 
     DeviceITF = new OPCDevice(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
 
@@ -609,14 +603,13 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
               .addComponent(jLabel6)))
-          .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-              .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                .addComponent(msb_opcua_servername)
-                .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+              .addComponent(msb_opcua_servername)
+              .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(LDSserverAddress))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
@@ -1054,35 +1047,38 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    * @param evt
    */
     private void startWebServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startWebServiceActionPerformed
-      // TODO add your handling code here:
+      // TODO handle the stop
+
       String address = soapServiceAddress.getText();
 
       //myRecipeWS.publish(address, new RecipesDeployerImpl());
       //System.out.println("Listening: " + address);
       //opc_comms_log.setText("Starting WebServer...\n Listening on: "+ address);
       // TODO - af-silva test without the thread stuf
-      Thread wsThread = new Thread()
-      {
-        @Override
-        public void run()
-        {
-          opc_comms_log.append("Starting MSB WebServices...\nListening on: " + address + "\n");
-          Endpoint recipesDeployment = Endpoint.publish((address + "/wsRecipesDeployment"), new RecipesDeploymentImpl());
-          Endpoint eventDeployment = Endpoint.publish((address + "/wsEventConfirmation"), new EventConfirmationImpl());
-          System.out.println("Listening: " + address);
-          if (recipesDeployment.isPublished() && eventDeployment.isPublished())
-          {
-            setConnectionColor(true, false, OnOffSOAP, labelSOAP);
-            opc_comms_log.append("MSB WebServices Successfully Started\n");
-          } else
-          {
-            setConnectionColor(false, true, OnOffSOAP, labelSOAP);
-            opc_comms_log.append("Failed to Start MSB WebServices\n");
-          }
-        }
-      };
+//      Thread wsThread = new Thread()
+//      {
+//        @Override
+//        public void run()
+//        {
+      logger.debug("Starting MSB WebServices...\nListening on: " + address + "\n");
+      opc_comms_log.append("Starting MSB WebServices...\nListening on: " + address + "\n");
+      Endpoint e1 = Endpoint.publish(address + "wsRecipesDeployment", new RecipesDeploymentImpl());
+      Endpoint e2 = Endpoint.publish(address + "wsEventConfirmation", new EventConfirmationImpl());
+      System.out.println("Listening: " + address);
 
-      wsThread.start();
+      if (e1.isPublished() && e2.isPublished())
+      {
+        setConnectionColor(true, false, OnOffSOAP, labelSOAP);
+        opc_comms_log.append("MSB WebServices Successfully Started\n");
+      } else
+      {
+        setConnectionColor(false, true, OnOffSOAP, labelSOAP);
+        opc_comms_log.append("Failed to Start MSB WebServices\n");
+      }
+//        }
+//      };
+//
+//      wsThread.start();
     }//GEN-LAST:event_startWebServiceActionPerformed
 
   /**
@@ -1731,13 +1727,13 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   private void startRESTWebServiceActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_startRESTWebServiceActionPerformed
   {//GEN-HEADEREND:event_startRESTWebServiceActionPerformed
-
+    // handle stop
     opc_comms_log.append("StartRS - starting...");
     URI uri;
     try
     {
       uri = new URI(this.restServiceAddress.getText()); // may throw URISyntaxException
-      
+
       //.register(new Resource(new Core(), configuration)) // create instance of Resource and dynamically register        
       ResourceConfig resourceConfig = new ResourceConfig()
               .register(CPADController.class)
@@ -1751,10 +1747,13 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       resourceConfig.register(new CORSFilter());
 
       HttpServer server = JdkHttpServerFactory.createHttpServer(uri, resourceConfig);
+
+      setConnectionColor(true, false, OnOffREST, labelREST);
       logger.info("Start Rest services at " + uri.toString());
       opc_comms_log.append("Start Rest services at " + uri.toString());
-    } catch ( URISyntaxException ex )
+    } catch (URISyntaxException ex)
     {
+      setConnectionColor(false, false, OnOffREST, labelREST);
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
   }//GEN-LAST:event_startRESTWebServiceActionPerformed
@@ -2164,7 +2163,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   public static void main(String args[])
   {
 
-    
     //Set the Nimbus look and feel
     //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
     try

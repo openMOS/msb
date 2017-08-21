@@ -6,13 +6,13 @@
 package eu.openmos.msb.services.soap;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.msb.cloudinterface.WebSocketsSender;
-import eu.openmos.msb.datastructures.DACManager;
+import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
 import io.vertx.core.Vertx;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.logging.Level;
 import javax.jws.WebService;
 import org.apache.log4j.Logger;
 
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
  *
  * @author valerio.gentile
  */
-@WebService(endpointInterface = "eu.openmos.msb.services.EventConfirmation", serviceName = "EventConfirmation")
+@WebService(endpointInterface = "eu.openmos.msb.services.soap.EventConfirmation", serviceName = "EventConfirmation")
 public class EventConfirmationImpl implements EventConfirmation
 {
 
@@ -32,10 +32,33 @@ public class EventConfirmationImpl implements EventConfirmation
     logger.debug(getClass().getName() + " - agentCreated - begin - starting websocket for agentId [" + agentId + "]");
 
     // some stuff...
-    // af-silva check if this can be instanciate in a new object
     Vertx.vertx().deployVerticle(new WebSocketsSender(agentId));
 
-    //DACManager.getInstance().getDeviceAdapter(agentId)
+    // emulation!
+    // add the created agent into the agents list
+    // so that the msb emulator starts sending messages
+    String agentsListFile = ConfigurationLoader.getMandatoryProperty("openmos.msb.agents.list.file");
+    logger.debug("agentsListFile = [" + agentsListFile + "]");
+    String agentsList = new String();
+    try
+    {
+      agentsList = new String(Files.readAllBytes(Paths.get(agentsListFile)));
+    } catch (IOException ex)
+    {
+      logger.error("cant read file " + agentsListFile + ": " + ex.getMessage());
+    }
+    if (agentsList.indexOf(agentId) == -1) // for sure
+    {
+      agentsList = agentsList.concat(agentId).concat("___");
+      try
+      {
+        Files.write(Paths.get(agentsListFile), agentsList.getBytes());
+      } catch (IOException ex)
+      {
+        logger.error("cant write file " + agentsListFile + ": " + ex.getMessage());
+      }
+    }
+
     logger.debug(getClass().getName() + " - agentCreated - end - websocket started for agentId [" + agentId + "]");
 
     return true;

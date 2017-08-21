@@ -5,8 +5,8 @@
  */
 package eu.openmos.msb.services.soap;
 
+// import eu.openmos.agentcloud.data.recipe.Recipe;
 import eu.openmos.model.Recipe;
-import eu.openmos.msb.datastructures.DACManager;
 import java.util.List;
 import javax.jws.WebService;
 import org.apache.log4j.Logger;
@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  *
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
-@WebService(endpointInterface = "eu.openmos.msb.services.RecipesDeployment", serviceName = "RecipesDeployment")
+@WebService(endpointInterface = "eu.openmos.msb.services.soap.RecipesDeployment", serviceName = "RecipesDeployment")
 public class RecipesDeploymentImpl implements RecipesDeployment
 {
 
@@ -46,7 +46,6 @@ public class RecipesDeploymentImpl implements RecipesDeployment
 
     logger.debug("recipes list = [" + recipes + "]");
 
-    //DACManager.getInstance().getDeviceAdapter(deviceName)
     return true;
   }
 
