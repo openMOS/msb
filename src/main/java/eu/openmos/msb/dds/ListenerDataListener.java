@@ -1,4 +1,4 @@
-package eu.openmos.msb.dds.instance;
+package eu.openmos.msb.dds;
 
 /*
  * OpenSplice DDS
@@ -20,7 +20,7 @@ import MSB2ADAPTER.StringMessage;
 import MSB2ADAPTER.StringMessageDataReader;
 import MSB2ADAPTER.StringMessageDataReaderImpl;
 import MSB2ADAPTER.StringMessageSeqHolder;
-import eu.openmos.msb.opcua.utils.OPCDeviceItf;
+import eu.openmos.msb.opcua.utils.OPCDevice;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +40,7 @@ public class ListenerDataListener implements DDS.DataReaderListener
 
     if (arg0 instanceof GeneralMethodMessageDataReaderImpl)
     {
-      OPCDeviceItf deviceItf = new OPCDeviceItf();
+      OPCDevice deviceItf = new OPCDevice();
 
       System.out.println("GeneralMethodMessageDataReaderImpl");
 
@@ -80,7 +80,7 @@ public class ListenerDataListener implements DDS.DataReaderListener
             try
             {
               String s = data[i].device + ":" + data[i].args;
-              deviceItf.AllCases(data[i].function, s);
+              deviceItf.allCases(data[i].function, s);
             } catch (ParserConfigurationException | SAXException | IOException | JAXBException | TransformerException ex)
             {
               Logger.getLogger(ListenerDataListener.class.getName()).log(Level.SEVERE, null, ex);

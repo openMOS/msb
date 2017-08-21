@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.opcua.utils;
 
-import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
+import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import static java.lang.Thread.sleep;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -56,7 +56,7 @@ public class CheckOPCServers
       try
       {
         System.out.println("a tentar sacar o clientsubscription do hashMAP...");
-        MSB_MiloClientSubscription TempSubscription = (MSB_MiloClientSubscription) clientObjectsList.get(key);;
+        MSBClientSubscription TempSubscription = (MSBClientSubscription) clientObjectsList.get(key);;
 
         System.out.println("a tentar sacar o cliente do clientsubscription: " + TempSubscription);
         //OpcUaClient client=TempSubscription.milo_client_instanceMSB;

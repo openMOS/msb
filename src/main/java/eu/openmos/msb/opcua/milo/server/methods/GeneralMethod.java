@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.opcua.milo.server.methods;
 
-import eu.openmos.msb.opcua.utils.OPCDeviceItf;
+import eu.openmos.msb.opcua.utils.OPCDevice;
 import java.io.IOException;
 import java.util.logging.Level;
 import javax.xml.bind.JAXBException;
@@ -45,11 +45,11 @@ public class GeneralMethod
     System.out.println("GeneralMethod(" + func + ")");
     logger.debug("Invoking GeneralMethod() method of Object '{}'", context.getObjectNode().getBrowseName().getName());
 
-    OPCDeviceItf dev = new OPCDeviceItf();
+    OPCDevice dev = new OPCDevice();
     String ret = null;
     try
     {
-      ret = dev.AllCases(func, args);
+      ret = dev.allCases(func, args);
     } catch (TransformerException ex)
     {
       java.util.logging.Logger.getLogger(GeneralMethod.class.getName()).log(Level.SEVERE, null, ex);

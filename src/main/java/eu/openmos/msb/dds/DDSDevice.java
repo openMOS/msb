@@ -1,7 +1,7 @@
 /*
  * TODO - ADD LICENCE
  */
-package eu.openmos.msb.dds.instance;
+package eu.openmos.msb.dds;
 
 import DDS.ANY_INSTANCE_STATE;
 import DDS.ANY_SAMPLE_STATE;

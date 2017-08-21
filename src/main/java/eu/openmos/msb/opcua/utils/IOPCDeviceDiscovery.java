@@ -9,7 +9,7 @@ package eu.openmos.msb.opcua.utils;
  *
  * @author Admin
  */
-public interface OPCDeviceDiscoveryItf
+public interface IOPCDeviceDiscovery
 {
 
   void on_new_server(String name, String app_uri);

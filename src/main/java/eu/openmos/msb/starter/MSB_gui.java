@@ -4,13 +4,12 @@
 package eu.openmos.msb.starter;
 
 // IMOPORTS
-import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
+import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.datastructures.DACManager;
-import eu.openmos.msb.opcua.utils.OPCDeviceDiscoveryItf;
-import eu.openmos.msb.dds.instance.DDSDeviceManager;
-import eu.openmos.msb.dds.instance.DDSDevice;
+import eu.openmos.msb.dds.DDSDeviceManager;
+import eu.openmos.msb.dds.DDSDevice;
 import eu.openmos.msb.opcua.milo.server.opcuaServerMSB;
-import eu.openmos.msb.opcua.utils.OPCDeviceItf;
+import eu.openmos.msb.opcua.utils.OPCDevice;
 import eu.openmos.msb.opcua.utils.OpcUaServersDiscoverySnippet;
 import eu.openmos.msb.recipesmanagement.RecipesDeployerImpl;
 import java.awt.Dimension;
@@ -50,7 +49,7 @@ import eu.openmos.model.Equipment;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
-import eu.openmos.msb.dds.instance.DDSErrorHandler;
+import eu.openmos.msb.dds.DDSErrorHandler;
 import eu.openmos.msb.messages.DaDevice;
 import eu.openmos.msb.messages.DaRecipe;
 import eu.openmos.msb.services.rest.CORSFilter;
@@ -73,6 +72,9 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import eu.openmos.msb.opcua.utils.IOPCDeviceDiscovery;
+import java.net.URISyntaxException;
+import org.slf4j.LoggerFactory;
 
 /**
  * *********************************************************************************************************************
@@ -94,11 +96,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private static ImageIcon greyLight;
   private static JLabel labelLDS;
   private static JLabel labelServer;
-  private static JLabel labelWS;
+  private static JLabel labelSOAP;
+  private static JLabel labelREST;
   private static JLabel labelRegister;
-  private static OPCDeviceItf DeviceITF;
+  private static OPCDevice DeviceITF;
   private boolean isDDSRunning;
 
+  private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
+  
   /**
    *
    * @throws Exception
@@ -118,28 +123,36 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     OnOffServerPanel.setLayout(new FlowLayout());
     OnOffRegister.setLayout(new FlowLayout());
-    OnOffWSPanel.setLayout(new FlowLayout());
     OnOffLDS.setLayout(new FlowLayout());
+    OnOffSOAP.setLayout(new FlowLayout());
+    OnOffREST.setLayout(new FlowLayout());
+    
 
     //faz o setup das imagens e dimensiona para o tamanho pretendido
     setImage();
     labelServer = new JLabel(redLight);
     OnOffServerPanel.add(labelServer);
-    OnOffServerPanel.setMaximumSize(new Dimension(34, 31));
+    OnOffServerPanel.setMaximumSize(new Dimension(32, 32));
 
     labelLDS = new JLabel(redLight);
     OnOffLDS.add(labelLDS);
-    OnOffLDS.setMaximumSize(new Dimension(34, 31));
+    OnOffLDS.setMaximumSize(new Dimension(32, 32));
 
     labelRegister = new JLabel(redLight);
     OnOffRegister.add(labelRegister);
-    OnOffRegister.setMaximumSize(new Dimension(34, 31));
+    OnOffRegister.setMaximumSize(new Dimension(32, 32));
 
-    labelWS = new JLabel(redLight);
-    OnOffWSPanel.add(labelWS);
-    OnOffWSPanel.setMaximumSize(new Dimension(34, 31));
+    labelSOAP = new JLabel(redLight);
+    OnOffSOAP.add(labelSOAP);
+    OnOffSOAP.setMaximumSize(new Dimension(32, 32));
+    
+    labelREST = new JLabel(redLight);
+    OnOffREST.add(labelREST);
+    OnOffREST.setMaximumSize(new Dimension(32, 32));
+    
+    
 
-    DeviceITF = new OPCDeviceItf(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
+    DeviceITF = new OPCDevice(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
 
 //    ImageIcon imageIcon;
 //    imageIcon = new ImageIcon(new ImageIcon(".\\main\\resources\\eu\\openmos\\msb\\icons\\OpenMos-logo-RGB-colours.png").getImage().getScaledInstance(l_openmosLogo.getWidth(), l_openmosLogo.getHeight(), Image.SCALE_DEFAULT));
@@ -215,11 +228,12 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     jPanel5 = new javax.swing.JPanel();
     startWebService = new javax.swing.JButton();
     soapServiceAddress = new javax.swing.JTextField();
-    OnOffWSPanel = new javax.swing.JPanel();
+    OnOffSOAP = new javax.swing.JPanel();
     jLabel10 = new javax.swing.JLabel();
     jLabel11 = new javax.swing.JLabel();
     restServiceAddress = new javax.swing.JTextField();
     startRESTWebService = new javax.swing.JButton();
+    OnOffREST = new javax.swing.JPanel();
     l_openmosLogo = new javax.swing.JLabel();
     p_productExecution = new javax.swing.JPanel();
     pb_produceProduct = new javax.swing.JButton();
@@ -417,11 +431,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     OnOffRegister.setLayout(OnOffRegisterLayout);
     OnOffRegisterLayout.setHorizontalGroup(
       OnOffRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 43, Short.MAX_VALUE)
+      .addGap(0, 42, Short.MAX_VALUE)
     );
     OnOffRegisterLayout.setVerticalGroup(
       OnOffRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 43, Short.MAX_VALUE)
+      .addGap(0, 42, Short.MAX_VALUE)
     );
 
     OnOffServerPanel.setPreferredSize(new java.awt.Dimension(34, 31));
@@ -430,11 +444,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     OnOffServerPanel.setLayout(OnOffServerPanelLayout);
     OnOffServerPanelLayout.setHorizontalGroup(
       OnOffServerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
+      .addGap(0, 42, Short.MAX_VALUE)
     );
     OnOffServerPanelLayout.setVerticalGroup(
       OnOffServerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
+      .addGap(0, 42, Short.MAX_VALUE)
     );
 
     OnOffLDS.setPreferredSize(new java.awt.Dimension(34, 31));
@@ -443,11 +457,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     OnOffLDS.setLayout(OnOffLDSLayout);
     OnOffLDSLayout.setHorizontalGroup(
       OnOffLDSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 43, Short.MAX_VALUE)
+      .addGap(0, 42, Short.MAX_VALUE)
     );
     OnOffLDSLayout.setVerticalGroup(
       OnOffLDSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
+      .addGap(0, 42, Short.MAX_VALUE)
     );
 
     comboServers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No device adapters available!"}));
@@ -565,7 +579,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           .addGroup(jPanel1Layout.createSequentialGroup()
             .addComponent(LDSRegisterserver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
             .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -593,7 +607,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(btn_start_discovery, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
               .addComponent(jLabel6)))
           .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
@@ -601,7 +615,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                 .addComponent(msb_opcua_servername)
                 .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
               .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(OnOffServerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE))
+              .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(LDSserverAddress))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -618,7 +632,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addComponent(msb_opcua_servername, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(OnOffServerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
+          .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addGap(18, 18, 18)
         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -629,14 +643,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addComponent(LDSRegisterserver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel6)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(OnOffLDS, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
+          .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(btn_start_discovery, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -800,7 +814,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       }
     });
 
-    soapServiceAddress.setText("http://0.0.0.0:9997");
+    soapServiceAddress.setText("http://0.0.0.0:9997/");
+    soapServiceAddress.setMaximumSize(new java.awt.Dimension(42, 120));
+    soapServiceAddress.setMinimumSize(new java.awt.Dimension(42, 20));
     soapServiceAddress.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -809,24 +825,26 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       }
     });
 
-    OnOffWSPanel.setPreferredSize(new java.awt.Dimension(34, 31));
+    OnOffSOAP.setPreferredSize(new java.awt.Dimension(34, 31));
 
-    javax.swing.GroupLayout OnOffWSPanelLayout = new javax.swing.GroupLayout(OnOffWSPanel);
-    OnOffWSPanel.setLayout(OnOffWSPanelLayout);
-    OnOffWSPanelLayout.setHorizontalGroup(
-      OnOffWSPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 34, Short.MAX_VALUE)
+    javax.swing.GroupLayout OnOffSOAPLayout = new javax.swing.GroupLayout(OnOffSOAP);
+    OnOffSOAP.setLayout(OnOffSOAPLayout);
+    OnOffSOAPLayout.setHorizontalGroup(
+      OnOffSOAPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 42, Short.MAX_VALUE)
     );
-    OnOffWSPanelLayout.setVerticalGroup(
-      OnOffWSPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 31, Short.MAX_VALUE)
+    OnOffSOAPLayout.setVerticalGroup(
+      OnOffSOAPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 0, Short.MAX_VALUE)
     );
 
     jLabel10.setText("SOAP Server Address:");
 
     jLabel11.setText("REST Server Address:");
 
-    restServiceAddress.setText("http://0.0.0.0:9995");
+    restServiceAddress.setText("http://localhost:9995/");
+    restServiceAddress.setMaximumSize(new java.awt.Dimension(42, 120));
+    restServiceAddress.setMinimumSize(new java.awt.Dimension(42, 20));
     restServiceAddress.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -844,6 +862,19 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       }
     });
 
+    OnOffREST.setPreferredSize(new java.awt.Dimension(34, 31));
+
+    javax.swing.GroupLayout OnOffRESTLayout = new javax.swing.GroupLayout(OnOffREST);
+    OnOffREST.setLayout(OnOffRESTLayout);
+    OnOffRESTLayout.setHorizontalGroup(
+      OnOffRESTLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 42, Short.MAX_VALUE)
+    );
+    OnOffRESTLayout.setVerticalGroup(
+      OnOffRESTLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 42, Short.MAX_VALUE)
+    );
+
     javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
     jPanel5.setLayout(jPanel5Layout);
     jPanel5Layout.setHorizontalGroup(
@@ -852,40 +883,41 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addContainerGap()
         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(jPanel5Layout.createSequentialGroup()
-            .addComponent(startWebService, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addContainerGap())
-          .addGroup(jPanel5Layout.createSequentialGroup()
-            .addComponent(jLabel10)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 47, Short.MAX_VALUE)
-            .addComponent(soapServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(OnOffWSPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(6, 6, 6))
-          .addGroup(jPanel5Layout.createSequentialGroup()
             .addComponent(jLabel11)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(restServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(45, 45, 45))
-          .addComponent(startRESTWebService, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGap(18, 18, Short.MAX_VALUE)
+            .addComponent(restServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 454, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(startRESTWebService, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(startWebService, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+            .addComponent(jLabel10)
+            .addGap(18, 18, 18)
+            .addComponent(soapServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        .addGap(18, 18, 18)
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(OnOffSOAP, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(OnOffREST, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(29, 29, 29))
     );
     jPanel5Layout.setVerticalGroup(
       jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel5Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(OnOffWSPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(soapServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel10)))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(startWebService)
-        .addGap(21, 21, 21)
+        .addGap(24, 24, 24)
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(soapServiceAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+          .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addGap(18, 18, 18)
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(OnOffSOAP, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+          .addComponent(startWebService, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE))
+        .addGap(26, 26, 26)
         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(restServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(restServiceAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel11))
         .addGap(18, 18, 18)
-        .addComponent(startRESTWebService)
-        .addContainerGap(464, Short.MAX_VALUE))
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(OnOffREST, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+          .addComponent(startRESTWebService, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(368, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("WebService", jPanel5);
@@ -970,7 +1002,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                   .addComponent(jScrollPane1))
                 .addContainerGap())
               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 38, Short.MAX_VALUE)
+                .addGap(0, 20, Short.MAX_VALUE)
                 .addComponent(jLabel5)
                 .addGap(302, 302, 302))
               .addGroup(layout.createSequentialGroup()
@@ -1040,11 +1072,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           System.out.println("Listening: " + address);
           if (recipesDeployment.isPublished() && eventDeployment.isPublished())
           {
-            setConnectionColor(true, false, OnOffWSPanel, labelWS);
+            setConnectionColor(true, false, OnOffSOAP, labelSOAP);
             opc_comms_log.append("MSB WebServices Successfully Started\n");
           } else
           {
-            setConnectionColor(false, true, OnOffWSPanel, labelWS);
+            setConnectionColor(false, true, OnOffSOAP, labelSOAP);
             opc_comms_log.append("Failed to Start MSB WebServices\n");
           }
         }
@@ -1157,7 +1189,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
     try
     {
-      ret = DeviceITF.AllCases("statusupdate", textToSend.getText()); //simulate a device registration
+      ret = DeviceITF.allCases("statusupdate", textToSend.getText()); //simulate a device registration
 
     } catch (ParserConfigurationException ex)
     {
@@ -1192,7 +1224,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
     try
     {
-      ret = DeviceITF.AllCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
+      ret = DeviceITF.allCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
 
     } catch (ParserConfigurationException ex)
     {
@@ -1226,7 +1258,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     String ret = "null";
     try
     {
-      ret = DeviceITF.AllCases("changedstate", textToSend.getText()); //simulate a device registration
+      ret = DeviceITF.allCases("changedstate", textToSend.getText()); //simulate a device registration
     } catch (ParserConfigurationException ex)
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
@@ -1260,7 +1292,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
     try
     {
-      ret = DeviceITF.AllCases("recipeexecutiondone", textToSend.getText()); //simulate a device registration
+      ret = DeviceITF.allCases("recipeexecutiondone", textToSend.getText()); //simulate a device registration
 
     } catch (ParserConfigurationException ex)
     {
@@ -1295,7 +1327,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
     try
     {
-      ret = DeviceITF.AllCases("deviceregistration", textToSend.getText()); //simulate a device registration
+      ret = DeviceITF.allCases("deviceregistration", textToSend.getText()); //simulate a device registration
 
     } catch (ParserConfigurationException ex)
     {
@@ -1409,8 +1441,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_btn_start_discoveryActionPerformed
     //launch Discovery Service to search for other devices (OPCUA servers from devices)
 
-    OPCDeviceDiscoveryItf OPCdevDiscItf;
-    OPCdevDiscItf = new OPCDeviceDiscoveryItf()
+    IOPCDeviceDiscovery OPCdevDiscItf;
+    OPCdevDiscItf = new IOPCDeviceDiscovery()
     {
 
       /**
@@ -1473,7 +1505,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               System.out.println("olas");
               DACManager manager = DACManager.getInstance();
               DeviceAdapterOPC opc = (DeviceAdapterOPC) manager.getDeviceAdapter(name);
-              MSB_MiloClientSubscription instance = opc.getClient();
+              MSBClientSubscription instance = opc.getClient();
 
               //start connection after inserting on the hashmap!
               instance.startConnection(app_uri);
@@ -1699,29 +1731,32 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   private void startRESTWebServiceActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_startRESTWebServiceActionPerformed
   {//GEN-HEADEREND:event_startRESTWebServiceActionPerformed
-    // TODO add your handling code here:
-    //logger.info("StartRS - starting...");
+
     opc_comms_log.append("StartRS - starting...");
-    String[] splited = restServiceAddress.getText().split(":", 2);
-    
-    URI baseUri = UriBuilder.fromUri(splited[0]).port(Integer.parseInt(splited[1])).build();
+    URI uri;
+    try
+    {
+      uri = new URI(this.restServiceAddress.getText()); // may throw URISyntaxException
+      
+      //.register(new Resource(new Core(), configuration)) // create instance of Resource and dynamically register        
+      ResourceConfig resourceConfig = new ResourceConfig()
+              .register(CPADController.class)
+              .register(ExecutionTableController.class)
+              .register(RecipeController.class)
+              .register(EquipmentController.class)
+              .register(SkillController.class)
+              .register(ProductController.class)
+              .register(OrderController.class);
 
-//                .register(new Resource(new Core(), configuration)) // create instance of Resource and dynamically register        
-    ResourceConfig resourceConfig = new ResourceConfig()
-            .register(CPADController.class)
-            .register(ExecutionTableController.class)
-            .register(RecipeController.class)
-            .register(EquipmentController.class)
-            .register(SkillController.class)
-            .register(ProductController.class)
-            .register(OrderController.class);
+      resourceConfig.register(new CORSFilter());
 
-    resourceConfig.register(new CORSFilter());
-
-    HttpServer server = JdkHttpServerFactory.createHttpServer(baseUri, resourceConfig);
-    //logger.info("StartRS - started succesfully");
-    opc_comms_log.append("StartRS - started succesfully");
-
+      HttpServer server = JdkHttpServerFactory.createHttpServer(uri, resourceConfig);
+      logger.info("Start Rest services at " + uri.toString());
+      opc_comms_log.append("Start Rest services at " + uri.toString());
+    } catch ( URISyntaxException ex )
+    {
+      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }//GEN-LAST:event_startRESTWebServiceActionPerformed
 
   /**
@@ -1981,9 +2016,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       e.printStackTrace();
     }
 
-    Image dimg = img.getScaledInstance(34, 31, Image.SCALE_SMOOTH);
-    Image dimg2 = img1.getScaledInstance(34, 31, Image.SCALE_SMOOTH);
-    Image dimg3 = img2.getScaledInstance(34, 31, Image.SCALE_SMOOTH);
+    Image dimg = img.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+    Image dimg2 = img1.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+    Image dimg3 = img2.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
     greenLight = new ImageIcon(dimg);
     redLight = new ImageIcon(dimg2);
     greyLight = new ImageIcon(dimg3);
@@ -2129,6 +2164,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   public static void main(String args[])
   {
 
+    
     //Set the Nimbus look and feel
     //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
     try
@@ -2191,9 +2227,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private javax.swing.JButton LDSRegisterserver;
   private javax.swing.JTextField LDSserverAddress;
   private javax.swing.JPanel OnOffLDS;
+  private javax.swing.JPanel OnOffREST;
   private javax.swing.JPanel OnOffRegister;
+  private javax.swing.JPanel OnOffSOAP;
   private javax.swing.JPanel OnOffServerPanel;
-  private javax.swing.JPanel OnOffWSPanel;
   private javax.swing.JButton StartMSBServer;
   private javax.swing.JTable TableServers;
   private static javax.swing.JButton b_DDSCallRecipe;

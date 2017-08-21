@@ -38,5 +38,15 @@ public class PECManager
     }
     return i;
   }
+  
+  
+  public void addNewProductToExecution()
+  {
+   
+    
+  }
+  
+  
+  
 
 }

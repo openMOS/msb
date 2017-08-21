@@ -6,7 +6,7 @@
 package eu.openmos.msb.recipesmanagement;
 
 import eu.openmos.model.Recipe;
-import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
+import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.datastructures.DACManager;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class RecipesDeployerImpl implements RecipesDeployer
     System.out.println("recipes list = [" + recipes + "]");
 
     //send it to the device
-    MSB_MiloClientSubscription opcClient = (MSB_MiloClientSubscription) DACManager.getInstance().getDeviceAdapter(deviceName).getClient();
+    MSBClientSubscription opcClient = (MSBClientSubscription) DACManager.getInstance().getDeviceAdapter(deviceName).getClient();
     System.out.println("device name: " + deviceName);
 
     String Recipes = "dummyRecipe and mode"; //TODO parse the received .aml

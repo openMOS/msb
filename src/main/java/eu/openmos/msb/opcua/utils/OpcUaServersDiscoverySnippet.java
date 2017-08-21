@@ -3,7 +3,7 @@ package eu.openmos.msb.opcua.utils;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
-import eu.openmos.msb.opcua.milo.client.MSB_MiloClientSubscription;
+import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import java.util.ArrayList;
 import java.util.List;
 import eu.openmos.msb.starter.MSB_gui;
@@ -26,14 +26,14 @@ public class OpcUaServersDiscoverySnippet extends Thread
    * 35 seconds
    */
   private final String LDS_uri;
-  private final OPCDeviceDiscoveryItf servers_dynamic;
+  private final IOPCDeviceDiscovery servers_dynamic;
 
   /**
    * @brief TODO fabio
    * @param _LDS_uri
    * @param _servers_dynamic
    */
-  public OpcUaServersDiscoverySnippet(String _LDS_uri, OPCDeviceDiscoveryItf _servers_dynamic)
+  public OpcUaServersDiscoverySnippet(String _LDS_uri, IOPCDeviceDiscovery _servers_dynamic)
   {
     LDS_uri = _LDS_uri;
     servers_dynamic = _servers_dynamic;
@@ -213,7 +213,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
       try
       {
         DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(device);
-        address = ((MSB_MiloClientSubscription) da.getClient()).getClientObject().getStackClient().getEndpointUrl();
+        address = ((MSBClientSubscription) da.getClient()).getClientObject().getStackClient().getEndpointUrl();
         endpointsFromServer = UaTcpStackClient.getEndpoints(address).get();
 
         // OPCUA Client TODO - Add DDS and MQTT af-silva

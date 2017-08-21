@@ -1,7 +1,7 @@
 /*
  * TODO add licence
  */
-package eu.openmos.msb.dds.instance;
+package eu.openmos.msb.dds;
 
 import DDS.DataReader;
 import DDS.DataReaderQosHolder;

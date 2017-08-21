@@ -43,11 +43,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author fabio.miranda
  */
-public class MSB_MiloClientSubscription implements Client
+public class MSBClientSubscription implements Client
 {
 
   // GLOBAL VARIABLES
-  private OpcUaClient milo_client_instanceMSB = null;
+  private OpcUaClient msbClientInstance = null;
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
@@ -60,7 +60,7 @@ public class MSB_MiloClientSubscription implements Client
   public void startConnection(String endpointUrl) throws Exception
   {
     System.out.println("MILO StartConnection*************");
-    if (milo_client_instanceMSB == null)
+    if (msbClientInstance == null)
     {
       System.out.println("Milo Client created. Trying to connect to: " + endpointUrl);
       //MSB_MiloClientSubscription example = new MSB_MiloClientSubscription();
@@ -80,11 +80,11 @@ public class MSB_MiloClientSubscription implements Client
   public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception
   {
 
-    System.out.println("RUNNING miloMSB*****************");
+    System.out.println("\n****RUNNING Milo MSB Instance ****\n");
 
     // synchronous connect 
-    milo_client_instanceMSB = client;
-    milo_client_instanceMSB.connect().get();
+    msbClientInstance = client;
+    msbClientInstance.connect().get();
 
     // create a subscription and a monitored item
     // UaSubscription subscription = client.getSubscriptionManager().createSubscription(100.0).get();
@@ -276,47 +276,6 @@ public class MSB_MiloClientSubscription implements Client
   }
 
   /**
-   * Function to list namespaces of the respective Device methods.
-   *
-   * @param indent
-   * @param client
-   * @param browseRoot
-   * @return
-   */
-  private Map<String, NodeId> browseNode(String indent, OpcUaClient client, NodeId browseRoot)
-  {
-    System.out.println("****Browse node with NO filter****");
-    Map<String, NodeId> nodes1 = null;
-
-    try
-    {
-      List<Node> nodes = null;
-      nodes = client.getAddressSpace().browse(browseRoot).get();
-      nodes1 = new HashMap<String, NodeId>();
-
-      for (Node node : nodes)
-      {
-        // logger.info("{} Node={} ID={}", indent, node.getBrowseName().get().getName(), node.getNodeId());
-        logger.info("{} Node={} ID={}", node.getBrowseName().get().getName(), node.getNodeId());
-        // recursively browse to children
-        browseNode(indent + "  ", client, node.getNodeId().get());
-      }
-
-      //put nodeID and namespaces in the Hashmap and return it
-      for (int i = 0; i < nodes.size(); i++)
-      {
-        nodes1.put(nodes.get(i).getBrowseName().get().getName(), nodes.get(i).getNodeId().get());
-      }
-      return nodes1;
-    } catch (InterruptedException | ExecutionException e)
-    {
-      // logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
-      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage());
-      return nodes1;
-    }
-  }
-
-  /**
    * Function to call the selected device method
    *
    * @param client
@@ -354,16 +313,53 @@ public class MSB_MiloClientSubscription implements Client
     });
   }
 
+//  /**
+//   * Function to list namespaces of the respective Device methods.
+//   *
+//   * @param indent
+//   * @param client
+//   * @param browseRoot
+//   * @return
+//   */
+//  private Map<String, NodeId> browseNode(String indent, OpcUaClient client, NodeId browseRoot)
+//  {
+//    System.out.println("\n**** Browse node with NO filter ****\n");
+//    
+//    Map<String, NodeId> nodes1 = null;
+//
+//    try
+//    {
+//      List<Node> nodes = null;
+//      nodes = client.getAddressSpace().browse(browseRoot).get();
+//      nodes1 = new HashMap<>();
+//
+//      for (Node node : nodes)
+//      {        
+//        logger.info("{} Node={} ID={}", node.getBrowseName().get().getName(), node.getNodeId());
+//        // recursively browse to children
+//        browseNode(indent + "  ", client, node.getNodeId().get());
+//      }
+//
+//      //put nodeID and namespaces in the Hashmap and return it
+//      for (int i = 0; i < nodes.size(); i++)
+//      {
+//        nodes1.put(nodes.get(i).getBrowseName().get().getName(), nodes.get(i).getNodeId().get());
+//      }
+//      return nodes1;
+//    } catch (InterruptedException | ExecutionException e)
+//    {      
+//      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage());
+//      return nodes1;
+//    }
+//  }
   /**
    *
    * @param indent
    * @param client
    * @param browseRoot
    */
-  private void browseNodeWFilter(String indent, OpcUaClient client, NodeId browseRoot)
+  private void browseNode(String indent, OpcUaClient client, NodeId browseRoot)
   {
-    System.out.println("****Browse node with filter****");
-
     BrowseDescription browse = new BrowseDescription(
             browseRoot,
             BrowseDirection.Forward,
@@ -382,13 +378,13 @@ public class MSB_MiloClientSubscription implements Client
       for (ReferenceDescription rd : references)
       {
         logger.info("{} Node={}", indent, rd.getBrowseName().getName());
+
         // recursively browse to children
         rd.getNodeId().local().ifPresent(nodeId -> browseNode(indent + "  ", client, nodeId));
       }
     } catch (InterruptedException | ExecutionException e)
     {
-      // logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
-      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage());
+      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
     }
   }
 
@@ -397,9 +393,9 @@ public class MSB_MiloClientSubscription implements Client
    */
   public void exitProgram()
   {
-    if (milo_client_instanceMSB != null)
+    if (msbClientInstance != null)
     {
-      milo_client_instanceMSB.disconnect();
+      msbClientInstance.disconnect();
     }
   }
 
@@ -409,7 +405,7 @@ public class MSB_MiloClientSubscription implements Client
    */
   public OpcUaClient getClientObject()
   {
-    return milo_client_instanceMSB;
+    return msbClientInstance;
   }
 
 }

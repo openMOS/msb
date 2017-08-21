@@ -1,4 +1,4 @@
-package eu.openmos.msb.dds.instance;
+package eu.openmos.msb.dds;
 
 /*
  * OpenSplice DDS

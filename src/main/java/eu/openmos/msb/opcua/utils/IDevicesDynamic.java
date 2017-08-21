@@ -9,7 +9,7 @@ package eu.openmos.msb.opcua.utils;
  *
  * @author Admin
  */
-public interface DevicesDynamic
+public interface IDevicesDynamic
 {
 
   void on_participant_disappear(String id, String reason);

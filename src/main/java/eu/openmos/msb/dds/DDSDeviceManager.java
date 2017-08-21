@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.openmos.msb.dds.instance;
+package eu.openmos.msb.dds;
 
 import DDS.DOMAIN_ID_DEFAULT;
 import DDS.DomainParticipant;
