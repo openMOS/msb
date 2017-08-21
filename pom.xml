@@ -26,6 +26,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <tool.wsgen>${java.home}/../bin/wsgen.exe</tool.wsgen>
+    <tool.wsimport>${java.home}/../bin/wsimport.exe</tool.wsimport>    
   </properties>
     
   <dependencies>
@@ -88,12 +90,19 @@
       <artifactId>retrofit</artifactId>
       <version>2.3.0</version>
     </dependency>
-        
+    
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+      <version>3.3.3</version>
+    </dependency>           
+    
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-hazelcast</artifactId>
       <version>3.3.3</version>
     </dependency>        
+    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -105,6 +114,27 @@
       <version>1.52</version>
     </dependency>
     <!-- VaG - 13/12/2016 -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+      <version>2.2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-ws-security</artifactId>
+      <version>2.2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ws.security</groupId>
+      <artifactId>wss4j</artifactId>
+      <version>1.5.8</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
+      <version>2.2.6</version>
+    </dependency>
+    
     <!-- milo dependencies -->
     <dependency>
       <groupId>org.eclipse.milo</groupId>
@@ -150,5 +180,95 @@
       <version>3.18.10</version>
     </dependency>
   </dependencies>
+  
+  
+  <!-- VaG - 03/10/2016 - begin   ###################################################### -->
+  <build>            
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <version>2.4.1</version>
+        <executions>
+          <!-- execution>
+            <id>wsgen-from-jdk</id>
+            <goals>
+              <goal>wsgen</goal>
+            </goals>
+            <configuration>
+              <executable>${tool.wsgen}</executable>
+              <sei>com.mycompany.MyService</sei>
+              ...
+            </configuration>
+          </execution -->
+          <execution>
+            <!-- 
+            "%JAVA_HOME%"\bin\wsimport 
+                          -s src/main/java 
+                          -p eu.openmos.agentcloud.ws.systemconfigurator.wsimport 
+                          -b c:\temp\wsSystemConfigurator.xjb  
+                          http://localhost:9999/wsSystemConfigurator?wsdl
+            -->              
+            <id>wsimport-from-jdk-wsSystemConfigurator</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <executable>${tool.wsimport}</executable>
+              <encoding>${project.build.sourceEncoding}</encoding>
+              <args>
+                <arg>-encoding UTF-8</arg>
+              </args>
+              <sourceDestDir>${basedir}/src/main/java</sourceDestDir>
+              <packageName>eu.openmos.agentcloud.ws.systemconfigurator.wsimport</packageName>
+              <bindingDirectory>${basedir}/src/main/jaxws</bindingDirectory>
+              <bindingFiles>
+                <bindingFile>wsSystemConfigurator.xjb</bindingFile>
+              </bindingFiles>
+              <wsdlLocation>/wsdl/wsSystemConfigurator.wsdl</wsdlLocation>
+              <!-- wsdlDirectory>${basedir}/src/main/wsdl</wsdlDirectory -->
+              <wsdlFiles>
+                <wsdlFile>${basedir}/src/main/resources/wsdl/wsSystemConfigurator.wsdl</wsdlFile>
+              </wsdlFiles>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- 
+            "%JAVA_HOME%"\bin\wsimport 
+                          -s src/main/java 
+                          -p eu.openmos.agentcloud.ws.productionoptimizer.wsimport 
+                          -b c:\temp\wsProductionOptimizer.xjb  
+                          http://localhost:9999/wsProductionOptimizer?wsdl
+            -->              
+            <id>wsimport-from-jdk-wsProductionOptimizer</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <executable>${tool.wsimport}</executable>
+              <encoding>${project.build.sourceEncoding}</encoding>
+              <args>
+                <arg>-encoding UTF-8</arg>
+              </args>
+              <sourceDestDir>${basedir}/src/main/java</sourceDestDir>
+              <packageName>eu.openmos.agentcloud.ws.productionoptimizer.wsimport</packageName>
+              <bindingDirectory>${basedir}/src/main/jaxws</bindingDirectory>
+              <bindingFiles>
+                <bindingFile>wsProductionOptimizer.xjb</bindingFile>
+              </bindingFiles>
+              <wsdlLocation>/wsdl/wsProductionOptimizer.wsdl</wsdlLocation>
+              <!-- wsdlDirectory>${basedir}/src/main/wsdl</wsdlDirectory -->
+              <wsdlFiles>
+                <wsdlFile>${basedir}/src/main/resources/wsdl/wsProductionOptimizer.wsdl</wsdlFile>
+              </wsdlFiles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>      
+    </plugins>
+  </build>
+  <!-- VaG - 03/10/2016 - end   ###################################################### -->              
+  
+  
   <name>openMOSMSBWithDDS</name>
 </project>
