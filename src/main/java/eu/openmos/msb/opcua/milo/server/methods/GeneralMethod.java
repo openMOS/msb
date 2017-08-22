@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.opcua.milo.server.methods;
 
-import eu.openmos.msb.opcua.utils.OPCDevice;
+import eu.openmos.msb.opcua.utils.OPCDeviceHelper;
 import java.io.IOException;
 import java.util.logging.Level;
 import javax.xml.bind.JAXBException;
@@ -45,7 +45,7 @@ public class GeneralMethod
     System.out.println("GeneralMethod(" + func + ")");
     logger.debug("Invoking GeneralMethod() method of Object '{}'", context.getObjectNode().getBrowseName().getName());
 
-    OPCDevice dev = new OPCDevice();
+    OPCDeviceHelper dev = new OPCDeviceHelper();
     String ret = null;
     try
     {

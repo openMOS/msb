@@ -13,8 +13,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusNode;
@@ -24,6 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  *
@@ -33,18 +32,15 @@ public class CheckOPCServers
 {
 
   private final int polling_period = 10;
-  /*
-   * 30 seconds
-   */
   private final Map<String, Object> clientObjectsList;
   private Map<String, String> ServersDisconectedList;
+  private final Logger logger;
 
   public CheckOPCServers(Map<String, Object> clientObjects)
   {
+    this.logger = LoggerFactory.getLogger(getClass());
     clientObjectsList = clientObjects;
   }
-
-  private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
   public Map<String, String> run()
   {
@@ -107,13 +103,13 @@ public class CheckOPCServers
         }
       } catch (InterruptedException ex)
       {
-        Logger.getLogger(CheckOPCServers.class.getName()).log(Level.SEVERE, null, ex);
+        logger.error("Error: {}", ex.getMessage(), ex);
         System.out.println("what is the problem? interrupt " + ex.getMessage());
         //return ex.getMessage();
         //ServersDisconectedList.put(key, ex.getMessage());
       } catch (ExecutionException ex)
       {
-        Logger.getLogger(CheckOPCServers.class.getName()).log(Level.SEVERE, null, ex);
+        logger.error("Error: {}", ex.getMessage(), ex);
         System.out.println("what is the problem? execution " + ex.getMessage() + " name: " + key);
         ServersDisconectedList.put(key, ex.getMessage());
         return ServersDisconectedList;
@@ -126,7 +122,7 @@ public class CheckOPCServers
       System.out.println("Sleeping...");
     } catch (InterruptedException ex)
     {
-      Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+      logger.error("Error: {}", ex.getMessage(), ex);
     }
     //}
     return ServersDisconectedList;

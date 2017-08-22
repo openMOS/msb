@@ -8,8 +8,8 @@ import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.dds.DDSDeviceManager;
 import eu.openmos.msb.dds.DDSDevice;
-import eu.openmos.msb.opcua.milo.server.opcuaServerMSB;
-import eu.openmos.msb.opcua.utils.OPCDevice;
+import eu.openmos.msb.opcua.milo.server.OPCUAMSBStandAloneServer;
+import eu.openmos.msb.opcua.utils.OPCDeviceHelper;
 import eu.openmos.msb.opcua.utils.OpcUaServersDiscoverySnippet;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -83,7 +83,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   // GLOBAL VARIABLES
   private static String MSB_OPCUA_SERVER_ADDRESS = null;
-  private static eu.openmos.msb.opcua.milo.server.opcuaServerMSB opcuaServerInstanceMILO;
+  private static eu.openmos.msb.opcua.milo.server.OPCUAMSBStandAloneServer opcuaServerInstanceMILO;
 
   private static DefaultTableModel adaptersTableModel;
   private static DefaultTableModel recipesTableModel;
@@ -96,7 +96,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private static JLabel labelSOAP;
   private static JLabel labelREST;
   private static JLabel labelRegister;
-  private static OPCDevice DeviceITF;
+  private static OPCDeviceHelper DeviceITF;
   private boolean isDDSRunning;
 
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
@@ -146,11 +146,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     OnOffREST.add(labelREST);
     OnOffREST.setMaximumSize(new Dimension(32, 32));
 
-    DeviceITF = new OPCDevice(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
+    DeviceITF = new OPCDeviceHelper(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
 
-//    ImageIcon imageIcon;
-//    imageIcon = new ImageIcon(new ImageIcon(".\\main\\resources\\eu\\openmos\\msb\\icons\\OpenMos-logo-RGB-colours.png").getImage().getScaledInstance(l_openmosLogo.getWidth(), l_openmosLogo.getHeight(), Image.SCALE_DEFAULT));
-//    l_openmosLogo.setIcon(imageIcon);
+
   }
 
   /**
@@ -1603,8 +1601,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           opc_comms_log.append("The server: " + name + " has disapeared and has NOT been removed from database.\n");
         }
       }
+      
     };
 
+    
+    
+    
+    
+    
     try
     {
       // String LDS_uri="opc.tcp://localhost:4840";
@@ -1617,8 +1621,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       System.out.println("boda");
     }
 
-    //TODO
-    //create a new OPCDevice with structure methods - common to all OPCcommunication?
+
+    
+    
+    
   }//GEN-LAST:event_btn_start_discoveryActionPerformed
 
   /**
@@ -1666,7 +1672,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       opc_comms_log.append("Starting MSB OPCUA Milo Server...\n");
 
-      opcuaServerInstanceMILO = new opcuaServerMSB(msb_opcua_servername.getText()); //new MSB Milo server
+      opcuaServerInstanceMILO = new OPCUAMSBStandAloneServer(msb_opcua_servername.getText()); //new MSB Milo server
 
       //launch MILO MSB OPCUA Server endpoint
       if (opcuaServerInstanceMILO.control == false)

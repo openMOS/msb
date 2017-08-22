@@ -5,13 +5,28 @@
  */
 package eu.openmos.msb.opcua.milo.server;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
+import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import com.google.common.collect.ImmutableList;
 import java.io.File;
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
-
-import com.google.common.collect.ImmutableList;
-import static com.google.common.collect.Lists.newArrayList;
-import eu.openmos.agentcloud.config.ConfigurationLoader;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
@@ -27,27 +42,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
 import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
-import org.slf4j.LoggerFactory;
-
-import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
-import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
-
-import eu.openmos.msb.opcua.milo.client.KeyStoreLoader;
-import eu.openmos.msb.opcua.milo.client.X509IdentityProvider;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
@@ -55,7 +49,6 @@ import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
@@ -63,18 +56,34 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisteredServer;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.msb.opcua.milo.client.KeyStoreLoader;
+import eu.openmos.msb.opcua.milo.client.X509IdentityProvider;
 
 /**
  *
  * @author fabio.miranda
  */
-public class opcuaServerMSB
+public class OPCUAMSBStandAloneServer
 {
 
+  private final OpcUaServer server;
+  public Boolean control = false;
+  private OpcUaClient client;
+  private final AtomicLong requestHandle = new AtomicLong(1L);
+  Timer periodicRegisterTimer;
+  RegisterServerRequest periodicRegServerRequest;
+
+  /**
+   *
+   * @param args
+   * @throws Exception
+   */
   public static void main(String[] args) throws Exception
   {
-    opcuaServerMSB server = new opcuaServerMSB("opc.tcp://172.18.2.136:12640/test-WHAT-server");
+    OPCUAMSBStandAloneServer server = new OPCUAMSBStandAloneServer("opc.tcp://localhost:12640/MSB-OPCUA-SERVER");
 
     server.startup().get();
 
@@ -87,12 +96,6 @@ public class opcuaServerMSB
     future.get();
   }
 
-  private final OpcUaServer server;
-  public Boolean control = false;
-  private OpcUaClient client;
-  private final AtomicLong requestHandle = new AtomicLong(1L);
-  Timer periodicRegisterTimer;
-  RegisterServerRequest periodicRegServerRequest;
   /**
    * Period (in seconds) for executing the server registration.
    */
@@ -105,7 +108,7 @@ public class opcuaServerMSB
   protected String productUri = "";
   protected String applicationName = "";
 
-  public opcuaServerMSB(String serverURL) throws Exception
+  public OPCUAMSBStandAloneServer(String serverURL) throws Exception
   {
 
     //serverURL="opc.tcp://172.18.2.90:12636/test-WHAT-server";
@@ -220,8 +223,8 @@ public class opcuaServerMSB
     server = new OpcUaServer(serverConfig);
 
     server.getNamespaceManager().registerAndAdd(
-            opcuaServerNamespaceMSB.NAMESPACE_URI,
-            idx -> new opcuaServerNamespaceMSB(server, idx));
+            OPCUAMSBServerNamespace.NAMESPACE_URI,
+            idx -> new OPCUAMSBServerNamespace(server, idx));
 
     server.getServer().addRequestHandler(TestStackRequest.class, service ->
     {
@@ -261,6 +264,7 @@ public class opcuaServerMSB
 
   public int register(String discoveryEndpoint)
   {
+    System.out.println("REGISTER AT " + discoveryEndpoint);
     try
     {
       // Process registration data
@@ -272,7 +276,7 @@ public class opcuaServerMSB
       return 1;
     } catch (Exception ex)
     {
-      java.util.logging.Logger.getLogger(opcuaServerMSB.class.getName()).log(Level.SEVERE, null, ex);
+      java.util.logging.Logger.getLogger(OPCUAMSBStandAloneServer.class.getName()).log(Level.SEVERE, null, ex);
       return -1;
     }
 

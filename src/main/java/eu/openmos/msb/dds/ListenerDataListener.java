@@ -20,7 +20,7 @@ import MSB2ADAPTER.StringMessage;
 import MSB2ADAPTER.StringMessageDataReader;
 import MSB2ADAPTER.StringMessageDataReaderImpl;
 import MSB2ADAPTER.StringMessageSeqHolder;
-import eu.openmos.msb.opcua.utils.OPCDevice;
+import eu.openmos.msb.opcua.utils.OPCDeviceHelper;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +40,7 @@ public class ListenerDataListener implements DDS.DataReaderListener
 
     if (arg0 instanceof GeneralMethodMessageDataReaderImpl)
     {
-      OPCDevice deviceItf = new OPCDevice();
+      OPCDeviceHelper deviceItf = new OPCDeviceHelper();
 
       System.out.println("GeneralMethodMessageDataReaderImpl");
 

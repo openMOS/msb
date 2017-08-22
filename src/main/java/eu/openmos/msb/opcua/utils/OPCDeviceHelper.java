@@ -73,7 +73,7 @@ import org.xml.sax.SAXException;
  *
  * @author fabio.miranda
  */
-public class OPCDevice extends Observable
+public class OPCDeviceHelper extends Observable
 {
 
   Vertx vertx = Vertx.vertx();
@@ -355,11 +355,11 @@ public class OPCDevice extends Observable
       }
     } catch (SAXException | IOException | ParserConfigurationException | JAXBException | DOMException ex)
     {
-      Logger.getLogger(OPCDevice.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(OPCDeviceHelper.class.getName()).log(Level.SEVERE, null, ex);
       System.out.println("Problems parsing the RegFile");
     } catch (InterruptedException ex)
     {
-      Logger.getLogger(OPCDevice.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(OPCDeviceHelper.class.getName()).log(Level.SEVERE, null, ex);
     } catch (Exception ex)
     {
       System.out.println("[ERROR]   " + ex.getMessage());
@@ -367,7 +367,7 @@ public class OPCDevice extends Observable
     {
       long endTime = System.nanoTime();
       long elapsedTime = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
-      Logger.getLogger(OPCDevice.class.getName()).log(Level.INFO, null, "ELAPSED TIME: " + elapsedTime + "ms");
+      Logger.getLogger(OPCDeviceHelper.class.getName()).log(Level.INFO, null, "ELAPSED TIME: " + elapsedTime + "ms");
       System.out.println("\n\n ELAPSED TIME: " + elapsedTime + "ms");
     }
     return null;
@@ -418,7 +418,7 @@ public class OPCDevice extends Observable
       parsedClass = (ChangedState) unmarshaller.unmarshal(docres);
     } catch (ParserConfigurationException | SAXException | IOException ex)
     {
-      Logger.getLogger(OPCDevice.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(OPCDeviceHelper.class.getName()).log(Level.SEVERE, null, ex);
     } catch (JAXBException | DOMException ex)
     {
       System.out.println("\n Problem parsing class: " + ex.toString());

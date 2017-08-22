@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author fabio.miranda
  */
-public class SumMethod
+public class ChangeState
 {
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -31,15 +31,22 @@ public class SumMethod
   @UaMethod
   public void invoke(
           AnnotationBasedInvocationHandler.InvocationContext context,
+          @UaInputArgument(
+                  name = "state",
+                  description = "State of the device adapter") int state,
+          @UaInputArgument(
+                  name = "recipe",
+                  description = "State of the device adapter") String recipe,
+          @UaInputArgument(
+                  name = "result2",
+                  description = "State of the device adapter") String result2,
           @UaOutputArgument(
-                  name = "xy_SUM",
-                  description = "The sum result of two values") AnnotationBasedInvocationHandler.Out<Double> xySum)
+                  name = "result",
+                  description = "The result") AnnotationBasedInvocationHandler.Out<Integer> result)
   {
 
-    //System.out.println("sum " + y.toString() + x.toString() + ")");
-    logger.debug("Invoking sum() method of Object '{}'", context.getObjectNode().getBrowseName().getName());
+    logger.debug("Not implemented yet! '{}'", context.getObjectNode().getBrowseName().getName());
 
-    xySum.set(1.1);
   }
 
 }

@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import static org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType.DiscoveryServer;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 /**
@@ -51,7 +53,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
       try
       {
         discoverServer(LDS_uri);
-        CheckDBServersStatus();
+        checkDBServersStatus();
         sleep(discovery_period * 1000);
       } catch (InterruptedException ex)
       {
@@ -84,18 +86,16 @@ public class OpcUaServersDiscoverySnippet extends Thread
           for (org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get())
           {
             edList.add(ed);
-            System.out.println("EndPoints from: " + url + " = " + ed);
-            //before 13-12-17 args-> app_uri , ed.getEndpointUrl()
+            System.out.println("EndPoints from: " + url + " = " + ed);            
             servers_dynamic.on_new_endpoint(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
           }
         } catch (Exception e)
         {
-          println("Cannot discover Endpoints from URL " + url + ": " + e.getMessage());
-          println("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + url + ": " + e.getMessage());
+          System.out.println("Cannot discover Endpoints from URL " + url + ": " + e.getMessage());
+          System.out.println("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + url + ": " + e.getMessage());
           if (e.getCause().getMessage().contains("Connection refused"))
           {
             //DELETE SERVER FROM DATABASE AND HASHMAP
-
             servers_dynamic.on_server_dissapeared(serverApp.getApplicationName().getText(), url);
           }
         }
@@ -103,7 +103,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
 
     } else
     {
-      println("No suitable discoveryUrl available: using the current Url");
+      System.out.println("No suitable discoveryUrl available: using the current Url");
     }
     return null;
   }
@@ -118,30 +118,25 @@ public class OpcUaServersDiscoverySnippet extends Thread
     try
     {
       // Discover a new server list from a discovery server at URI
-
-      org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription[] serverList = UaTcpStackClient.findServers(uri).get(); //new MSB
-
+      ApplicationDescription[] serverList = UaTcpStackClient.findServers(uri).get(); //new MSB
       if (serverList.length == 0)
       {
-        println("No servers found");
+        System.out.println("No servers found");
         return false;
       }
 
       for (int i = 0; i < serverList.length; i++)
       {
-        final org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription s = serverList[i];
+        final ApplicationDescription s = serverList[i];
 
         servers_dynamic.on_new_server(s.getApplicationName().getText(), s.getApplicationUri());
-        /*
-              * name, application
-         */
 
         System.out.println("getApplicationUri output " + s.getApplicationUri());
         System.out.println("getDiscoveryUrls output " + s.getDiscoveryUrls()[0]);
 
         try
         {
-          if (s.getApplicationType() != org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType.DiscoveryServer) //discover endpoints only from servers. not from discovery
+          if (s.getApplicationType() != DiscoveryServer) //discover endpoints only from servers. not from discovery
           {
             discoverEndpoints(s, s.getApplicationUri());
           }
@@ -149,7 +144,6 @@ public class OpcUaServersDiscoverySnippet extends Thread
         {
           Logger.getLogger(OpcUaServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
         }
-
       }
       return true;
     } catch (InterruptedException ex)
@@ -164,42 +158,9 @@ public class OpcUaServersDiscoverySnippet extends Thread
 
   /**
    *
-   * @param list
-   * @param element
    * @return
    */
-  private boolean check_if_object_exists(List<String> list, String element)
-  {
-    return list.contains(element);
-  }
-
-  /**
-   *
-   * @param in
-   */
-  void println(String in)
-  {
-    System.out.println(in);
-  }
-
-  /**
-   *
-   * @param name
-   * @param url
-   * @return
-   */
-  boolean on_server_dissapeared(String name, String url)
-  {
-    System.out.println("url disapeared: " + url);
-    System.out.println("name disapeared: " + name);
-    return true;
-  }
-
-  /**
-   *
-   * @return
-   */
-  int CheckDBServersStatus()
+  int checkDBServersStatus()
   {
 
     ArrayList<String> devices = DatabaseInteraction.getInstance().listAllDeviceAdapters();
