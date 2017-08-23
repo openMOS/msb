@@ -1,7 +1,5 @@
 package eu.openmos.msb.opcua.milo.server;
 
-import eu.openmos.msb.opcua.milo.server.IOPCDeviceDiscovery;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -24,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Admin
  */
-public class OpcUaServersDiscoverySnippet extends Thread
+public class OPCServersDiscoverySnippet extends Thread
 {
 
   private final int discovery_period = 10;
@@ -40,7 +38,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
    * @param _LDS_uri
    * @param _servers_dynamic
    */
-  public OpcUaServersDiscoverySnippet(String _LDS_uri, IOPCDeviceDiscovery _servers_dynamic)
+  public OPCServersDiscoverySnippet(String _LDS_uri, IOPCDeviceDiscovery _servers_dynamic)
   {
     LDS_uri = _LDS_uri;
     servers_dynamic = _servers_dynamic;

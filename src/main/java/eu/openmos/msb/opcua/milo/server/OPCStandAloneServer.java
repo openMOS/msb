@@ -66,7 +66,7 @@ import eu.openmos.msb.opcua.milo.client.X509IdentityProvider;
  *
  * @author fabio.miranda
  */
-public class OPCUAMSBStandAloneServer
+public class OPCStandAloneServer
 {
 
   private final OpcUaServer server;
@@ -83,7 +83,7 @@ public class OPCUAMSBStandAloneServer
    */
   public static void main(String[] args) throws Exception
   {
-    OPCUAMSBStandAloneServer server = new OPCUAMSBStandAloneServer("opc.tcp://localhost:12640/MSB-OPCUA-SERVER");
+    OPCStandAloneServer server = new OPCStandAloneServer("opc.tcp://localhost:12640/MSB-OPCUA-SERVER");
 
     server.startup().get();
 
@@ -108,7 +108,7 @@ public class OPCUAMSBStandAloneServer
   protected String productUri = "";
   protected String applicationName = "";
 
-  public OPCUAMSBStandAloneServer(String serverURL) throws Exception
+  public OPCStandAloneServer(String serverURL) throws Exception
   {
 
     
@@ -222,8 +222,8 @@ public class OPCUAMSBStandAloneServer
     server = new OpcUaServer(serverConfig);
 
     server.getNamespaceManager().registerAndAdd(
-            OPCUAMSBServerNamespace.NAMESPACE_URI,
-            idx -> new OPCUAMSBServerNamespace(server, idx));
+            OPCServerNamespace.NAMESPACE_URI,
+            idx -> new OPCServerNamespace(server, idx));
 
     server.getServer().addRequestHandler(TestStackRequest.class, service ->
     {
@@ -275,7 +275,7 @@ public class OPCUAMSBStandAloneServer
       return 1;
     } catch (Exception ex)
     {
-      java.util.logging.Logger.getLogger(OPCUAMSBStandAloneServer.class.getName()).log(Level.SEVERE, null, ex);
+      java.util.logging.Logger.getLogger(OPCStandAloneServer.class.getName()).log(Level.SEVERE, null, ex);
       return -1;
     }
 

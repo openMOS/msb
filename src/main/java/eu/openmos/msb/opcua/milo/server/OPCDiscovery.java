@@ -53,7 +53,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription
 /**
  * Created by fabio on 08.03.17. based on profanter MsbGenericComponent class
  */
-public class OpcUaDiscoveryMilo
+public class OPCDiscovery
 {
 
   private static String MDNS_LISTENING = "_opcua-tcp._tcp.local.";
@@ -81,16 +81,18 @@ public class OpcUaDiscoveryMilo
 
   RegisterServerRequest periodicRegServerRequest;
 
-  public OpcUaDiscoveryMilo(String arg)
+  public OPCDiscovery(String arg)
   {
 
     // add opc.tcp protocol for URL class
     URL.setURLStreamHandlerFactory(protocol -> "opc.tcp".equals(protocol) ? new URLStreamHandler()
     {
+      @Override
       protected URLConnection openConnection(URL url) throws IOException
       {
         return new URLConnection(url)
         {
+          @Override
           public void connect() throws IOException
           {
             System.out.println("Connected!");
@@ -105,7 +107,6 @@ public class OpcUaDiscoveryMilo
       fullDiscoveryUrl = new URL(arg);
     } catch (MalformedURLException e)
     {
-      e.printStackTrace();
       return;
     }
 
@@ -119,12 +120,14 @@ public class OpcUaDiscoveryMilo
     {
       serverName = "";
     }
-    // System.out.println("opc.tcp://" + bindingIP + ":" + bindingPort + "/"
-    // + serverName);
-    // throw new UnsupportedOperationException("Not supported yet."); //To
-    // change body of generated methods, choose Tools | Templates.
   }
 
+  /**
+   * NOT IN USE
+   *
+   * @param discoveryUrl
+   * @return
+   */
   private static EndpointDescription getDiscoveryEndpoint(String discoveryUrl)
   {
 
@@ -132,13 +135,8 @@ public class OpcUaDiscoveryMilo
     try
     {
       endpoints = UaTcpStackClient.getEndpoints(discoveryUrl).get();
-    } catch (InterruptedException e)
+    } catch (InterruptedException | ExecutionException e)
     {
-      e.printStackTrace();
-      return null;
-    } catch (ExecutionException e)
-    {
-      e.printStackTrace();
       return null;
     }
 
@@ -173,40 +171,41 @@ public class OpcUaDiscoveryMilo
   void createRegisterServerData(String discoveryEndpoint) throws Exception
   {
 
-    SecurityPolicy securityPolicy = SecurityPolicy.Basic256; // For example : SecurityPolicy.Basic256
-    String securityMode = "SignAndEncrypt"; // For example : "SignAndEncrypt"
+    // For example : SecurityPolicy.Basic256
+    SecurityPolicy securityPolicy = SecurityPolicy.Basic256;
+    // For example : "SignAndEncrypt"
+    String securityMode = "SignAndEncrypt";
 
     EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(discoveryEndpoint).get();
     ApplicationDescription[] endpointsDesc = UaTcpStackClient.findServers(discoveryEndpoint).get();
-    // EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://fmoranda-pc.introsys.lan:4840").get();
 
     EndpointDescription endpoint = Arrays.stream(endpoints)
-            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))//
-            .filter(e -> e.getSecurityMode().toString().compareTo(securityMode) == 0)//
-            .findFirst()//
+            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
+            .filter(e -> e.getSecurityMode().toString().compareTo(securityMode) == 0)
+            .findFirst()
             .orElseThrow(() -> new Exception("no desired endpoints returned"));
     X509IdentityProvider x509IdentityProvider = new X509IdentityProvider("openssl_crt.der",
             "herong.key");
     X509Certificate cert = x509IdentityProvider.getCertificate();
     KeyPair keyPair = new KeyPair(cert.getPublicKey(), x509IdentityProvider.getPrivateKey());
     OpcUaClientConfig clientConfig = OpcUaClientConfig.builder().setApplicationName(LocalizedText.english("opc-ua client"))//
-            .setApplicationUri("urn:opcua client")//
-            .setCertificate(cert)//
-            .setKeyPair(keyPair)//
-            .setEndpoint(endpoint)//
-            .setIdentityProvider(x509IdentityProvider)//
-            // .setIdentityProvider(clientExample.getIdentityProvider())//
-            .setRequestTimeout(uint(10000))//
+            .setApplicationUri("urn:opcua client")
+            .setCertificate(cert)
+            .setKeyPair(keyPair)
+            .setEndpoint(endpoint)
+            .setIdentityProvider(x509IdentityProvider)
+            // .setIdentityProvider(clientExample.getIdentityProvider())
+            .setRequestTimeout(uint(10000))
             .build();
     client = new OpcUaClient(clientConfig);
 
-    // KeyStoreLoader loader = new KeyStoreLoader().load();
-    // UaTcpStackClientConfig config = UaTcpStackClientConfig.builder()
-    //		.setApplicationName(LocalizedText.english("Stack Example Client"))
-    //		.setApplicationUri(String.format("urn:example-client:%s", UUID.randomUUID()))
-    //		.setCertificate(loader.getClientCertificate())
-    //        .setKeyPair(loader.getClientKeyPair())
-    //		.setEndpointUrl(discoveryEndpoint).build();
+//     KeyStoreLoader loader = new KeyStoreLoader().load();
+//     UaTcpStackClientConfig config = UaTcpStackClientConfig.builder()
+//    		.setApplicationName(LocalizedText.english("Stack Example Client"))
+//    		.setApplicationUri(String.format("urn:example-client:%s", UUID.randomUUID()))
+//    		.setCertificate(loader.getClientCertificate())
+//            .setKeyPair(loader.getClientKeyPair())
+//    		.setEndpointUrl(discoveryEndpoint).build();
     UaTcpStackClientConfig config = UaTcpStackClientConfig.builder()
             .setApplicationName(LocalizedText.english("Stack Example Client"))
             .setApplicationUri(String.format("urn:example-client:%s", UUID.randomUUID()))
@@ -307,17 +306,11 @@ public class OpcUaDiscoveryMilo
 
     KeyStoreLoader loader = new KeyStoreLoader().load();
 
-    /*
-     * TestCertificateManager certificateManager = new TestCertificateManager( loader.getServerKeyPair(),
-     * loader.getServerCertificate() );
-     *
-     * TestCertificateValidator certificateValidator = new TestCertificateValidator( loader.getClientCertificate() );
-     */
-    // Enforce with security
-    // CertificateManager certificateManager = new
-    // DefaultCertificateManager(loader.getServerKeyPair(),
-    // loader.getServerCertificate());
-    // No security
+//     TestCertificateManager certificateManager = new TestCertificateManager( loader.getServerKeyPair(), loader.getServerCertificate() ); 
+//     TestCertificateValidator certificateValidator = new TestCertificateValidator( loader.getClientCertificate() );
+//    // Enforce with security
+//    CertificateManager certificateManager = new DefaultCertificateManager(loader.getServerKeyPair(), loader.getServerCertificate());
+//    // No security
     CertificateManager certificateManager = new DefaultCertificateManager();
     File securityDir = new File("./security/");
     if (!securityDir.exists() && !securityDir.mkdirs())
@@ -361,12 +354,9 @@ public class OpcUaDiscoveryMilo
 
     server.startup();
 
-    /*
-     * KeyStoreLoader loader = new KeyStoreLoader().load();
-     *
-     * DeviceUaServer server = new DeviceUaServer(loader.getServerCertificate(), loader.getServerKeyPair());
-     * server.startupMdns();
-     */
-    //
+//    KeyStoreLoader loader = new KeyStoreLoader().load();
+//    DeviceUaServer server = new DeviceUaServer(loader.getServerCertificate(), loader.getServerKeyPair());
+//    server.startupMdns();
+
   }
 }

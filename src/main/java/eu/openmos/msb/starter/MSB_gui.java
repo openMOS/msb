@@ -8,9 +8,9 @@ import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.dds.DDSDeviceManager;
 import eu.openmos.msb.dds.DDSDevice;
-import eu.openmos.msb.opcua.milo.server.OPCUAMSBStandAloneServer;
+import eu.openmos.msb.opcua.milo.server.OPCStandAloneServer;
 import eu.openmos.msb.opcua.milo.server.OPCDeviceHelper;
-import eu.openmos.msb.opcua.milo.server.OpcUaServersDiscoverySnippet;
+import eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
@@ -83,7 +83,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   // GLOBAL VARIABLES
   private static String MSB_OPCUA_SERVER_ADDRESS = null;
-  private static eu.openmos.msb.opcua.milo.server.OPCUAMSBStandAloneServer opcuaServerInstanceMILO;
+  private static eu.openmos.msb.opcua.milo.server.OPCStandAloneServer opcuaServerInstanceMILO;
 
   private static DefaultTableModel adaptersTableModel;
   private static DefaultTableModel recipesTableModel;
@@ -1500,7 +1500,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       // String LDS_uri="opc.tcp://localhost:4840";
       String LDS_uri = LDSserverAddress.getText();
 
-      OpcUaServersDiscoverySnippet OPCDiscoverySnippet = new OpcUaServersDiscoverySnippet(LDS_uri, OPCdevDiscItf);
+      OPCServersDiscoverySnippet OPCDiscoverySnippet = new OPCServersDiscoverySnippet(LDS_uri, OPCdevDiscItf);
       OPCDiscoverySnippet.start();
     } catch (Exception ex)
     {
@@ -1555,7 +1555,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       opc_comms_log.append("Starting MSB OPCUA Milo Server...\n");
 
-      opcuaServerInstanceMILO = new OPCUAMSBStandAloneServer(msb_opcua_servername.getText()); //new MSB Milo server
+      opcuaServerInstanceMILO = new OPCStandAloneServer(msb_opcua_servername.getText()); //new MSB Milo server
 
       //launch MILO MSB OPCUA Server endpoint
       if (opcuaServerInstanceMILO.control == false)

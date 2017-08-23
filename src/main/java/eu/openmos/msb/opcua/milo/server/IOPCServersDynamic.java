@@ -9,7 +9,7 @@ package eu.openmos.msb.opcua.milo.server;
  *
  * @author Admin
  */
-public interface IOpcUaServersDynamic
+public interface IOPCServersDynamic
 {
 
   void on_new_server(String name, String app_uri);

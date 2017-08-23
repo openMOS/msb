@@ -68,7 +68,7 @@ import eu.openmos.msb.opcua.milo.server.methods.UpdateDevice;
  *
  * @author fabio.miranda
  */
-public class OPCUAMSBServerNamespace implements Namespace
+public class OPCServerNamespace implements Namespace
 {
 
   public static final String NAMESPACE_URI = "urn:eclipse:milo:MSB-namespace";
@@ -218,7 +218,7 @@ public class OPCUAMSBServerNamespace implements Namespace
    * @param server
    * @param namespaceIndex
    */
-  public OPCUAMSBServerNamespace(OpcUaServer server, UShort namespaceIndex)
+  public OPCServerNamespace(OpcUaServer server, UShort namespaceIndex)
   {
     this.server = server;
     this.namespaceIndex = namespaceIndex;
