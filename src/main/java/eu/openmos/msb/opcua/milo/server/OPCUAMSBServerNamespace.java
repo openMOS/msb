@@ -5,17 +5,19 @@
  */
 package eu.openmos.msb.opcua.milo.server;
 
-import com.google.common.collect.Iterators;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.LinkedList;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.PeekingIterator;
-import eu.openmos.msb.opcua.milo.server.methods.GeneralMethod;
-import eu.openmos.msb.opcua.milo.server.methods.ChangeState;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -48,22 +50,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import eu.openmos.msb.opcua.milo.server.methods.GeneralMethod;
+import eu.openmos.msb.opcua.milo.server.methods.ChangeState;
+import eu.openmos.msb.opcua.milo.server.methods.UpdateDevice;
 
 /**
  *
@@ -209,7 +209,6 @@ public class OPCUAMSBServerNamespace implements Namespace
   };
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
-  private final Random random = new Random();
   private final SubscriptionModel subscriptionModel;
   private final OpcUaServer server;
   private final UShort namespaceIndex;
@@ -225,10 +224,10 @@ public class OPCUAMSBServerNamespace implements Namespace
     this.server = server;
     this.namespaceIndex = namespaceIndex;
 
-    NodeId parentFolderNodeId = new NodeId(namespaceIndex, "OPC_Device");
+    NodeId parentFolderNodeId = new NodeId(namespaceIndex, "MSB");
 
     parentFolder = new UaFolderNode(server.getNodeMap(), parentFolderNodeId,
-            new QualifiedName(namespaceIndex, "OPC_Device"), LocalizedText.english("OPC_Device"));
+            new QualifiedName(namespaceIndex, "MSB"), LocalizedText.english("MSB"));
 
     server.getNodeMap().put(parentFolderNodeId, parentFolder);
 
@@ -242,8 +241,9 @@ public class OPCUAMSBServerNamespace implements Namespace
     }
 
     // af-silva - declerations of the OPC-UA methods
-    addGeneralMethodNode(parentFolder); //add example methods for testing
-    addChangeStateMethodNode(parentFolder); //add example methods for testing
+    addGeneralMethodNode(parentFolder); 
+    addChangeStateNode(parentFolder); 
+    addUpdateDeviceNode(parentFolder);
 
     subscriptionModel = new SubscriptionModel(server, this);
   }
@@ -673,10 +673,10 @@ public class OPCUAMSBServerNamespace implements Namespace
    *
    * @param folderNode
    */
-  private void addChangeStateMethodNode(UaFolderNode folderNode)
+  private void addChangeStateNode(UaFolderNode folderNode)
   {
-    UaMethodNode methodNodeSUM = UaMethodNode.builder(server.getNodeMap())
-            .setNodeId(new NodeId(namespaceIndex, "OPC_Device/ChangeState"))
+    UaMethodNode methodChangeSate = UaMethodNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "MSB/ChangeState"))
             .setBrowseName(new QualifiedName(namespaceIndex, "ChangeState"))
             .setDisplayName(new LocalizedText(null, "ChangeState"))
             .setDescription(
@@ -688,31 +688,31 @@ public class OPCUAMSBServerNamespace implements Namespace
       AnnotationBasedInvocationHandler invocationHandler
               = AnnotationBasedInvocationHandler.fromAnnotatedObject(server.getNodeMap(), new ChangeState());
 
-      //methodNodeSUM.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
-      methodNodeSUM.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
-      methodNodeSUM.setInvocationHandler(invocationHandler);
+      methodChangeSate.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
+      methodChangeSate.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
+      methodChangeSate.setInvocationHandler(invocationHandler);
 
-      server.getNodeMap().addNode(methodNodeSUM);
+      server.getNodeMap().addNode(methodChangeSate);
 
       folderNode.addReference(new Reference(
               folderNode.getNodeId(),
               Identifiers.HasComponent,
-              methodNodeSUM.getNodeId().expanded(),
-              methodNodeSUM.getNodeClass(),
+              methodChangeSate.getNodeId().expanded(),
+              methodChangeSate.getNodeClass(),
               true
       ));
 
       System.out.println("folderNode.getNodeId():" + folderNode.getNodeId().toString());
 
-      methodNodeSUM.addReference(new Reference(
-              methodNodeSUM.getNodeId(),
+      methodChangeSate.addReference(new Reference(
+              methodChangeSate.getNodeId(),
               Identifiers.HasComponent,
               folderNode.getNodeId().expanded(),
               folderNode.getNodeClass(),
               false
       ));
 
-      System.out.println("methodNodeSUM.getNodeId():" + methodNodeSUM.getNodeId().toString());
+      System.out.println("methodNodeSUM.getNodeId():" + methodChangeSate.getNodeId().toString());
 
     } catch (Exception e)
     {
@@ -726,8 +726,8 @@ public class OPCUAMSBServerNamespace implements Namespace
    */
   private void addGeneralMethodNode(UaFolderNode folderNode)
   {
-    UaMethodNode methodNodeGeneral = UaMethodNode.builder(server.getNodeMap())
-            .setNodeId(new NodeId(namespaceIndex, "OPC_Device/GeneralMethod"))
+    UaMethodNode methodGeneralMethod = UaMethodNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "MSB/GeneralMethod"))
             .setBrowseName(new QualifiedName(namespaceIndex, "GeneralMethod"))
             .setDisplayName(new LocalizedText(null, "GeneralMethod"))
             .setDescription(
@@ -740,35 +740,87 @@ public class OPCUAMSBServerNamespace implements Namespace
               = AnnotationBasedInvocationHandler.fromAnnotatedObject(
                       server.getNodeMap(), new GeneralMethod());
 
-      methodNodeGeneral.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
-      methodNodeGeneral.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
-      methodNodeGeneral.setInvocationHandler(invocationHandler);
+      methodGeneralMethod.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
+      methodGeneralMethod.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
+      methodGeneralMethod.setInvocationHandler(invocationHandler);
 
-      server.getNodeMap().addNode(methodNodeGeneral);
+      server.getNodeMap().addNode(methodGeneralMethod);
 
       folderNode.addReference(new Reference(
               folderNode.getNodeId(),
               Identifiers.HasComponent,
-              methodNodeGeneral.getNodeId().expanded(),
-              methodNodeGeneral.getNodeClass(),
+              methodGeneralMethod.getNodeId().expanded(),
+              methodGeneralMethod.getNodeClass(),
               true
       ));
 
       System.out.println("folderNode.getNodeId():" + folderNode.getNodeId().toString());
 
-      methodNodeGeneral.addReference(new Reference(
-              methodNodeGeneral.getNodeId(),
+      methodGeneralMethod.addReference(new Reference(
+              methodGeneralMethod.getNodeId(),
               Identifiers.HasComponent,
               folderNode.getNodeId().expanded(),
               folderNode.getNodeClass(),
               false
       ));
 
-      System.out.println("GeneralMethod.getNodeId():" + methodNodeGeneral.getNodeId().toString());
+      System.out.println("GeneralMethod.getNodeId():" + methodGeneralMethod.getNodeId().toString());
 
     } catch (Exception e)
     {
       logger.error("Error creating GeneralMethod() method.", e);
+    }
+  }
+
+  /**
+   *
+   * @param folderNode
+   */
+  private void addUpdateDeviceNode(UaFolderNode folderNode)
+  {
+    UaMethodNode methodUpdateDevice = UaMethodNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "MSB/UpdateDevice"))
+            .setBrowseName(new QualifiedName(namespaceIndex, "UpdateDevice"))
+            .setDisplayName(new LocalizedText(null, "UpdateDevice"))
+            .setDescription(
+                    LocalizedText.english("Calls a MSB function with the respective arguments. Returns a feedback message"))
+            .build();
+
+    try
+    {
+      AnnotationBasedInvocationHandler invocationHandler
+              = AnnotationBasedInvocationHandler.fromAnnotatedObject(
+                      server.getNodeMap(), new UpdateDevice());
+
+      methodUpdateDevice.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
+      methodUpdateDevice.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
+      methodUpdateDevice.setInvocationHandler(invocationHandler);
+
+      server.getNodeMap().addNode(methodUpdateDevice);
+
+      folderNode.addReference(new Reference(
+              folderNode.getNodeId(),
+              Identifiers.HasComponent,
+              methodUpdateDevice.getNodeId().expanded(),
+              methodUpdateDevice.getNodeClass(),
+              true
+      ));
+
+      System.out.println("folderNode.getNodeId():" + folderNode.getNodeId().toString());
+
+      methodUpdateDevice.addReference(new Reference(
+              methodUpdateDevice.getNodeId(),
+              Identifiers.HasComponent,
+              folderNode.getNodeId().expanded(),
+              folderNode.getNodeClass(),
+              false
+      ));
+
+      System.out.println("UpdateDevice.getNodeId():" + methodUpdateDevice.getNodeId().toString());
+
+    } catch (Exception e)
+    {
+      logger.error("Error creating UpdateDevice() method.", e);
     }
   }
 

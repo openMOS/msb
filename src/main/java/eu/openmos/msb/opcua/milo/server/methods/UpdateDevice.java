@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author fabio.miranda
  */
-public class ChangeState
+public class UpdateDevice
 {
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -32,18 +32,18 @@ public class ChangeState
   public void invoke(
           AnnotationBasedInvocationHandler.InvocationContext context,
           @UaInputArgument(
-                  name = "state",
-                  description = "State of the device adapter") int state,
+                  name = "device_id",
+                  description = "State of the device adapter") String device_id,
           @UaInputArgument(
-                  name = "recipe_id",
-                  description = "State of the device adapter") String recipe_id,
+                  name = "node",
+                  description = "The ndoe to update") String node,
           @UaOutputArgument(
                   name = "result",
                   description = "The result") AnnotationBasedInvocationHandler.Out<Integer> result)
   {
-    logger.debug("Not implemented yet! '{}'", context.getObjectNode().getBrowseName().getName());
-    // TODO add code handler af-silva
 
+    logger.debug("Not implemented yet! '{}'", context.getObjectNode().getBrowseName().getName());
+    // TODO add handler code af-silva
   }
 
 }

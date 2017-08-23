@@ -72,7 +72,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
    * @throws ExecutionException
    * @throws Exception
    */
-  protected EndpointDescription discoverEndpoints(org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription serverApp, String applicationUri) throws URISyntaxException, InterruptedException, ExecutionException, Exception
+  protected EndpointDescription discoverEndpoints(ApplicationDescription serverApp, String applicationUri)
   {
     final String[] discoveryUrls = serverApp.getDiscoveryUrls(); //OLDMSB
     if (discoveryUrls != null)
@@ -89,7 +89,7 @@ public class OpcUaServersDiscoverySnippet extends Thread
             System.out.println("EndPoints from: " + url + " = " + ed);            
             servers_dynamic.on_new_endpoint(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
           }
-        } catch (Exception e)
+        } catch (InterruptedException | ExecutionException e)
         {
           System.out.println("Cannot discover Endpoints from URL " + url + ": " + e.getMessage());
           System.out.println("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + url + ": " + e.getMessage());
