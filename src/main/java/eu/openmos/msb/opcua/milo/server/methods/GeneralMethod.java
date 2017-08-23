@@ -50,7 +50,7 @@ public class GeneralMethod
     try
     {
       ret = dev.allCases(func, args);
-    } catch (TransformerException ex)
+    } catch (Exception ex)
     {
       java.util.logging.Logger.getLogger(GeneralMethod.class.getName()).log(Level.SEVERE, null, ex);
     }

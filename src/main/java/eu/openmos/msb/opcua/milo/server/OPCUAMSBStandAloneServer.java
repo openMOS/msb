@@ -111,8 +111,7 @@ public class OPCUAMSBStandAloneServer
   public OPCUAMSBStandAloneServer(String serverURL) throws Exception
   {
 
-    //serverURL="opc.tcp://172.18.2.90:12636/test-WHAT-server";
-    // add opc.tcp protocol for URL class
+    
     URL.setURLStreamHandlerFactory(protocol -> "opc.tcp".equals(protocol) ? new URLStreamHandler()
     {
       protected URLConnection openConnection(URL url) throws IOException

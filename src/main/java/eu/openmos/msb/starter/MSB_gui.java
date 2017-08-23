@@ -148,7 +148,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     DeviceITF = new OPCDeviceHelper(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
 
-
   }
 
   /**
@@ -1181,30 +1180,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_btn_updatestatusActionPerformed
     String ret = "null";
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
-    try
-    {
-      ret = DeviceITF.allCases("statusupdate", textToSend.getText()); //simulate a device registration
 
-    } catch (ParserConfigurationException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-    } catch (SAXException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-    } catch (IOException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-    } catch (JAXBException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call statusupdate method: " + ex + "\n");
-    } catch (TransformerException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    ret = DeviceITF.allCases("statusupdate", textToSend.getText()); //simulate a device registration
+
     opc_comms_log.append("statusupdate method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_updatestatusActionPerformed
 
@@ -1216,30 +1194,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_btn_sendrecipe2ActionPerformed
     String ret = "null";
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
-    try
-    {
-      ret = DeviceITF.allCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
 
-    } catch (ParserConfigurationException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-    } catch (SAXException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-    } catch (IOException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-    } catch (JAXBException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call sendRecipe method: " + ex + "\n");
-    } catch (TransformerException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    ret = DeviceITF.allCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
+
     opc_comms_log.append("sendRecipe method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_sendrecipe2ActionPerformed
 
@@ -1250,29 +1207,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private void btn_ChangedStateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_ChangedStateActionPerformed
   {//GEN-HEADEREND:event_btn_ChangedStateActionPerformed
     String ret = "null";
-    try
-    {
-      ret = DeviceITF.allCases("changedstate", textToSend.getText()); //simulate a device registration
-    } catch (ParserConfigurationException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-    } catch (SAXException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-    } catch (IOException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-    } catch (JAXBException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call changed state method: " + ex + "\n");
-    } catch (TransformerException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    ret = DeviceITF.allCases("changedstate", textToSend.getText()); //simulate a device registration
     opc_comms_log.append("Changed State method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_ChangedStateActionPerformed
 
@@ -1284,30 +1219,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_btn_RecipeExecutionDoneActionPerformed
     String ret = "null";
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
-    try
-    {
-      ret = DeviceITF.allCases("recipeexecutiondone", textToSend.getText()); //simulate a device registration
+    ret = DeviceITF.allCases("recipeexecutiondone", textToSend.getText()); //simulate a device registration
 
-    } catch (ParserConfigurationException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-    } catch (SAXException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-    } catch (IOException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-    } catch (JAXBException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call RecipeExecutionDone method: " + ex + "\n");
-    } catch (TransformerException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    }
     opc_comms_log.append("RecipeExecutionDone method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_RecipeExecutionDoneActionPerformed
 
@@ -1319,30 +1232,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_btn_DeviceRegistrationActionPerformed
     String ret = "null";
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
-    try
-    {
-      ret = DeviceITF.allCases("deviceregistration", textToSend.getText()); //simulate a device registration
+    ret = DeviceITF.allCases("deviceregistration", textToSend.getText()); //simulate a device registration
 
-    } catch (ParserConfigurationException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-    } catch (SAXException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-    } catch (IOException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-    } catch (JAXBException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      opc_comms_log.append("Failed to call device registration method: " + ex + "\n");
-    } catch (TransformerException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    }
     opc_comms_log.append("Device registration method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_DeviceRegistrationActionPerformed
 
@@ -1601,14 +1492,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           opc_comms_log.append("The server: " + name + " has disapeared and has NOT been removed from database.\n");
         }
       }
-      
+
     };
 
-    
-    
-    
-    
-    
     try
     {
       // String LDS_uri="opc.tcp://localhost:4840";
@@ -1622,9 +1508,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     }
 
 
-    
-    
-    
   }//GEN-LAST:event_btn_start_discoveryActionPerformed
 
   /**

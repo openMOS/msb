@@ -5,10 +5,33 @@
  */
 package eu.openmos.msb.opcua.utils;
 
-import eu.openmos.agentcloud.cloudinterface.ServiceCallStatus;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.Observable;
+import java.util.concurrent.TimeUnit;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.ws.BindingProvider;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import io.vertx.core.Vertx;
+
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 import eu.openmos.agentcloud.data.LogicalLocation;
@@ -37,37 +60,10 @@ import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.messages.DaRecipe;
 import eu.openmos.msb.messages.DaSkill;
-import io.vertx.core.Vertx;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.Observable;
-import java.util.concurrent.TimeUnit;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
+import eu.openmos.agentcloud.cloudinterface.ServiceCallStatus;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.ws.BindingProvider;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+
+
 
 /**
  *
@@ -85,14 +81,9 @@ public class OPCDeviceHelper extends Observable
    * @param Function
    * @param args
    * @return
-   * @throws ParserConfigurationException
-   * @throws SAXException
-   * @throws IOException
-   * @throws JAXBException
-   * @throws java.io.FileNotFoundException
-   * @throws javax.xml.transform.TransformerException
+   * @deprecated This will no longer be used
    */
-  public String allCases(String Function, String args) throws ParserConfigurationException, SAXException, IOException, JAXBException, FileNotFoundException, TransformerException
+  public String allCases(String Function, String args)
   {
     String productID;
     String WorkstationID;
@@ -243,10 +234,7 @@ public class OPCDeviceHelper extends Observable
    *
    * @param args
    * @return
-   * @throws JAXBException
-   * @throws FileNotFoundException
-   * @throws ParserConfigurationException
-   * @throws TransformerException
+   * @deprecated 
    */
   private String workStationRegistration(String args)
   {
@@ -373,17 +361,6 @@ public class OPCDeviceHelper extends Observable
     return null;
   }
 
-  /**
-   * 
-   * @return 
-   */
-  private String workStationRegistration()
-  {
-    
-    
-    
-    return null;
-  }
 
   /**
    * Send ChangedState to the AgentCloud
