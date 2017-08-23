@@ -8,13 +8,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -43,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author fabio.miranda
  */
-public class MSBClientSubscription implements Client
+public class MSBClientSubscription implements IClient
 {
 
   // GLOBAL VARIABLES

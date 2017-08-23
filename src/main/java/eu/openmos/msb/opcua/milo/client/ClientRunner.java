@@ -22,9 +22,9 @@ public class ClientRunner
   private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
   private final KeyStoreLoader loader = new KeyStoreLoader();
   private final String endpointUrl;
-  private final Client uaClient;
+  private final IClient uaClient;
 
-  public ClientRunner(String endpointUrl, Client clientExample)
+  public ClientRunner(String endpointUrl, IClient clientExample)
   {
     this.endpointUrl = endpointUrl;
     this.uaClient = clientExample;

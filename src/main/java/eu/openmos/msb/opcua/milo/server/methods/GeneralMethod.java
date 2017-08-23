@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.msb.opcua.milo.server.methods;
 
-import eu.openmos.msb.opcua.utils.OPCDeviceHelper;
+import eu.openmos.msb.opcua.milo.server.OPCDeviceHelper;
 import java.io.IOException;
 import java.util.logging.Level;
 import javax.xml.bind.JAXBException;

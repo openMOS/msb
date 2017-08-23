@@ -1,5 +1,6 @@
-package eu.openmos.msb.opcua.utils;
+package eu.openmos.msb.opcua.milo.server;
 
+import eu.openmos.msb.opcua.milo.server.IOPCDeviceDiscovery;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;

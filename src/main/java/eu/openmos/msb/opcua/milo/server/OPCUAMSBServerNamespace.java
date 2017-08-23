@@ -7,7 +7,6 @@ package eu.openmos.msb.opcua.milo.server;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.LinkedList;
@@ -351,7 +350,7 @@ public class OPCUAMSBServerNamespace implements Namespace
   @Override
   public void call(CallContext context, List<CallMethodRequest> requests)
   {
-    Namespace.super.call(context, requests); //To change body of generated methods, choose Tools | Templates.
+    Namespace.super.call(context, requests); 
   }
 
   /**
@@ -362,7 +361,7 @@ public class OPCUAMSBServerNamespace implements Namespace
   @Override
   public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId)
   {
-    //return Namespace.super.getInvocationHandler(methodId); //To change body of generated methods, choose Tools | Templates.
+    
     ServerNode node = server.getNodeMap().get(methodId);
 
     if (node instanceof UaMethodNode)
@@ -411,7 +410,7 @@ public class OPCUAMSBServerNamespace implements Namespace
   @Override
   public void onEventItemsCreated(List<EventItem> list)
   {
-    Namespace.super.onEventItemsCreated(list); //To change body of generated methods, choose Tools | Templates.
+    Namespace.super.onEventItemsCreated(list); 
   }
 
   /**
@@ -421,7 +420,7 @@ public class OPCUAMSBServerNamespace implements Namespace
   @Override
   public void onEventItemsModified(List<EventItem> list)
   {
-    Namespace.super.onEventItemsModified(list); //To change body of generated methods, choose Tools | Templates.
+    Namespace.super.onEventItemsModified(list); 
   }
 
   /**
@@ -431,7 +430,7 @@ public class OPCUAMSBServerNamespace implements Namespace
   @Override
   public void onEventItemsDeleted(List<EventItem> list)
   {
-    Namespace.super.onEventItemsDeleted(list); //To change body of generated methods, choose Tools | Templates.
+    Namespace.super.onEventItemsDeleted(list); 
   }
 
   /**
@@ -452,7 +451,7 @@ public class OPCUAMSBServerNamespace implements Namespace
   @Override
   public void addNode(AddNodesContext context, List<AddNodesItem> nodesToAdd)
   {
-    Namespace.super.addNode(context, nodesToAdd); //To change body of generated methods, choose Tools | Templates.
+    Namespace.super.addNode(context, nodesToAdd); 
   }
 
   /**
@@ -463,7 +462,7 @@ public class OPCUAMSBServerNamespace implements Namespace
   @Override
   public void deleteNode(DeleteNodesContext context, List<DeleteNodesItem> nodesToDelete)
   {
-    Namespace.super.deleteNode(context, nodesToDelete); //To change body of generated methods, choose Tools | Templates.
+    Namespace.super.deleteNode(context, nodesToDelete); 
   }
 
   /**
@@ -474,7 +473,7 @@ public class OPCUAMSBServerNamespace implements Namespace
   @Override
   public void addReference(AddReferencesContext context, List<AddReferencesItem> referencesToAdd)
   {
-    Namespace.super.addReference(context, referencesToAdd); //To change body of generated methods, choose Tools | Templates.
+    Namespace.super.addReference(context, referencesToAdd); 
   }
 
   /**
@@ -485,7 +484,7 @@ public class OPCUAMSBServerNamespace implements Namespace
   @Override
   public void deleteReference(DeleteReferencesContext context, List<DeleteReferencesItem> referencesToDelete)
   {
-    Namespace.super.deleteReference(context, referencesToDelete); //To change body of generated methods, choose Tools | Templates.
+    Namespace.super.deleteReference(context, referencesToDelete); 
   }
 
   /**
