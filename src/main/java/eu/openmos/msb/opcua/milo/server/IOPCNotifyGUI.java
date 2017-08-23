@@ -9,12 +9,12 @@ package eu.openmos.msb.opcua.milo.server;
  *
  * @author Admin
  */
-public interface IOPCDeviceDiscovery
+public interface IOPCNotifyGUI
 {
 
-  void on_new_server(String name, String app_uri);
+  void on_polling_cycle();
 
-  void on_new_endpoint(String parent_app_uri, String app_uri);
+  void on_new_endpoint_discovered(String parent_app_uri, String app_uri);
 
   void on_server_dissapeared(String name, String app_uri);
 

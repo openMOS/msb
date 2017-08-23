@@ -32,12 +32,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.DefaultCaret;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.ws.Endpoint;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.xml.sax.SAXException;
 import DDS.DataWriter;
 import DDS.HANDLE_NIL;
 import MSB2ADAPTER.StringMessage;
@@ -69,9 +65,9 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import eu.openmos.msb.opcua.milo.server.IOPCDeviceDiscovery;
 import java.net.URISyntaxException;
 import org.slf4j.LoggerFactory;
+import eu.openmos.msb.opcua.milo.server.IOPCNotifyGUI;
 
 /**
  * *********************************************************************************************************************
@@ -1324,10 +1320,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   private void btn_start_discoveryActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_start_discoveryActionPerformed
   {//GEN-HEADEREND:event_btn_start_discoveryActionPerformed
-    //launch Discovery Service to search for other devices (OPCUA servers from devices)
 
-    IOPCDeviceDiscovery OPCdevDiscItf;
-    OPCdevDiscItf = new IOPCDeviceDiscovery()
+    // notification mechanism to send information from the worker class to the GUI
+    // this is not the best way to implement this, but for the time being it has to do
+    // TODO - implement a Event Dispatcher approach or use Observer/Observable mechanism
+    IOPCNotifyGUI ntoficationsListner = new IOPCNotifyGUI()
     {
 
       /**
@@ -1336,10 +1333,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
        * @param app_uri
        */
       @Override
-      public void on_new_server(String name, String app_uri)
+      public void on_polling_cycle()
       {
-        System.out.println("server found: " + app_uri);
-
         labelLDS.setIcon(greenLight); //blink status LED every polling cycle
         try
         {
@@ -1356,7 +1351,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
        * @param app_uri Device Adapter address
        */
       @Override
-      public void on_new_endpoint(String name, String app_uri)
+      public void on_new_endpoint_discovered(String name, String app_uri)
       {
         // every time there is a "polling" cycle in discovery, check OPC client/server connections
         System.out.println("[on_new_endpoint]  POLLING CYCLE  ");
@@ -1501,7 +1496,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       // String LDS_uri="opc.tcp://localhost:4840";
       String LDS_uri = LDSserverAddress.getText();
 
-      OPCServersDiscoverySnippet OPCDiscoverySnippet = new OPCServersDiscoverySnippet(LDS_uri, OPCdevDiscItf);
+      OPCServersDiscoverySnippet OPCDiscoverySnippet = new OPCServersDiscoverySnippet(LDS_uri, ntoficationsListner);
       OPCDiscoverySnippet.start();
     } catch (Exception ex)
     {

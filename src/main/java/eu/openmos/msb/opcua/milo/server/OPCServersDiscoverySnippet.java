@@ -26,7 +26,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
   private final int discovery_period = 10; // 35 seconds
   private final String LDS_uri;
-  private final IOPCDeviceDiscovery servers_dynamic;
+  private final IOPCNotifyGUI servers_dynamic;
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
@@ -34,7 +34,7 @@ public class OPCServersDiscoverySnippet extends Thread
    * @param _LDS_uri
    * @param _servers_dynamic
    */
-  public OPCServersDiscoverySnippet(String _LDS_uri, IOPCDeviceDiscovery _servers_dynamic)
+  public OPCServersDiscoverySnippet(String _LDS_uri, IOPCNotifyGUI _servers_dynamic)
   {
     LDS_uri = _LDS_uri;
     servers_dynamic = _servers_dynamic;
@@ -70,6 +70,8 @@ public class OPCServersDiscoverySnippet extends Thread
    */
   private boolean discoverServer(String uri)
   {
+    // notify gui of the pooling mechanism
+    servers_dynamic.on_polling_cycle();
     try
     {
       // Discover a new server list from a discovery server at URI
@@ -84,7 +86,7 @@ public class OPCServersDiscoverySnippet extends Thread
       {
         final ApplicationDescription s = serverList[i];
 
-        servers_dynamic.on_new_server(s.getApplicationName().getText(), s.getApplicationUri());
+        
 
         System.out.println("getApplicationUri output " + s.getApplicationUri());
         System.out.println("getDiscoveryUrls output " + s.getDiscoveryUrls()[0]);
@@ -118,11 +120,10 @@ public class OPCServersDiscoverySnippet extends Thread
     int retMsg = 0;
     
     ArrayList<String> devices = DatabaseInteraction.getInstance().listAllDeviceAdapters();
-    String address = null;
+    String address = "";
+    
     EndpointDescription[] endpointsFromServer = null;
     String DeviceToRemove = null;
-    
-    
     for (String device : devices)
     {
       try
@@ -130,8 +131,6 @@ public class OPCServersDiscoverySnippet extends Thread
         DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(device);
         address = ((MSBClientSubscription) da.getClient()).getClientObject().getStackClient().getEndpointUrl();
         endpointsFromServer = UaTcpStackClient.getEndpoints(address).get();
-
-        // OPCUA Client TODO - Add DDS and MQTT af-silva
       } catch (InterruptedException | ExecutionException ex)
       {
         this.logger.error(ex.getMessage());
@@ -199,7 +198,7 @@ public class OPCServersDiscoverySnippet extends Thread
           {
             edList.add(ed);
             System.out.println("EndPoints from: " + url + " = " + ed);
-            servers_dynamic.on_new_endpoint(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
+            servers_dynamic.on_new_endpoint_discovered(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
           }
         } catch (InterruptedException | ExecutionException e)
         {
