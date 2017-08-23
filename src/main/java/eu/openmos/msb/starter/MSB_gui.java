@@ -360,7 +360,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     jLabel1.setText("MSB OPCUA Server");
 
-    msb_opcua_servername.setText("opc.tcp://172.18.1.174:12637/MSB-OPCUA-SERVER");
+    msb_opcua_servername.setText("opc.tcp://172.18.1.213:12637/MSB-OPCUA-SERVER");
     msb_opcua_servername.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -1387,7 +1387,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
             ApplicationDescription[] serverList = UaTcpStackClient.findServers(app_uri).get(); //new MSB            
             if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
             {
-              System.out.println("olas");
+              
               DACManager manager = DACManager.getInstance();
               DeviceAdapterOPC opc = (DeviceAdapterOPC) manager.getDeviceAdapter(name);
               MSBClientSubscription instance = opc.getClient();
@@ -1404,6 +1404,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                 comboServers.addItem(name);
 
                 // send server url to Device Adatper
+                // af-silva TODO - aqui e enviado o URL para o Servidor
                 instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex
                         ->
                 {
@@ -2026,23 +2027,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     return "OK";
   }
 
-  /**
-   *
-   * @param ServerName
-   * @return
-   */
-  public static int RemoveDownServer(String ServerName)
-  {
-    if (DACManager.getInstance().deleteDeviceAdapter(ServerName))
-    {
-      System.out.println("DownServer successfully deleted from DB!");
-      return 1;
-    } else
-    {
-      System.out.println("ERROR deleting DownServer from DB!");
-      return -1;
-    }
-  }
 
   // **************************************************************************************************************** //
   // **************************************************************************************************************** //

@@ -66,7 +66,7 @@ import javax.xml.transform.TransformerException;
 
 
 /**
- *
+ * @deprecated 
  * @author fabio.miranda
  */
 public class OPCDeviceHelper extends Observable

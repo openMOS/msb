@@ -9,7 +9,6 @@ import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
-import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
@@ -25,10 +24,7 @@ import org.slf4j.LoggerFactory;
 public class OPCServersDiscoverySnippet extends Thread
 {
 
-  private final int discovery_period = 10;
-  /*
-   * 35 seconds
-   */
+  private final int discovery_period = 10; // 35 seconds
   private final String LDS_uri;
   private final IOPCDeviceDiscovery servers_dynamic;
   private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -124,7 +120,7 @@ public class OPCServersDiscoverySnippet extends Thread
     ArrayList<String> devices = DatabaseInteraction.getInstance().listAllDeviceAdapters();
     String address = null;
     EndpointDescription[] endpointsFromServer = null;
-    String DevicetoRemove = null;
+    String DeviceToRemove = null;
     
     
     for (String device : devices)
@@ -143,10 +139,10 @@ public class OPCServersDiscoverySnippet extends Thread
         {
           //DELETE SERVER FROM DATABASE, HASHMAP AND TABLE
           servers_dynamic.on_server_dissapeared(device, address);
-          retMsg = MSB_gui.RemoveDownServer(device);
-          if (DevicetoRemove != null)
+          retMsg = removeDownServer(device);
+          if (DeviceToRemove != null)
           {
-            DevicetoRemove = device;
+            DeviceToRemove = device;
           }
         }
       }
@@ -156,18 +152,18 @@ public class OPCServersDiscoverySnippet extends Thread
         System.out.println();
         this.logger.warn("This server doens't have Endpoints available:  {}", device);
         //delete it from db and hashmap
-        retMsg = MSB_gui.RemoveDownServer(device);
-        if (DevicetoRemove != null)
+        retMsg = removeDownServer(device);
+        if (DeviceToRemove != null)
         {
-          DevicetoRemove = device;
+          DeviceToRemove = device;
         }
 
       } else if (endpointsFromServer.length == 0)
       {
         this.logger.warn("This server doens't have Endpoints available:  {}", device);
         //delete it from db and hashmap
-        retMsg = MSB_gui.RemoveDownServer(device);
-        if (DevicetoRemove != null)
+        retMsg = removeDownServer(device);
+        if (DeviceToRemove != null)
         {
           // TODO
         }
@@ -175,9 +171,9 @@ public class OPCServersDiscoverySnippet extends Thread
       }
     }
 
-    if (DevicetoRemove != null && address != null)
+    if (DeviceToRemove != null && address != null)
     {
-      servers_dynamic.on_server_dissapeared(DevicetoRemove, address);
+      servers_dynamic.on_server_dissapeared(DeviceToRemove, address);
     }
 
     return retMsg;
@@ -223,5 +219,24 @@ public class OPCServersDiscoverySnippet extends Thread
       System.out.println("No suitable discoveryUrl available: using the current Url");
     }
     return null;
+  }
+  
+  
+    /**
+   *
+   * @param ServerName
+   * @return
+   */
+  private int removeDownServer(String ServerName)
+  {
+    if (DACManager.getInstance().deleteDeviceAdapter(ServerName))
+    {
+      System.out.println("DownServer successfully deleted from DB!");
+      return 1;
+    } else
+    {
+      System.out.println("ERROR deleting DownServer from DB!");
+      return -1;
+    }
   }
 }
