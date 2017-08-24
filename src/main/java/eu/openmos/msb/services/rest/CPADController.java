@@ -5,16 +5,14 @@
  */
 package eu.openmos.msb.services.rest;
 
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-// import eu.openmos.agentcloud.data.recipe.Equipment;
+
+
 import eu.openmos.model.*;
-// import eu.openmos.agentcloud.data.recipe.Recipe;
-// import eu.openmos.agentcloud.data.recipe.Skill;
-import eu.openmos.msb.cloud.cloudinterface.testdata.CyberPhysicalAgentDescriptionTest;
-import eu.openmos.msb.cloud.cloudinterface.testdata.EquipmentTest;
-import eu.openmos.msb.cloud.cloudinterface.testdata.RecipeTest;
-import eu.openmos.msb.cloud.cloudinterface.testdata.SkillTest;
 import eu.openmos.agentcloud.utilities.Constants;
+import eu.openmos.model.testdata.ModuleTest;
+import eu.openmos.model.testdata.RecipeTest;
+import eu.openmos.model.testdata.SkillTest;
+import eu.openmos.model.testdata.SubSystemTest;
 import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.Consumes;
@@ -43,22 +41,22 @@ public class CPADController {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CyberPhysicalAgentDescription> getList()
+    public List<SubSystem> getList()
     {
         logger.debug("cpads getList");
-        List<CyberPhysicalAgentDescription> ls = new LinkedList<>();
+        List<SubSystem> ls = new LinkedList<>();
         
         for (int i = 0; i < 5; i++)
         {
-            CyberPhysicalAgentDescription cpad1 = CyberPhysicalAgentDescriptionTest.getTestObject();
+            SubSystem cpad1 = SubSystemTest.getTestObject();
             if (i%2 == 0)
-            {
-                cpad1.setEquipmentId("WORKSTATION_" + i);
+            {                
+                cpad1.setUniqueId("WORKSTATION_" + i);
                 cpad1.setType(Constants.DF_RESOURCE);
             }
             else
-            {
-                cpad1.setEquipmentId("TRANSPORT_" + i);
+            {                
+                cpad1.setUniqueId("TRANSPORT_" + i);
                 cpad1.setType(Constants.DF_TRANSPORT);
             }
                 
@@ -76,15 +74,14 @@ public class CPADController {
      * @return detail of cyberphysical agent
      * 
      * @param cpadId the unique id of the workstation or transport
-     * @return cyberphysicalagentdescription object, or null if not existing
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{cpadId}")    
-    public CyberPhysicalAgentDescription getDetail(@PathParam("cpadId") String cpadId) {
+    public SubSystem getDetail(@PathParam("cpadId") String cpadId) {
         logger.debug("cpad - getDetail - cpadId = " + cpadId);
-        for (CyberPhysicalAgentDescription cpad : getList()) {
-            if (cpad.getEquipmentId().equals(cpadId)) {
+        for (SubSystem cpad : getList()) {
+            if (cpad.getUniqueId().equals(cpadId)) {
                 logger.debug("cpad - found " + cpadId + " - returning " + cpad.toString());
                 return cpad;
             }
@@ -148,11 +145,11 @@ public class CPADController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{cpadId}/equipments")    
-    public List<Equipment> getEquipmentsList(@PathParam("cpadId") String cpadId)
+    public List<Module> getEquipmentsList(@PathParam("cpadId") String cpadId)
     {
         logger.debug("cpad - getEquipmentsList - cpadId = " + cpadId);
         logger.debug("cpad getEquipmentsList - of the cpad = " + cpadId);
-        return EquipmentTest.getTestList(cpadId);
+        return ModuleTest.getTestList(cpadId);
     }
 
    /**

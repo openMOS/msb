@@ -4,7 +4,7 @@ package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import eu.openmos.agentcloud.cloudinterface.ServiceCallStatus;
+import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 
 
 /**

@@ -9,7 +9,7 @@ import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
-import eu.openmos.agentcloud.optimizer.data.OptimizationParameter;
+import eu.openmos.agentcloud.utilities.OptimizationParameter;
 import eu.openmos.model.Recipe;
 
 

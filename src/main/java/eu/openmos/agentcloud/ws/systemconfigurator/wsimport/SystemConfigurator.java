@@ -9,11 +9,11 @@ import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
-import eu.openmos.agentcloud.cloudinterface.ServiceCallStatus;
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-import eu.openmos.agentcloud.data.Order;
+import eu.openmos.agentcloud.utilities.ServiceCallStatus;
+import eu.openmos.model.Order;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
+import eu.openmos.model.SubSystem;
 
 
 /**
@@ -33,7 +33,7 @@ public interface SystemConfigurator {
      * 
      * @param recipe
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
@@ -48,7 +48,7 @@ public interface SystemConfigurator {
      * @param operationTimestamp
      * @param orderId
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
@@ -64,7 +64,7 @@ public interface SystemConfigurator {
      * 
      * @param cyberPhysicalAgentDescription
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
@@ -72,13 +72,13 @@ public interface SystemConfigurator {
     @ResponseWrapper(localName = "createNewResourceAgentResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.CreateNewResourceAgentResponse")
     public ServiceCallStatus createNewResourceAgent(
         @WebParam(name = "cyberPhysicalAgentDescription", targetNamespace = "")
-        CyberPhysicalAgentDescription cyberPhysicalAgentDescription);
+        SubSystem cyberPhysicalAgentDescription);
 
     /**
      * 
      * @param order
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
@@ -92,7 +92,7 @@ public interface SystemConfigurator {
      * 
      * @param newOrder
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
@@ -106,7 +106,7 @@ public interface SystemConfigurator {
      * 
      * @param cyberPhysicalAgentDescription
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
@@ -114,7 +114,7 @@ public interface SystemConfigurator {
     @ResponseWrapper(localName = "createNewTransportAgentResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.CreateNewTransportAgentResponse")
     public ServiceCallStatus createNewTransportAgent(
         @WebParam(name = "cyberPhysicalAgentDescription", targetNamespace = "")
-        CyberPhysicalAgentDescription cyberPhysicalAgentDescription);
+        SubSystem cyberPhysicalAgentDescription);
 
     /**
      * 
@@ -122,7 +122,7 @@ public interface SystemConfigurator {
      * @param productId
      * @param equipmentId
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
@@ -141,7 +141,7 @@ public interface SystemConfigurator {
      * @param orders
      * @param cyberPhysicalAgentDescriptions
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
@@ -149,7 +149,7 @@ public interface SystemConfigurator {
     @ResponseWrapper(localName = "initializePlatformResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.InitializePlatformResponse")
     public ServiceCallStatus initializePlatform(
         @WebParam(name = "cyberPhysicalAgentDescriptions", targetNamespace = "")
-        List<CyberPhysicalAgentDescription> cyberPhysicalAgentDescriptions,
+        List<SubSystem> cyberPhysicalAgentDescriptions,
         @WebParam(name = "orders", targetNamespace = "")
         List<Order> orders);
 
@@ -157,7 +157,7 @@ public interface SystemConfigurator {
      * 
      * @param skill
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
@@ -171,7 +171,7 @@ public interface SystemConfigurator {
      * 
      * @param agentUniqueName
      * @return
-     *     returns eu.openmos.agentcloud.cloudinterface.ServiceCallStatus
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")

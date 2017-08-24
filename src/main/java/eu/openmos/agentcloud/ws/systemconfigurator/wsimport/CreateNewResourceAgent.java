@@ -4,7 +4,7 @@ package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
+import eu.openmos.model.SubSystem;
 
 
 /**
@@ -17,7 +17,7 @@ import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="cyberPhysicalAgentDescription" type="{http://cloudinterface.agentcloud.openmos.eu/}cyberPhysicalAgentDescription" minOccurs="0"/>
+ *         &lt;element name="cyberPhysicalAgentDescription" type="{http://cloudinterface.agentcloud.openmos.eu/}subSystem" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -32,17 +32,17 @@ import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
 })
 public class CreateNewResourceAgent {
 
-    protected CyberPhysicalAgentDescription cyberPhysicalAgentDescription;
+    protected SubSystem cyberPhysicalAgentDescription;
 
     /**
      * Gets the value of the cyberPhysicalAgentDescription property.
      * 
      * @return
      *     possible object is
-     *     {@link CyberPhysicalAgentDescription }
+     *     {@link SubSystem }
      *     
      */
-    public CyberPhysicalAgentDescription getCyberPhysicalAgentDescription() {
+    public SubSystem getCyberPhysicalAgentDescription() {
         return cyberPhysicalAgentDescription;
     }
 
@@ -51,10 +51,10 @@ public class CreateNewResourceAgent {
      * 
      * @param value
      *     allowed object is
-     *     {@link CyberPhysicalAgentDescription }
+     *     {@link SubSystem }
      *     
      */
-    public void setCyberPhysicalAgentDescription(CyberPhysicalAgentDescription value) {
+    public void setCyberPhysicalAgentDescription(SubSystem value) {
         this.cyberPhysicalAgentDescription = value;
     }
 

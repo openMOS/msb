@@ -5,14 +5,10 @@
  */
 package eu.openmos.msb.services.rest;
 
-import eu.openmos.model.SubSystem;
-import eu.openmos.agentcloud.data.Order;
-import eu.openmos.model.KPISetting;
-import eu.openmos.model.Parameter;
-import eu.openmos.model.ParameterSetting;
-import eu.openmos.model.Recipe;
-import eu.openmos.model.SkillRequirement;
-import eu.openmos.msb.cloud.cloudinterface.testdata.OrderTest;
+
+
+import eu.openmos.model.Order;
+import eu.openmos.model.testdata.OrderTest;
 import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.GET;

@@ -7,8 +7,9 @@ package eu.openmos.msb.services.rest;
 
 import eu.openmos.model.Product;
 import eu.openmos.model.SkillRequirement;
-import eu.openmos.msb.cloud.cloudinterface.testdata.ProductTest;
-import eu.openmos.msb.cloud.cloudinterface.testdata.SkillRequirementTest;
+import eu.openmos.model.testdata.ProductTest;
+import eu.openmos.model.testdata.SkillRequirementTest;
+
 import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.GET;

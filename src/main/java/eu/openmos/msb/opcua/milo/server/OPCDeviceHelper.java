@@ -7,7 +7,6 @@ package eu.openmos.msb.opcua.milo.server;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
@@ -33,9 +32,6 @@ import org.xml.sax.SAXException;
 import io.vertx.core.Vertx;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-import eu.openmos.agentcloud.data.LogicalLocation;
-import eu.openmos.agentcloud.data.PhysicalLocation;
 import eu.openmos.model.KPI;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Parameter;
@@ -44,24 +40,25 @@ import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.agentcloud.utilities.Constants;
+import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.model.Equipment;
+import eu.openmos.model.LogicalLocation;
+import eu.openmos.model.PhysicalLocation;
 import eu.openmos.model.SubSystem;
-import eu.openmos.msb.cloud.cloudinterface.testdata.CyberPhysicalAgentDescriptionTest;
-import eu.openmos.msb.cloudinterface.WebSocketsReceiver;
-import eu.openmos.msb.cloudinterface.WebSocketsSender;
-import eu.openmos.msb.cloudinterface.WebSocketsSenderDraft;
-import eu.openmos.msb.messages.ChangedState;
+import eu.openmos.model.testdata.SubSystemTest;
+import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsReceiver;
+import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
 import eu.openmos.msb.messages.RegFile;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.messages.ChangedState;
 import eu.openmos.msb.messages.DaRecipe;
 import eu.openmos.msb.messages.DaSkill;
-import eu.openmos.agentcloud.cloudinterface.ServiceCallStatus;
-import javax.xml.transform.TransformerException;
+
 
 
 
@@ -306,6 +303,7 @@ public class OPCDeviceHelper extends Observable
 
       // --------------------------------------------------------------------------------------------------------------
       // create new agent
+      // TODO falar com o velerio
       if (withAGENTCloud)
       {
         // THIS CODE IS WORKING!! 
@@ -316,7 +314,7 @@ public class OPCDeviceHelper extends Observable
         bindingProvider.getRequestContext().put(
                 BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
         // SubSystem cpad = dummySubSystemGeneration(parsedClass);
-        CyberPhysicalAgentDescription cpad = CyberPhysicalAgentDescriptionTest.getTestObject();
+        SubSystem cpad = SubSystemTest.getTestObject();
 
         ServiceCallStatus agentStatus = systemConfigurator.createNewResourceAgent(cpad);
         System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
@@ -336,7 +334,7 @@ public class OPCDeviceHelper extends Observable
 
         Thread.sleep(3000);
 
-        vertx.deployVerticle(new WebSocketsSenderDraft());
+        vertx.deployVerticle(new WebSocketsSender("R3"));
 
         return "OK - No AgentPlatform";
 
@@ -712,7 +710,7 @@ public class OPCDeviceHelper extends Observable
       // kpiSettingId, kpiSettingName, kpiSettingValue);
       recipeKpiSetting = new KPISetting();
       recipeKpiSetting.setDescription(kpiSettingDescription);
-      recipeKpiSetting.setId(kpiSettingId);
+      
       recipeKpiSetting.setName(kpiSettingName);
       recipeKpiSetting.setValue(kpiSettingValue);
 

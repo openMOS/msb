@@ -6,8 +6,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import eu.openmos.agentcloud.data.CyberPhysicalAgentDescription;
-import eu.openmos.agentcloud.data.Order;
+import eu.openmos.model.Order;
+import eu.openmos.model.SubSystem;
 
 
 /**
@@ -20,7 +20,7 @@ import eu.openmos.agentcloud.data.Order;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="cyberPhysicalAgentDescriptions" type="{http://cloudinterface.agentcloud.openmos.eu/}cyberPhysicalAgentDescription" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="cyberPhysicalAgentDescriptions" type="{http://cloudinterface.agentcloud.openmos.eu/}subSystem" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="orders" type="{http://cloudinterface.agentcloud.openmos.eu/}order" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -37,7 +37,7 @@ import eu.openmos.agentcloud.data.Order;
 })
 public class InitializePlatform {
 
-    protected List<CyberPhysicalAgentDescription> cyberPhysicalAgentDescriptions;
+    protected List<SubSystem> cyberPhysicalAgentDescriptions;
     protected List<Order> orders;
 
     /**
@@ -58,13 +58,13 @@ public class InitializePlatform {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link CyberPhysicalAgentDescription }
+     * {@link SubSystem }
      * 
      * 
      */
-    public List<CyberPhysicalAgentDescription> getCyberPhysicalAgentDescriptions() {
+    public List<SubSystem> getCyberPhysicalAgentDescriptions() {
         if (cyberPhysicalAgentDescriptions == null) {
-            cyberPhysicalAgentDescriptions = new ArrayList<CyberPhysicalAgentDescription>();
+            cyberPhysicalAgentDescriptions = new ArrayList<SubSystem>();
         }
         return this.cyberPhysicalAgentDescriptions;
     }

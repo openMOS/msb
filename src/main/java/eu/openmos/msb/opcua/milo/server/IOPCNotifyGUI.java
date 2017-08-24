@@ -16,9 +16,7 @@ public interface IOPCNotifyGUI
 
   void on_new_endpoint_discovered(String parent_app_uri, String app_uri);
 
-  void on_server_dissapeared(String name, String app_uri);
-
-  void on_endpoint_dissapeared();
+  void on_endpoint_dissapeared(String name);
 
   void reset_tables();
 }

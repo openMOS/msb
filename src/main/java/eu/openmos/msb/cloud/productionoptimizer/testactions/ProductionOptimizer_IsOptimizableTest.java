@@ -14,23 +14,21 @@ import org.apache.log4j.Logger;
  *
  * @author valerio.gentile
  */
-public class ProductionOptimizer_IsOptimizableTest
-{
+public class ProductionOptimizer_IsOptimizableTest {
+    
+    private static final Logger logger = Logger.getLogger(ProductionOptimizer_IsOptimizableTest.class.getName());
+    
+    public static void main(String[] args) {
+        logger.info("New is optimizable Test main start");
+        
+        ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
+	ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
+        
+        ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.isOptimizable();
+        
+        logger.info(productionOptimizerResponseBean.getCode());
+        logger.info(productionOptimizerResponseBean.getDescription());
 
-  private static final Logger logger = Logger.getLogger(ProductionOptimizer_IsOptimizableTest.class.getName());
-
-  public static void main(String[] args)
-  {
-    logger.info("New is optimizable Test main start");
-
-    ProductionOptimizer_Service productionOptimizerService = new ProductionOptimizer_Service();
-    ProductionOptimizer productionOptimizer = productionOptimizerService.getProductionOptimizerImplPort();
-
-    ProductionOptimizerResponseBean productionOptimizerResponseBean = productionOptimizer.isOptimizable();
-
-    logger.info(productionOptimizerResponseBean.getCode());
-    logger.info(productionOptimizerResponseBean.getDescription());
-
-    logger.info("New is optimizable Test main end");
-  }
+        logger.info("New is optimizable Test main end");
+    }               
 }

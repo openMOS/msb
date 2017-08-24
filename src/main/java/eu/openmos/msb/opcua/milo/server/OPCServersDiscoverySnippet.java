@@ -12,7 +12,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.DeviceAdapterOPC;
+import eu.openmos.msb.datastructures.EProtocol;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
+import java.util.logging.Level;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,16 +33,19 @@ public class OPCServersDiscoverySnippet extends Thread
   private final String LDS_uri;
   private final IOPCNotifyGUI servers_dynamic;
   private final Logger logger = LoggerFactory.getLogger(getClass());
+  private final String MSB_OPCUA_SERVER_ADDRESS;
 
   /**
+   * @param _msb_address
    * @brief Class constructor
    * @param _LDS_uri
    * @param _servers_dynamic
    */
-  public OPCServersDiscoverySnippet(String _LDS_uri, IOPCNotifyGUI _servers_dynamic)
+  public OPCServersDiscoverySnippet(String _LDS_uri, String _msb_address, IOPCNotifyGUI _servers_dynamic)
   {
     LDS_uri = _LDS_uri;
     servers_dynamic = _servers_dynamic;
+    MSB_OPCUA_SERVER_ADDRESS = _msb_address;
   }
 
   /**
@@ -62,7 +70,6 @@ public class OPCServersDiscoverySnippet extends Thread
   }
 
   // ---------------------------------------------------------------------------------------------------------------- //
-  
   /**
    *
    * @param uri
@@ -84,19 +91,17 @@ public class OPCServersDiscoverySnippet extends Thread
 
       for (int i = 0; i < serverList.length; i++)
       {
-        final ApplicationDescription s = serverList[i];
+        ApplicationDescription server = serverList[i];
 
-        
-
-        System.out.println("getApplicationUri output " + s.getApplicationUri());
-        System.out.println("getDiscoveryUrls output " + s.getDiscoveryUrls()[0]);
+        System.out.println("getApplicationUri output " + server.getApplicationUri());
+        System.out.println("getDiscoveryUrls output " + server.getDiscoveryUrls()[0]);
 
         try
         {
           //discover endpoints only from servers. not from discovery
-          if (s.getApplicationType() != DiscoveryServer) 
+          if (server.getApplicationType() != DiscoveryServer)
           {
-            discoverEndpoints(s, s.getApplicationUri());
+            discoverEndpoints(server);
           }
         } catch (Exception ex)
         {
@@ -118,10 +123,10 @@ public class OPCServersDiscoverySnippet extends Thread
   private int checkDBServersStatus()
   {
     int retMsg = 0;
-    
+
     ArrayList<String> devices = DatabaseInteraction.getInstance().listAllDeviceAdapters();
     String address = "";
-    
+
     EndpointDescription[] endpointsFromServer = null;
     String DeviceToRemove = null;
     for (String device : devices)
@@ -137,7 +142,7 @@ public class OPCServersDiscoverySnippet extends Thread
         if (ex.getCause().getMessage().contains("Connection refused"))
         {
           //DELETE SERVER FROM DATABASE, HASHMAP AND TABLE
-          servers_dynamic.on_server_dissapeared(device, address);
+          servers_dynamic.on_endpoint_dissapeared(device);
           retMsg = removeDownServer(device);
           if (DeviceToRemove != null)
           {
@@ -172,7 +177,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
     if (DeviceToRemove != null && address != null)
     {
-      servers_dynamic.on_server_dissapeared(DeviceToRemove, address);
+      servers_dynamic.on_endpoint_dissapeared(DeviceToRemove);
     }
 
     return retMsg;
@@ -184,32 +189,85 @@ public class OPCServersDiscoverySnippet extends Thread
    * @param applicationUri
    * @return
    */
-  private EndpointDescription discoverEndpoints(ApplicationDescription serverApp, String applicationUri)
+  private EndpointDescription discoverEndpoints(ApplicationDescription serverApp)
   {
-    final String[] discoveryUrls = serverApp.getDiscoveryUrls();
+    DACManager manager = DACManager.getInstance();
+    String[] discoveryUrls = serverApp.getDiscoveryUrls();
+
     if (discoveryUrls != null)
     {
       List<EndpointDescription> edList = new ArrayList<>();
       for (String url : discoveryUrls)
       {
+        String da_url = "";
         try
         {
           for (EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get())
           {
             edList.add(ed);
             System.out.println("EndPoints from: " + url + " = " + ed);
-            servers_dynamic.on_new_endpoint_discovered(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
+            
+
+            String daName = serverApp.getApplicationName().getText();
+            DeviceAdapter da = manager.getDeviceAdapter(daName);
+            if (da == null)
+            {
+              manager.addDeviceAdapter(daName, EProtocol.OPC, "", "");
+              da_url = ed.getEndpointUrl();
+              // TODO af-silva validate this
+              ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get(); //new MSB            
+              if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
+              {
+
+                DeviceAdapterOPC opc = (DeviceAdapterOPC) manager.getDeviceAdapter(daName);
+                MSBClientSubscription instance = opc.getClient();
+
+                //start connection after inserting on the hashmap!
+                instance.startConnection(da_url);
+
+                // Iterate over all values, using the keySet method.
+                // call SendServerURL() method from device
+                OpcUaClient client = instance.getClientObject();
+                if (daName != null && !daName.contains("MSB"))
+                {
+
+                  instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
+                  {
+                    System.out.println("error invoking SendServerURL() for server: " + daName + "\n" + ex);
+                    //logger.error("error invoking SendServerURL()", ex);
+                    return "-1.0";
+                  }).thenAccept(v ->
+                  {
+
+                    System.out.println("SendServerURL(uri)={}\n" + v);
+
+                  });
+
+                }
+
+                if (client == null)
+                {
+                  System.out.println("Client = null?");
+                }
+
+              }
+              servers_dynamic.on_new_endpoint_discovered(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
+            }
+
           }
         } catch (InterruptedException | ExecutionException e)
         {
-          this.logger.error("Cannot discover Endpoints from URL {} : {}", url, e.getMessage());
-          System.out.println("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + url + ": " + e.getMessage());
+          this.logger.error("Cannot discover Endpoints from URL {} : {}", da_url, e.getMessage());
+          System.out.println("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + da_url + ": " + e.getMessage());
 
           if (e.getCause().getMessage().contains("Connection refused"))
           {
             //DELETE SERVER FROM DATABASE AND HASHMAP
-            servers_dynamic.on_server_dissapeared(serverApp.getApplicationName().getText(), url);
+            servers_dynamic.on_endpoint_dissapeared(serverApp.getApplicationName().getText());
           }
+        } catch (Exception ex)
+        {
+          java.util.logging.Logger.getLogger(OPCServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
 
@@ -219,9 +277,8 @@ public class OPCServersDiscoverySnippet extends Thread
     }
     return null;
   }
-  
-  
-    /**
+
+  /**
    *
    * @param ServerName
    * @return
@@ -231,6 +288,7 @@ public class OPCServersDiscoverySnippet extends Thread
     if (DACManager.getInstance().deleteDeviceAdapter(ServerName))
     {
       System.out.println("DownServer successfully deleted from DB!");
+      servers_dynamic.on_endpoint_dissapeared(ServerName);
       return 1;
     } else
     {

@@ -8,7 +8,7 @@ import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.dds.DDSDeviceManager;
 import eu.openmos.msb.dds.DDSDevice;
-import eu.openmos.msb.opcua.milo.server.OPCStandAloneServer;
+import eu.openmos.msb.opcua.milo.server.OPCServer;
 import eu.openmos.msb.opcua.milo.server.OPCDeviceHelper;
 import eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet;
 import java.awt.Dimension;
@@ -79,7 +79,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   // GLOBAL VARIABLES
   private static String MSB_OPCUA_SERVER_ADDRESS = null;
-  private static eu.openmos.msb.opcua.milo.server.OPCStandAloneServer opcuaServerInstanceMILO;
+  private static eu.openmos.msb.opcua.milo.server.OPCServer opcuaServerInstanceMILO;
 
   private static DefaultTableModel adaptersTableModel;
   private static DefaultTableModel recipesTableModel;
@@ -176,10 +176,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     jTabbedPane1 = new javax.swing.JTabbedPane();
     jPanel1 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
-    msb_opcua_servername = new javax.swing.JTextField();
+    msbServerAddress = new javax.swing.JTextField();
     StartMSBServer = new javax.swing.JButton();
     jLabel7 = new javax.swing.JLabel();
-    LDSserverAddress = new javax.swing.JTextField();
+    ldsSserverAddress = new javax.swing.JTextField();
     LDSRegisterserver = new javax.swing.JButton();
     jLabel6 = new javax.swing.JLabel();
     btn_start_discovery = new javax.swing.JButton();
@@ -356,12 +356,12 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     jLabel1.setText("MSB OPCUA Server");
 
-    msb_opcua_servername.setText("opc.tcp://172.18.1.213:12637/MSB-OPCUA-SERVER");
-    msb_opcua_servername.addActionListener(new java.awt.event.ActionListener()
+    msbServerAddress.setText("opc.tcp://DESKTOP-AO6QDEJ:12637/MSB-OPCUA-SERVER");
+    msbServerAddress.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        msb_opcua_servernameActionPerformed(evt);
+        msbServerAddressActionPerformed(evt);
       }
     });
 
@@ -383,12 +383,12 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     jLabel7.setText("LDS Server");
 
-    LDSserverAddress.setText("opc.tcp://localhost:4840");
-    LDSserverAddress.addActionListener(new java.awt.event.ActionListener()
+    ldsSserverAddress.setText("opc.tcp://DESKTOP-AO6QDEJ:4840");
+    ldsSserverAddress.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        LDSserverAddressActionPerformed(evt);
+        ldsSserverAddressActionPerformed(evt);
       }
     });
 
@@ -598,16 +598,16 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               .addComponent(jLabel6)))
           .addGroup(jPanel1Layout.createSequentialGroup()
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addComponent(msb_opcua_servername)
+              .addComponent(msbServerAddress)
               .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(LDSserverAddress))
+          .addComponent(ldsSserverAddress))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {LDSRegisterserver, LDSserverAddress, StartMSBServer, btn_start_discovery, msb_opcua_servername});
+    jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {LDSRegisterserver, StartMSBServer, btn_start_discovery, ldsSserverAddress, msbServerAddress});
 
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -615,7 +615,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addContainerGap()
         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(msb_opcua_servername, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(msbServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -625,7 +625,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(LDSserverAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(ldsSserverAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addComponent(LDSRegisterserver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -939,11 +939,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p_productExecutionLayout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 13, Short.MAX_VALUE)
             .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
               .addComponent(cb_productSelection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addComponent(pb_produceProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE))
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addContainerGap(22, Short.MAX_VALUE))))
     );
 
     p_productExecutionLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cb_productSelection, pb_produceProduct});
@@ -957,7 +957,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addComponent(cb_productSelection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(pb_produceProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(50, Short.MAX_VALUE))
     );
 
     p_productExecutionLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cb_productSelection, pb_produceProduct});
@@ -970,33 +970,25 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jScrollPane3)
-            .addContainerGap())
+          .addComponent(jScrollPane3)
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addGroup(layout.createSequentialGroup()
-                .addGap(145, 145, 145)
+                .addGap(125, 125, 125)
                 .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addGap(18, 18, 18)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+              .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+              .addComponent(jScrollPane1)
+              .addComponent(p_productExecution, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                  .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                  .addComponent(jScrollPane1))
-                .addContainerGap())
-              .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 20, Short.MAX_VALUE)
-                .addComponent(jLabel5)
-                .addGap(302, 302, 302))
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(p_productExecution, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())))))
+                  .addComponent(jLabel5)
+                  .addComponent(jLabel3))
+                .addGap(0, 312, Short.MAX_VALUE)))))
+        .addContainerGap())
       .addGroup(layout.createSequentialGroup()
         .addGap(493, 493, 493)
         .addComponent(jLabel4)
@@ -1009,26 +1001,26 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
             .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 650, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(12, 12, 12)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(jLabel5)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(p_productExecution, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(p_productExecution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        .addGap(16, 16, 16)
         .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel4)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -1320,162 +1312,23 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   private void btn_start_discoveryActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_start_discoveryActionPerformed
   {//GEN-HEADEREND:event_btn_start_discoveryActionPerformed
-
-    // notification mechanism to send information from the worker class to the GUI
-    // this is not the best way to implement this, but for the time being it has to do
-    // TODO - implement a Event Dispatcher approach or use Observer/Observable mechanism
-    IOPCNotifyGUI ntoficationsListner = new IOPCNotifyGUI()
+    try
     {
-
-      /**
-       *
-       * @param name
-       * @param app_uri
-       */
-      @Override
-      public void on_polling_cycle()
+      // notification mechanism to send information from the worker class to the GUI
+      // this is not the best way to implement this, but for the time being it has to do
+      // TODO - implement a Event Dispatcher approach or use Observer/Observable mechanism
+      IOPCNotifyGUI ntoficationsListner = new IOPCNotifyGUI()
       {
-        labelLDS.setIcon(greenLight); //blink status LED every polling cycle
-        try
+
+        /**
+         *
+         * @param name
+         * @param app_uri
+         */
+        @Override
+        public void on_polling_cycle()
         {
-          Thread.sleep(1000);
-        } catch (InterruptedException ex)
-        {
-          Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        labelLDS.setIcon(greyLight);
-      }
-
-      /**
-       *
-       * @param app_uri Device Adapter address
-       */
-      @Override
-      public void on_new_endpoint_discovered(String name, String app_uri)
-      {
-        // every time there is a "polling" cycle in discovery, check OPC client/server connections
-        System.out.println("[on_new_endpoint]  POLLING CYCLE  ");
-        System.out.println("NAME: " + name + " URL: " + app_uri);
-
-        DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(name);
-
-        // if the device name doesn't exist in the database, register
-        if (da == null)
-        {
-          try
-          {
-            DACManager.getInstance().addDeviceAdapter(name, EProtocol.OPC, "", "");
-
-            // visual
-            addToTableAdapters(name, "opcua", app_uri);
-            opc_comms_log.append("New Server found and registered: " + name + " " + app_uri + "\n");
-            System.out.println("onNewServer Registered Server: " + name + " " + app_uri);
-
-            if (name.contains("MSB"))
-            {
-              MSB_OPCUA_SERVER_ADDRESS = app_uri;
-              // visual
-              ComboMSB.addItem(name);
-            }
-
-            // TODO af-silva validate this
-            ApplicationDescription[] serverList = UaTcpStackClient.findServers(app_uri).get(); //new MSB            
-            if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
-            {
-              
-              DACManager manager = DACManager.getInstance();
-              DeviceAdapterOPC opc = (DeviceAdapterOPC) manager.getDeviceAdapter(name);
-              MSBClientSubscription instance = opc.getClient();
-
-              //start connection after inserting on the hashmap!
-              instance.startConnection(app_uri);
-
-              // Iterate over all values, using the keySet method.
-              // call SendServerURL() method from device
-              OpcUaClient client = instance.getClientObject();
-              if (!name.contains("MSB"))
-              {
-                // visual
-                comboServers.addItem(name);
-
-                // send server url to Device Adatper
-                // af-silva TODO - aqui e enviado o URL para o Servidor
-                instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex
-                        ->
-                {
-                  System.out.println("error invoking SendServerURL() for server: " + name + "\n" + ex);
-                  //logger.error("error invoking SendServerURL()", ex);
-                  return "-1.0";
-                }).thenAccept(v
-                        ->
-                {
-                  //logger.info("SendServerURL(cenas)={}", v);
-                  System.out.println("SendServerURL(uri)={}\n" + v);
-                  //future.complete(client);
-                });
-
-              }
-
-              if (client == null)
-              {
-                System.out.println("Client = null?");
-              }
-
-            }
-          } catch (InterruptedException ex)
-          {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-          } catch (ExecutionException ex)
-          {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-
-          } catch (Exception ex)
-          {
-            Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-          }
-        } else
-        {
-          // TODO af-silva 
-          // if the device name exist in the database, check if it is still available
-          System.out.println("Server : " + name + " " + app_uri + " Already registered in the Database!");
-        }
-      }
-
-      /**
-       *
-       */
-      @Override
-      public void on_endpoint_dissapeared()
-      {
-        //To change body of generated methods, choose Tools | Templates.
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      /**
-       *
-       */
-      @Override
-      public void reset_tables()
-      {
-        // dropServersAndEndpoints(); //ver
-        System.out.println("reset endpoint and servers tables...");
-      }
-
-      /**
-       *
-       * @param name
-       * @param app_uri
-       */
-      @Override
-      public void on_server_dissapeared(String name, String app_uri)
-      {
-        System.out.println("This server has disapeared: " + name);
-        if (removeDownServer(name))
-        {
-          opc_comms_log.append("The server: " + name + " has disapeared and has been successfully removed from database.\n");
-          //deleteFromTableServers(name, "", app_uri);
-          CleanTablesFromWorkstation(name);
-          //wait for completion? warning
+          labelLDS.setIcon(greenLight); //blink status LED every polling cycle
           try
           {
             Thread.sleep(1000);
@@ -1483,27 +1336,62 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           {
             Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
           }
-        } else
-        {
-          opc_comms_log.append("The server: " + name + " has disapeared and has NOT been removed from database.\n");
+          labelLDS.setIcon(greyLight);
         }
-      }
 
-    };
+        /**
+         *
+         * @param app_uri Device Adapter address
+         */
+        @Override
+        public void on_new_endpoint_discovered(String name, String app_uri)
+        {
+          Logger.getLogger(MSB_gui.class.getName()).log(Level.INFO, null, "NAME: " + name + " URL: " + app_uri);
+          opc_comms_log.append("New Server found and registered: " + name + " " + app_uri + "\n");
+          addToTableAdapters(name, "opcua", app_uri);
+          if (name.contains("MSB"))
+          {
+            ComboMSB.addItem(name);
+          } else
+          {
+            comboServers.addItem(name);
+          }
+        }
 
-    try
-    {
-      // String LDS_uri="opc.tcp://localhost:4840";
-      String LDS_uri = LDSserverAddress.getText();
+        /**
+         *
+         */
+        @Override
+        public void reset_tables()
+        {
+          // dropServersAndEndpoints(); //ver
+          System.out.println("reset endpoint and servers tables...");
+        }
 
-      OPCServersDiscoverySnippet OPCDiscoverySnippet = new OPCServersDiscoverySnippet(LDS_uri, ntoficationsListner);
+        /**
+         *
+         * @param name
+         * @param app_uri
+         */
+        @Override
+        public void on_endpoint_dissapeared(String name)
+        {
+          System.out.println("This server has disapeared: " + name);
+          opc_comms_log.append("The server: " + name + " has disapeared and has been successfully removed from database.\n");
+          cleanTablesFromDeviceAdapter(name);
+        }
+
+      };
+
+      String LDS_uri = ldsSserverAddress.getText();
+      String MSB_uri = msbServerAddress.getText();
+
+      OPCServersDiscoverySnippet OPCDiscoverySnippet = new OPCServersDiscoverySnippet(LDS_uri, MSB_uri, ntoficationsListner);
       OPCDiscoverySnippet.start();
     } catch (Exception ex)
     {
       System.out.println("boda");
     }
-
-
   }//GEN-LAST:event_btn_start_discoveryActionPerformed
 
   /**
@@ -1515,7 +1403,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     int ret = 0;
     try
     {
-      ret = opcuaServerInstanceMILO.register(LDSserverAddress.getText());
+      ret = opcuaServerInstanceMILO.register(ldsSserverAddress.getText());
       opc_comms_log.append("Registering MSB OPCUA Milo Server on the LDS server...\n");
       if (ret == 1)
       {
@@ -1536,10 +1424,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    *
    * @param evt
    */
-  private void LDSserverAddressActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_LDSserverAddressActionPerformed
-  {//GEN-HEADEREND:event_LDSserverAddressActionPerformed
+  private void ldsSserverAddressActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_ldsSserverAddressActionPerformed
+  {//GEN-HEADEREND:event_ldsSserverAddressActionPerformed
     // TODO add your handling code here:
-  }//GEN-LAST:event_LDSserverAddressActionPerformed
+  }//GEN-LAST:event_ldsSserverAddressActionPerformed
 
   /**
    *
@@ -1551,7 +1439,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       opc_comms_log.append("Starting MSB OPCUA Milo Server...\n");
 
-      opcuaServerInstanceMILO = new OPCStandAloneServer(msb_opcua_servername.getText()); //new MSB Milo server
+      opcuaServerInstanceMILO = new OPCServer(msbServerAddress.getText()); //new MSB Milo server
 
       //launch MILO MSB OPCUA Server endpoint
       if (opcuaServerInstanceMILO.control == false)
@@ -1600,10 +1488,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    *
    * @param evt
    */
-  private void msb_opcua_servernameActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_msb_opcua_servernameActionPerformed
-  {//GEN-HEADEREND:event_msb_opcua_servernameActionPerformed
+  private void msbServerAddressActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_msbServerAddressActionPerformed
+  {//GEN-HEADEREND:event_msbServerAddressActionPerformed
     // TODO add your handling code here:
-  }//GEN-LAST:event_msb_opcua_servernameActionPerformed
+  }//GEN-LAST:event_msbServerAddressActionPerformed
 
   private void restServiceAddressActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_restServiceAddressActionPerformed
   {//GEN-HEADEREND:event_restServiceAddressActionPerformed
@@ -1642,16 +1530,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
   }//GEN-LAST:event_startRESTWebServiceActionPerformed
-
-  /**
-   *
-   * @param ServerName
-   * @return
-   */
-  public boolean removeDownServer(String ServerName)
-  {
-    return DACManager.getInstance().deleteDeviceAdapter(ServerName);
-  }
 
   /**
    *
@@ -1784,7 +1662,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    * @param protocol
    * @param serverUri
    */
-  private void deleteFromTableAdapters(String serverName, String protocol, String serverUri)
+  private void deleteFromTableAdapters(String serverName)
   {
     int indexToRemove = -1;
     for (int i = 0; i < adaptersTableModel.getRowCount(); i++)
@@ -1817,16 +1695,18 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    * @param recipeID
    * @param workstationName
    */
-  private static void deleteFromTableRecipes(String productID, String recipeID, String workstationName)
+  private static void deleteFromTableRecipes(String toRemove)
   {
+    String recipe = "";
     int indexToRemove = -1;
     for (int i = 0; i < recipesTableModel.getRowCount(); i++)
     {//For each row
       for (int j = 0; j < recipesTableModel.getColumnCount(); j++)
       {//For each column in that row
-        if (recipesTableModel.getValueAt(i, j).equals(workstationName))
+        if (recipesTableModel.getValueAt(i, j).equals(toRemove))
         {//Search the model
           indexToRemove = i;
+          recipe = (String) recipesTableModel.getValueAt(i, 0); // recipe name
           recipesTableModel.removeRow(indexToRemove);
           i--;
         }
@@ -1835,10 +1715,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     if (indexToRemove != -1)
     {
-      opc_comms_log.append("RECIPE DELETED from table: " + productID + "\n");
+      opc_comms_log.append("RECIPE DELETED from table: " + recipe + "\n");
     } else
     {
-      opc_comms_log.append("RECIPE TO DELETE NOT FOUND from table: " + productID + "\n");
+      opc_comms_log.append("RECIPE TO DELETE NOT FOUND from table: " + recipe + "\n");
     }
   }
 
@@ -1849,20 +1729,22 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    * @param endpoint
    * @param workstationName
    */
-  private static void deleteFromTableDevices(String DeviceName, Boolean status, String endpoint, String workstationName)
+  private static void deleteFromTableDevices(String toRemove)
   {
     //delete from DeviceName? status? or endpoint? or all?
     //TODO
 
     int indexToRemove = -1;
+    String device = "";
     for (int i = 0; i < devicesTableModel.getRowCount(); i++)
     {//For each row
       for (int j = 0; j < devicesTableModel.getColumnCount(); j++)
       {//For each column in that row
-        if (devicesTableModel.getValueAt(i, j).equals(workstationName))
-        {//Search the model
-          System.out.println("FOUND PRODUCT TO DELETE from table: " + devicesTableModel.getValueAt(i, j) + " at row:" + i + " col:" + j);//Print if found string
+        if (devicesTableModel.getValueAt(i, j).equals(toRemove))
+        {//Search the model          
           indexToRemove = i;
+          // the device name to be removed
+          device = (String) devicesTableModel.getValueAt(i, 0);
           devicesTableModel.removeRow(indexToRemove);
           i--;
         }
@@ -1871,12 +1753,13 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     if (indexToRemove != -1)
     {
-      System.out.println("DEVICE DELETED from table: " + workstationName);//Print if server found 
-      opc_comms_log.append("DEVICE DELETED from table: " + workstationName + "\n");
+      //Print if server found 
+      System.out.println("DEVICE DELETED from table: " + device);
+      opc_comms_log.append("DEVICE DELETED from table: " + device + "\n");
     } else
     {
-      System.out.println("DEVICE TO DELETE NOT FOUND from table: " + workstationName);//Print if server not found 
-      //opc_comms_log.append("DEVICE TO DELETE NOT FOUND from table: " + DeviceName + "\n");
+      //Print if server not found 
+      System.out.println("DEVICE TO DELETE NOT FOUND from table: " + device);
     }
 
   }
@@ -2013,15 +1896,13 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    * @param WorkstationName
    * @return
    */
-  public String CleanTablesFromWorkstation(String WorkstationName)
+  public String cleanTablesFromDeviceAdapter(String WorkstationName)
   {
-    deleteFromTableDevices(null, null, null, WorkstationName);
-    deleteFromTableRecipes(null, null, WorkstationName);
-    deleteFromTableAdapters(WorkstationName, null, null);
-
+    deleteFromTableDevices(WorkstationName);
+    deleteFromTableRecipes(WorkstationName);
+    deleteFromTableAdapters(WorkstationName);
     return "OK";
   }
-
 
   // **************************************************************************************************************** //
   // **************************************************************************************************************** //
@@ -2091,7 +1972,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox<String> ComboMSB;
   private javax.swing.JButton LDSRegisterserver;
-  private javax.swing.JTextField LDSserverAddress;
   private javax.swing.JPanel OnOffLDS;
   private javax.swing.JPanel OnOffREST;
   private javax.swing.JPanel OnOffRegister;
@@ -2149,7 +2029,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private javax.swing.JLabel l_ddsDomain;
   private static javax.swing.JLabel l_openmosLogo;
   private javax.swing.JLabel l_testDDS;
-  private javax.swing.JTextField msb_opcua_servername;
+  private javax.swing.JTextField ldsSserverAddress;
+  private javax.swing.JTextField msbServerAddress;
   private static javax.swing.JTextArea opc_comms_log;
   private static javax.swing.JPanel p_dds;
   private javax.swing.JPanel p_productExecution;

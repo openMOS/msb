@@ -5,12 +5,12 @@
  */
 package eu.openmos.msb.cloud.cloudinterface.testactions;
 
-import eu.openmos.agentcloud.cloudinterface.ServiceCallStatus;
+import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.agentcloud.data.Order;
-import eu.openmos.msb.cloud.cloudinterface.testdata.OrderTest;
+import eu.openmos.model.Order;
+import eu.openmos.model.testdata.OrderTest;
 import io.vertx.core.Vertx;
 import javax.xml.ws.BindingProvider;
 import org.apache.log4j.Logger;
@@ -19,41 +19,41 @@ import org.apache.log4j.Logger;
  *
  * @author valerio.gentile
  */
-public class CloudInterface_NewOrderTest
-{
-
-  private static final Logger logger = Logger.getLogger(CloudInterface_NewOrderTest.class.getName());
-
-  public static void main(String[] args)
-  {
-    logger.info("New Order Test main start");
-
-    SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-    SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-
+public class CloudInterface_NewOrderTest {
+    
+    private static final Logger logger = Logger.getLogger(CloudInterface_NewOrderTest.class.getName());
+    
+    public static void main(String[] args) {
+        logger.info("New Order Test main start");
+        
+        SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+	SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+        
 /////////////////////////////
-    String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-    logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");
+        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+        logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");            
 
-    BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-    bindingProvider.getRequestContext().put(
-            // BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://192.168.15.5:9999/wsSystemConfigurator");
+        BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+        bindingProvider.getRequestContext().put(
+              // BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://192.168.15.5:9999/wsSystemConfigurator");
             BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
 //////////////////////////////
 
 //        Order newOrder = getTestObject();
-    Order newOrder = OrderTest.getTestObject();
-
-    ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrder(newOrder);
-    logger.info(orderStatus.getCode());
-    logger.info(orderStatus.getDescription());
-
-    // since july 2017, aka wp4 several semantic model alignment meetings,
-    // also product agents have socket communication
+        Order newOrder = OrderTest.getTestObject();
+                
+        ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrder(newOrder);
+        logger.info(orderStatus.getCode());
+        logger.info(orderStatus.getDescription());
+        
+        // since july 2017, aka wp4 several semantic model alignment meetings,
+        // also product agents have socket communication
 //        for (ProductDescription productDescription : newOrder.getProductDescriptions())
 //                Vertx.vertx().deployVerticle(new WebSocketsSender(productDescription.getUniqueId()));
-    logger.info("New Order Test main end");
-  }
+
+        logger.info("New Order Test main end");
+    }
+            
 
 //    public static Order getTestObject()
 //    {

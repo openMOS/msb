@@ -7,14 +7,15 @@ package eu.openmos.msb.services.rest;
 
 import eu.openmos.model.Equipment;
 import eu.openmos.model.KPI;
+import eu.openmos.model.Module;
 import eu.openmos.model.Parameter;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
-import eu.openmos.msb.cloud.cloudinterface.testdata.EquipmentTest;
-import eu.openmos.msb.cloud.cloudinterface.testdata.KPITest;
-import eu.openmos.msb.cloud.cloudinterface.testdata.ParameterTest;
-import eu.openmos.msb.cloud.cloudinterface.testdata.RecipeTest;
-import eu.openmos.msb.cloud.cloudinterface.testdata.SkillTest;
+import eu.openmos.model.testdata.KPITest;
+import eu.openmos.model.testdata.ModuleTest;
+import eu.openmos.model.testdata.ParameterTest;
+import eu.openmos.model.testdata.RecipeTest;
+import eu.openmos.model.testdata.SkillTest;
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -112,10 +113,10 @@ public class SkillController
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/{skillId}/equipments")
-  public List<Equipment> getEquipmentList(@PathParam("skillId") String skillId)
+  public List<Module> getEquipmentList(@PathParam("skillId") String skillId)
   {
     logger.debug("cpad - getEquipmentList - skillId = " + skillId);
     logger.debug("cpad getEquipmentList - of the skill = " + skillId);
-    return EquipmentTest.getTestList("TO FIX");
+    return ModuleTest.getTestList("TO FIX");
   }
 }
