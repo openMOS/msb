@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.openmos.agentcloud.data.utilities;
+package eu.openmos.model.utilities;
 
-import eu.openmos.agentcloud.data.Component;
-import eu.openmos.agentcloud.data.ProductDescription;
+import eu.openmos.model.Part;
+import eu.openmos.model.ProductInstance;
 // import eu.openmos.agentcloud.data.recipe.Equipment;
-import eu.openmos.agentcloud.data.recipe.ExecutionTableRow;
-import eu.openmos.agentcloud.data.recipe.KPI;
-import eu.openmos.agentcloud.data.recipe.KPISetting;
+// import eu.openmos.agentcloud.data.recipe.ExecutionTableRow;
+// import eu.openmos.agentcloud.data.recipe.KPI;
+// import eu.openmos.agentcloud.data.recipe.KPISetting;
 // import eu.openmos.agentcloud.data.recipe.Parameter;
 // import eu.openmos.agentcloud.data.recipe.ParameterSetting;
 // import eu.openmos.agentcloud.data.recipe.Recipe;
@@ -70,6 +70,21 @@ public class ListsToString {
         return builder.toString();
     }
     
+    public static String writeInternalModuleIds(List<String> internalModuleIds)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        if(internalModuleIds == null || internalModuleIds.isEmpty())
+            builder.append(SerializationConstants.EMPTY_LIST);
+        else {
+            for(String internalModuleId : internalModuleIds) {
+                builder.append(internalModuleId.toString());
+                builder.append(SerializationConstants.TOKEN_INTERNAL_MODULE_ID_LIST_ITEM);
+            }
+        }
+        return builder.toString();
+    }
+    
     public static String writeKPISettings(List<KPISetting> kpiSettings)
     {
         StringBuilder builder = new StringBuilder();
@@ -84,7 +99,7 @@ public class ListsToString {
         }
         return builder.toString();
     }
-    
+        
     public static String writeKPIs(List<KPI> kpis)
     {
         StringBuilder builder = new StringBuilder();
@@ -222,14 +237,14 @@ public class ListsToString {
         return builder.toString();
     }
 
-    public static String writeProductDescriptions(List<ProductDescription> productDescriptions)
+    public static String writeProductDescriptions(List<ProductInstance> productDescriptions)
     {
         StringBuilder builder = new StringBuilder();
 
         if(productDescriptions == null || productDescriptions.isEmpty())
             builder.append(SerializationConstants.EMPTY_LIST);
         else {
-            for(ProductDescription productDescription : productDescriptions) {
+            for(ProductInstance productDescription : productDescriptions) {
                 builder.append(productDescription.toString());
                 builder.append(SerializationConstants.TOKEN_PRODUCT_DESCRIPTION_LIST_ITEM); 
             }
@@ -237,14 +252,14 @@ public class ListsToString {
         return builder.toString();
     }
     
-    public static String writeComponents(List<Component> components)
+    public static String writeParts(List<Part> components)
     {
         StringBuilder builder = new StringBuilder();
 
         if(components == null || components.isEmpty())
             builder.append(SerializationConstants.EMPTY_LIST);
         else {
-            for(Component component : components) {
+            for(Part component : components) {
                 builder.append(component.toString());
                 builder.append(SerializationConstants.TOKEN_COMPONENT_LIST_ITEM); 
             }
@@ -266,4 +281,20 @@ public class ListsToString {
         }
         return builder.toString();
     }
+
+    public static String writePossibleRecipeChoices(List<String> possibleRecipeChoices)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        if(possibleRecipeChoices == null || possibleRecipeChoices.isEmpty())
+            builder.append(SerializationConstants.EMPTY_LIST);
+        else {
+            for(String possibleRecipeChoice : possibleRecipeChoices) {
+                builder.append(possibleRecipeChoices);
+                builder.append(SerializationConstants.TOKEN_POSSIBLE_RECIPE_CHOICE_LIST_ITEM); 
+            }
+        }
+        return builder.toString();
+    }
+    
 }

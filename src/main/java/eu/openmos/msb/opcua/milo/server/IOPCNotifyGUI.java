@@ -18,5 +18,5 @@ public interface IOPCNotifyGUI
 
   void on_endpoint_dissapeared(String name);
 
-  void reset_tables();
+  void notify_error();
 }

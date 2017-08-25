@@ -129,7 +129,7 @@ public class DACManager
     boolean ok = false;
     try
     {
-      int id = DatabaseInteraction.getInstance().removeDeviceById(deviceAdapterName);
+      int id = DatabaseInteraction.getInstance().removeDeviceByName(deviceAdapterName);
       if (id != -1 && deviceAdapters.containsKey(id))
       {
         deviceAdapters.remove(id);
@@ -142,18 +142,6 @@ public class DACManager
     return ok;
   }
 
-//  /**
-//   * @brief @param deviceAdapterName
-//   * @param cpad
-//   */
-//  public void setAgentDeviceIDMaps(String deviceAdapterName, CyberPhysicalAgentDescription cpad)
-//  {
-//    int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
-//    if (id != -1 && deviceAdapters.containsKey(id))
-//    {
-//      deviceAdapters.get(id).setCyberPhysicalAgentDescription(cpad);
-//    }
-//  }
   /**
    * @param deviceAdapterName
    * @brief WORKSTATIONName vs DEVICE data MAPS

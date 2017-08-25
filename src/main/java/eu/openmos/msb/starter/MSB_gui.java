@@ -4,7 +4,6 @@
 package eu.openmos.msb.starter;
 
 // IMOPORTS
-import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.dds.DDSDeviceManager;
 import eu.openmos.msb.dds.DDSDevice;
@@ -1360,16 +1359,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         /**
          *
-         */
-        @Override
-        public void reset_tables()
-        {
-          // dropServersAndEndpoints(); //ver
-          System.out.println("reset endpoint and servers tables...");
-        }
-
-        /**
-         *
          * @param name
          * @param app_uri
          */
@@ -1379,6 +1368,13 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           System.out.println("This server has disapeared: " + name);
           opc_comms_log.append("The server: " + name + " has disapeared and has been successfully removed from database.\n");
           cleanTablesFromDeviceAdapter(name);
+        }
+
+        @Override
+        public void notify_error()
+        {
+
+          throw new UnsupportedOperationException("Not supported yet.");
         }
 
       };

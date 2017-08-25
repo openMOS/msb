@@ -31,7 +31,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
   private final int discovery_period = 10; // 35 seconds
   private final String LDS_uri;
-  private final IOPCNotifyGUI servers_dynamic;
+  private final IOPCNotifyGUI notify_channel;
   private final Logger logger = LoggerFactory.getLogger(getClass());
   private final String MSB_OPCUA_SERVER_ADDRESS;
 
@@ -39,12 +39,12 @@ public class OPCServersDiscoverySnippet extends Thread
    * @param _msb_address
    * @brief Class constructor
    * @param _LDS_uri
-   * @param _servers_dynamic
+   * @param _notify_channel
    */
-  public OPCServersDiscoverySnippet(String _LDS_uri, String _msb_address, IOPCNotifyGUI _servers_dynamic)
+  public OPCServersDiscoverySnippet(String _LDS_uri, String _msb_address, IOPCNotifyGUI _notify_channel)
   {
     LDS_uri = _LDS_uri;
-    servers_dynamic = _servers_dynamic;
+    notify_channel = _notify_channel;
     MSB_OPCUA_SERVER_ADDRESS = _msb_address;
   }
 
@@ -56,11 +56,10 @@ public class OPCServersDiscoverySnippet extends Thread
   {
     while (true)
     {
-      servers_dynamic.reset_tables();
       try
       {
         discoverServer(LDS_uri);
-        checkDBServersStatus();
+        //checkDBServersStatus();
         sleep(discovery_period * 1000);
       } catch (InterruptedException ex)
       {
@@ -78,7 +77,7 @@ public class OPCServersDiscoverySnippet extends Thread
   private boolean discoverServer(String uri)
   {
     // notify gui of the pooling mechanism
-    servers_dynamic.on_polling_cycle();
+    notify_channel.on_polling_cycle();
     try
     {
       // Discover a new server list from a discovery server at URI
@@ -117,73 +116,6 @@ public class OPCServersDiscoverySnippet extends Thread
   }
 
   /**
-   *
-   * @return
-   */
-  private int checkDBServersStatus()
-  {
-    int retMsg = 0;
-
-    ArrayList<String> devices = DatabaseInteraction.getInstance().listAllDeviceAdapters();
-    String address = "";
-
-    EndpointDescription[] endpointsFromServer = null;
-    String DeviceToRemove = null;
-    for (String device : devices)
-    {
-      try
-      {
-        DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(device);
-        address = ((MSBClientSubscription) da.getClient()).getClientObject().getStackClient().getEndpointUrl();
-        endpointsFromServer = UaTcpStackClient.getEndpoints(address).get();
-      } catch (InterruptedException | ExecutionException ex)
-      {
-        this.logger.error(ex.getMessage());
-        if (ex.getCause().getMessage().contains("Connection refused"))
-        {
-          //DELETE SERVER FROM DATABASE, HASHMAP AND TABLE
-          servers_dynamic.on_endpoint_dissapeared(device);
-          retMsg = removeDownServer(device);
-          if (DeviceToRemove != null)
-          {
-            DeviceToRemove = device;
-          }
-        }
-      }
-
-      if (endpointsFromServer == null)
-      {
-        System.out.println();
-        this.logger.warn("This server doens't have Endpoints available:  {}", device);
-        //delete it from db and hashmap
-        retMsg = removeDownServer(device);
-        if (DeviceToRemove != null)
-        {
-          DeviceToRemove = device;
-        }
-
-      } else if (endpointsFromServer.length == 0)
-      {
-        this.logger.warn("This server doens't have Endpoints available:  {}", device);
-        //delete it from db and hashmap
-        retMsg = removeDownServer(device);
-        if (DeviceToRemove != null)
-        {
-          // TODO
-        }
-
-      }
-    }
-
-    if (DeviceToRemove != null && address != null)
-    {
-      servers_dynamic.on_endpoint_dissapeared(DeviceToRemove);
-    }
-
-    return retMsg;
-  }
-
-  /**
    * @brief TODO fabio
    * @param serverApp
    * @param applicationUri
@@ -206,15 +138,15 @@ public class OPCServersDiscoverySnippet extends Thread
           {
             edList.add(ed);
             System.out.println("EndPoints from: " + url + " = " + ed);
-            
 
             String daName = serverApp.getApplicationName().getText();
             DeviceAdapter da = manager.getDeviceAdapter(daName);
+
             if (da == null)
             {
               manager.addDeviceAdapter(daName, EProtocol.OPC, "", "");
               da_url = ed.getEndpointUrl();
-              // TODO af-silva validate this
+
               ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get(); //new MSB            
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
               {
@@ -251,7 +183,7 @@ public class OPCServersDiscoverySnippet extends Thread
                 }
 
               }
-              servers_dynamic.on_new_endpoint_discovered(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
+              notify_channel.on_new_endpoint_discovered(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
             }
 
           }
@@ -262,8 +194,11 @@ public class OPCServersDiscoverySnippet extends Thread
 
           if (e.getCause().getMessage().contains("Connection refused"))
           {
-            //DELETE SERVER FROM DATABASE AND HASHMAP
-            servers_dynamic.on_endpoint_dissapeared(serverApp.getApplicationName().getText());
+            String daName = serverApp.getApplicationName().getText();
+            if(manager.getDeviceAdapter(daName) != null)
+            {             
+              removeDownServer(daName);              
+            }
           }
         } catch (Exception ex)
         {
@@ -280,19 +215,20 @@ public class OPCServersDiscoverySnippet extends Thread
 
   /**
    *
-   * @param ServerName
+   * @param serverName
    * @return
    */
-  private int removeDownServer(String ServerName)
+  private int removeDownServer(String serverName)
   {
-    if (DACManager.getInstance().deleteDeviceAdapter(ServerName))
+    if (DACManager.getInstance().deleteDeviceAdapter(serverName))
     {
       System.out.println("DownServer successfully deleted from DB!");
-      servers_dynamic.on_endpoint_dissapeared(ServerName);
+      notify_channel.on_endpoint_dissapeared(serverName);
       return 1;
     } else
     {
       System.out.println("ERROR deleting DownServer from DB!");
+      System.out.println("Unable to remove " + serverName );
       return -1;
     }
   }
