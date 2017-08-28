@@ -47,7 +47,7 @@ public class ProductController
     {
       Product p = ProductTest.getTestObject();
       String currentP = "PRODUCT " + Character.getNumericValue("A".charAt(0)) + i;
-      p.setModelId(currentP);
+      //p.setModelId(currentP); // TODO valerio
       p.setName("name_" + currentP);
       p.setDescription("description_" + currentP);
       ls.add(p);

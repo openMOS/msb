@@ -647,7 +647,7 @@ public class OPCDeviceHelper extends Observable
     kpi.setName(kpiName);
     kpi.setDefaultUpperBound(kpiDefaultUpperBound);
     kpi.setDefaultLowerBound(kpiDefaultLowerBound);
-    kpi.setCurrentValue(kpiCurrentValue);
+    //kpi.setCurrentValue(kpiCurrentValue); // TODO - valerio
     kpi.setUnit(kpiUnit);
 
     List<KPI> skillKpis = new LinkedList<>(Arrays.asList(kpi));
