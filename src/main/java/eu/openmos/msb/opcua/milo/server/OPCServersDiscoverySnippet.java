@@ -17,6 +17,8 @@ import eu.openmos.msb.datastructures.EProtocol;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import java.util.logging.Level;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 
 import org.slf4j.Logger;
@@ -147,22 +149,39 @@ public class OPCServersDiscoverySnippet extends Thread
               manager.addDeviceAdapter(daName, EProtocol.OPC, "", "");
               da_url = ed.getEndpointUrl();
 
-              ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get(); //new MSB            
+              //new MSB            
+              ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get(); 
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
               {
 
                 DeviceAdapterOPC opc = (DeviceAdapterOPC) manager.getDeviceAdapter(daName);
-                MSBClientSubscription instance = opc.getClient();
-
-                //start connection after inserting on the hashmap!
+                MSBClientSubscription instance = opc.getClient();                
                 instance.startConnection(da_url);
-
+                OpcUaClient client = instance.getClientObject();
+                
+               
                 // Iterate over all values, using the keySet method.
                 // call SendServerURL() method from device
-                OpcUaClient client = instance.getClientObject();
-                if (daName != null && !daName.contains("MSB"))
+                
+                if (daName != null && !daName.contains("MSB") && !daName.contains("discovery"))
                 {
 
+                  
+                  
+                  // oompa loompas at work here
+                  System.out.println("\n");
+                  System.out.println("***** Starting namespace browsing *****");
+                  
+                  System.out.println("Identifiers id " + Identifiers.References);
+                  System.out.println("Identifiers id " + Identifiers.HasTypeDefinition);
+                  
+                  
+                  System.out.println("\n");
+                  instance.browseNode("", client, new NodeId(2, "Masmec_InstanceHierarchy/Transport1"));
+                  System.out.println("\n");
+                  System.out.println("***** End namespace browsing *****");
+                  System.out.println("\n");
+                  
                   instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
                   {
                     System.out.println("error invoking SendServerURL() for server: " + daName + "\n" + ex);
@@ -170,13 +189,9 @@ public class OPCServersDiscoverySnippet extends Thread
                     return "-1.0";
                   }).thenAccept(v ->
                   {
-
                     System.out.println("SendServerURL(uri)={}\n" + v);
-
                   });
-
                 }
-
                 if (client == null)
                 {
                   System.out.println("Client = null?");
@@ -195,9 +210,9 @@ public class OPCServersDiscoverySnippet extends Thread
           if (e.getCause().getMessage().contains("Connection refused"))
           {
             String daName = serverApp.getApplicationName().getText();
-            if(manager.getDeviceAdapter(daName) != null)
-            {             
-              removeDownServer(daName);              
+            if (manager.getDeviceAdapter(daName) != null)
+            {
+              removeDownServer(daName);
             }
           }
         } catch (Exception ex)
@@ -227,8 +242,9 @@ public class OPCServersDiscoverySnippet extends Thread
       return 1;
     } else
     {
-      System.out.println("ERROR deleting DownServer from DB!");
-      System.out.println("Unable to remove " + serverName );
+      String error = "Unable to remove  " + serverName + " from DB!";
+      notify_channel.on_notify_error(error);
+      System.out.println(error);
       return -1;
     }
   }

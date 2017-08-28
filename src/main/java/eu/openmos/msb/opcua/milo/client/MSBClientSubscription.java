@@ -33,8 +33,11 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.toList;
+import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 
 /**
  *
@@ -355,29 +358,83 @@ public class MSBClientSubscription implements IClient
    * @param client
    * @param browseRoot
    */
-  private void browseNode(String indent, OpcUaClient client, NodeId browseRoot)
+//  public void browseNode(String indent, OpcUaClient client, NodeId browseRoot)
+//  {
+//
+//    BrowseDescription browse = new BrowseDescription(
+//            browseRoot,
+//            BrowseDirection.Forward,
+//            Identifiers.References,
+//            true,
+//            uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
+//            uint(BrowseResultMask.All.getValue())
+//    );
+//
+//    try
+//    {
+//      BrowseResult browseResult = client.browse(browse).get();
+//
+//      List<ReferenceDescription> references = toList(browseResult.getReferences());
+//
+//      for (ReferenceDescription rd : references)
+//      {
+//        logger.info("{} Node={}", indent, rd.getBrowseName().getName());
+//        System.out.println(indent + " Node= " + rd.getBrowseName().getName());
+//        // recursively browse to children
+//        rd.getNodeId().local().ifPresent(nodeId -> browseNode(indent + "  ", client, nodeId));
+//      }
+//    } catch (InterruptedException | ExecutionException e)
+//    {
+//      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
+//    }
+//  }
+  public void browseNode(String indent, OpcUaClient client, NodeId browseRoot)
   {
-    BrowseDescription browse = new BrowseDescription(
-            browseRoot,
-            BrowseDirection.Forward,
-            Identifiers.References,
-            true,
-            uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
-            uint(BrowseResultMask.All.getValue())
-    );
-
     try
     {
-      BrowseResult browseResult = client.browse(browse).get();
 
+      String equipmentNamespace = "openMOSRoleClassLib/Equipment";
+      String skillNamespace = "openMOSRoleClassLib/Skill";
+      String moduleNamespace = "openMOSRoleClassLib/Equipment/Module";
+
+      BrowseDescription browse = new BrowseDescription(
+              browseRoot,
+              BrowseDirection.Forward,
+              Identifiers.References,
+              true,
+              //uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
+              uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue() | NodeClass.ObjectType.getValue()),
+              uint(BrowseResultMask.All.getValue())
+      );
+
+      BrowseDescription browse2 = new BrowseDescription(
+              browseRoot,
+              BrowseDirection.Forward,
+              new NodeId(1, 4001),
+              true,
+              //uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
+              uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue() | NodeClass.ReferenceType.getValue()),
+              uint(BrowseResultMask.All.getValue())
+      );
+
+      BrowseResult browseResult = client.browse(browse).get();
       List<ReferenceDescription> references = toList(browseResult.getReferences());
 
+      System.out.println("\n");
       for (ReferenceDescription rd : references)
       {
-        logger.info("{} Node={}", indent, rd.getBrowseName().getName());
+
+        //logger.info("Node={}", rd.getBrowseName().getName());
+        System.out.println(indent + "Node=                         " + rd.getBrowseName().getName());
+        System.out.println(indent + "Type=                         " + rd.getTypeId().toParseableString());
+        System.out.println(indent + "NodeId:                       " + rd.getNodeId().toString());
+        System.out.println(indent + "Other INFO[]:                 " + rd.getTypeDefinition().toParseableString());
+        System.out.println(indent + "Other INFO[NamespaceIndex]:   " + rd.getReferenceTypeId().expanded().getNamespaceIndex());
+        System.out.println(indent + "Other INFO[ReferenceTypeId]:  " + rd.getReferenceTypeId().expanded().toString());
 
         // recursively browse to children
-        rd.getNodeId().local().ifPresent(nodeId -> browseNode(indent + "  ", client, nodeId));
+        rd.getNodeId().local().ifPresent(nodeId -> browseNode("\t" + indent, client, nodeId));
+
       }
     } catch (InterruptedException | ExecutionException e)
     {

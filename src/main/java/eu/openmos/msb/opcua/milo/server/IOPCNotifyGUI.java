@@ -18,5 +18,5 @@ public interface IOPCNotifyGUI
 
   void on_endpoint_dissapeared(String name);
 
-  void notify_error();
+  void on_notify_error(String error);
 }

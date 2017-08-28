@@ -1371,10 +1371,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         }
 
         @Override
-        public void notify_error()
+        public void on_notify_error(String error)
         {
-
-          throw new UnsupportedOperationException("Not supported yet.");
+          opc_comms_log.append("[ERROR] " + error + "\n");
         }
 
       };
