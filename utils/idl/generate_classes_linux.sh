@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# this script is for linux enviroment
 
 # <path to idlpp> -I <path to idl default> -l <language (e.g java)> <file ".idl">
 
