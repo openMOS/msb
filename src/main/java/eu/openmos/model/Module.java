@@ -1,12 +1,13 @@
 package eu.openmos.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 
 /**
  * Modules that compose subsystems.
@@ -16,9 +17,21 @@ import org.apache.log4j.Logger;
  */
 public class Module extends Equipment implements Serializable {
     private static final Logger logger = Logger.getLogger(Module.class.getName());
-    private static final long serialVersionUID = 6529685098267757689L;
+    private static final long serialVersionUID = 6529685098267757011L;
     
+    /**
+     * List of internal modules, can be empty.
+     */
     protected List<Module> internalModules;
+    
+    /**
+     * Pointer to the parent equipment, can be null.
+     */
+    protected String parentId;
+    /**
+     * Type of parent equipment, can be a subsystem or another module.
+     */
+    protected String parentType;
 
     public List<Module> getInternalModules() {
         return internalModules;
@@ -28,44 +41,93 @@ public class Module extends Equipment implements Serializable {
         this.internalModules = internalModules;
     }
 
-    // for reflection purpose
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getParentType() {
+        return parentType;
+    }
+
+    public void setParentType(String parentType) {
+        this.parentType = parentType;
+    }
+    
+    
+
+    /**
+     * Empty constructor, for reflection purpose.
+     */
     public Module() {super();}
 
+    /**
+     * Parameterized constructor.
+     * 
+     * @param uniqueId
+     * @param name
+     * @param description
+     * @param connected
+     * @param skills
+     * @param ports
+     * @param internalModules
+     * @param address
+     * @param status
+     * @param manufacturer
+     * @param registeredTimestamp 
+     */
     public Module(
             String uniqueId, 
             String name, 
             String description, 
             boolean connected,
             List<Skill> skills,
+            List<PhysicalPort> ports,
             List<Module> internalModules,
             String address,
             String status,
             String manufacturer,
+            String parentId,
+            String parentType,
             Date registeredTimestamp
-    ) {
-        super(uniqueId, name, description, connected, skills, address, status, manufacturer, registeredTimestamp);
-        this.setInternaleModules(internalModules);
-        }
-    
-//    public static Module deserialize(String object) 
-//    {        
-//        Module objectToReturn = null;
-//        try 
-//        {
-//            ByteArrayInputStream bIn = new ByteArrayInputStream(object.getBytes());
-//            ObjectInputStream in = new ObjectInputStream(bIn);
-//            objectToReturn = (Module) in.readObject();
-//            in.close();
-//            bIn.close();
-//        }
-//        catch (IOException i) 
-//        {
-//            logger.error(i);
-//        }
-//        catch (ClassNotFoundException c) 
-//        {
-//            logger.error(c);
-//        }
-//        return objectToReturn;
-//    }
+    ) 
+    {
+        super(uniqueId, name, description, connected, skills, ports, address, status, manufacturer, registeredTimestamp);
+
+        this.internalModules = internalModules;
+        this.parentId = parentId;
+        this.parentType = parentType;
+    }    
+
+     /**
+     * Method that serializes the object into a BSON document.
+     * 
+     * @return BSON form of the object. 
+     */
+    public Document toBSON() {
+        Document doc = new Document();
+
+        List<String> skillIds = skills.stream().map(skill -> skill.getUniqueId()).collect(Collectors.toList());        
+        List<String> physicalPortIds = skills.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
+        List<String> moduleIds = skills.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
+        
+        doc.append("uniqueId", uniqueId);
+        doc.append("name", name);
+        doc.append("description", description);
+        doc.append("connected", connected);
+        doc.append("skillIds", skillIds);        
+        doc.append("physicalPortIds", physicalPortIds);        
+        doc.append("moduleIds", moduleIds);        
+        doc.append("address", address);
+        doc.append("status", status);
+        doc.append("manifacturer", manufacturer);
+        doc.append("parentId", parentId);
+        doc.append("parentType", parentType);
+        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
+        
+        return doc;
+    }
 }

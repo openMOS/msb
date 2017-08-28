@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.model.testdata;
 
 import java.util.Arrays;
@@ -38,14 +33,18 @@ public class SkillTest {
                 "description", 
                 "uniqueId", 
                 KPITest.getTestList(), 
+                InformationPortTest.getTestList(),
                 "name", 
                 "label",
                 ParameterTest.getTestList(), 
+                ParameterPortTest.getTestList(),
                 "weld", 
+                SkillTypeTest.getTestObject(),
                 0, 
                 // SkillRequirementTest.getTestList(), 
-                null,
+                null,                
                 RecipeTest.getTestRecipeIdsList(),
+                ControlPortTest.getTestList(),
                 ModuleTest.getTestObject().getUniqueId(),
                 registeredTimestamp);
         
@@ -73,14 +72,18 @@ public class SkillTest {
                 "description", 
                 "uniqueId", 
                 KPITest.getTestList(), 
+                InformationPortTest.getTestList(),
                 "name", 
                 "label",
                 ParameterTest.getTestList(), 
+                ParameterPortTest.getTestList(),
                 "classificationType", 
+                SkillTypeTest.getTestObject(),
                 0, 
                 // SkillRequirementTest.getTestList(), 
                 null,
                 null, 
+                ControlPortTest.getTestList(),
                 // ModuleTest.getTestObject().getUniqueId(),
                 null,
                 registeredTimestamp);

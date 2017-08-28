@@ -6,12 +6,6 @@
 package eu.openmos.model.testdata;
 
 // import eu.openmos.agentcloud.data.recipe.Equipment;
-import eu.openmos.model.LogicalLocation;
-import eu.openmos.model.PhysicalLocation;
-import eu.openmos.model.Equipment;
-// import eu.openmos.agentcloud.data.recipe.ExecutionTable;
-// import eu.openmos.agentcloud.data.recipe.Skill;
-// import eu.openmos.agentcloud.data.recipe.SkillRequirement;
 import eu.openmos.model.*;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +38,7 @@ public class SubSystemTest {
         List<Recipe> recipes = RecipeTest.getTestList();
         List<KPI> kpis = KPITest.getTestList();
         List<Skill> skills = SkillTest.getTestList();
+        List<PhysicalPort> ports = PhysicalPortTest.getTestList();
         List<Module> internalModules = ModuleTest.getTestList();
         
         PhysicalLocation physicalLocation = PhysicalLocationTest.getTestObject();
@@ -52,7 +47,7 @@ public class SubSystemTest {
     ExecutionTable executionTable = ExecutionTableTest.getTestObject();
     
     cpad = new SubSystem(equipmentId, equipmentId, "description", 
-            executionTable, true, skills, recipes, 
+            executionTable, true, skills, ports, recipes, 
             internalModules, "address", "status", "manufacturer", 
             physicalLocation, logicalLocation, type, registeredTimestamp);
     

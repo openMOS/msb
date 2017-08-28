@@ -1,9 +1,7 @@
 package eu.openmos.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Date;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -16,7 +14,7 @@ import org.bson.Document;
  */
 public class KPI extends Base implements Serializable {
     private static final Logger logger = Logger.getLogger(KPI.class.getName());
-    private static final long serialVersionUID = 6529685098267757687L;
+    private static final long serialVersionUID = 6529685098267757007L;
     
     /**
      * KPI unique ID.
@@ -34,32 +32,31 @@ public class KPI extends Base implements Serializable {
     private String description;
 
     /**
-     * KPI upper bound.
+     * KPI type.
      */
-    private String defaultUpperBound;
-
-    /**
-     * KPI lower bound.
-     */
-    private String defaultLowerBound;
-    
-    /**
-     * KPI current value.
-     */
-    private String currentValue;
-    
+    private String type;
     /**
      * KPI unit.
      */
     private String unit;
-   
     /**
-     * KPI type.
+     * KPI current value type
      */
-    private String type;
+    private String valueType;
+    /**
+     * KPI current value.
+     */
+    private String value;
     
-//    private static final int FIELDS_COUNT = 8;
-
+    /**
+     * KPI lower bound.
+     */
+    private String defaultLowerBound;
+    /**
+     * KPI upper bound.
+     */
+    private String defaultUpperBound;
+    
     /**
      * Default constructor, for reflection.
      */   
@@ -78,18 +75,21 @@ public class KPI extends Base implements Serializable {
      */
     public KPI(String description, String uniqueId, String name, 
             String defaultUpperBound, String defaultLowerBound, 
-            String currentValue, String unit, String type) {
-//        super(registeredTimestamp);
-        super();
+            String currentValue, String unit, String type, String valueType,
+            Date registered) {
+        super(registered);
         
-        this.description = description;
         this.uniqueId = uniqueId;
         this.name = name;
-        this.defaultUpperBound = defaultUpperBound;
-        this.defaultLowerBound = defaultLowerBound;
-        this.currentValue = currentValue;
-        this.unit = unit;
+        this.description = description;
+
         this.type = type;
+        this.unit = unit;
+        this.value = currentValue;
+        this.valueType = valueType;
+
+        this.defaultLowerBound = defaultLowerBound;
+        this.defaultUpperBound = defaultUpperBound;
     }
 
     public String getDescription() {
@@ -132,14 +132,6 @@ public class KPI extends Base implements Serializable {
         this.defaultLowerBound = defaultLowerBound;
     }
 
-    public String getCurrentValue() {
-        return currentValue;
-    }
-
-    public void setCurrentValue(String currentValue) {
-        this.currentValue = currentValue;
-    }
-
     public String getUnit() {
         return unit;
     }
@@ -156,142 +148,39 @@ public class KPI extends Base implements Serializable {
         this.type = type;
     }
 
-    /**
-     * Method that serializes the object.
-     * The returned string has the following format:
-     * 
-     * description,
-     * unique id,
-     * name,
-     * upper bound,
-     * lower bound,
-     * value,
-     * unit
-     * 
-     * @return Serialized form of the object. 
-     */
-//    @Override
-//    public String toString() {
-//        return description + SerializationConstants.TOKEN_KPI + 
-//                uniqueId + SerializationConstants.TOKEN_KPI + 
-//                name + SerializationConstants.TOKEN_KPI + 
-//                defaultUpperBound + SerializationConstants.TOKEN_KPI + 
-//                defaultLowerBound + SerializationConstants.TOKEN_KPI + 
-//                currentValue + SerializationConstants.TOKEN_KPI + 
-//                unit + SerializationConstants.TOKEN_KPI + 
-//                type;
-//    }
+    public String getValueType() {
+        return valueType;
+    }
 
-    /**
-    * Method that deserializes a String object.
-     * The input string needs to have the following format:
-    *
-     * description,
-     * unique id,
-     * name,
-     * upper bound,
-     * lower bound,
-     * value,
-     * unit
-     * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-    */
-//    public static KPI fromString(String object) throws ParseException {
-//        StringTokenizer tokenizer = new StringTokenizer(object, SerializationConstants.TOKEN_KPI);
-//        
-//        if (tokenizer.countTokens() != FIELDS_COUNT)
-//            throw new ParseException("KPI - " + SerializationConstants.INVALID_FORMAT_FIELD_COUNT_ERROR + FIELDS_COUNT, 0);
-//        
-//        return new KPI(
-//                tokenizer.nextToken(),      // description
-//                tokenizer.nextToken(),      // unique id
-//                tokenizer.nextToken(),      // name
-//                tokenizer.nextToken(),      // upper bound
-//                tokenizer.nextToken(),      // lower bound
-//                tokenizer.nextToken(),      // value
-//                tokenizer.nextToken(),      // unit
-//                tokenizer.nextToken()       // type
-//        );
-//    }   
+    public void setValueType(String valueType) {
+        this.valueType = valueType;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     
     /**
      * Method that serializes the object into a BSON document.
-     * The returned BSON document has the following format:
-     * 
-     * description,
-     * unique id,
-     * name,
-     * upper bound,
-     * lower bound,
-     * value,
-     * unit
      * 
      * @return BSON form of the object. 
      */
     public Document toBSON() {
         return toBSON2();
-//        Document doc = new Document();
-//        
-//        doc.append("description", description);
-//        doc.append("uniqueId", uniqueId);
-//        doc.append("name", name);
-//        doc.append("defaultUpperBound", defaultUpperBound);
-//        doc.append("defaultLowerBound", defaultLowerBound);
-//        doc.append("currentValue", currentValue);
-//        doc.append("unit", unit);
-//        doc.append("type", type);
-//        return doc;
     }   
     
     /**
      * Method that deserializes a BSON object.
-     * The input BSON needs to have the following format:
-     * 
-     * description,
-     * unique id,
-     * name,
-     * upper bound,
-     * lower bound,
-     * value,
-     * unit
      * 
      * @param bsonKPI - BSON to be deserialized.
     * @return Deserialized object.
      */
     public static KPI fromBSON(Document bsonKPI) {   
         return (KPI)fromBSON2(bsonKPI, KPI.class);
-//        return new KPI(
-//            bsonKPI.get("description").toString(),
-//            bsonKPI.get("id").toString(),       // it was "uniqueid"
-//            bsonKPI.get("name").toString(),
-//            bsonKPI.get("defaultUpperBound").toString(),
-//            bsonKPI.get("defaultLowerBound").toString(),
-//            bsonKPI.get("currentValue").toString(),
-//            bsonKPI.get("unit").toString(),
-//            bsonKPI.get("type").toString()                                
-//        );
     }
-
-//    public static KPI deserialize(String object) 
-//    {        
-//        KPI objectToReturn = null;
-//        try 
-//        {
-//            ByteArrayInputStream bIn = new ByteArrayInputStream(object.getBytes());
-//            ObjectInputStream in = new ObjectInputStream(bIn);
-//            objectToReturn = (KPI) in.readObject();
-//            in.close();
-//            bIn.close();
-//        }
-//        catch (IOException i) 
-//        {
-//            logger.error(i);
-//        }
-//        catch (ClassNotFoundException c) 
-//        {
-//            logger.error(c);
-//        }
-//        return objectToReturn;
-//    }
 }

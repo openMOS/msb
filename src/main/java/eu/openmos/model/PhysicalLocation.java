@@ -9,9 +9,10 @@ import org.bson.Document;
  *
  * @author Luis Ribeiro <luis.ribeiro@liu.se>
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
+ * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
 public class PhysicalLocation extends Location implements Serializable {
-    private static final long serialVersionUID = 6529685098267757501L;
+    private static final long serialVersionUID = 6529685098267757017L;
     
     private String referenceFrameName;
     private long x;
@@ -24,17 +25,30 @@ public class PhysicalLocation extends Location implements Serializable {
     /**
      * Product instance ID.
      */
-    private String productId;
+    private String productInstanceId;    
     
-//    private static final int FIELDS_COUNT = 9;
-    
-    // reflection stuff
+    /**
+     * Empty constructor, for reflection purpose.
+     */
     public PhysicalLocation() {super();}
     
+    /**
+     * Parameterized constructor.
+     * 
+     * @param referenceFrameName
+     * @param x
+     * @param y
+     * @param z
+     * @param alpha
+     * @param beta
+     * @param gamma
+     * @param productId
+     * @param registeredTimestamp 
+     */
     public PhysicalLocation(String referenceFrameName, 
             long x, long y, long z, 
             long alpha, long beta, long gamma,
-            String productId, Date registeredTimestamp) {
+            String productInstanceId, Date registeredTimestamp) {
         super(registeredTimestamp);
         
         this.referenceFrameName = referenceFrameName;
@@ -45,7 +59,7 @@ public class PhysicalLocation extends Location implements Serializable {
         this.beta = beta;
         this.gamma = gamma;
         
-        this.productId = productId;
+        this.productInstanceId = productInstanceId;
         this.registered = registeredTimestamp;
     }
 
@@ -105,133 +119,20 @@ public class PhysicalLocation extends Location implements Serializable {
         this.gamma = gamma;
     }
 
-    public String getProductId() {
-        return productId;
+    public String getProductInstanceId() {
+        return productInstanceId;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setProductInstanceId(String productId) {
+        this.productInstanceId = productId;
     }
-    
-    /**
-     * Method that serializes the object.
-     * The returned string has the following format:
- 
- referenceFrameName,
- x,
- y,
- z,
- alpha,
- beta,
- gamma,
- product instance id,
- registered ("yyyy-MM-dd HH:mm:ss.SSS")
-     * 
-     * @return Serialized form of the object. 
-     */
-//    @Override
-//    public String toString() {
-//        StringBuilder builder = new StringBuilder();
-//        
-//        builder.append(referenceFrameName);
-//        
-//        builder.append(SerializationConstants.TOKEN_PHYSICAL_LOCATION);
-//        builder.append(x);
-//        builder.append(SerializationConstants.TOKEN_PHYSICAL_LOCATION);
-//        builder.append(y);
-//        builder.append(SerializationConstants.TOKEN_PHYSICAL_LOCATION);
-//        builder.append(z);
-//        
-//        builder.append(SerializationConstants.TOKEN_PHYSICAL_LOCATION);
-//        builder.append(alpha);
-//        builder.append(SerializationConstants.TOKEN_PHYSICAL_LOCATION);
-//        builder.append(beta);
-//        builder.append(SerializationConstants.TOKEN_PHYSICAL_LOCATION);
-//        builder.append(gamma);
-//        
-//        builder.append(SerializationConstants.TOKEN_PHYSICAL_LOCATION);
-//        builder.append(productId);
-//        
-////        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-////        String stringRegisteredTimestamp = sdf.format(this.registered);
-////        builder.append(SerializationConstants.TOKEN_PHYSICAL_LOCATION);
-////        builder.append(stringRegisteredTimestamp);
-//
-//builder.append(registered);
-//
-//        return builder.toString();
-//    }
-    
-    /**
-    * Method that deserializes a String object.
-     * The input string needs to have the following format:
- 
- referenceFrameName,
- x,
- y,
- z,
- alpha,
- beta,
- gamma,
- product instance id,
- registered ("yyyy-MM-dd HH:mm:ss.SSS")
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-     * @throws java.text.ParseException
-    */
-//    public static PhysicalLocation fromString(String object) throws ParseException  {
-//        StringTokenizer tokenizer = new StringTokenizer(object, SerializationConstants.TOKEN_PHYSICAL_LOCATION);
-//
-//        if (tokenizer.countTokens() != FIELDS_COUNT)
-//            throw new ParseException("PhysicalLocation - " + SerializationConstants.INVALID_FORMAT_FIELD_COUNT_ERROR + FIELDS_COUNT, 0);
-//
-//        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-//        
-//        return new PhysicalLocation(
-//                tokenizer.nextToken(),                          // referenceFrameName
-//                Long.parseLong(tokenizer.nextToken()),          // x
-//                Long.parseLong(tokenizer.nextToken()),          // y 
-//                Long.parseLong(tokenizer.nextToken()),          // z
-//                Long.parseLong(tokenizer.nextToken()),          // alpha
-//                Long.parseLong(tokenizer.nextToken()),          // beta
-//                Long.parseLong(tokenizer.nextToken()),          // gamma
-//                tokenizer.nextToken(),                          // product instance id
-//                sdf.parse(tokenizer.nextToken())             // registered                
-////                tokenizer.nextToken()             // registered                
-//        );
-//    }
     
     /**
      * Method that serializes the object into a BSON document.
-     * The returned BSON document has the following format:
- 
- referenceFrameName,
- x,
- y,
- z,
- alpha,
- beta,
- gamma,
- product instance id,
- registered ("yyyy-MM-dd HH:mm:ss.SSS")
      * 
      * @return BSON form of the object. 
      */
     public Document toBSON() {
         return toBSON2();
-//        Document doc = new Document();
-//        
-//        doc.append("referenceFrameName", referenceFrameName);
-//        doc.append("x", x);
-//        doc.append("y", y);
-//        doc.append("z", z);
-//        doc.append("alpha", alpha);
-//        doc.append("beta", beta);
-//        doc.append("gamma", gamma);
-//        doc.append("productId", productId);
-//        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
-//        
-//        return doc;
     }
 }

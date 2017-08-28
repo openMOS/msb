@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.model.testdata;
 
 import java.util.Arrays;
@@ -29,7 +24,15 @@ public class KPISettingTest {
         KPI kpi = KPITest.getTestObject();
   
         Date d = new Date();
-        kpiSetting = new KPISetting(kpiSettingDescription, kpiSettingId, kpiSettingName, kpiSettingValue, kpi, d);
+        kpiSetting = new KPISetting(
+                kpiSettingDescription, 
+                kpiSettingId, 
+                kpiSettingName, 
+                kpi,
+                "kpiSettingType",
+                "kpiSettingUnit",
+                kpiSettingValue, 
+                d);
         
         return kpiSetting;
     }

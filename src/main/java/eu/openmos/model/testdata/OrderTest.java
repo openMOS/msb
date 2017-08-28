@@ -1,14 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.model.testdata;
 
 import eu.openmos.model.Part;
 import eu.openmos.model.Order;
+import eu.openmos.model.PartInstance;
 import eu.openmos.model.ProductInstance;
-// import eu.openmos.agentcloud.data.recipe.SkillRequirement;
 import eu.openmos.model.SkillRequirement;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -47,14 +42,15 @@ public class OrderTest {
 //                sr.setUniqueId(pdName + "_skillRequirementUniqueId_" + i);
                 sr.setName(pdName + "_skillRequirementName_" + i);
                 sr.setType("weld");
-                sr.setPrecedents(new LinkedList<String>());
+                sr.setPrecedents(new LinkedList<SkillRequirement>());
                 sr.setRegistered(new Date());
 
                 // pd1.getSkillRequirements().add(sr);
                 lsr.add(sr);
             }
-            List<Part> comps = new LinkedList();
-            Part c1 = new Part("uniqueCpID", "CpName", "CpDescription", new Date());
+            List<PartInstance> comps = new LinkedList();
+            Part p1 = new Part("uniqueCpID", "CpName", "CpDescription", new Date());
+            PartInstance c1 = new PartInstance("uniqueCpinstanceID", "CpinstanceName", "CpinstanceDescription", p1, new Date());
             comps.add(c1);
             pd1.setParts(comps);
             pd1.setDescription("product description");
@@ -62,14 +58,14 @@ public class OrderTest {
             pd1.setName(pdName);
             pd1.setOrderId(o.getUniqueId());
             pd1.setRegistered(new Date());
-            pd1.setSkillRequirements(lsr);
+//            pd1.setSkillRequirements(lsr);
             
             pd1.setUniqueId("pd" + y + "uniqueid_" + now.toString());
                 
-            // o.getProductDescriptions().add(pd1);
+            // o.getProductInstances().add(pd1);
             lpd.add(pd1);
         }        
-        o.setProductDescriptions(lpd);
+        o.setProductInstances(lpd);
         o.setRegistered(new Date());
         return o;
     }

@@ -70,6 +70,22 @@ public class ListsToString {
         return builder.toString();
     }
     
+    public static String writePhysicalPorts(List<PhysicalPort> physicalPorts)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        if(physicalPorts == null || physicalPorts.isEmpty())
+            builder.append(SerializationConstants.EMPTY_LIST);
+        else {
+            for(PhysicalPort physicalPort : physicalPorts) {
+                builder.append(physicalPort.toString());
+                builder.append("\n");
+//                builder.append(SerializationConstants.TOKEN_SKILL_LIST_ITEM);
+            }
+        }
+        return builder.toString();
+    }
+    
     public static String writeInternalModuleIds(List<String> internalModuleIds)
     {
         StringBuilder builder = new StringBuilder();

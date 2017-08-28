@@ -3,9 +3,6 @@ package eu.openmos.model;
 import java.util.List;
 import java.util.Date;
 import eu.openmos.model.utilities.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
@@ -27,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Skill extends Base implements Serializable {    
     private static final Logger logger = Logger.getLogger(Skill.class.getName());
-    private static final long serialVersionUID = 6529685098267757696L;
+    private static final long serialVersionUID = 6529685098267757023L;
 
     public static final int TYPE_ATOMIC = 0;
     public static final int TYPE_COMPOSITE = 1;
@@ -52,16 +49,28 @@ public class Skill extends Base implements Serializable {
      * It's a sort of general description of the skill, ex "weld", "transport", ....
      * MSB alignment: changed the field type from int to string according with Pedro Ferreira.
      */
+    @Deprecated
     private String type;
+    private SkillType skillType;
     /**
      * KPIs the skill needs to respect.
      * It's an optional list.
      */
+    @Deprecated
     private List<KPI> kpis;
+    /**
+     * Information ports that have KPIS.
+     */
+    private List<InformationPort> informationPorts;
     /**
      * Parameters the skill needs to meet.
      */
+    @Deprecated
     private List<Parameter> parameters;
+    /**
+     * Parameter ports that have parameters.
+     */
+    private List<ParameterPort> parameterPorts;
     /**
      * Skill classification type.
      * The skill can be atomic or composite.
@@ -73,16 +82,22 @@ public class Skill extends Base implements Serializable {
      * The skillRequirements list has to be aligned with recipes list:
      * for every recipe we must have one skillrequirement.
     */
+    @Deprecated
     private List<SkillRequirement> skillRequirements;
     /**
      * The recipes list has to be aligned with skillRequiremens list:
      * for every skillrequirement we must have one recipe.
     */
+    @Deprecated
     private List<String> recipeIds;    
+    /**
+     * Control ports that link to recipes.
+     */
+    private List<ControlPort> controlPorts;
     /**
      * Equipment id.
     */
-    private String equipmentId;
+    private String subSystemId;
 
     /**
      * Revision after semantic model update 13
@@ -114,30 +129,43 @@ public class Skill extends Base implements Serializable {
     public Skill(String description, 
             String uniqueId, 
             List<KPI> kpis, 
+            List<InformationPort> informationPorts,
             String name, 
             String label,
             List<Parameter> parameters, 
+            List<ParameterPort> parameterPorts,
             String type,
+            SkillType skillType,
             int classificationType,
             List<SkillRequirement> skillRequirements,
 //            List<Recipe> recipes,
             List<String> recipeIds,
-            String equipmentId,
+            List<ControlPort> controlPorts,
+            String subSystemId,
             Date registeredTimestamp) {
           super(registeredTimestamp);
 
           this.description = description;
         this.uniqueId = uniqueId;
+        
         this.kpis = kpis;
+        this.informationPorts = informationPorts;
+        
         this.name = name;
         this.label = label;
         this.parameters = parameters;
+        this.parameterPorts = parameterPorts;
+        
         this.type = type;
+        this.skillType = skillType;
+        this.skillRequirements = skillRequirements;
         
         this.classificationType = classificationType;
-        this.skillRequirements = skillRequirements;
+        
         this.recipeIds = recipeIds;
-        this.equipmentId = equipmentId;
+        this.controlPorts = controlPorts;
+        
+        this.subSystemId = subSystemId;
     }
 
     public String getDescription() {
@@ -212,12 +240,12 @@ public class Skill extends Base implements Serializable {
         this.recipeIds = recipeIds;
     }
 
-    public String getEquipmentId() {
-        return equipmentId;
+    public String getSubSystemId() {
+        return subSystemId;
     }
 
-    public void setEquipmentId(String equipmentId) {
-        this.equipmentId = equipmentId;
+    public void setSubSystemId(String equipmentId) {
+        this.subSystemId = equipmentId;
     }
 
     public String getLabel() {
@@ -227,158 +255,41 @@ public class Skill extends Base implements Serializable {
     public void setLabel(String label) {
         this.label = label;
     }
-    
-     /**
-     * Method that serializes the object.
-     * The returned string has the following format:
-     * 
-     * description,
-     * uniqueId,
-     * list of kpis,
-     * name,
-     * list of parameters,
-     * type,
-     * classification_type,
-     * list of skill requirements,
-     * list of recipe ids,
-     * equipment id,
-     * registeredTimestamp ("yyyy-MM-dd HH:mm:ss.SSS")
-     * 
-     * 
-     * @return Serialized form of the object. 
-     */
-//    @Override
-//    public String toString() {
-//        StringBuilder builder = new StringBuilder();
-//        builder.append(description);
-//        
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(uniqueId);
-//        
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(ListsToString.writeKPIs(kpis));
-//                
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(name);
-//        
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(label);
-//        
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(ListsToString.writeParameters(parameters));
-//        
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(type);
-//        
-//        // WP3 semantic model alignment
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(classificationType);
-//
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(ListsToString.writeSkillRequirements(skillRequirements));
-//
-////        builder.append(Constants.TOKEN_SKILL);
-////        builder.append(ListsToString.writeRecipes(recipes));
-//        
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-////        builder.append(ListsToString.writeRecipes(recipes));
-//        builder.append(ListsToString.writeRecipeIds(recipeIds));
-//        
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(equipmentId);
-//        
-//        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-//        String stringRegisteredTimestamp = sdf.format(this.registered);
-//        builder.append(SerializationConstants.TOKEN_SKILL);
-//        builder.append(stringRegisteredTimestamp);
-//        
-//        logger.debug(getClass().getName() + " - toString - " + builder.toString());
-//        return builder.toString();
-//    }
-   
-    /**
-    * Method that deserializes a String object.
-     * The input string needs to have the following format:
-     * 
-     * description,
-     * uniqueId,
-     * list of kpis,
-     * name,
-     * list of parameters,
-     * type,
-     * classification_type,
-     * list of skill requirements,
-     * list of recipe ids,
-     * equipment id,
-     * registeredTimestamp ("yyyy-MM-dd HH:mm:ss.SSS")
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-     * @throws java.text.ParseException
-    */
-//    public static Skill fromString(String object) throws ParseException {
-//        logger.debug(Skill.class.getName() + " - fromString - " + object);
-//        
-//        StringTokenizer tokenizer = new StringTokenizer(object, SerializationConstants.TOKEN_SKILL);
-//        
-//        if (tokenizer.countTokens() != FIELDS_COUNT)
-//        {
-//            logger.error(Skill.class.getName() + " - fromString - " + FIELDS_COUNT + " fields expected, " + tokenizer.countTokens() + " fields received");
-//            throw new ParseException("Skill - " + SerializationConstants.INVALID_FORMAT_FIELD_COUNT_ERROR + FIELDS_COUNT, 0);
-//        }
-//        
-//        String description = tokenizer.nextToken();
-//        String uniqueId = tokenizer.nextToken();
-//        List<KPI> kpis = StringToLists.readKPIs(tokenizer.nextToken());        
-//        String name = tokenizer.nextToken();        
-//        String label = tokenizer.nextToken();        
-//        List<Parameter> parameters = StringToLists.readParameters(tokenizer.nextToken());                
-//        String type = tokenizer.nextToken();
-//        
-//        // WP3 semantic model alignment
-//        String classificationType = tokenizer.nextToken();
-//        List<SkillRequirement> skillRequirements = StringToLists.readSkillRequirements(tokenizer.nextToken());        
-////        List<Recipe> recipes = StringToLists.readRecipes(tokenizer.nextToken());        
-//        List<String> recipeIds = StringToLists.readRecipeIds(tokenizer.nextToken());        
-//        
-//        String equipmentId = tokenizer.nextToken();
-//        
-//        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-//        Date registered = sdf.parse(tokenizer.nextToken());
-//        
-//        return new Skill(
-//                description, 
-//                uniqueId, 
-//                kpis, 
-//                name, 
-//                label,
-//                parameters, 
-//                type,
-//                Integer.parseInt(classificationType),
-//                skillRequirements,
-//                recipeIds,
-//                equipmentId,
-//                registered
-//        );
-//    }
+
+    public SkillType getSkillType() {
+        return skillType;
+    }
+
+    public void setSkillType(SkillType skillType) {
+        this.skillType = skillType;
+    }
+
+    public List<InformationPort> getInformationPorts() {
+        return informationPorts;
+    }
+
+    public void setInformationPorts(List<InformationPort> informationPorts) {
+        this.informationPorts = informationPorts;
+    }
+
+    public List<ParameterPort> getParameterPorts() {
+        return parameterPorts;
+    }
+
+    public void setParameterPorts(List<ParameterPort> parameterPorts) {
+        this.parameterPorts = parameterPorts;
+    }
+
+    public List<ControlPort> getControlPorts() {
+        return controlPorts;
+    }
+
+    public void setControlPorts(List<ControlPort> controlPorts) {
+        this.controlPorts = controlPorts;
+    }
     
      /**
      * Method that serializes the object into a BSON document.
-     * The returned BSON document has the following format:
- 
- {
-  description,
-  uniqueId,
-  list of kpis,
-  name,
-  list of parameters,
-  type,
-  classification_type,
-  list of skill requirements,
-  list of recipe ids,
-  equipment id,
-  registered ("yyyy-MM-dd HH:mm:ss.SSS")
- }
      * 
      * @return BSON form of the object. 
      */
@@ -389,6 +300,10 @@ public class Skill extends Base implements Serializable {
         List<String> parameterIds = parameters.stream().map(parameter -> parameter.getUniqueId()).collect(Collectors.toList());
 //        List<String> skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getUniqueId()).collect(Collectors.toList());
         List<String> skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());
+
+        List<String> controlPortIds = controlPorts.stream().map(controlPort -> controlPort.getUniqueId()).collect(Collectors.toList());        
+        List<String> parameterPortIds = parameterPorts.stream().map(parameterPort -> parameterPort.getUniqueId()).collect(Collectors.toList());        
+        List<String> informationPortIds = informationPorts.stream().map(informationPort -> informationPort.getUniqueId()).collect(Collectors.toList());        
         
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         String stringRegisteredTimestamp = sdf.format(this.registered);       
@@ -396,38 +311,20 @@ public class Skill extends Base implements Serializable {
         doc.append("description", description);
         doc.append("id", uniqueId);
         doc.append("kpis", kpiIds);
+        doc.append("informationPortIds", informationPortIds);
         doc.append("name", name);
         doc.append("label", label);
-        doc.append("parameters", parameterIds);        
+        doc.append("parameters", parameterIds);      
+        doc.append("parameterPortIds", parameterPortIds);
         doc.append("type", type);     
+        doc.append("skillType", skillType.getUniqueId());     
         doc.append("classificationType", classificationType);
-        doc.append("skillRequirements", skillRequirements);           
+        doc.append("skillRequirements", skillRequirementIds);           
         doc.append("recipes", recipeIds);
-        doc.append("equipmentId", equipmentId);
+        doc.append("controlPortIds", controlPortIds);
+        doc.append("equipmentId", subSystemId);
         doc.append("registered", stringRegisteredTimestamp);
     
         return doc;
     }
-
-//    public static Skill deserialize(String object) 
-//    {        
-//        Skill objectToReturn = null;
-//        try 
-//        {
-//            ByteArrayInputStream bIn = new ByteArrayInputStream(object.getBytes());
-//            ObjectInputStream in = new ObjectInputStream(bIn);
-//            objectToReturn = (Skill) in.readObject();
-//            in.close();
-//            bIn.close();
-//        }
-//        catch (IOException i) 
-//        {
-//            logger.error(i);
-//        }
-//        catch (ClassNotFoundException c) 
-//        {
-//            logger.error(c);
-//        }
-//        return objectToReturn;
-//    }
 }

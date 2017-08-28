@@ -3,23 +3,21 @@ package eu.openmos.model;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.util.JSON;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.bson.Document;
-import com.mongodb.util.JSON;
-
-
 
 /**
  * Base class for semantic model implementation.
- * Holds the registered field and some utilities for JSON and BSON conversion.
+ * Manages the "registered" date field and some utilities for JSON and BSON conversion.
  * 
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
 public abstract class Base implements Serializable {
-    private static final long serialVersionUID = 6529685098267757683L;
+    private static final long serialVersionUID = 6529685098267757001L;
     
     private static final Logger logger = Logger.getLogger(Base.class.getName());
     
@@ -96,47 +94,10 @@ public abstract class Base implements Serializable {
     {
         String json = JSON.serialize(bsonDocument);
         return fromJSON2(json, className);
-    }
-        
-
-/*    
-    public byte[] serialize() throws IOException {
-        String outString = null;
+    }      
     
-        try 
-        {
-            ByteArrayOutputStream bOut = new ByteArrayOutputStream();         
-            ObjectOutputStream out = new ObjectOutputStream(bOut);
-            out.writeObject(this);
-            out.close();
-            bOut.close();
-            byte[] bytes = bOut.toByteArray();
-            logger.debug("in base class, " + bytes.length);
-            return bytes;
-        }
-        catch(IOException i) 
-        {
-            logger.error(i);
-        }     
+    public String toString()
+    {
+        return toJSON2();
     }
-    public String serialize() throws IOException {
-        String outString = null;
-    
-        try 
-        {
-            ByteArrayOutputStream bOut = new ByteArrayOutputStream();         
-            ObjectOutputStream out = new ObjectOutputStream(bOut);
-            out.writeObject(this);
-            out.close();
-            bOut.close();
-            outString = bOut.toString();
-            return outString;
-        }
-        catch(IOException i) 
-        {
-            logger.error(i);
-        }     
-    }
-*/    
-
 }

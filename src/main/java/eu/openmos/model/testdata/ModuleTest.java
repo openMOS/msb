@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.model.testdata;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import eu.openmos.model.Equipment;
 import eu.openmos.model.Module;
 import eu.openmos.model.Skill;
 
@@ -27,17 +21,20 @@ public class ModuleTest {
         
         List<Skill> ls = SkillTest.getTestListWithoutRecipes();
         for (Skill s : ls)
-            s.setEquipmentId("uniqueModuleId");
+            s.setSubSystemId("uniqueModuleId");
         Module module = new Module(
                 "uniqueModuleId", 
                 "nameModule", 
                 "descriptionModule", 
                 true,
                 SkillTest.getTestListWithoutRecipes(),
+                PhysicalPortTest.getTestList(),
                 internalModules,
                 "address",
                 "status",
                 "manifacturer",
+                null,   // parentId
+                null,   // parentType
                 registeredTimestamp);
         
         return module;
@@ -56,10 +53,13 @@ public class ModuleTest {
 //                ExecutionTableTest.getTestObject(parentId + " - equipment " + pos, pos), 
                 true,
                 SkillTest.getTestListWithoutRecipes(),
+                PhysicalPortTest.getTestList(),
                 internalModules,
                 "address",
                 "status",
                 "manifacturer",
+                null,   // parentId
+                null,   // parentType
                 registeredTimestamp);
         
         return equipment;

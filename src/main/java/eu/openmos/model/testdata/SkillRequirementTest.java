@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.model.testdata;
 
+import eu.openmos.model.Part;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -34,15 +30,17 @@ public class SkillRequirementTest {
         String uniqueId = "skillRequirementUniqueId";
         String name = "skillRequirementName";
         String type = "weld";
-        List<String> precedenceIds = new LinkedList<>();
+        List<SkillRequirement> precedenceIds = new LinkedList<>();
         String classificationType = "skillRequirementClassificationType";
         
         SkillRequirement skillRequirement = new SkillRequirement(
                 description, 
-//                uniqueId, 
+                uniqueId, 
                 name, 
                 type, 
+                SkillTypeTest.getTestObject(),
                 precedenceIds, 
+                            new Part("uniqueCpID", "CpName", "CpDescription", new Date()),
                 registeredTimestamp
         );
         

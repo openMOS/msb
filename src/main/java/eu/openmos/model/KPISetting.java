@@ -13,6 +13,7 @@ import org.bson.Document;
 /**
  * Object that describes an actual setting of a KPI, i.e., a possible value for 
  * it.
+ * Into the semantic model diagrams this class is known as "KPIForecast".
  * 
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  * @author Luis Ribeiro
@@ -20,7 +21,7 @@ import org.bson.Document;
  */
 public class KPISetting extends Base implements Serializable {
     private static final Logger logger = Logger.getLogger(KPISetting.class.getName());
-    private static final long serialVersionUID = 6529685098267757688L;
+    private static final long serialVersionUID = 6529685098267757008L;
     
     /**
      * KPI Setting ID.
@@ -35,16 +36,22 @@ public class KPISetting extends Base implements Serializable {
      */
     private String description;
     /**
-     * KPI Setting value.
-     */
-    private String value;
-    /**
      * Pointer to the kpi.
      */
     private KPI kpi; 
+    /**
+     * KPI Setting value type.
+     */
+    private String type;
+    /**
+     * KPI Setting value unit.
+     */
+    private String unit;
+    /**
+     * KPI Setting value.
+     */
+    private String value;
     
-//    private static final int FIELDS_COUNT = 6;
-
     /**
      * Default constructor, for reflection.
      */
@@ -63,14 +70,19 @@ public class KPISetting extends Base implements Serializable {
     public KPISetting(String description, 
             String id, 
             String name, 
-            String value,
             KPI kpi,
+            String type,
+            String unit,
+            String value,
             Date registeredTimestamp) {
         super(registeredTimestamp);
         
         this.description = description;
         this.uniqueId = id;
         this.name = name;
+        
+        this.type = type;
+        this.unit = unit;
         this.value = value;
         
         this.kpi = kpi;
@@ -116,109 +128,38 @@ public class KPISetting extends Base implements Serializable {
         this.kpi = kpi;
     }
 
-    /**
-     * Method that serializes the object.
-     * The returned string has the following format:
-     * 
-     * description,
-     * unique id,
-     * name,
-     * value,
-     * kpi,
-     * registeredTimestamp ("yyyy-MM-dd HH:mm:ss.SSS")
-     * 
-     * @return Serialized form of the object. 
-     */
-//    @Override
-//    public String toString() {
-//        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-//        String stringRegisteredTimestamp = sdf.format(registered);
-//        
-//        return description + SerializationConstants.TOKEN_KPI_SETTING + 
-//                uniqueId + SerializationConstants.TOKEN_KPI_SETTING + 
-//                name + SerializationConstants.TOKEN_KPI_SETTING + 
-//                value + SerializationConstants.TOKEN_KPI_SETTING 
-//                + kpi.toString() + SerializationConstants.TOKEN_KPI_SETTING 
-//                + stringRegisteredTimestamp;
-//    }
-    
-    /**
-    * Method that deserializes a String object.
-     * The input string needs to have the following format:
-    * 
-     * description,
-     * unique id,
-     * name,
-     * value,
-     * kpi,
-     * registeredTimestamp ("yyyy-MM-dd HH:mm:ss.SSS")
-     * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-    */
-//    public static KPISetting fromString(String object) throws ParseException {
-//        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-//
-//        StringTokenizer tokenizer = new StringTokenizer(object, SerializationConstants.TOKEN_KPI_SETTING);
-//        
-//        if (tokenizer.countTokens() != FIELDS_COUNT)
-//            throw new ParseException("KPISetting - " + SerializationConstants.INVALID_FORMAT_FIELD_COUNT_ERROR + FIELDS_COUNT, 0);
-//        
-//        return new KPISetting(
-//                tokenizer.nextToken(),  // description
-//                tokenizer.nextToken(),  // unique uniqueId
-//                tokenizer.nextToken(),  // name
-//                tokenizer.nextToken(),   // value
-//                KPI.fromString(tokenizer.nextToken()),    // kpi
-//                sdf.parse(tokenizer.nextToken())    // registered
-//        );
-//    }
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
     
     /**
      * Method that serializes the object into a BSON document.
-     * The returned BSON document has the following format:
- 
- {
-  "description": description,
-  "uniqueId": unique uniqueId,
-  "name": name,
-  "value": value,
-  "kpi": kpi,
-  "registered": registered
- }
      * 
      * @return BSON Document format of the object. 
      */
     public Document toBSON() {
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         String stringRegisteredTimestamp = sdf.format(this.registered);
-        return new Document("description", description)
-                .append("id", uniqueId)
+        return new Document()
+                .append("uniqueId", uniqueId)
                 .append("name", name)
-                .append("value", value)
+                .append("description", description)
                 .append("kpiId", kpi.getUniqueId())
+                .append("type", type)
+                .append("unit", unit)
+                .append("value", value)
                 .append("registered", stringRegisteredTimestamp);
     }
-
-//    public static KPISetting deserialize(String object) 
-//    {        
-//        KPISetting objectToReturn = null;
-//        try 
-//        {
-//            ByteArrayInputStream bIn = new ByteArrayInputStream(object.getBytes());
-//            ObjectInputStream in = new ObjectInputStream(bIn);
-//            objectToReturn = (KPISetting) in.readObject();
-//            in.close();
-//            bIn.close();
-//        }
-//        catch (IOException i) 
-//        {
-//            logger.error(i);
-//        }
-//        catch (ClassNotFoundException c) 
-//        {
-//            logger.error(c);
-//        }
-//        return objectToReturn;
-//    }
 }

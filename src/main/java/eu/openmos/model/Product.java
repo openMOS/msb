@@ -1,9 +1,6 @@
 package eu.openmos.model;
 
 import eu.openmos.model.utilities.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,12 +27,12 @@ import org.bson.Document;
  */
 public class Product extends Base implements Serializable {
     private static final Logger logger = Logger.getLogger(Product.class.getName());
-    private static final long serialVersionUID = 6529685098267757693L;
+    private static final long serialVersionUID = 6529685098267757020L;
     
     /**
      * Id of the product family, of the model of the product (product A, product B, etc).
      */
-    private String modelId;    
+    private String uniqueId;    
     /**
      * Product model name.
      */
@@ -71,12 +68,12 @@ public class Product extends Base implements Serializable {
      * @param skillRequirements - list of skills requirements
      * @param registeredTimestamp - timestamp of object creation
      */
-    public Product(String modelId, String name, 
+    public Product(String uniqueId, String name, 
             String description, List<Part> parts, 
             List<SkillRequirement> skillRequirements, Date registeredTimestamp) {
         super(registeredTimestamp);
 
-        this.modelId = modelId;
+        this.uniqueId = uniqueId;
         this.name = name;
         this.description = description;
         this.parts = parts;
@@ -100,12 +97,12 @@ public class Product extends Base implements Serializable {
         this.skillRequirements = skillRequirements;
     }
 
-    public String getModelId() {
-        return modelId;
+    public String getUniqueId() {
+        return uniqueId;
     }
 
-    public void setModelId(String modelId) {
-        this.modelId = modelId;
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
     public String getDescription() {
@@ -125,97 +122,7 @@ public class Product extends Base implements Serializable {
     }
     
     /**
-    /**
-     * Method that serializes the object.
-     * The returned string has the following format:
-     * 
-     * modelId
-     * name,
-     * description,
-     * list of parts,
-     * list of skill requirements,
-     * registeredTimestamp ("yyyy-MM-dd HH:mm:ss.SSS")
-     * 
-     * @return Serialized form of the object. 
-     */
-//    @Override
-//    public String toString() {
-//        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-//    
-//        StringBuilder builder = new StringBuilder();        
-//        builder.append(modelId);
-//        
-//        builder.append(SerializationConstants.TOKEN_PRODUCT_DESCRIPTION);
-//        builder.append(name);
-//        
-//        builder.append(SerializationConstants.TOKEN_PRODUCT_DESCRIPTION);
-//        builder.append(description);
-//
-//        builder.append(SerializationConstants.TOKEN_PRODUCT_DESCRIPTION);
-//        builder.append(ListsToString.writeParts(parts));
-//
-//        builder.append(SerializationConstants.TOKEN_PRODUCT_DESCRIPTION);
-//        builder.append(ListsToString.writeSkillRequirements(skillRequirements));
-//        
-//        String stringRegisteredTimestamp = sdf.format(this.registered);
-//        builder.append(SerializationConstants.TOKEN_PRODUCT_DESCRIPTION);
-//        builder.append(stringRegisteredTimestamp);
-//        
-//        return builder.toString();
-//    }
-        
-    /**
-    * Method that deserializes a String object.
-     * The input string needs to have the following format:
-     * 
-     * modelId
-     * name,
-     * description,
-     * list of parts,
-     * list of skill requirements,
-     * registeredTimestamp ("yyyy-MM-dd HH:mm:ss.SSS")
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
-     * @throws java.text.ParseException
-    */
-//    public static Product fromString(String object) throws ParseException {
-//        StringTokenizer tokenizer = new StringTokenizer(object, SerializationConstants.TOKEN_PRODUCT_DESCRIPTION);
-//        
-//        System.out.println(object);
-//        if (tokenizer.countTokens() != FIELDS_COUNT)
-//            throw new ParseException("ProductDescription - " + SerializationConstants.INVALID_FORMAT_FIELD_COUNT_ERROR + FIELDS_COUNT, 0);
-//        
-//        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-//        
-//        String pmi = tokenizer.nextToken();     // model id
-//        String name = tokenizer.nextToken();    // name
-//        String description = tokenizer.nextToken();     // description
-//        List<Part> comps = StringToLists.readParts(tokenizer.nextToken());       // parts
-//        List<SkillRequirement> skillsReq = StringToLists.readSkillRequirements(tokenizer.nextToken());      // skill requirements
-//        String registered = tokenizer.nextToken();
-//        
-//        return new Product(
-//                pmi,                                // product model id
-//                name,                               // name
-//                description,                        // description
-//                comps,                              // list of parts
-//                skillsReq,                          // list of skill requirements
-//                sdf.parse(registered)               // registered
-//        );
-//        
-//    }
-    
-    /**
      * Method that serializes the object into a BSON document.
-     * The returned BSON document has the following format:
- 
- modelId
- name,
- description,
- list of parts,
- list of skill requirements,
- registered ("yyyy-MM-dd HH:mm:ss.SSS")
      * 
      * @return BSON form of the object. 
      */
@@ -225,35 +132,13 @@ public class Product extends Base implements Serializable {
         List<String> partIds = parts.stream().map(part -> part.getUniqueId()).collect(Collectors.toList());
         List<String> skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());        
         
-        doc.append("modelId", modelId);
+        doc.append("uniqueId", uniqueId);
         doc.append("name", name);
         doc.append("description", description);
-        doc.append("parts", partIds);
-        doc.append("skillRequirements", skillRequirementIds);      
+        doc.append("partIds", partIds);
+        doc.append("skillRequirementIds", skillRequirementIds);      
         doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
         
         return doc;
     }
-
-//    public static Product deserialize(String object) 
-//    {        
-//        Product objectToReturn = null;
-//        try 
-//        {
-//            ByteArrayInputStream bIn = new ByteArrayInputStream(object.getBytes());
-//            ObjectInputStream in = new ObjectInputStream(bIn);
-//            objectToReturn = (Product) in.readObject();
-//            in.close();
-//            bIn.close();
-//        }
-//        catch (IOException i) 
-//        {
-//            logger.error(i);
-//        }
-//        catch (ClassNotFoundException c) 
-//        {
-//            logger.error(c);
-//        }
-//        return objectToReturn;
-//    }
 }
