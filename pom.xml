@@ -26,6 +26,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <vertx.version>3.4.2</vertx.version>
     <tool.wsgen>${java.home}/../bin/wsgen.exe</tool.wsgen>
     <tool.wsimport>${java.home}/../bin/wsimport.exe</tool.wsimport>    
   </properties>
@@ -94,14 +95,14 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
-      <version>3.3.3</version>
-    </dependency>           
-    
+      <version>${vertx.version}</version>
+    </dependency>   
+         
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-hazelcast</artifactId>
-      <version>3.3.3</version>
-    </dependency>        
+      <version>${vertx.version}</version>
+    </dependency>      
     
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -178,6 +179,12 @@
       <groupId>jdbc</groupId>
       <artifactId>jdbc</artifactId>
       <version>3.18.10</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver</artifactId>
+      <version>3.3.0</version>
+      <type>jar</type>
     </dependency>
   </dependencies>
   
