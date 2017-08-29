@@ -177,7 +177,7 @@ public class OPCServersDiscoverySnippet extends Thread
                   
                   
                   System.out.println("\n");
-                  instance.browseNode("", client, new NodeId(2, "Masmec_InstanceHierarchy/Transport1"));
+                  instance.browseNode("", client, new NodeId(2, "Masmec_InstanceHierarchy/Transport1"), 4);
                   System.out.println("\n");
                   System.out.println("***** End namespace browsing *****");
                   System.out.println("\n");
