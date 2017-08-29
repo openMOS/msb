@@ -356,7 +356,8 @@ public class OPCServer
             .filter(e -> e.getSecurityMode().toString().compareTo(securityMode) == 0)
             .findFirst()
             .orElseThrow(() -> new Exception("no desired endpoints returned"));
-    X509IdentityProvider x509IdentityProvider = new X509IdentityProvider("openssl_crt.der", "herong.key");
+    X509IdentityProvider x509IdentityProvider = new X509IdentityProvider("openssl_crt.der",
+            "herong.key");
     X509Certificate cert = x509IdentityProvider.getCertificate();
     KeyPair keyPair = new KeyPair(cert.getPublicKey(), x509IdentityProvider.getPrivateKey());
     OpcUaClientConfig clientConfig = OpcUaClientConfig.builder().setApplicationName(LocalizedText.english("opc-ua client"))

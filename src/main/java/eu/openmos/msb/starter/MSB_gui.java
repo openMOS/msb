@@ -93,7 +93,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private static JLabel labelRegister;
   private static OPCDeviceHelper DeviceITF;
   private boolean isDDSRunning;
-  ClassLoader classLoader;
 
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -105,7 +104,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {
     initComponents();
 
-    this.classLoader = getClass().getClassLoader();    
     this.isDDSRunning = false;
 
     adaptersTableModel = (DefaultTableModel) TableServers.getModel();
@@ -1772,10 +1770,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     BufferedImage img2 = null;
     try
     {
-      
-      img = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/green-circle.png").getFile()));
-      img1 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/red.png").getFile()));
-      img2 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/glossy-gray.png").getFile()));
+      img = ImageIO.read(new File("images/green-circle.png"));
+      img1 = ImageIO.read(new File("images/red.png"));
+      img2 = ImageIO.read(new File("images/glossy-gray.png"));
     } catch (IOException e)
     {
       e.printStackTrace();
