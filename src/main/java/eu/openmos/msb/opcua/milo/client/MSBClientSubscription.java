@@ -357,6 +357,7 @@ public class MSBClientSubscription implements IClient
    * @param indent
    * @param client
    * @param browseRoot
+   * @param level
    */
 //  public void browseNode(String indent, OpcUaClient client, NodeId browseRoot)
 //  {
@@ -388,8 +389,9 @@ public class MSBClientSubscription implements IClient
 //      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
 //    }
 //  }
-  public void browseNode(String indent, OpcUaClient client, NodeId browseRoot)
+  public void browseNode(String indent, OpcUaClient client, NodeId browseRoot, int level)
   {
+    final int nextInteraction = level - 1;    
     try
     {
 
@@ -407,23 +409,13 @@ public class MSBClientSubscription implements IClient
               uint(BrowseResultMask.All.getValue())
       );
 
-      BrowseDescription browse2 = new BrowseDescription(
-              browseRoot,
-              BrowseDirection.Forward,
-              new NodeId(1, 4001),
-              true,
-              //uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
-              uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue() | NodeClass.ReferenceType.getValue()),
-              uint(BrowseResultMask.All.getValue())
-      );
-
       BrowseResult browseResult = client.browse(browse).get();
       List<ReferenceDescription> references = toList(browseResult.getReferences());
 
       System.out.println("\n");
       for (ReferenceDescription rd : references)
       {
-
+        System.out.println("\n");  
         //logger.info("Node={}", rd.getBrowseName().getName());
         System.out.println(indent + "Node=                         " + rd.getBrowseName().getName());
         System.out.println(indent + "Type=                         " + rd.getTypeId().toParseableString());
@@ -431,9 +423,11 @@ public class MSBClientSubscription implements IClient
         System.out.println(indent + "Other INFO[]:                 " + rd.getTypeDefinition().toParseableString());
         System.out.println(indent + "Other INFO[NamespaceIndex]:   " + rd.getReferenceTypeId().expanded().getNamespaceIndex());
         System.out.println(indent + "Other INFO[ReferenceTypeId]:  " + rd.getReferenceTypeId().expanded().toString());
-
+       
         // recursively browse to children
-        rd.getNodeId().local().ifPresent(nodeId -> browseNode("\t" + indent, client, nodeId));
+        if(nextInteraction > 0){
+          rd.getNodeId().local().ifPresent(nodeId -> browseNode("\t" + indent, client, nodeId, nextInteraction));
+        }
 
       }
     } catch (InterruptedException | ExecutionException e)
