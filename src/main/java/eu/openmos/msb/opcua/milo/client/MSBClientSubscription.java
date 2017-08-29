@@ -313,82 +313,13 @@ public class MSBClientSubscription implements IClient
     });
   }
 
-//  /**
-//   * Function to list namespaces of the respective Device methods.
-//   *
-//   * @param indent
-//   * @param client
-//   * @param browseRoot
-//   * @return
-//   */
-//  private Map<String, NodeId> browseNode(String indent, OpcUaClient client, NodeId browseRoot)
-//  {
-//    System.out.println("\n**** Browse node with NO filter ****\n");
-//    
-//    Map<String, NodeId> nodes1 = null;
-//
-//    try
-//    {
-//      List<Node> nodes = null;
-//      nodes = client.getAddressSpace().browse(browseRoot).get();
-//      nodes1 = new HashMap<>();
-//
-//      for (Node node : nodes)
-//      {        
-//        logger.info("{} Node={} ID={}", node.getBrowseName().get().getName(), node.getNodeId());
-//        // recursively browse to children
-//        browseNode(indent + "  ", client, node.getNodeId().get());
-//      }
-//
-//      //put nodeID and namespaces in the Hashmap and return it
-//      for (int i = 0; i < nodes.size(); i++)
-//      {
-//        nodes1.put(nodes.get(i).getBrowseName().get().getName(), nodes.get(i).getNodeId().get());
-//      }
-//      return nodes1;
-//    } catch (InterruptedException | ExecutionException e)
-//    {      
-//      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage());
-//      return nodes1;
-//    }
-//  }
   /**
-   *
+   * 
    * @param indent
    * @param client
    * @param browseRoot
-   * @param level
+   * @param level 
    */
-//  public void browseNode(String indent, OpcUaClient client, NodeId browseRoot)
-//  {
-//
-//    BrowseDescription browse = new BrowseDescription(
-//            browseRoot,
-//            BrowseDirection.Forward,
-//            Identifiers.References,
-//            true,
-//            uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
-//            uint(BrowseResultMask.All.getValue())
-//    );
-//
-//    try
-//    {
-//      BrowseResult browseResult = client.browse(browse).get();
-//
-//      List<ReferenceDescription> references = toList(browseResult.getReferences());
-//
-//      for (ReferenceDescription rd : references)
-//      {
-//        logger.info("{} Node={}", indent, rd.getBrowseName().getName());
-//        System.out.println(indent + " Node= " + rd.getBrowseName().getName());
-//        // recursively browse to children
-//        rd.getNodeId().local().ifPresent(nodeId -> browseNode(indent + "  ", client, nodeId));
-//      }
-//    } catch (InterruptedException | ExecutionException e)
-//    {
-//      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
-//    }
-//  }
   public void browseNode(String indent, OpcUaClient client, NodeId browseRoot, int level)
   {
     final int nextInteraction = level - 1;    
