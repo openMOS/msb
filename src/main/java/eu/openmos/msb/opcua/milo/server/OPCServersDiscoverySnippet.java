@@ -1,5 +1,6 @@
 package eu.openmos.msb.opcua.milo.server;
 
+import eu.openmos.agentcloud.config.ConfigurationLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -9,20 +10,31 @@ import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
-import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
+
+import java.util.Arrays;
+
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
+
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.jdom2.Element;
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 /**
  *
@@ -48,6 +60,7 @@ public class OPCServersDiscoverySnippet extends Thread
     LDS_uri = _LDS_uri;
     notify_channel = _notify_channel;
     MSB_OPCUA_SERVER_ADDRESS = _msb_address;
+
   }
 
   /**
@@ -150,38 +163,40 @@ public class OPCServersDiscoverySnippet extends Thread
               da_url = ed.getEndpointUrl();
 
               //new MSB            
-              ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get(); 
+              ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get();
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
               {
 
                 DeviceAdapterOPC opc = (DeviceAdapterOPC) manager.getDeviceAdapter(daName);
-                MSBClientSubscription instance = opc.getClient();                
+                MSBClientSubscription instance = opc.getClient();
                 instance.startConnection(da_url);
                 OpcUaClient client = instance.getClientObject();
-                
-               
+
                 // Iterate over all values, using the keySet method.
                 // call SendServerURL() method from device
-                
                 if (daName != null && !daName.contains("MSB") && !daName.contains("discovery"))
                 {
 
-                  
-                  
                   // oompa loompas at work here
                   System.out.println("\n");
                   System.out.println("***** Starting namespace browsing *****");
-                  
-                  System.out.println("Identifiers id " + Identifiers.References);
-                  System.out.println("Identifiers id " + Identifiers.HasTypeDefinition);
-                  
-                  
-                  System.out.println("\n");
-                  instance.browseNode("", client, new NodeId(2, "Masmec_InstanceHierarchy/Transport1"), 4);
-                  System.out.println("\n");
+                  Element node = new Element("DeviceAdapter");
+                  Set<String> ignore = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+                  ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
+                  node.addContent(instance.browseNode(client,
+                          new NodeId(2, "Masmec_InstanceHierarchy"),
+                          Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
+                          ignore));
                   System.out.println("***** End namespace browsing *****");
                   System.out.println("\n");
+                  new XMLOutputter(Format.getPrettyFormat()).output(node, System.out);
+                  System.out.println("\n");
+
                   
+                  
+
+
+                  // TODO next step validate this
                   instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
                   {
                     System.out.println("error invoking SendServerURL() for server: " + daName + "\n" + ex);

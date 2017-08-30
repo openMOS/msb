@@ -32,7 +32,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.DefaultCaret;
 import javax.xml.ws.Endpoint;
-import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import DDS.DataWriter;
 import DDS.HANDLE_NIL;
 import MSB2ADAPTER.StringMessage;

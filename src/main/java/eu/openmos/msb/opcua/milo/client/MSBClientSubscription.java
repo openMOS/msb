@@ -6,16 +6,21 @@ package eu.openmos.msb.opcua.milo.client;
 // IMPORTS
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -33,11 +38,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.toList;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
+
+import org.jdom2.Element;
+import org.jdom2.Attribute;
 
 /**
  *
@@ -313,98 +319,29 @@ public class MSBClientSubscription implements IClient
     });
   }
 
-//  /**
-//   * Function to list namespaces of the respective Device methods.
-//   *
-//   * @param indent
-//   * @param client
-//   * @param browseRoot
-//   * @return
-//   */
-//  private Map<String, NodeId> browseNode(String indent, OpcUaClient client, NodeId browseRoot)
-//  {
-//    System.out.println("\n**** Browse node with NO filter ****\n");
-//    
-//    Map<String, NodeId> nodes1 = null;
-//
-//    try
-//    {
-//      List<Node> nodes = null;
-//      nodes = client.getAddressSpace().browse(browseRoot).get();
-//      nodes1 = new HashMap<>();
-//
-//      for (Node node : nodes)
-//      {        
-//        logger.info("{} Node={} ID={}", node.getBrowseName().get().getName(), node.getNodeId());
-//        // recursively browse to children
-//        browseNode(indent + "  ", client, node.getNodeId().get());
-//      }
-//
-//      //put nodeID and namespaces in the Hashmap and return it
-//      for (int i = 0; i < nodes.size(); i++)
-//      {
-//        nodes1.put(nodes.get(i).getBrowseName().get().getName(), nodes.get(i).getNodeId().get());
-//      }
-//      return nodes1;
-//    } catch (InterruptedException | ExecutionException e)
-//    {      
-//      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage());
-//      return nodes1;
-//    }
-//  }
   /**
+   * equipmentNamespace = "openMOSRoleClassLib/Equipment"; skillNamespace = "openMOSRoleClassLib/Skill"; moduleNamespace
+   * = "openMOSRoleClassLib/Equipment/Module";
    *
    * @param indent
    * @param client
    * @param browseRoot
+   * @param ignoreList
    * @param level
+   * @return
    */
-//  public void browseNode(String indent, OpcUaClient client, NodeId browseRoot)
-//  {
-//
-//    BrowseDescription browse = new BrowseDescription(
-//            browseRoot,
-//            BrowseDirection.Forward,
-//            Identifiers.References,
-//            true,
-//            uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
-//            uint(BrowseResultMask.All.getValue())
-//    );
-//
-//    try
-//    {
-//      BrowseResult browseResult = client.browse(browse).get();
-//
-//      List<ReferenceDescription> references = toList(browseResult.getReferences());
-//
-//      for (ReferenceDescription rd : references)
-//      {
-//        logger.info("{} Node={}", indent, rd.getBrowseName().getName());
-//        System.out.println(indent + " Node= " + rd.getBrowseName().getName());
-//        // recursively browse to children
-//        rd.getNodeId().local().ifPresent(nodeId -> browseNode(indent + "  ", client, nodeId));
-//      }
-//    } catch (InterruptedException | ExecutionException e)
-//    {
-//      logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
-//    }
-//  }
-  public void browseNode(String indent, OpcUaClient client, NodeId browseRoot, int level)
+  public List<Element> browseNode(OpcUaClient client, NodeId browseRoot, int level, Set<String> ignoreList)
   {
-    final int nextInteraction = level - 1;    
+
+    final int nextInteraction = level - 1;
+    final List<Element> nodes = new ArrayList<Element>();
     try
     {
-
-      String equipmentNamespace = "openMOSRoleClassLib/Equipment";
-      String skillNamespace = "openMOSRoleClassLib/Skill";
-      String moduleNamespace = "openMOSRoleClassLib/Equipment/Module";
-
       BrowseDescription browse = new BrowseDescription(
               browseRoot,
               BrowseDirection.Forward,
               Identifiers.References,
               true,
-              //uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
               uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue() | NodeClass.ObjectType.getValue()),
               uint(BrowseResultMask.All.getValue())
       );
@@ -412,28 +349,94 @@ public class MSBClientSubscription implements IClient
       BrowseResult browseResult = client.browse(browse).get();
       List<ReferenceDescription> references = toList(browseResult.getReferences());
 
-      System.out.println("\n");
       for (ReferenceDescription rd : references)
       {
-        System.out.println("\n");  
-        //logger.info("Node={}", rd.getBrowseName().getName());
-        System.out.println(indent + "Node=                         " + rd.getBrowseName().getName());
-        System.out.println(indent + "Type=                         " + rd.getTypeId().toParseableString());
-        System.out.println(indent + "NodeId:                       " + rd.getNodeId().toString());
-        System.out.println(indent + "Other INFO[]:                 " + rd.getTypeDefinition().toParseableString());
-        System.out.println(indent + "Other INFO[NamespaceIndex]:   " + rd.getReferenceTypeId().expanded().getNamespaceIndex());
-        System.out.println(indent + "Other INFO[ReferenceTypeId]:  " + rd.getReferenceTypeId().expanded().toString());
-       
-        // recursively browse to children
-        if(nextInteraction > 0){
-          rd.getNodeId().local().ifPresent(nodeId -> browseNode("\t" + indent, client, nodeId, nextInteraction));
+        String referenceName = rd.getBrowseName().getName();
+        if (ignoreList.contains(referenceName))
+        {
+          continue;
         }
 
-      }
-    } catch (InterruptedException | ExecutionException e)
+        Element node = new Element(referenceName.replaceAll(":", "").replaceAll(" ", "_"));
+
+        Element nodeType = new Element("Type");
+        nodeType.setAttribute("id", rd.getNodeId().getType().toString());
+        nodeType.setAttribute("namespace", rd.getNodeId().getIdentifier().toString());
+        node.addContent(nodeType);
+
+        Element nodePath = new Element("Path");
+        nodePath.setAttribute("ns", rd.getNodeId().getNamespaceIndex().toString());
+        nodePath.setText(rd.getNodeId().getIdentifier().toString());
+        node.addContent(nodePath);
+
+        Element nodeReferenceType = new Element("ReferenceType");
+        nodeReferenceType.setAttribute("ns", rd.getNodeId().getNamespaceIndex().toString());
+        nodeReferenceType.setText(rd.getNodeId().getIdentifier().toString());
+        node.addContent(nodeReferenceType);
+
+//        try
+//        {
+//          Element nodeValue = new Element("Value");
+//          VariableNode vNode = client.getAddressSpace().createVariableNode(rd.getNodeId().local().get());
+//          DataValue value = vNode.readValue().get();
+//          nodeValue.setText(value.getValue().getValue().toString());
+//          node.addContent(nodeValue);
+//        }
+//        catch(Exception e)
+//        {
+//          System.out.println("[ERROR] " + rd.getBrowseName() + " " + e.getMessage());
+//          //logger.error("Browsing node={} failed: {}", rd.getBrowseName(), e.getMessage(), e);
+//        }
+//        
+        try
+        {
+          Element nodeValue = new Element("Value");
+          rd.getNodeId().local().ifPresent((NodeId) ->
+          {
+            try
+            {
+              VariableNode vNode = client.getAddressSpace().createVariableNode(NodeId);
+              DataValue value = vNode.readValue().get();
+              nodeValue.setText(value.getValue().getValue().toString());
+            } catch (InterruptedException ex)
+            {
+              java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex)
+            {
+              java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+          });
+          node.addContent(nodeValue);
+          
+          
+          
+        } catch (Exception e)
+        {
+          //System.out.println("[ERROR] " + rd.getBrowseName() + " " + e.getMessage());
+          //logger.error("Browsing node={} failed: {}", rd.getBrowseName(), e.getMessage(), e);
+        }
+
+        // recursively browse to children
+        if (nextInteraction > 0)
+        {
+          rd.getNodeId().local().ifPresent(nodeId ->
+          {
+            List<Element> list = browseNode(client, nodeId, nextInteraction, ignoreList);
+            if (!list.isEmpty())
+            {
+              node.addContent(list);
+            }
+          });
+        }
+        nodes.add(node);
+      } // end of for
+    } catch (InterruptedException | ExecutionException | NullPointerException e)
     {
       logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
+
     }
+    return nodes;
   }
 
   /**
