@@ -6,9 +6,8 @@
 package eu.openmos.msb.database.interaction;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.msb.messages.DaDevice;
-import eu.openmos.msb.messages.DaRecipe;
-import eu.openmos.msb.messages.HelperDevicesInfo;
+import eu.openmos.model.Recipe;
+import eu.openmos.model.Skill;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,8 +20,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +41,7 @@ public class DatabaseInteraction
   private final String DB_CONNECTION_PARAMETER = "openmos.msb.database.connection.string";
   private Connection conn = null;
   private PreparedStatement ps = null;
+  private final Set<String> trueSet = new HashSet<>(Arrays.asList("1", "true", "True"));
 
   /**
    * @brief private constructor from the singleton implementation
@@ -48,6 +49,7 @@ public class DatabaseInteraction
   private DatabaseInteraction()
   {
     createInMemDatabase();
+
   }
 
   /**
@@ -591,6 +593,32 @@ public class DatabaseInteraction
     return null;
   }
 
+  /**
+   *
+   * @param id
+   * @return
+   */
+  public String getSkillNameById(int id)
+  {
+    try
+    {
+
+      Statement stmt = conn.createStatement();
+      String sql = "SELECT Skill.name "
+              + "FROM Skill"
+              + "WHERE Skill.id =" + id + ";";
+      ResultSet rs = stmt.executeQuery(sql);
+      String name = rs.getString(1);
+      stmt.close();
+      return name;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+  }
+
   // **************************************************************************************************************** //
   // **************************************************************************************************************** //
   /**
@@ -715,9 +743,9 @@ public class DatabaseInteraction
    * @param deviceAdapterName
    * @return
    */
-  public ArrayList<DaRecipe> getRecipesByDAName(String deviceAdapterName)
+  public ArrayList<Recipe> getRecipesByDAName(String deviceAdapterName)
   {
-    ArrayList<DaRecipe> result = new ArrayList<>();
+    ArrayList<Recipe> result = new ArrayList<>();
     try
     {
       try (Statement stmt = conn.createStatement())
@@ -728,11 +756,10 @@ public class DatabaseInteraction
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next())
         {
-          DaRecipe recipe = new DaRecipe();
-          recipe.setAmlId(rs.getString(1));
+          Recipe recipe = new Recipe();
+          recipe.setUniqueId(rs.getString(1));
           recipe.setName(rs.getString(5));
-          recipe.setValid(rs.getString(4));
-          recipe.setSkill(getRecipeName(Integer.valueOf(rs.getString(2))));
+          recipe.setValid(trueSet.contains(rs.getString(4)));
           result.add(recipe);
         }
       }

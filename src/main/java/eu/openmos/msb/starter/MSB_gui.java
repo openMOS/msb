@@ -8,7 +8,6 @@ import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.dds.DDSDeviceManager;
 import eu.openmos.msb.dds.DDSDevice;
 import eu.openmos.msb.opcua.milo.server.OPCServer;
-import eu.openmos.msb.opcua.milo.server.OPCDeviceHelper;
 import eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -39,11 +38,8 @@ import MSB2ADAPTER.StringMessageDataWriter;
 import MSB2ADAPTER.StringMessageDataWriterHelper;
 import com.sun.net.httpserver.HttpServer;
 import eu.openmos.model.Equipment;
-import eu.openmos.msb.datastructures.DeviceAdapter;
-import eu.openmos.msb.datastructures.DeviceAdapterOPC;
-import eu.openmos.msb.datastructures.EProtocol;
+import eu.openmos.model.Recipe;
 import eu.openmos.msb.dds.DDSErrorHandler;
-import eu.openmos.msb.messages.DaRecipe;
 import eu.openmos.msb.services.rest.CORSFilter;
 import eu.openmos.msb.services.rest.CPADController;
 import eu.openmos.msb.services.rest.EquipmentController;
@@ -58,9 +54,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
-import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import java.net.URISyntaxException;
@@ -90,7 +83,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private static JLabel labelSOAP;
   private static JLabel labelREST;
   private static JLabel labelRegister;
-  private static OPCDeviceHelper DeviceITF;
   private boolean isDDSRunning;
   private ClassLoader classLoader;
 
@@ -140,8 +132,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     labelREST = new JLabel(redLight);
     OnOffREST.add(labelREST);
     OnOffREST.setMaximumSize(new Dimension(32, 32));
-
-    DeviceITF = new OPCDeviceHelper(); //inputs? endpoints, MAP<ID, OPCclientObject> ?
 
   }
 
@@ -1168,7 +1158,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     String ret = "null";
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
 
-    ret = DeviceITF.allCases("statusupdate", textToSend.getText()); //simulate a device registration
+    //ret = DeviceITF.allCases("statusupdate", textToSend.getText()); //simulate a device registration
 
     opc_comms_log.append("statusupdate method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_updatestatusActionPerformed
@@ -1182,7 +1172,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     String ret = "null";
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
 
-    ret = DeviceITF.allCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
+    //ret = DeviceITF.allCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
 
     opc_comms_log.append("sendRecipe method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_sendrecipe2ActionPerformed
@@ -1194,7 +1184,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private void btn_ChangedStateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_ChangedStateActionPerformed
   {//GEN-HEADEREND:event_btn_ChangedStateActionPerformed
     String ret = "null";
-    ret = DeviceITF.allCases("changedstate", textToSend.getText()); //simulate a device registration
+    //ret = DeviceITF.allCases("changedstate", textToSend.getText()); //simulate a device registration
     opc_comms_log.append("Changed State method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_ChangedStateActionPerformed
 
@@ -1206,7 +1196,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_btn_RecipeExecutionDoneActionPerformed
     String ret = "null";
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
-    ret = DeviceITF.allCases("recipeexecutiondone", textToSend.getText()); //simulate a device registration
+    //ret = DeviceITF.allCases("recipeexecutiondone", textToSend.getText()); //simulate a device registration
 
     opc_comms_log.append("RecipeExecutionDone method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_RecipeExecutionDoneActionPerformed
@@ -1219,7 +1209,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_btn_DeviceRegistrationActionPerformed
     String ret = "null";
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
-    ret = DeviceITF.allCases("deviceregistration", textToSend.getText()); //simulate a device registration
+    //ret = DeviceITF.allCases("deviceregistration", textToSend.getText()); //simulate a device registration
 
     opc_comms_log.append("Device registration method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_DeviceRegistrationActionPerformed
@@ -1535,10 +1525,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     List<String> devices = instance.getDeviceAdapters();
     for (String daName : devices)
     {
-      ArrayList<DaRecipe> list = instance.getRecipesFromDevice(daName);
-      for (DaRecipe r : list)
+      ArrayList<Recipe> list = instance.getRecipesFromDevice(daName);
+      for (Recipe r : list)
       {
-        addToTableRecipes(r.getName(), Boolean.parseBoolean(r.getValid()), daName); //add each product from the list for each workstation
+        addToTableRecipes(r.getName(), r.isValid(), daName); //add each product from the list for each workstation
       }
     }
   }

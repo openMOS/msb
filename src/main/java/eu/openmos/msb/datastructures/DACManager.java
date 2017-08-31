@@ -5,9 +5,10 @@
  */
 package eu.openmos.msb.datastructures;
 
-import eu.openmos.model.Equipment;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
-import eu.openmos.msb.messages.DaRecipe;
+import eu.openmos.model.Equipment;
+import eu.openmos.model.Recipe;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ import java.util.Set;
 public class DACManager
 {
 
-  Set<String> trueSet = new HashSet<String>(Arrays.asList("1", "true", "True"));
+  private final Set<String> trueSet = new HashSet<>(Arrays.asList("1", "true", "True"));
   // Singleton specific objects
   private static final Object lock = new Object();
   private static volatile DACManager instance = null;
@@ -206,7 +207,7 @@ public class DACManager
    * @param deviceAdapterName
    * @return
    */
-  public ArrayList<DaRecipe> getRecipesFromDevice(String deviceAdapterName)
+  public ArrayList<Recipe> getRecipesFromDevice(String deviceAdapterName)
   {
     return DatabaseInteraction.getInstance().getRecipesByDAName(deviceAdapterName);
   }

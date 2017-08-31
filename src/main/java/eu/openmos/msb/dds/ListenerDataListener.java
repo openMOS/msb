@@ -20,14 +20,8 @@ import MSB2ADAPTER.StringMessage;
 import MSB2ADAPTER.StringMessageDataReader;
 import MSB2ADAPTER.StringMessageDataReaderImpl;
 import MSB2ADAPTER.StringMessageSeqHolder;
-import eu.openmos.msb.opcua.milo.server.OPCDeviceHelper;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import org.xml.sax.SAXException;
 
 public class ListenerDataListener implements DDS.DataReaderListener
 {
@@ -40,7 +34,7 @@ public class ListenerDataListener implements DDS.DataReaderListener
 
     if (arg0 instanceof GeneralMethodMessageDataReaderImpl)
     {
-      OPCDeviceHelper deviceItf = new OPCDeviceHelper();
+      //OPCDeviceHelper deviceItf = new OPCDeviceHelper();
 
       System.out.println("GeneralMethodMessageDataReaderImpl");
 
@@ -80,7 +74,7 @@ public class ListenerDataListener implements DDS.DataReaderListener
             try
             {
               String s = data[i].device + ":" + data[i].args;
-              deviceItf.allCases(data[i].function, s);
+              //deviceItf.allCases(data[i].function, s);
             } catch (Exception ex)
             {
               Logger.getLogger(ListenerDataListener.class.getName()).log(Level.SEVERE, null, ex);
