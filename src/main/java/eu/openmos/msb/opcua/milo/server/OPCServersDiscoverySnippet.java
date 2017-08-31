@@ -189,7 +189,7 @@ public class OPCServersDiscoverySnippet extends Thread
                           ignore));
                   System.out.println("***** End namespace browsing *****");
                   System.out.println("\n");
-                  new XMLOutputter(Format.getPrettyFormat()).output(node, System.out);
+                  new XMLOutputter(Format.getPrettyFormat()).output(node, System.out); // this is only for debug
                   System.out.println("\n");
 
                   

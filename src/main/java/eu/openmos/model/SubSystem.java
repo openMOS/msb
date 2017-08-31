@@ -85,21 +85,26 @@ public class SubSystem extends Equipment implements Serializable {
      */
     public SubSystem() { super(); }
 
-    /**
-     * Parameterized constructor.
-     * 
-     * @param equipmentId - the equipment id, aka the agent unique identifier
-     * @param skills - The skills the agent is capable of performing (Resource/
-     * Transport Agent).
-     * @param recipes - The recipes the agent can apply (Resource/Transport Agent).
-     * @param equipments - The inner equipment in case of workstation.
-     * @param physicalLocation - The Physical Location of the device abstracted 
-     * by this agent.
-     * @param logicalLocation - The skill requirements of the agent (Product Agent).
-     * @param agentClass - Agent's class - TBV if necessary.
-     * @param type - Agent's type - TBV if necessary.
-     * @param registeredTimestamp - the agent creation time
-     */
+  /**
+   * Parameterized constructor.
+   * 
+   * @param uniqueId
+   * @param name
+   * @param description
+   * @param executionTable
+   * @param connected
+   * @param skills - The skills the agent is capable of performing (Resource/Transport Agent).
+   * @param ports
+   * @param recipes - The recipes the agent can apply (Resource/Transport Agent).
+   * @param internalModules
+   * @param address
+   * @param status
+   * @param manufacturer
+   * @param physicalLocation - The Physical Location of the device abstracted by this agent.
+   * @param logicalLocation - The skill requirements of the agent (Product Agent).
+   * @param type - Agent's type - TBV if necessary.
+   * @param registeredTimestamp - the agent creation time
+   */
     public SubSystem(
             String uniqueId, 
             String name, 
@@ -184,6 +189,7 @@ public class SubSystem extends Equipment implements Serializable {
      * 
      * @return BSON form of the object. 
      */
+    @Override
     public Document toBSON() {
         Document doc = new Document();
 
@@ -212,6 +218,7 @@ public class SubSystem extends Equipment implements Serializable {
         return doc;
     }
     
+    @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();

@@ -1,11 +1,10 @@
 package eu.openmos.msb.opcua.milo.server.methods;
 
-import eu.openmos.msb.opcua.milo.server.OPCDeviceHelper;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaOutputArgument;
@@ -40,11 +39,11 @@ public class GeneralMethod
     System.out.println("GeneralMethod(" + func + ")");
     logger.debug("Invoking GeneralMethod() method of Object '{}'", context.getObjectNode().getBrowseName().getName());
 
-    OPCDeviceHelper dev = new OPCDeviceHelper();
+    //OPCDeviceHelper dev = new OPCDeviceHelper();
     String ret = null;
     try
     {
-      ret = dev.allCases(func, args);
+      //ret = dev.allCases(func, args);
     } catch (Exception ex)
     {
       java.util.logging.Logger.getLogger(GeneralMethod.class.getName()).log(Level.SEVERE, null, ex);

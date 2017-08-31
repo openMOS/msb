@@ -5,10 +5,11 @@
  */
 package eu.openmos.msb.opcua.milo.server;
 
-
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
+import io.vertx.core.Vertx;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,12 +26,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.ws.BindingProvider;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import io.vertx.core.Vertx;
-
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.model.KPI;
 import eu.openmos.model.KPISetting;
@@ -50,14 +48,12 @@ import eu.openmos.model.SubSystem;
 import eu.openmos.model.testdata.SubSystemTest;
 import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsReceiver;
 import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
-import eu.openmos.msb.messages.RegFile;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.messages.ChangedState;
-import eu.openmos.msb.messages.DaRecipe;
-import eu.openmos.msb.messages.DaSkill;
+
 
 
 
