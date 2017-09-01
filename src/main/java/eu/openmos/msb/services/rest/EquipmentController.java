@@ -6,6 +6,7 @@
 package eu.openmos.msb.services.rest;
 
 import eu.openmos.model.Equipment;
+import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.msb.datastructures.DACManager;
@@ -111,7 +112,7 @@ public class EquipmentController
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/{equipmentId}/equipments")
-  public List<Equipment> getEquipmentsList(@PathParam("equipmentId") String equipmentId)
+  public List<Module> getEquipmentsList(@PathParam("equipmentId") String equipmentId)
   {
     logger.debug("cpad - getEquipmentsList - equipmentId = " + equipmentId);
     return DACManager.getInstance().getDeviceAdapter(equipmentId).getListOfEquipments();

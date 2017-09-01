@@ -7,6 +7,7 @@ package eu.openmos.msb.datastructures;
 
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.model.Equipment;
+import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 
 import java.util.ArrayList;
@@ -148,9 +149,8 @@ public class DACManager
    * @brief WORKSTATIONName vs DEVICE data MAPS
    * @return
    */
-  public List<Equipment> getDevicesFromDeviceAdapter(String deviceAdapterName)
+  public List<Module> getDevicesFromDeviceAdapter(String deviceAdapterName)
   {
-
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
@@ -169,7 +169,7 @@ public class DACManager
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      deviceAdapters.get(id).addEquipmentModule(device);
+      deviceAdapters.get(id).getSubSystem().
     }
   }
 

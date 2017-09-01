@@ -38,6 +38,7 @@ import MSB2ADAPTER.StringMessageDataWriter;
 import MSB2ADAPTER.StringMessageDataWriterHelper;
 import com.sun.net.httpserver.HttpServer;
 import eu.openmos.model.Equipment;
+import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.msb.dds.DDSErrorHandler;
 import eu.openmos.msb.services.rest.CORSFilter;
@@ -69,7 +70,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 {
 
   // GLOBAL VARIABLES
-  private static String MSB_OPCUA_SERVER_ADDRESS = null;
   private static eu.openmos.msb.opcua.milo.server.OPCServer opcuaServerInstanceMILO;
 
   private static DefaultTableModel adaptersTableModel;
@@ -84,8 +84,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private static JLabel labelREST;
   private static JLabel labelRegister;
   private boolean isDDSRunning;
-  private ClassLoader classLoader;
-
+  private final ClassLoader classLoader = getClass().getClassLoader();
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
@@ -96,8 +95,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {
     initComponents();
 
-    this.isDDSRunning = false;
-    this.classLoader = getClass().getClassLoader();
+    this.isDDSRunning = false;    
     adaptersTableModel = (DefaultTableModel) TableServers.getModel();
     recipesTableModel = (DefaultTableModel) recipesTable.getModel();
     devicesTableModel = (DefaultTableModel) devicesTable.getModel();
@@ -1568,9 +1566,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     List<String> adapters = instance.getDeviceAdapters();
     for (String adapter : adapters)
     {
-      List<Equipment> devices = instance.getDevicesFromDeviceAdapter(adapter);
+      List<Module> devices = instance.getDevicesFromDeviceAdapter(adapter);
       for (Equipment device : devices)
-      {
+      {        
         addToTableDevice(device.getName(), (device.getStatus().equals("1")), device.getAddress(), adapter);
       }
     }

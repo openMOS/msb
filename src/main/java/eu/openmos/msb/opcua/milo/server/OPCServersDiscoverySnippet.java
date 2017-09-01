@@ -184,16 +184,20 @@ public class OPCServersDiscoverySnippet extends Thread
                   Set<String> ignore = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
                   ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
                   node.addContent(instance.browseNode(client,
-                          new NodeId(2, "Masmec_InstanceHierarchy"),
+                          new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.dainstance")),
                           Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
                           ignore));
+                  Element nSkills = new Element("Skills");                  
+                  nSkills.addContent(instance.browseNode(client,
+                          new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
+                          Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level.skills")),
+                          ignore));
+                  node.addContent(nSkills);
+                  
                   System.out.println("***** End namespace browsing *****");
                   System.out.println("\n");
                   new XMLOutputter(Format.getPrettyFormat()).output(node, System.out); // this is only for debug
                   System.out.println("\n");
-
-                  
-                  
 
 
                   // TODO next step validate this

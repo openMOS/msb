@@ -5,14 +5,15 @@
  */
 package eu.openmos.msb.datastructures;
 
-import eu.openmos.model.Equipment;
 import eu.openmos.model.ExecutionTable;
+import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SubSystem;
 import io.vertx.core.Vertx;
 import java.util.ArrayList;
 import java.util.List;
+import org.jdom2.Element;
 
 
 /**
@@ -27,13 +28,11 @@ public abstract class DeviceAdapter
   /*
    * device name || devices in the workstation and its data
    */
-  protected List<Equipment> listOfDevices;
   protected SubSystem subSystem;
   protected Vertx vert;
 
   public DeviceAdapter()
   {
-    listOfDevices = new ArrayList<Equipment>();
     subSystem = new SubSystem(); // will be depreceated
     vert = Vertx.vertx();
   }
@@ -64,37 +63,7 @@ public abstract class DeviceAdapter
     throw new java.lang.UnsupportedOperationException("Not supported yet.");
   }
 
-  /**
-   *
-   * @return
-   */
-  public List<Equipment> getListOfEquipments()
-  {
-    // TODO
-    throw new java.lang.UnsupportedOperationException("Not supported yet.");
-  }
-
-  /**
-   *
-   * @param module
-   */
-  public void addEquipmentModule(Equipment module)
-  {
-    // TODO
-    throw new java.lang.UnsupportedOperationException("Not supported yet.");
-  }
-
-  /**
-   *
-   * @param deviceName
-   * @return
-   */
-  public boolean removeEquipmentModule(String deviceName)
-  {
-    // TODO
-    throw new java.lang.UnsupportedOperationException("Not supported yet.");
-  }
-
+  // ---------------------------------------------------------------------------------------------------------------- //
   /**
    *
    * @param system
@@ -113,47 +82,175 @@ public abstract class DeviceAdapter
     return this.subSystem;
   }
 
-  public List<Recipe> getListOfRecipes()
+  // ---------------------------------------------------------------------------------------------------------------- //
+  /**
+   *
+   * @return
+   */
+  public List<Module> getListOfEquipments()
   {
-
-    Recipe r = new Recipe();
-    return null;
-
+    return this.subSystem.getInternalModules();
   }
 
+  /**
+   *
+   * @param module
+   */
+  public void addEquipmentModule(Module module)
+  {
+    this.subSystem.getInternalModules().add(module);
+  }
+
+  /**
+   *
+   * @param deviceName
+   * @return
+   */
+  public boolean removeEquipmentModule(String deviceName)
+  {
+    throw new java.lang.UnsupportedOperationException("Not supported yet.");
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------- //
+  /**
+   *
+   * @return
+   */
+  public List<Recipe> getListOfRecipes()
+  {
+    return this.subSystem.getRecipes();
+  }
+
+  /**
+   *
+   * @param newRecipe
+   * @return
+   */
+  public List<Recipe> addNewRecipe(Recipe newRecipe)
+  {
+    this.subSystem.getRecipes().add(newRecipe);
+    // TODO we should verify if the recipe was added correctly 
+    return this.subSystem.getRecipes();
+  }
+
+  /**
+   *
+   * @param recipeId
+   * @return
+   */
+  public List<Recipe> remvoeRecipe(String recipeId)
+  {
+    throw new java.lang.UnsupportedOperationException("Not supported yet.");
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------- //
   /**
    *
    * @return
    */
   public List<Skill> getListOfSkills()
   {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return this.subSystem.getSkills();
   }
 
+  /**
+   *
+   * @param newSkill
+   * @return
+   */
+  public List<Skill> addNewSkill(Skill newSkill)
+  {
+    this.subSystem.getSkills().add(newSkill);
+    // TODO we should verify if the skill was added correctly 
+    return this.subSystem.getSkills();
+  }
+
+  /**
+   *
+   * @param skillId
+   * @return
+   */
+  public List<Skill> removeSkill(String skillId)
+  {
+    throw new java.lang.UnsupportedOperationException("Not supported yet.");
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------- //
+  /**
+   *
+   * @return
+   */
+  public ExecutionTable getExecutionTable()
+  {
+    return this.subSystem.getExecutionTable();
+  }
+
+  /**
+   *
+   * @param executionTable
+   * @return
+   */
+  public ExecutionTable setExecutionTable(ExecutionTable executionTable)
+  {
+    this.subSystem.setExecutionTable(executionTable);
+    return this.subSystem.getExecutionTable();
+  }
+
+  
+  // ---------------------------------------------------------------------------------------------------------------- //
+  /**
+   * 
+   * @param deviceDescriptionNode
+   * @param skillsDescriptionNode
+   * @return 
+   */
+  public boolean parseDNToObjects(Element deviceDescriptionNode, Element skillsDescriptionNode)
+  {
+    
+    
+    
+    
+    List<Skill> skills = new ArrayList<Skill>();
+    List<Module> internalModules = new ArrayList<Module>();
+    List<Recipe> recipes = new ArrayList<Recipe>();
+    ExecutionTable executionTable = new ExecutionTable(
+            uniqueId, 
+            name, 
+            description, 
+            rows, 
+            registeredTimestamp
+    );
+    
+    SubSystem ssNode = new SubSystem(
+            uniqueId, 
+            name, 
+            description, 
+            executionTable, 
+            true, 
+            skills, 
+            null, // list of PhysicalPort
+            recipes, 
+            internalModules, 
+            address, 
+            status, 
+            manufacturer, 
+            null, // PhysicalLocation
+            null, // LogicalLocation
+            type, 
+            registeredTimestamp
+    );
+    
+    
+    
+    
+    return false;
+  }
+  
+// ------------------------------------------------------------------------------------------------------------------ //
+// ------------------------------------------------------------------------------------------------------------------ //
   /**
    *
    * @return
    */
   public abstract Object getClient();
-
-  public ExecutionTable getExecutionTable()
-  {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-
-  public List<Skill> addNewSkill(Skill newSkill)
-  {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-
-  public List<Recipe> addNewRecipe(Recipe newRecipe)
-  {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-
-  public ExecutionTable setExecutionTable(ExecutionTable executionTable)
-  {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-
 }
