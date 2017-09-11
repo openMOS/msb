@@ -164,12 +164,12 @@ public class DACManager
    * @param deviceAdapterName
    * @param device
    */
-  public void addEquipmentModuleToList(String deviceAdapterName, Equipment device)
+  public void addEquipmentModuleToList(String deviceAdapterName, Module device)
   {
     int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      deviceAdapters.get(id).getSubSystem().
+      deviceAdapters.get(id).getSubSystem().getInternalModules().add(device);
     }
   }
 

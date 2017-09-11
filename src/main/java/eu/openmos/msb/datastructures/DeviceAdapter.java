@@ -6,6 +6,7 @@
 package eu.openmos.msb.datastructures;
 
 import eu.openmos.model.ExecutionTable;
+import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
@@ -206,13 +207,23 @@ public abstract class DeviceAdapter
    */
   public boolean parseDNToObjects(Element deviceDescriptionNode, Element skillsDescriptionNode)
   {
-    
-    
-    
-    
     List<Skill> skills = new ArrayList<Skill>();
     List<Module> internalModules = new ArrayList<Module>();
     List<Recipe> recipes = new ArrayList<Recipe>();
+    List<ExecutionTableRow> rows = new ArrayList<ExecutionTableRow>();
+   
+    
+    
+    
+    ExecutionTableRow row = new ExecutionTableRow(
+            uniqueId, 
+            productId, 
+            recipeId, 
+            nextRecipeId, 
+            possibleRecipeChoices
+    );
+    
+    
     ExecutionTable executionTable = new ExecutionTable(
             uniqueId, 
             name, 
@@ -220,6 +231,7 @@ public abstract class DeviceAdapter
             rows, 
             registeredTimestamp
     );
+    
     
     SubSystem ssNode = new SubSystem(
             uniqueId, 
