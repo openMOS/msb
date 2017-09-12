@@ -268,7 +268,7 @@ public class DatabaseInteraction
    * @param deviceName
    * @return
    */
-  public int removeDeviceByName(String deviceName)
+  public boolean removeDeviceByName(String deviceName)
   {
     try
     {
@@ -276,14 +276,14 @@ public class DatabaseInteraction
       int query = stmt.executeUpdate("DELETE FROM DeviceAdapter WHERE name = '" + deviceName + "'");
       stmt.close();
 
-      return query;
+      return true;
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-    return -999;
+    return false;
   }
 
   /**
@@ -291,21 +291,21 @@ public class DatabaseInteraction
    * @param deviceId
    * @return
    */
-  public int removeDeviceById(String deviceId)
+  public boolean removeDeviceById(String deviceId)
   {
     try
     {
       Statement stmt = conn.createStatement();
-      int results = stmt.executeUpdate("DELETE FROM DeviceAdapter WHERE id = '" + deviceId + "'");
+      stmt.executeUpdate("DELETE FROM DeviceAdapter WHERE id = '" + deviceId + "'");
       stmt.close();
-      return results;
+      return true;
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-    return -999;
+    return false;
   }
 
   /**
