@@ -32,12 +32,6 @@
   </properties>
     
   <dependencies>
-        
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom2</artifactId>
-      <version>2.0.6</version>
-    </dependency>
     
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
@@ -191,6 +185,31 @@
       <artifactId>mongodb-driver</artifactId>
       <version>3.3.0</version>
       <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+      <version>2.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jaxen-core</artifactId>
+      <version>1.0-FCS</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jaxen-jdom</artifactId>
+      <version>1.0-FCS</version>
+    </dependency>
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.7-20060614</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>saxpath</artifactId>
+      <version>1.0-FCS</version>
     </dependency>
   </dependencies>
   
