@@ -32,6 +32,7 @@ public class DACManager
   private static volatile DACManager instance = null;
 
   // [af-silva] TODO valdiate
+  // para aceder as classes especificas (DeviceAdapterOPC e DeviceAdapterDDS) fazer cast
   private final Map<Integer, DeviceAdapter> deviceAdapters;
 
   /**
@@ -71,7 +72,7 @@ public class DACManager
    * @param short_info
    * @param long_info
    */
-  public void addDeviceAdapter(String deviceAdapterName, EProtocol device_protocol, String short_info, String long_info)
+  public DeviceAdapter addDeviceAdapter(String deviceAdapterName, EProtocol device_protocol, String short_info, String long_info)
   {
     String protocol = "";
     try
@@ -104,11 +105,13 @@ public class DACManager
       if (id != -1 && client != null) // the last condition should never happen
       {
         deviceAdapters.put(id, client);
+        return client;
       }
     } catch (UnsupportedOperationException ex)
     {
       System.out.println("[ERRO] at addDeviceAdapter" + ex.getMessage());
     }
+    return null;
   }
 
   public DeviceAdapter getDeviceAdapter(String deviceAdapterName)
@@ -128,20 +131,20 @@ public class DACManager
    */
   public boolean deleteDeviceAdapter(String deviceAdapterName)
   {
-    boolean ok = false;
+    
     try
     {
-      int id = DatabaseInteraction.getInstance().removeDeviceByName(deviceAdapterName);
-      if (id != -1 && deviceAdapters.containsKey(id))
+      int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);      
+      if (id != -1 && DatabaseInteraction.getInstance().removeDeviceByName(deviceAdapterName) && deviceAdapters.containsKey(id))
       {
         deviceAdapters.remove(id);
-        ok = true;
+        return true;
       }
     } catch (Exception ex)
     {
       System.out.println("[Error] at deleteDeviceAdapter" + ex);
     }
-    return ok;
+    return false;
   }
 
   /**

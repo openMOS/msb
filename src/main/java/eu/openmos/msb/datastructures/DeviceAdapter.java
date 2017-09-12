@@ -5,17 +5,29 @@
  */
 package eu.openmos.msb.datastructures;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.vertx.core.Vertx;
+
 import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SubSystem;
-import io.vertx.core.Vertx;
-import java.util.ArrayList;
-import java.util.List;
-import org.jdom2.Element;
 
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.filter.Filters;
+import org.jdom2.input.DOMBuilder;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.StAXEventBuilder;
+import org.jdom2.xpath.XPathExpression;
+import org.jdom2.xpath.XPathFactory;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -197,67 +209,88 @@ public abstract class DeviceAdapter
     return this.subSystem.getExecutionTable();
   }
 
-  
   // ---------------------------------------------------------------------------------------------------------------- //
   /**
-   * 
+   *
    * @param deviceDescriptionNode
    * @param skillsDescriptionNode
-   * @return 
+   * @return
    */
   public boolean parseDNToObjects(Element deviceDescriptionNode, Element skillsDescriptionNode)
   {
-    List<Skill> skills = new ArrayList<Skill>();
-    List<Module> internalModules = new ArrayList<Module>();
-    List<Recipe> recipes = new ArrayList<Recipe>();
-    List<ExecutionTableRow> rows = new ArrayList<ExecutionTableRow>();
-   
+    System.out.println("Starting DA Parser **********************");
+    try
+    {
+
+      List<Skill> skills = new ArrayList<>();
+      List<Module> internalModules = new ArrayList<>();
+      List<Recipe> recipes = new ArrayList<>();
+      List<ExecutionTableRow> eTRows = new ArrayList<>();
+
+      // TEST ONE
+      List<Element> list = deviceDescriptionNode.getChildren();
+      System.out.println("Number of elements list " + list.size());
+
+
+      
+      
+      // TODO GET ELEMENTS IN THE XML DOM USING XPATH AND JDOM2
+      String query0 = "//DeviceAdapter/Transport1/manufacturer";
+      String query1 = "//DeviceAdapter/*/manufacturer/Type[contains(@namespace, 'manufacturer')]";
+      String query2 = "//*[contains(local-name(), 'Name')]";
+      String query3 = "//manufacturer/Type[contains(namespace/text(),'manufacturer')]/node()";
+      
+      
+      XPathFactory xpfac = XPathFactory.instance();
+      XPathExpression<Element> xp = xpfac.compile(query3, Filters.element());
+      List<Element> list2 = xp.evaluate(deviceDescriptionNode);
+      System.out.println("Number of elements list2 " + list2.size());
+      for (Element l : list2) {
+        System.out.println("We have target " + l.getValue());
+      }
+
     
-    
-    
-    ExecutionTableRow row = new ExecutionTableRow(
-            uniqueId, 
-            productId, 
-            recipeId, 
-            nextRecipeId, 
-            possibleRecipeChoices
-    );
-    
-    
-    ExecutionTable executionTable = new ExecutionTable(
-            uniqueId, 
-            name, 
-            description, 
-            rows, 
-            registeredTimestamp
-    );
-    
-    
-    SubSystem ssNode = new SubSystem(
-            uniqueId, 
-            name, 
-            description, 
-            executionTable, 
-            true, 
-            skills, 
-            null, // list of PhysicalPort
-            recipes, 
-            internalModules, 
-            address, 
-            status, 
-            manufacturer, 
-            null, // PhysicalLocation
-            null, // LogicalLocation
-            type, 
-            registeredTimestamp
-    );
-    
-    
-    
-    
+//    ExecutionTableRow eTRow = new ExecutionTableRow(
+//            uniqueId,
+//            productId,
+//            recipeId,
+//            nextRecipeId,
+//            possibleRecipeChoices
+//    );
+//
+//    ExecutionTable executionTable = new ExecutionTable(
+//            uniqueId,
+//            name,
+//            description,
+//            eTRows,
+//            registeredTimestamp
+//    );
+//
+//    SubSystem ssNode = new SubSystem(
+//            uniqueId,
+//            name,
+//            description,
+//            executionTable,
+//            true,
+//            skills,
+//            null, // list of PhysicalPort
+//            recipes,
+//            internalModules,
+//            address,
+//            status,
+//            manufacturer,
+//            null, // PhysicalLocation
+//            null, // LogicalLocation
+//            type,
+//            registeredTimestamp
+//    );
+    } catch (Exception ex)
+    {
+      System.out.println("[ERROR] " + ex.getMessage());
+    }
     return false;
   }
-  
+
 // ------------------------------------------------------------------------------------------------------------------ //
 // ------------------------------------------------------------------------------------------------------------------ //
   /**

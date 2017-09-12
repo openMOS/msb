@@ -4,36 +4,28 @@ import eu.openmos.agentcloud.config.ConfigurationLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
 import static org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType.DiscoveryServer;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
-
+import java.io.FileWriter;
 import java.util.Arrays;
-
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
-
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.jdom2.Element;
-import org.jdom2.Attribute;
-import org.jdom2.Document;
 import org.jdom2.output.Format;
+//import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 /**
@@ -138,6 +130,7 @@ public class OPCServersDiscoverySnippet extends Thread
    */
   private EndpointDescription discoverEndpoints(ApplicationDescription serverApp)
   {
+    // singleton of the class Device Adatper Manager, it holds all the Device Adapters registered in this MSB instance
     DACManager manager = DACManager.getInstance();
     String[] discoveryUrls = serverApp.getDiscoveryUrls();
 
@@ -155,14 +148,23 @@ public class OPCServersDiscoverySnippet extends Thread
             System.out.println("EndPoints from: " + url + " = " + ed);
 
             String daName = serverApp.getApplicationName().getText();
+            // Creates a new Device Adapter
             DeviceAdapter da = manager.getDeviceAdapter(daName);
 
             if (da == null)
             {
-              manager.addDeviceAdapter(daName, EProtocol.OPC, "", "");
+              System.out.println("\n\n Registered the " + daName + "\n\n");
+              
+              da = manager.addDeviceAdapter(daName, EProtocol.OPC, "", "");
+              if (da == null)
+              {
+                this.logger.error("Unable to create Device Adatper {} at {}", daName, url);
+                System.out.println("Unable to create Device Adatper " + daName + " at " + url);
+                continue;
+              }
+              // if Device Adatper created ok, let's do some magic
               da_url = ed.getEndpointUrl();
-
-              //new MSB            
+ 
               ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get();
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
               {
@@ -172,6 +174,8 @@ public class OPCServersDiscoverySnippet extends Thread
                 instance.startConnection(da_url);
                 OpcUaClient client = instance.getClientObject();
 
+                // add subscribet for the ServerStatus of the device adatper
+                
                 // Iterate over all values, using the keySet method.
                 // call SendServerURL() method from device
                 if (daName != null && !daName.contains("MSB") && !daName.contains("discovery"))
@@ -179,28 +183,41 @@ public class OPCServersDiscoverySnippet extends Thread
 
                   // oompa loompas at work here
                   System.out.println("\n");
-                  System.out.println("***** Starting namespace browsing *****");
+                  System.out.println("***** Starting namespace browsing ***** \n");
                   Element node = new Element("DeviceAdapter");
-                  Set<String> ignore = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+                  Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
                   ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
                   node.addContent(instance.browseNode(client,
                           new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.dainstance")),
                           Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
                           ignore));
-                  Element nSkills = new Element("Skills");                  
+                  Element nSkills = new Element("Skills");
                   nSkills.addContent(instance.browseNode(client,
                           new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
                           Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level.skills")),
                           ignore));
-                  node.addContent(nSkills);
+                  // add the skills node to the main doc, not necessary 
+//                  node.addContent(nSkills);
+
                   
-                  System.out.println("***** End namespace browsing *****");
-                  System.out.println("\n");
-                  new XMLOutputter(Format.getPrettyFormat()).output(node, System.out); // this is only for debug
-                  System.out.println("\n");
+//                  // Print to console
 
+//                  System.out.println("\n");
+//                  new XMLOutputter(Format.getPrettyFormat()).output(node, System.out); // this is only for debug
+//                  System.out.println("\n");
+                  
+                  // print to file the XML structure extracted from the browsing process             
+                  XMLOutputter xmlOutput = new XMLOutputter();
+                  xmlOutput.setFormat(Format.getPrettyFormat());
+                  xmlOutput.output(node, new FileWriter("xml/file.xml", false));
 
+                  // TODO - WIP - parse the XML to java classes to be send up to the HMI and Agent Cloud
+                  boolean ok = da.parseDNToObjects(node, nSkills);
+
+                  System.out.println("***** End namespace browsing ***** \n\n");                  
+                  
                   // TODO next step validate this
+                  // TODO fabio check if this will be valid after changes from fortiss
                   instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
                   {
                     System.out.println("error invoking SendServerURL() for server: " + daName + "\n" + ex);
@@ -210,6 +227,7 @@ public class OPCServersDiscoverySnippet extends Thread
                   {
                     System.out.println("SendServerURL(uri)={}\n" + v);
                   });
+
                 }
                 if (client == null)
                 {
@@ -217,10 +235,11 @@ public class OPCServersDiscoverySnippet extends Thread
                 }
 
               }
+              // Update the GUI with the new devices discovered 
               notify_channel.on_new_endpoint_discovered(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
             }
 
-          }
+          } // end of second "for" for Discovery Endpoints
         } catch (InterruptedException | ExecutionException e)
         {
           this.logger.error("Cannot discover Endpoints from URL {} : {}", da_url, e.getMessage());
@@ -238,8 +257,7 @@ public class OPCServersDiscoverySnippet extends Thread
         {
           java.util.logging.Logger.getLogger(OPCServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
         }
-      }
-
+      } // end of first "for" for Discovery Urls
     } else
     {
       System.out.println("No suitable discoveryUrl available: using the current Url");

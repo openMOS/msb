@@ -5,12 +5,17 @@
  */
 package eu.openmos.msb.datastructures;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Introsys
  */
 public class ProductExecution implements Runnable
 {
+  
+  List<String> recipesExecuted = new ArrayList<>();
 
   @Override
   public void run()

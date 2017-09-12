@@ -369,25 +369,12 @@ public class MSBClientSubscription implements IClient
         nodePath.setText(rd.getNodeId().getIdentifier().toString());
         node.addContent(nodePath);
 
-        Element nodeReferenceType = new Element("ReferenceType");
-        nodeReferenceType.setAttribute("ns", rd.getNodeId().getNamespaceIndex().toString());
-        nodeReferenceType.setText(rd.getNodeId().getIdentifier().toString());
-        node.addContent(nodeReferenceType);
+//        // if we need the Reference Type
+//        Element nodeReferenceType = new Element("ReferenceType");
+//        nodeReferenceType.setAttribute("ns", rd.getNodeId().getNamespaceIndex().toString());
+//        nodeReferenceType.setText(rd.getNodeId().getIdentifier().toString());
+//        node.addContent(nodeReferenceType);
 
-//        try
-//        {
-//          Element nodeValue = new Element("Value");
-//          VariableNode vNode = client.getAddressSpace().createVariableNode(rd.getNodeId().local().get());
-//          DataValue value = vNode.readValue().get();
-//          nodeValue.setText(value.getValue().getValue().toString());
-//          node.addContent(nodeValue);
-//        }
-//        catch(Exception e)
-//        {
-//          System.out.println("[ERROR] " + rd.getBrowseName() + " " + e.getMessage());
-//          //logger.error("Browsing node={} failed: {}", rd.getBrowseName(), e.getMessage(), e);
-//        }
-//        
         try
         {
           Element nodeValue = new Element("Value");
@@ -395,6 +382,7 @@ public class MSBClientSubscription implements IClient
           {
             try
             {
+              // read the value from the variable exposed in the OPC-UA Server
               VariableNode vNode = client.getAddressSpace().createVariableNode(NodeId);
               DataValue value = vNode.readValue().get();
               nodeValue.setText(value.getValue().getValue().toString());
@@ -407,14 +395,11 @@ public class MSBClientSubscription implements IClient
             }
             
           });
-          node.addContent(nodeValue);
-          
-          
-          
-        } catch (Exception e)
-        {
-          //System.out.println("[ERROR] " + rd.getBrowseName() + " " + e.getMessage());
-          //logger.error("Browsing node={} failed: {}", rd.getBrowseName(), e.getMessage(), e);
+          node.addContent(nodeValue);                         
+        } catch (Exception ex)
+        { 
+          // this is empty on purpose, since every time a variable does not have a value an exception is thrown
+          // TODO - handle this in another way, maybe or let the oompa loopas do there work and forget about this
         }
 
         // recursively browse to children
@@ -422,9 +407,12 @@ public class MSBClientSubscription implements IClient
         {
           rd.getNodeId().local().ifPresent(nodeId ->
           {
+            // recursive call HERE
             List<Element> list = browseNode(client, nodeId, nextInteraction, ignoreList);
             if (!list.isEmpty())
             {
+              // the recursive function returns a list of nodes (XML), so if a node has children they are added here
+              // for each recursvie call
               node.addContent(list);
             }
           });

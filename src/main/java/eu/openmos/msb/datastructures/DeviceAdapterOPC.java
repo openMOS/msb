@@ -16,6 +16,9 @@ public class DeviceAdapterOPC extends DeviceAdapter
 
   private MSBClientSubscription opcClient;
 
+  /**
+   * 
+   */
   public DeviceAdapterOPC()
   {
     opcClient = new MSBClientSubscription();
