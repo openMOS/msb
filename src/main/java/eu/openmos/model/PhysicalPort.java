@@ -11,7 +11,7 @@ import org.bson.Document;
  */
 public class PhysicalPort extends Port implements Serializable {
     private static final Logger logger = Logger.getLogger(Module.class.getName());    
-    private static final long serialVersionUID = 6529685098267757018L;
+    private static final long serialVersionUID = 6529685098267757021L;
     
     public PhysicalPort() {super();}
 

@@ -15,7 +15,7 @@ import org.bson.Document;
  */
 public class Parameter extends Base implements Serializable {
     private static final Logger logger = Logger.getLogger(Module.class.getName());    
-    private static final long serialVersionUID = 6529685098267757013L;
+    private static final long serialVersionUID = 6529685098267757015L;
     
     /**
      * Parameter ID.

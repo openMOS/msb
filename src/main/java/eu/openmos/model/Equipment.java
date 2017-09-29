@@ -196,6 +196,7 @@ public abstract class Equipment extends Base implements Serializable {
      * 
      * @return BSON form of the object. 
      */
+/*    
     public Document toBSON() {
         Document doc = new Document();
 
@@ -217,5 +218,6 @@ public abstract class Equipment extends Base implements Serializable {
         
         return doc;
     }
+*/
 
 }

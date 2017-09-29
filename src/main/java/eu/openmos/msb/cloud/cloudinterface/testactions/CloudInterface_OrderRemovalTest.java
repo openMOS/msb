@@ -37,7 +37,7 @@ public class CloudInterface_OrderRemovalTest {
 
         String orderId = "order_unique_id";
         String date = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(new Date());
-        ServiceCallStatus skillStatus = systemConfigurator.orderRemoval(orderId, date);
+        ServiceCallStatus skillStatus = systemConfigurator.orderInstanceRemoval(orderId, date);
           
         logger.info("New Skill Test main end");
     }

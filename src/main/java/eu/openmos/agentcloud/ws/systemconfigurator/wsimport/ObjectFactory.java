@@ -30,23 +30,23 @@ import eu.openmos.model.SubSystem;
 public class ObjectFactory {
 
     private final static QName _Recipe_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "recipe");
+    private final static QName _AcceptNewOrderInstanceResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "acceptNewOrderInstanceResponse");
     private final static QName _CreateNewTransportAgentResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewTransportAgentResponse");
     private final static QName _SkillRequirement_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "skillRequirement");
+    private final static QName _OrderInstanceRemovalResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceRemovalResponse");
     private final static QName _FinishedProduct_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "finishedProduct");
     private final static QName _CreateNewSkill_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewSkill");
+    private final static QName _OrderInstanceUpdate_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceUpdate");
     private final static QName _DeviceAdapter_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "deviceAdapter");
-    private final static QName _OrderRemoval_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderRemoval");
-    private final static QName _OrderRemovalResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderRemovalResponse");
-    private final static QName _OrderUpdateResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderUpdateResponse");
+    private final static QName _OrderInstanceUpdateResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceUpdateResponse");
     private final static QName _Skill_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "skill");
     private final static QName _CreateNewRecipe_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewRecipe");
     private final static QName _InitializePlatformResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "initializePlatformResponse");
-    private final static QName _OrderUpdate_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderUpdate");
     private final static QName _CreateNewResourceAgentResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewResourceAgentResponse");
-    private final static QName _AcceptNewOrder_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "acceptNewOrder");
+    private final static QName _OrderInstanceRemoval_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceRemoval");
+    private final static QName _AcceptNewOrderInstance_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "acceptNewOrderInstance");
     private final static QName _InitializePlatform_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "initializePlatform");
     private final static QName _CreateNewSkillResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewSkillResponse");
-    private final static QName _AcceptNewOrderResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "acceptNewOrderResponse");
     private final static QName _CreateNewResourceAgent_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewResourceAgent");
     private final static QName _Device_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "device");
     private final static QName _RemoveAgentResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "removeAgentResponse");
@@ -60,6 +60,14 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link OrderInstanceRemovalResponse }
+     * 
+     */
+    public OrderInstanceRemovalResponse createOrderInstanceRemovalResponse() {
+        return new OrderInstanceRemovalResponse();
     }
 
     /**
@@ -79,6 +87,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AcceptNewOrderInstanceResponse }
+     * 
+     */
+    public AcceptNewOrderInstanceResponse createAcceptNewOrderInstanceResponse() {
+        return new AcceptNewOrderInstanceResponse();
+    }
+
+    /**
      * Create an instance of {@link CreateNewTransportAgentResponse }
      * 
      */
@@ -87,35 +103,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link OrderRemovalResponse }
+     * Create an instance of {@link OrderInstanceUpdateResponse }
      * 
      */
-    public OrderRemovalResponse createOrderRemovalResponse() {
-        return new OrderRemovalResponse();
+    public OrderInstanceUpdateResponse createOrderInstanceUpdateResponse() {
+        return new OrderInstanceUpdateResponse();
     }
 
     /**
-     * Create an instance of {@link OrderUpdateResponse }
+     * Create an instance of {@link OrderInstanceUpdate }
      * 
      */
-    public OrderUpdateResponse createOrderUpdateResponse() {
-        return new OrderUpdateResponse();
-    }
-
-    /**
-     * Create an instance of {@link OrderRemoval }
-     * 
-     */
-    public OrderRemoval createOrderRemoval() {
-        return new OrderRemoval();
-    }
-
-    /**
-     * Create an instance of {@link AcceptNewOrder }
-     * 
-     */
-    public AcceptNewOrder createAcceptNewOrder() {
-        return new AcceptNewOrder();
+    public OrderInstanceUpdate createOrderInstanceUpdate() {
+        return new OrderInstanceUpdate();
     }
 
     /**
@@ -124,6 +124,14 @@ public class ObjectFactory {
      */
     public CreateNewResourceAgentResponse createCreateNewResourceAgentResponse() {
         return new CreateNewResourceAgentResponse();
+    }
+
+    /**
+     * Create an instance of {@link OrderInstanceRemoval }
+     * 
+     */
+    public OrderInstanceRemoval createOrderInstanceRemoval() {
+        return new OrderInstanceRemoval();
     }
 
     /**
@@ -143,19 +151,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AcceptNewOrderInstance }
+     * 
+     */
+    public AcceptNewOrderInstance createAcceptNewOrderInstance() {
+        return new AcceptNewOrderInstance();
+    }
+
+    /**
      * Create an instance of {@link CreateNewRecipe }
      * 
      */
     public CreateNewRecipe createCreateNewRecipe() {
         return new CreateNewRecipe();
-    }
-
-    /**
-     * Create an instance of {@link OrderUpdate }
-     * 
-     */
-    public OrderUpdate createOrderUpdate() {
-        return new OrderUpdate();
     }
 
     /**
@@ -199,14 +207,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AcceptNewOrderResponse }
-     * 
-     */
-    public AcceptNewOrderResponse createAcceptNewOrderResponse() {
-        return new AcceptNewOrderResponse();
-    }
-
-    /**
      * Create an instance of {@link RemoveAgentResponse }
      * 
      */
@@ -232,6 +232,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AcceptNewOrderInstanceResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "acceptNewOrderInstanceResponse")
+    public JAXBElement<AcceptNewOrderInstanceResponse> createAcceptNewOrderInstanceResponse(AcceptNewOrderInstanceResponse value) {
+        return new JAXBElement<AcceptNewOrderInstanceResponse>(_AcceptNewOrderInstanceResponse_QNAME, AcceptNewOrderInstanceResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CreateNewTransportAgentResponse }{@code >}}
      * 
      */
@@ -247,6 +256,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "skillRequirement")
     public JAXBElement<SkillRequirement> createSkillRequirement(SkillRequirement value) {
         return new JAXBElement<SkillRequirement>(_SkillRequirement_QNAME, SkillRequirement.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link OrderInstanceRemovalResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "orderInstanceRemovalResponse")
+    public JAXBElement<OrderInstanceRemovalResponse> createOrderInstanceRemovalResponse(OrderInstanceRemovalResponse value) {
+        return new JAXBElement<OrderInstanceRemovalResponse>(_OrderInstanceRemovalResponse_QNAME, OrderInstanceRemovalResponse.class, null, value);
     }
 
     /**
@@ -268,6 +286,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link OrderInstanceUpdate }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "orderInstanceUpdate")
+    public JAXBElement<OrderInstanceUpdate> createOrderInstanceUpdate(OrderInstanceUpdate value) {
+        return new JAXBElement<OrderInstanceUpdate>(_OrderInstanceUpdate_QNAME, OrderInstanceUpdate.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SubSystem }{@code >}}
      * 
      */
@@ -277,30 +304,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link OrderRemoval }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link OrderInstanceUpdateResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "orderRemoval")
-    public JAXBElement<OrderRemoval> createOrderRemoval(OrderRemoval value) {
-        return new JAXBElement<OrderRemoval>(_OrderRemoval_QNAME, OrderRemoval.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link OrderRemovalResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "orderRemovalResponse")
-    public JAXBElement<OrderRemovalResponse> createOrderRemovalResponse(OrderRemovalResponse value) {
-        return new JAXBElement<OrderRemovalResponse>(_OrderRemovalResponse_QNAME, OrderRemovalResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link OrderUpdateResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "orderUpdateResponse")
-    public JAXBElement<OrderUpdateResponse> createOrderUpdateResponse(OrderUpdateResponse value) {
-        return new JAXBElement<OrderUpdateResponse>(_OrderUpdateResponse_QNAME, OrderUpdateResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "orderInstanceUpdateResponse")
+    public JAXBElement<OrderInstanceUpdateResponse> createOrderInstanceUpdateResponse(OrderInstanceUpdateResponse value) {
+        return new JAXBElement<OrderInstanceUpdateResponse>(_OrderInstanceUpdateResponse_QNAME, OrderInstanceUpdateResponse.class, null, value);
     }
 
     /**
@@ -331,15 +340,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link OrderUpdate }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "orderUpdate")
-    public JAXBElement<OrderUpdate> createOrderUpdate(OrderUpdate value) {
-        return new JAXBElement<OrderUpdate>(_OrderUpdate_QNAME, OrderUpdate.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CreateNewResourceAgentResponse }{@code >}}
      * 
      */
@@ -349,12 +349,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AcceptNewOrder }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link OrderInstanceRemoval }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "acceptNewOrder")
-    public JAXBElement<AcceptNewOrder> createAcceptNewOrder(AcceptNewOrder value) {
-        return new JAXBElement<AcceptNewOrder>(_AcceptNewOrder_QNAME, AcceptNewOrder.class, null, value);
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "orderInstanceRemoval")
+    public JAXBElement<OrderInstanceRemoval> createOrderInstanceRemoval(OrderInstanceRemoval value) {
+        return new JAXBElement<OrderInstanceRemoval>(_OrderInstanceRemoval_QNAME, OrderInstanceRemoval.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AcceptNewOrderInstance }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "acceptNewOrderInstance")
+    public JAXBElement<AcceptNewOrderInstance> createAcceptNewOrderInstance(AcceptNewOrderInstance value) {
+        return new JAXBElement<AcceptNewOrderInstance>(_AcceptNewOrderInstance_QNAME, AcceptNewOrderInstance.class, null, value);
     }
 
     /**
@@ -373,15 +382,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "createNewSkillResponse")
     public JAXBElement<CreateNewSkillResponse> createCreateNewSkillResponse(CreateNewSkillResponse value) {
         return new JAXBElement<CreateNewSkillResponse>(_CreateNewSkillResponse_QNAME, CreateNewSkillResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AcceptNewOrderResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "acceptNewOrderResponse")
-    public JAXBElement<AcceptNewOrderResponse> createAcceptNewOrderResponse(AcceptNewOrderResponse value) {
-        return new JAXBElement<AcceptNewOrderResponse>(_AcceptNewOrderResponse_QNAME, AcceptNewOrderResponse.class, null, value);
     }
 
     /**

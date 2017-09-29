@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Recipe extends Base implements Serializable {    
     private static final Logger logger = Logger.getLogger(Recipe.class.getName());
-    private static final long serialVersionUID = 6529685098267757022L;
+    private static final long serialVersionUID = 6529685098267757025L;
 
     /**
      * Recipe ID.
@@ -78,7 +78,9 @@ public class Recipe extends Base implements Serializable {
     /**
      * Recipe's equipment.
      */
-    private Equipment equipment;
+    //private Equipment equipment;
+    // private SubSystem equipment;
+    private String equipmentId;
     /**
      * Whether the recipe is optimized or not.
      */
@@ -124,7 +126,9 @@ public class Recipe extends Base implements Serializable {
             List<SkillRequirement> skillRequirements,
             Skill skill,
             ControlPort executedBySkillControlPort,
-            Equipment equipment,
+            // Equipment equipment,
+            // SubSystem equipment,
+            String equipmentId,
             String msbProtocolEndpoint,
             boolean valid,
             Date registeredTimestamp) {
@@ -141,7 +145,8 @@ public class Recipe extends Base implements Serializable {
         this.skill = skill;
         this.executedBySkillControlPort = executedBySkillControlPort;
         
-        this.equipment = equipment;
+        // this.equipment = equipment;
+        this.equipmentId = equipmentId;
         this.msbProtocolEndpoint = msbProtocolEndpoint;        
         this.valid = valid;
     }
@@ -210,12 +215,28 @@ public class Recipe extends Base implements Serializable {
         this.skill = skill;
     }
 
-    public Equipment getEquipment() {
+    /* public Equipment getEquipment() {
         return equipment;
     }
 
     public void setEquipment(Equipment equipment) {
         this.equipment = equipment;
+    } */
+/*    
+    public SubSystem getEquipment() {
+        return equipment;
+    }
+    
+    public void setEquipment(SubSystem equipment) {
+        this.equipment = equipment;
+    }
+*/
+    public String getEquipmentId() {
+        return equipmentId;
+    }
+    
+    public void setEquipmentId(String equipmentId) {
+        this.equipmentId = equipmentId;
     }
 
     public boolean isOptimized() {
@@ -267,10 +288,26 @@ public class Recipe extends Base implements Serializable {
     public Document toBSON() {
         Document doc = new Document();
         
-        List<String> kpiSettingIds = kpiSettings.stream().map(kpiSetting -> kpiSetting.getUniqueId()).collect(Collectors.toList());
-        List<String> parameterSettingIds = parameterSettings.stream().map(parameterSetting -> parameterSetting.getUniqueId()).collect(Collectors.toList());        
-        List<String> skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());        
+        List<String> kpiSettingIds = null;
+        if (kpiSettings != null)
+            kpiSettingIds = kpiSettings.stream().map(kpiSetting -> kpiSetting.getUniqueId()).collect(Collectors.toList());
+        
+        List<String> parameterSettingIds = null;
+        if (parameterSettings != null)
+            parameterSettingIds = parameterSettings.stream().map(parameterSetting -> parameterSetting.getUniqueId()).collect(Collectors.toList());        
+        
+        List<String> skillRequirementIds = null;
+        if (skillRequirements != null)
+            skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());        
 
+        String skillId = null;
+        if (skill != null)
+            skillId = skill.getUniqueId();
+        
+        String controlPortId = null;
+        if (executedBySkillControlPort != null)
+            controlPortId = executedBySkillControlPort.getUniqueId();
+        
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         
         doc.append("description", description);
@@ -280,9 +317,9 @@ public class Recipe extends Base implements Serializable {
         doc.append("parameterSettings", parameterSettingIds);        
         doc.append("uniqueAgentName", uniqueAgentName);
         doc.append("skillRequirements", skillRequirementIds);           
-        doc.append("skillId", skill.getUniqueId());
-        doc.append("executedBySkillControlPortId", executedBySkillControlPort.getUniqueId());
-        doc.append("equipmentId", equipment.getUniqueId());
+        doc.append("skillId", skillId);
+        doc.append("executedBySkillControlPortId", controlPortId);
+        doc.append("equipmentId", equipmentId);
         doc.append("optimized", optimized);
         doc.append("lastOptimizationTime", this.lastOptimizationTime == null ? "null" : sdf.format(this.lastOptimizationTime));
         doc.append("msbProtocolEndpoint", msbProtocolEndpoint);

@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Skill extends Base implements Serializable {    
     private static final Logger logger = Logger.getLogger(Skill.class.getName());
-    private static final long serialVersionUID = 6529685098267757023L;
+    private static final long serialVersionUID = 6529685098267757026L;
 
     public static final int TYPE_ATOMIC = 0;
     public static final int TYPE_COMPOSITE = 1;
@@ -49,14 +49,14 @@ public class Skill extends Base implements Serializable {
      * It's a sort of general description of the skill, ex "weld", "transport", ....
      * MSB alignment: changed the field type from int to string according with Pedro Ferreira.
      */
-    @Deprecated
+//    @Deprecated
     private String type;
     private SkillType skillType;
     /**
      * KPIs the skill needs to respect.
      * It's an optional list.
      */
-    @Deprecated
+//    @Deprecated
     private List<KPI> kpis;
     /**
      * Information ports that have KPIS.
@@ -65,7 +65,7 @@ public class Skill extends Base implements Serializable {
     /**
      * Parameters the skill needs to meet.
      */
-    @Deprecated
+//    @Deprecated
     private List<Parameter> parameters;
     /**
      * Parameter ports that have parameters.
@@ -81,14 +81,16 @@ public class Skill extends Base implements Serializable {
     /**
      * The skillRequirements list has to be aligned with recipes list:
      * for every recipe we must have one skillrequirement.
+     * 
+     * Atomic skills have only one skillreq, composite skills have many of them.
     */
-    @Deprecated
+//    @Deprecated
     private List<SkillRequirement> skillRequirements;
     /**
      * The recipes list has to be aligned with skillRequiremens list:
      * for every skillrequirement we must have one recipe.
     */
-    @Deprecated
+//    @Deprecated
     private List<String> recipeIds;    
     /**
      * Control ports that link to recipes.
@@ -296,14 +298,34 @@ public class Skill extends Base implements Serializable {
     public Document toBSON() {
         Document doc = new Document();
         
-        List<String> kpiIds = kpis.stream().map(kpi -> kpi.getUniqueId()).collect(Collectors.toList());        
-        List<String> parameterIds = parameters.stream().map(parameter -> parameter.getUniqueId()).collect(Collectors.toList());
+        List<String> kpiIds = null;
+        if (kpis != null)
+            kpiIds = kpis.stream().map(kpi -> kpi.getUniqueId()).collect(Collectors.toList());        
+        
+        List<String> parameterIds = null;
+        if (parameters != null)
+            parameterIds = parameters.stream().map(parameter -> parameter.getUniqueId()).collect(Collectors.toList());
+        
 //        List<String> skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getUniqueId()).collect(Collectors.toList());
-        List<String> skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());
+        List<String> skillRequirementIds = null;
+        if (skillRequirements != null)
+            skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());
 
-        List<String> controlPortIds = controlPorts.stream().map(controlPort -> controlPort.getUniqueId()).collect(Collectors.toList());        
-        List<String> parameterPortIds = parameterPorts.stream().map(parameterPort -> parameterPort.getUniqueId()).collect(Collectors.toList());        
-        List<String> informationPortIds = informationPorts.stream().map(informationPort -> informationPort.getUniqueId()).collect(Collectors.toList());        
+        List<String> controlPortIds = null;
+        if (controlPorts != null)
+            controlPortIds = controlPorts.stream().map(controlPort -> controlPort.getUniqueId()).collect(Collectors.toList());        
+        
+        List<String> parameterPortIds = null;
+        if (parameterPorts != null)
+            parameterPortIds = parameterPorts.stream().map(parameterPort -> parameterPort.getUniqueId()).collect(Collectors.toList());        
+        
+        List<String> informationPortIds = null;
+        if (informationPorts != null)
+            informationPortIds = informationPorts.stream().map(informationPort -> informationPort.getUniqueId()).collect(Collectors.toList());        
+        
+        String skillTypeId = null;
+        if (skillType != null)
+            skillTypeId = skillType.getUniqueId();
         
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         String stringRegisteredTimestamp = sdf.format(this.registered);       
@@ -317,7 +339,7 @@ public class Skill extends Base implements Serializable {
         doc.append("parameters", parameterIds);      
         doc.append("parameterPortIds", parameterPortIds);
         doc.append("type", type);     
-        doc.append("skillType", skillType.getUniqueId());     
+        doc.append("skillType", skillTypeId);     
         doc.append("classificationType", classificationType);
         doc.append("skillRequirements", skillRequirementIds);           
         doc.append("recipes", recipeIds);

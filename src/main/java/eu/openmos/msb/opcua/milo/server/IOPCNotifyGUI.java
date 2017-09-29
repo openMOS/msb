@@ -5,6 +5,9 @@
  */
 package eu.openmos.msb.opcua.milo.server;
 
+import eu.openmos.model.Recipe;
+import java.util.List;
+
 /**
  *
  * @author Admin
@@ -19,4 +22,6 @@ public interface IOPCNotifyGUI
   void on_endpoint_dissapeared(String name);
 
   void on_notify_error(String error);
+  
+  void on_namespace_read(List<Recipe> recipeList, String daName);
 }

@@ -145,8 +145,10 @@ public class RawProductData extends Base implements Serializable {
      */
     public Document toBSON() {
         Document doc = new Document();
-
-        List<String> recipeIds = recipes.stream().map(recipe -> recipe.getUniqueId()).collect(Collectors.toList());
+        
+        List<String> recipeIds = null;
+        if (recipes != null)
+            recipeIds = recipes.stream().map(recipe -> recipe.getUniqueId()).collect(Collectors.toList());
         
         doc.append("id", productId);
         doc.append("logicalLocation", logicalLocation);

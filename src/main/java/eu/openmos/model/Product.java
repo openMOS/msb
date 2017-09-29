@@ -27,7 +27,7 @@ import org.bson.Document;
  */
 public class Product extends Base implements Serializable {
     private static final Logger logger = Logger.getLogger(Product.class.getName());
-    private static final long serialVersionUID = 6529685098267757020L;
+    private static final long serialVersionUID = 6529685098267757023L;
     
     /**
      * Id of the product family, of the model of the product (product A, product B, etc).
@@ -129,8 +129,13 @@ public class Product extends Base implements Serializable {
     public Document toBSON() {
         Document doc = new Document();
         
-        List<String> partIds = parts.stream().map(part -> part.getUniqueId()).collect(Collectors.toList());
-        List<String> skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());        
+        List<String> partIds = null;
+        if (parts != null)
+            partIds = parts.stream().map(part -> part.getUniqueId()).collect(Collectors.toList());
+        
+        List<String> skillRequirementIds = null;
+        if (skillRequirements != null)
+            skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());        
         
         doc.append("uniqueId", uniqueId);
         doc.append("name", name);

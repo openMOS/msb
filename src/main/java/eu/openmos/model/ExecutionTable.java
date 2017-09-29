@@ -96,8 +96,10 @@ public class ExecutionTable extends Base implements Serializable {
      */
     public Document toBSON() {
         Document doc = new Document();
-        
-        List<String> executionTableRowIds = rows.stream().map(row -> row.getUniqueId()).collect(Collectors.toList());        
+                
+        List<String> executionTableRowIds = null;
+        if (rows != null)
+            executionTableRowIds = rows.stream().map(row -> row.getUniqueId()).collect(Collectors.toList());        
         
         doc.append("uniqueId", uniqueId);
         doc.append("name", name);
@@ -107,9 +109,4 @@ public class ExecutionTable extends Base implements Serializable {
         
         return doc;
     }
-
-  public ExecutionTable updateRow(String executionTableRowId, ExecutionTableRow rowToUpdate)
-  {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
 }

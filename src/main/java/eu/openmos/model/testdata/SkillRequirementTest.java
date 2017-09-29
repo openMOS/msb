@@ -1,6 +1,7 @@
 package eu.openmos.model.testdata;
 
 import eu.openmos.model.Part;
+import eu.openmos.model.SkillReqPrecedent;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -30,7 +31,8 @@ public class SkillRequirementTest {
         String uniqueId = "skillRequirementUniqueId";
         String name = "skillRequirementName";
         String type = "weld";
-        List<SkillRequirement> precedenceIds = new LinkedList<>();
+//        List<SkillRequirement> precedenceIds = new LinkedList<>();
+        List<SkillReqPrecedent> precedents = new LinkedList<>();
         String classificationType = "skillRequirementClassificationType";
         
         SkillRequirement skillRequirement = new SkillRequirement(
@@ -39,7 +41,7 @@ public class SkillRequirementTest {
                 name, 
                 type, 
                 SkillTypeTest.getTestObject(),
-                precedenceIds, 
+                precedents, 
                             new Part("uniqueCpID", "CpName", "CpDescription", new Date()),
                 registeredTimestamp
         );

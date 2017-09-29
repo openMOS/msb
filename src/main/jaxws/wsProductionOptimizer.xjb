@@ -8,6 +8,27 @@
 <jxb:bindings node="//xs:complexType[@name='base']">
     <jxb:class ref="eu.openmos.model.Base" />
 </jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='controlPort']">
+    <jxb:class ref="eu.openmos.model.ControlPort" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='informationPort']">
+    <jxb:class ref="eu.openmos.model.InformationPort" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='parameterPort']">
+    <jxb:class ref="eu.openmos.model.ParameterPort" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='physicalPort']">
+    <jxb:class ref="eu.openmos.model.PhysicalPort" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='part']">
+    <jxb:class ref="eu.openmos.model.Part" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='port']">
+    <jxb:class ref="eu.openmos.model.Port" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='skillType']">
+    <jxb:class ref="eu.openmos.model.SkillType" />
+</jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='equipment']">
     <jxb:class ref="eu.openmos.model.Equipment" />
 </jxb:bindings>

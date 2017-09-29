@@ -4,6 +4,7 @@
 package eu.openmos.msb.opcua.milo.client;
 
 // IMPORTS
+import static com.google.common.collect.Lists.newArrayList;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -13,18 +14,25 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusNode;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
@@ -34,10 +42,15 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.toList;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +68,10 @@ public class MSBClientSubscription implements IClient
   // GLOBAL VARIABLES
   private OpcUaClient msbClientInstance = null;
   private final Logger logger = LoggerFactory.getLogger(getClass());
+  private UaSubscription subscription;
+  private ArrayList<ReadValueId> readValueList;
+  private final AtomicLong clientHandles = new AtomicLong(1L);
+  private List<UaMonitoredItem> items;
 
   /**
    *
@@ -86,9 +103,10 @@ public class MSBClientSubscription implements IClient
   public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception
   {
 
-    System.out.println("\n****RUNNING Milo MSB Instance ****\n");
+    System.out.println("\n****RUNNING Milo MSB Instance" +client.getAddressSpace().toString()+ "****\n");
 
     // synchronous connect 
+    
     msbClientInstance = client;
     msbClientInstance.connect().get();
 
@@ -135,6 +153,63 @@ public class MSBClientSubscription implements IClient
     System.out.println("SERVERTIME: " + ServerTime + " MSBTIME: " + MSBTime + " MSBDate: " + MSBDate);
     System.out.println("MSB_DateUTC: " + MSB_DateUTC + " ServerDateUTC: " + ServerDateUTC);
 
+    //subscription to keep session open
+    subscription = msbClientInstance.getSubscriptionManager().createSubscription(500.0).get();
+    //server status
+    NodeId nodeServerStatus = new NodeId(0, 2256);
+    readValueList = new ArrayList<>();
+    readValueList.add(new ReadValueId(nodeServerStatus, AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE));
+    setSubscription(readValueList);
+
+  }
+
+  private void setSubscription(ArrayList<ReadValueId> readValueList) throws InterruptedException, ExecutionException
+  {
+    ArrayList<MonitoredItemCreateRequest> requestList = new ArrayList<>();
+    for (int i = 0; i < readValueList.size(); i++)
+    {
+      // client handle must be unique per item
+      UInteger clientHandle = uint(clientHandles.getAndIncrement());
+      MonitoringParameters parameters = new MonitoringParameters(
+              clientHandle,
+              500.0, // sampling interval
+              null, // filter, null means use default
+              uint(10), // queue size
+              true);      // discard oldest
+      ReadValueId readValueId = readValueList.get(i);
+      MonitoredItemCreateRequest request = new MonitoredItemCreateRequest(readValueId, MonitoringMode.Reporting, parameters);
+      requestList.add(request);
+    }
+
+    BiConsumer<UaMonitoredItem, Integer> onItemCreated = (item, id) -> item.setValueConsumer(this::onSubscriptionValue);
+    items = subscription.createMonitoredItems(TimestampsToReturn.Both, newArrayList(requestList), onItemCreated).get();
+    items.forEach((item) ->
+    {
+      if (item.getStatusCode().isGood())
+      {
+        System.out.println("MSBClient - - 1 item created for nodeId= " + item.getReadValueId().getNodeId() + "\n");
+        //logger.info("1 item created for nodeId={}", item.getReadValueId().getNodeId());
+        //MainWindow.mainLogger.append("Subscription_EXECUTE - 1 item created for nodeId= " + item.getReadValueId().getNodeId() + "\n");
+      } else
+      {
+        System.out.println("MSBClient - failed to create item for nodeId= " + item.getReadValueId().getNodeId() + " (status=" + ")\n");
+        //logger.warn("failed to create item for nodeId={} (status={})", item.getReadValueId().getNodeId(), item.getStatusCode());
+        //MainWindow.mainLogger.append("Subscription_EXECUTE - failed to create item for nodeId= " + item.getReadValueId().getNodeId() + " (status=" + ")\n");
+      }
+    });
+  }
+
+  private void onSubscriptionValue(UaMonitoredItem item, DataValue value)
+  {
+    String aux = value.getStatusCode().toString();
+    boolean ServerStats = aux.contains("quality=bad");
+    if (ServerStats)
+    {
+      //MainWindow.mainLogger.append("Subscription_EXECUTE - subscription value received: item=" + item.getReadValueId().getNodeId() + ", value=" + value.getValue().getValue().toString() + "\n");
+    } else
+    {
+      //MainWindow.mainLogger.append("Subscription_EXECUTE - subscription value received: item=" + item.getReadValueId().getNodeId() + ", value=" + value.getValue().getValue().toString() + "\n");
+    }
   }
 
   /**
@@ -334,7 +409,7 @@ public class MSBClientSubscription implements IClient
   {
 
     final int nextInteraction = level - 1;
-    final List<Element> nodes = new ArrayList<Element>();
+    final List<Element> nodes = new ArrayList<>();
     try
     {
       BrowseDescription browse = new BrowseDescription(
@@ -342,7 +417,7 @@ public class MSBClientSubscription implements IClient
               BrowseDirection.Forward,
               Identifiers.References,
               true,
-              uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue() | NodeClass.ObjectType.getValue()),
+              uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue() | NodeClass.ObjectType.getValue() | NodeClass.Method.getValue()),
               uint(BrowseResultMask.All.getValue())
       );
 
@@ -374,7 +449,6 @@ public class MSBClientSubscription implements IClient
 //        nodeReferenceType.setAttribute("ns", rd.getNodeId().getNamespaceIndex().toString());
 //        nodeReferenceType.setText(rd.getNodeId().getIdentifier().toString());
 //        node.addContent(nodeReferenceType);
-
         try
         {
           Element nodeValue = new Element("Value");
@@ -386,18 +460,15 @@ public class MSBClientSubscription implements IClient
               VariableNode vNode = client.getAddressSpace().createVariableNode(NodeId);
               DataValue value = vNode.readValue().get();
               nodeValue.setText(value.getValue().getValue().toString());
-            } catch (InterruptedException ex)
-            {
-              java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ExecutionException ex)
+            } catch (InterruptedException | ExecutionException ex)
             {
               java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
           });
-          node.addContent(nodeValue);                         
+          node.addContent(nodeValue);
         } catch (Exception ex)
-        { 
+        {
           // this is empty on purpose, since every time a variable does not have a value an exception is thrown
           // TODO - handle this in another way, maybe or let the oompa loopas do there work and forget about this
         }

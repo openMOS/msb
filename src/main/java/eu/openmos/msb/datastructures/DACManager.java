@@ -230,10 +230,10 @@ public class DACManager
    * @param aml_id
    * @param skillName
    * @param recipeValid
-   * @param name
+   * @param recipeName
    * @return
    */
-  public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, String recipeValid, String name)
+  public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, String recipeValid, String recipeName)
   {
     DatabaseInteraction db = DatabaseInteraction.getInstance();
     int da_id = db.getDeviceIdByName(deviceAdapterName);
@@ -241,7 +241,7 @@ public class DACManager
     boolean valid = trueSet.contains(recipeValid);
     if (da_id != -1 && sk_id != -1)
     {
-      return db.registerRecipe(aml_id, da_id, sk_id, valid, name);
+      return db.registerRecipe(aml_id, da_id, sk_id, valid, recipeName);
     } else
     {
       return false;
@@ -262,4 +262,9 @@ public class DACManager
     return db.registerSkill(deviceAdapterName, aml_id, name, description);
   }
 
+  public boolean registerModule(String deviceAdapterName, String name, String status, String address)
+  {
+    DatabaseInteraction db = DatabaseInteraction.getInstance();
+    return db.registerModule(deviceAdapterName, name, status, address);
+  }
 }

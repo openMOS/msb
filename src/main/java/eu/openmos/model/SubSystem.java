@@ -30,7 +30,7 @@ import org.bson.Document;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SubSystem extends Equipment implements Serializable {    
     private static final Logger logger = Logger.getLogger(SubSystem.class.getName());
-    private static final long serialVersionUID = 6529685098267757026L;
+    private static final long serialVersionUID = 6529685098267757032L;
 
     /**
      * Agent execution table.
@@ -65,6 +65,9 @@ public class SubSystem extends Equipment implements Serializable {
     @XmlElement(name = "type")    
     private String type;
     
+    
+    private boolean valid = true;
+    
     /**
      * List of internal modules.
      */
@@ -85,26 +88,21 @@ public class SubSystem extends Equipment implements Serializable {
      */
     public SubSystem() { super(); }
 
-  /**
-   * Parameterized constructor.
-   * 
-   * @param uniqueId
-   * @param name
-   * @param description
-   * @param executionTable
-   * @param connected
-   * @param skills - The skills the agent is capable of performing (Resource/Transport Agent).
-   * @param ports
-   * @param recipes - The recipes the agent can apply (Resource/Transport Agent).
-   * @param internalModules
-   * @param address
-   * @param status
-   * @param manufacturer
-   * @param physicalLocation - The Physical Location of the device abstracted by this agent.
-   * @param logicalLocation - The skill requirements of the agent (Product Agent).
-   * @param type - Agent's type - TBV if necessary.
-   * @param registeredTimestamp - the agent creation time
-   */
+    /**
+     * Parameterized constructor.
+     * 
+     * @param equipmentId - the equipment id, aka the agent unique identifier
+     * @param skills - The skills the agent is capable of performing (Resource/
+     * Transport Agent).
+     * @param recipes - The recipes the agent can apply (Resource/Transport Agent).
+     * @param equipments - The inner equipment in case of workstation.
+     * @param physicalLocation - The Physical Location of the device abstracted 
+     * by this agent.
+     * @param logicalLocation - The skill requirements of the agent (Product Agent).
+     * @param agentClass - Agent's class - TBV if necessary.
+     * @param type - Agent's type - TBV if necessary.
+     * @param registeredTimestamp - the agent creation time
+     */
     public SubSystem(
             String uniqueId, 
             String name, 
@@ -131,6 +129,8 @@ public class SubSystem extends Equipment implements Serializable {
         this.physicalLocation = physicalLocation;
         this.logicalLocation = logicalLocation;
         this.type = type;
+        
+        this.internalModules = internalModules;
     }
 
     public ExecutionTable getExecutionTable() {
@@ -181,7 +181,7 @@ public class SubSystem extends Equipment implements Serializable {
      * @return always true
      */
     public boolean isValid() {
-        return true;
+        return this.valid;
     }
 
     /**
@@ -189,22 +189,29 @@ public class SubSystem extends Equipment implements Serializable {
      * 
      * @return BSON form of the object. 
      */
-    @Override
     public Document toBSON() {
         Document doc = new Document();
-
+logger.debug("subsystem-toBSON - 1");
         List<String> skillIds = skills.stream().map(skill -> skill.getUniqueId()).collect(Collectors.toList());        
+logger.debug("subsystem-toBSON - 2");
         List<String> portIds = physicalPorts.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
+logger.debug("subsystem-toBSON - 2.5");
         List<String> recipeIds = recipes.stream().map(recipe -> recipe.getUniqueId()).collect(Collectors.toList());
+logger.debug("subsystem-toBSON - 3");
         List<String> internalModuleIds = skills.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
+logger.debug("subsystem-toBSON - 4");
+
         
-        doc.append("id", uniqueId);
+        doc.append("uniqueId", uniqueId);
         doc.append("name", name);
         doc.append("description", description);
         doc.append("executionTableId", executionTable.getUniqueId());
         doc.append("connected", connected);
         doc.append("skillIds", skillIds);
-        doc.append("portIds", portIds);
+        // doc.append("portIds", portIds);
+logger.debug("subsystem-toBSON - 5");
+        doc.append("physicalPorts", portIds);
+logger.debug("subsystem-toBSON - 6");
         doc.append("recipeIds", recipeIds);
         doc.append("internalModuleIds", internalModuleIds);  
         doc.append("address", address);
@@ -214,11 +221,11 @@ public class SubSystem extends Equipment implements Serializable {
         doc.append("logicalLocation", logicalLocation.toBSON());
         doc.append("type", type);
         doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
+logger.debug("subsystem-toBSON - 7");
                 
         return doc;
     }
     
-    @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
@@ -234,8 +241,14 @@ public class SubSystem extends Equipment implements Serializable {
         builder.append(address).append("\n");
         builder.append(status).append("\n");
         builder.append(manufacturer).append("\n");
-        builder.append(physicalLocation.toString()).append("\n");
-        builder.append(logicalLocation.toString()).append("\n");
+        if (physicalLocation != null)
+            builder.append(physicalLocation.toString()).append("\n");
+        else
+            builder.append("physicalLocation is null").append("\n");
+        if (logicalLocation != null)
+            builder.append(logicalLocation.toString()).append("\n");
+        else
+            builder.append("logicalLocation is null").append("\n");
         builder.append(type).append("\n");
         builder.append(registered).append("\n");
         

@@ -10,9 +10,6 @@ import org.apache.log4j.Logger;
 import org.bson.Document;
 
 /**
- *
- * @author Luis Ribeiro <luis.ribeiro@liu.se>
- * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
 public class Order extends Base implements Serializable {
@@ -37,25 +34,21 @@ public class Order extends Base implements Serializable {
     /**
      * Order lines.
      */
-    private List<ProductInstance> productInstances;
-    
-//    private static final int FIELDS_COUNT = 6;
+    private List<OrderLine> lines;
     
     private static final Logger logger = Logger.getLogger(Order.class.getName());
     
-    
-    // for reflection purpose
     public Order() {super();}
 
     public Order(String uniqueId, String name, String description, int priority, 
-            List<ProductInstance> productInstances, Date registeredTimestamp) {
-        super(registeredTimestamp);
+            List<OrderLine> lines, Date registered) {
+        super(registered);
         
-        this.productInstances = productInstances;
         this.uniqueId = uniqueId;
         this.name = name;
         this.description = description;
         this.priority = priority;
+        this.lines = lines;
     }
 
     public String getUniqueId() {
@@ -90,12 +83,12 @@ public class Order extends Base implements Serializable {
         this.priority = priority;
     }
 
-    public List<ProductInstance> getProductInstances() {
-        return productInstances;
+    public List<OrderLine> getOrderLines() {
+        return lines;
     }
 
-    public void setProductInstances(List<ProductInstance> productInstances) {
-        this.productInstances = productInstances;
+    public void setOrderLines(List<OrderLine> lines) {
+        this.lines = lines;
     }    
 
     /**
@@ -106,13 +99,15 @@ public class Order extends Base implements Serializable {
     public Document toBSON() {
         Document doc = new Document();
         
-        List<String> productInstanceIds = productInstances.stream().map(pd -> pd.getUniqueId()).collect(Collectors.toList());
+        List<String> orderLineIds = null;
+        if (lines != null)
+            orderLineIds = lines.stream().map(line -> line.getUniqueId()).collect(Collectors.toList());
         
-        doc.append("id", uniqueId);
+        doc.append("uniqueId", uniqueId);
         doc.append("name", name);
         doc.append("description", description);
         doc.append("priority", priority);
-        doc.append("productInstances", productInstanceIds);
+        doc.append("orderLineIds", orderLineIds);
         doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
         
         logger.debug("ORDER TOBSON: " + doc.toString());

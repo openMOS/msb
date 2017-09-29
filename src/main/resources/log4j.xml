@@ -1,34 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/' debug="true">
-  <appender name="MSBLogFile" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="File" value="./MSB.log" />
-    <param name="DatePattern" value="'.'yyyy-MM-dd" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d | %-5p | %m%n"/>
-    </layout>
-  </appender>
+	<appender name="OpenMOSMSBEmulatorLogFile" class="org.apache.log4j.DailyRollingFileAppender">
+       	<param name="File" value="./MSB.log" />
+       	<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d | %-5p | %m%n"/>
+		</layout>
+	</appender>
 
-  <!-- ============================ -->
-  <!-- CATEGORIES -->
-  <!-- ============================ -->
+	<appender name="OpenMOSMSBEmulatorConsole" class="org.apache.log4j.ConsoleAppender">
+	  	<param name="Target" value="System.out"/>
+		<layout class="org.apache.log4j.PatternLayout">
+	    	<param name="ConversionPattern" value="%d | %-5p | %m%n"/>
+	  	</layout>
+	</appender>
+
+   <!-- ============================ -->
+   <!-- CATEGORIES -->
+   <!-- ============================ -->
   <category name="io.vertx" additivity="false">
-    <priority value="${DD_MSB_LOG_PRIORITY}" />
-    <appender-ref ref="MSBLogFile" />
+    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+        <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
+        <appender-ref ref="OpenMOSMSBEmulatorConsole" />
   </category>
   
   <category name="eu.openmos.agentcloud" additivity="false">
-    <priority value="${DD_MSB_LOG_PRIORITY}" />
-    <appender-ref ref="MSBLogFile" />
+    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+        <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
+        <appender-ref ref="OpenMOSMSBEmulatorConsole" />
+  </category>
+
+  <category name="eu.openmos.fakemsb" additivity="false">
+    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+        <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
+        <appender-ref ref="OpenMOSMSBEmulatorConsole" />
   </category>
 
   <category name="eu.openmos.msb" additivity="false">
-    <priority value="${DD_MSB_LOG_PRIORITY}" />
-    <appender-ref ref="MSBLogFile" />
+    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+        <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
+        <appender-ref ref="OpenMOSMSBEmulatorConsole" />
   </category>
 
-  <root>
-    <priority value="INFO"/>
-    <appender-ref ref="MSBLogFile"/>
-  </root>
+  <category name="_masmec" additivity="false">
+    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+        <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
+        <appender-ref ref="OpenMOSMSBEmulatorConsole" />
+  </category>
+
+   <root>
+        <priority value="INFO"/>
+        <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
+        <appender-ref ref="OpenMOSMSBEmulatorConsole" />
+    </root>
 </log4j:configuration>

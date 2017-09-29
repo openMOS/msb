@@ -6,7 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import eu.openmos.model.Order;
+import eu.openmos.model.OrderInstance;
 import eu.openmos.model.SubSystem;
 
 
@@ -21,7 +21,7 @@ import eu.openmos.model.SubSystem;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="cyberPhysicalAgentDescriptions" type="{http://cloudinterface.agentcloud.openmos.eu/}subSystem" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="orders" type="{http://cloudinterface.agentcloud.openmos.eu/}order" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="orders" type="{http://cloudinterface.agentcloud.openmos.eu/}orderInstance" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -38,7 +38,7 @@ import eu.openmos.model.SubSystem;
 public class InitializePlatform {
 
     protected List<SubSystem> cyberPhysicalAgentDescriptions;
-    protected List<Order> orders;
+    protected List<OrderInstance> orders;
 
     /**
      * Gets the value of the cyberPhysicalAgentDescriptions property.
@@ -87,13 +87,13 @@ public class InitializePlatform {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Order }
+     * {@link OrderInstance }
      * 
      * 
      */
-    public List<Order> getOrders() {
+    public List<OrderInstance> getOrders() {
         if (orders == null) {
-            orders = new ArrayList<Order>();
+            orders = new ArrayList<OrderInstance>();
         }
         return this.orders;
     }

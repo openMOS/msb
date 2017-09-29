@@ -3,7 +3,6 @@ package eu.openmos.model;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.util.Date;
 import java.io.Serializable;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +22,7 @@ import org.bson.Document;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SkillRequirement extends Base implements Serializable  {
     private static final Logger logger = Logger.getLogger(SkillRequirement.class.getName());
-    private static final long serialVersionUID = 6529685098267757024L;
+    private static final long serialVersionUID = 6529685098267757028L;
     
     /**
      * Skill Requirement ID.
@@ -55,8 +54,8 @@ public class SkillRequirement extends Base implements Serializable  {
      * On the HMI there will be the chance for the user to select to next recipe according
      * to this precedences list.
      */
-//    private List<String> precedents;
-    private List<SkillRequirement> precedents;
+//    private List<String> precedentIds;
+    private List<SkillReqPrecedent> precedents;
     
     private Part requiresPart;
     
@@ -82,9 +81,8 @@ public class SkillRequirement extends Base implements Serializable  {
             String name, 
             String type,
             SkillType skillType,
-//            String classificationType, 
-//            List<String> precedents,
-            List<SkillRequirement> precedents,
+//            List<String> precedentIds,
+            List<SkillReqPrecedent> precedents,
             Part requiresPart,
             Date registeredTimestamp
     ) {
@@ -96,7 +94,8 @@ public class SkillRequirement extends Base implements Serializable  {
         this.type = type;
         this.skillType = skillType;
         
-        this.precedents = precedents;
+        // this.precedentIds = precedentIds;
+        this.precedents = precedents;        
         this.requiresPart = requiresPart;
     }
 
@@ -147,7 +146,7 @@ public class SkillRequirement extends Base implements Serializable  {
     public void setSkillType(SkillType skillType) {
         this.skillType = skillType;
     }
-
+/*
     public List<SkillRequirement> getPrecedents() {
         return precedents;
     }
@@ -155,7 +154,23 @@ public class SkillRequirement extends Base implements Serializable  {
     public void setPrecedents(List<SkillRequirement> precedents) {
         this.precedents = precedents;
     }
+*/
+/*
+    public List<String> getPrecedentIds() {
+        return precedentIds;
+    }
+    public void setPrecedentIds(List<String> precedentIds) {
+        this.precedentIds = precedentIds;
+    }
+*/
 
+    public List<SkillReqPrecedent> getPrecedents() {
+        return precedents;
+    }
+    public void setPrecedents(List<SkillReqPrecedent> precedents) {
+        this.precedents = precedents;
+    }
+    
     public Part getRequiresPart() {
         return requiresPart;
     }
@@ -173,17 +188,29 @@ public class SkillRequirement extends Base implements Serializable  {
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         String stringRegisteredTimestamp = sdf.format(this.registered);
 
-        List<String> skillRequirementIds = precedents.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());        
+//        List<String> skillRequirementIds = precedents.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());        
+        List<String> precedentIds = null;
+        if (precedents != null)
+            precedentIds = precedents.stream().map(precedent -> precedent.getUniqueId()).collect(Collectors.toList());        
 
+        String skillTypeId = null;
+        if (skillType != null)
+            skillTypeId = skillType.getUniqueId();
+        
+        String requiresPartId = null;
+        if (requiresPart != null)
+            requiresPartId = requiresPart.getUniqueId();
+        
         return new Document("description", description)
                 .append("uniqueId", uniqueId)
                 .append("name", name)
                 .append("type", type)
-                .append("skillTypeId", skillType.getUniqueId())
-                .append("precedents", skillRequirementIds)
-                .append("requiresPartId", requiresPart.getUniqueId())
+                .append("skillTypeId", skillTypeId)
+                .append("precedentIds", precedentIds)
+                .append("requiresPartId", requiresPartId)
                 .append("registered", stringRegisteredTimestamp);
     }
+//                .append("precedents", skillRequirementIds)
     
     /**
      * Method that deserializes a BSON object.

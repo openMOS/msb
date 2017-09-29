@@ -12,7 +12,7 @@ import eu.openmos.model.Recipe;
  */
 public class RecipeTest {
     
-    public static Recipe getTestObject()
+    public static Recipe getTestObject(String equipmentId)
     {
         Date registeredTimestamp = new Date();
                 
@@ -41,7 +41,9 @@ public class RecipeTest {
                 SkillRequirementTest.getTestList(), 
                 SkillTest.getTestObjectWithoutRecipes(), 
                 ControlPortTest.getTestObject(),
-                ModuleTest.getTestObject(), 
+                // ModuleTest.getTestObject(), 
+                // SubSystemTest.getTestObject(),
+                equipmentId,    // SubSystemTest.getTestObject().getUniqueId(),
                 "recipeMSBProtocolEndpoint",
                 true,
                 registeredTimestamp);
@@ -49,13 +51,13 @@ public class RecipeTest {
         return recipe;
     }
     
-    public static List<Recipe> getTestList()
+    public static List<Recipe> getTestList(String equipmentId)
     {
-        return new LinkedList<>(Arrays.asList(getTestObject()));        
+        return new LinkedList<>(Arrays.asList(getTestObject(equipmentId)));        
     }
 
-    public static List<String> getTestRecipeIdsList()
+    public static List<String> getTestRecipeIdsList(String equipmentId)
     {
-        return new LinkedList<>(Arrays.asList(getTestObject().getUniqueId()));        
+        return new LinkedList<>(Arrays.asList(getTestObject(equipmentId).getUniqueId()));        
     }
 }

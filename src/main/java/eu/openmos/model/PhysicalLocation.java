@@ -12,7 +12,7 @@ import org.bson.Document;
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
 public class PhysicalLocation extends Location implements Serializable {
-    private static final long serialVersionUID = 6529685098267757017L;
+    private static final long serialVersionUID = 6529685098267757020L;
     
     private String referenceFrameName;
     private long x;

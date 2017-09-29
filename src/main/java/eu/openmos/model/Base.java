@@ -1,6 +1,7 @@
 package eu.openmos.model;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.util.JSON;
@@ -75,6 +76,9 @@ public abstract class Base implements Serializable {
     {
         Object obj = null;
         ObjectMapper mapper = new ObjectMapper();
+        
+        // to ignore the _id field
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         try {
             // Convert JSON string to Object

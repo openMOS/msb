@@ -1,8 +1,8 @@
 <wsdl:definitions name="SystemConfigurator" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <wsdl:types>
 <xs:schema elementFormDefault="unqualified" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-<xs:element name="acceptNewOrder" type="tns:acceptNewOrder" />
-<xs:element name="acceptNewOrderResponse" type="tns:acceptNewOrderResponse" />
+<xs:element name="acceptNewOrderInstance" type="tns:acceptNewOrderInstance" />
+<xs:element name="acceptNewOrderInstanceResponse" type="tns:acceptNewOrderInstanceResponse" />
 <xs:element name="createNewRecipe" type="tns:createNewRecipe" />
 <xs:element name="createNewRecipeResponse" type="tns:createNewRecipeResponse" />
 <xs:element name="createNewResourceAgent" type="tns:createNewResourceAgent" />
@@ -17,15 +17,64 @@
 <xs:element name="finishedProductResponse" type="tns:finishedProductResponse" />
 <xs:element name="initializePlatform" type="tns:initializePlatform" />
 <xs:element name="initializePlatformResponse" type="tns:initializePlatformResponse" />
-<xs:element name="orderRemoval" type="tns:orderRemoval" />
-<xs:element name="orderRemovalResponse" type="tns:orderRemovalResponse" />
-<xs:element name="orderUpdate" type="tns:orderUpdate" />
-<xs:element name="orderUpdateResponse" type="tns:orderUpdateResponse" />
+<xs:element name="orderInstanceRemoval" type="tns:orderInstanceRemoval" />
+<xs:element name="orderInstanceRemovalResponse" type="tns:orderInstanceRemovalResponse" />
+<xs:element name="orderInstanceUpdate" type="tns:orderInstanceUpdate" />
+<xs:element name="orderInstanceUpdateResponse" type="tns:orderInstanceUpdateResponse" />
 <xs:element name="recipe" type="tns:recipe" />
 <xs:element name="removeAgent" type="tns:removeAgent" />
 <xs:element name="removeAgentResponse" type="tns:removeAgentResponse" />
 <xs:element name="skill" type="tns:skill" />
 <xs:element name="skillRequirement" type="tns:skillRequirement" />
+<xs:complexType name="orderInstanceUpdate">
+<xs:sequence>
+<xs:element minOccurs="0" name="order" type="tns:orderInstance" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="orderInstance">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element name="priority" type="xs:int" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="productInstances" nillable="true" type="tns:productInstance" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType abstract="true" name="base">
+<xs:sequence>
+<xs:element minOccurs="0" name="registered" type="xs:dateTime" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="productInstance">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="modelId" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="orderId" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="orderInstanceUpdateResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="serviceCallStatus">
+<xs:sequence>
+<xs:element minOccurs="0" name="className" type="xs:string" />
+<xs:element minOccurs="0" name="code" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="operationName" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
 <xs:complexType name="createNewRecipe">
 <xs:sequence>
 <xs:element minOccurs="0" name="recipe" type="tns:recipe" />
@@ -38,50 +87,17 @@
 <xs:element minOccurs="0" name="amlId" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
+<xs:element name="valid" type="xs:boolean" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="parameterSettings" nillable="true" type="tns:parameterSetting" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" type="tns:skillRequirement" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
 <xs:element minOccurs="0" name="skill" type="tns:skill" />
-<xs:element minOccurs="0" name="equipment" type="tns:equipment" />
+<xs:element minOccurs="0" name="executedBySkillControlPort" type="tns:controlPort" />
+<xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
 <xs:element name="optimized" type="xs:boolean" />
-<xs:element minOccurs="0" name="lastOptimizationTimestamp" type="xs:dateTime" />
-<xs:element name="valid" type="xs:boolean" />
+<xs:element minOccurs="0" name="lastOptimizationTime" type="xs:dateTime" />
 <xs:element minOccurs="0" name="msbProtocolEndpoint" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType abstract="true" name="base">
-<xs:sequence>
-<xs:element minOccurs="0" name="registered" type="xs:dateTime" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="kpiSetting">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="kpi" type="tns:kpi" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="value" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="kpi">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="currentValue" type="xs:string" />
-<xs:element minOccurs="0" name="defaultLowerBound" type="xs:string" />
-<xs:element minOccurs="0" name="defaultUpperBound" type="xs:string" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="unit" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -111,6 +127,7 @@
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="unit" type="xs:string" />
 <xs:element minOccurs="0" name="upperBound" type="xs:string" />
+<xs:element minOccurs="0" name="valueType" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -119,10 +136,78 @@
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="precedents" nillable="true" type="xs:string" />
+<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="precedents" nillable="true" type="tns:skillReqPrecedent" />
+<xs:element minOccurs="0" name="requiresPart" type="tns:part" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="skillType">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element name="decision" type="xs:boolean" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="skillReqPrecedent">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="part">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="kpiSetting">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="kpi" type="tns:kpi" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="unit" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="kpi">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="defaultLowerBound" type="xs:string" />
+<xs:element minOccurs="0" name="defaultUpperBound" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="unit" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+<xs:element minOccurs="0" name="valueType" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -135,44 +220,62 @@
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="kpis" nillable="true" type="tns:kpi" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="informationPorts" nillable="true" type="tns:informationPort" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="parameters" nillable="true" type="tns:parameter" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="parameterPorts" nillable="true" type="tns:parameterPort" />
 <xs:element name="classificationType" type="xs:int" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="recipeIds" nillable="true" type="xs:string" />
-<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="controlPorts" nillable="true" type="tns:controlPort" />
+<xs:element minOccurs="0" name="subSystemId" type="xs:string" />
 <xs:element minOccurs="0" name="label" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
-<xs:complexType abstract="true" name="equipment">
+<xs:complexType name="informationPort">
+<xs:complexContent>
+<xs:extension base="tns:port">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="kpis" nillable="true" type="tns:kpi" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType abstract="true" name="port">
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
-<xs:element minOccurs="0" name="amlId" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element name="connected" type="xs:boolean" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skills" nillable="true" type="tns:skill" />
-<xs:element minOccurs="0" name="address" type="xs:string" />
-<xs:element minOccurs="0" name="status" type="xs:string" />
-<xs:element minOccurs="0" name="manufacturer" type="xs:string" />
+<xs:element minOccurs="0" name="direction" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="parameterPort">
+<xs:complexContent>
+<xs:extension base="tns:port">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="parameters" nillable="true" type="tns:parameter" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="controlPort">
+<xs:complexContent>
+<xs:extension base="tns:port">
+<xs:sequence />
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
 <xs:complexType name="createNewRecipeResponse">
 <xs:sequence>
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="serviceCallStatus">
-<xs:sequence>
-<xs:element minOccurs="0" name="className" type="xs:string" />
-<xs:element minOccurs="0" name="code" type="xs:string" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="operationName" type="xs:string" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="createNewResourceAgent">
@@ -189,7 +292,25 @@
 <xs:element minOccurs="0" name="physicalLocation" type="tns:physicalLocation" />
 <xs:element minOccurs="0" name="logicalLocation" type="tns:logicalLocation" />
 <xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element name="valid" type="xs:boolean" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="internalModules" nillable="true" type="tns:module" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType abstract="true" name="equipment">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="amlId" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element name="connected" type="xs:boolean" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="skills" nillable="true" type="tns:skill" />
+<xs:element minOccurs="0" name="address" type="xs:string" />
+<xs:element minOccurs="0" name="status" type="xs:string" />
+<xs:element minOccurs="0" name="manufacturer" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="physicalPorts" nillable="true" type="tns:physicalPort" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -226,7 +347,7 @@
 <xs:element name="alpha" type="xs:long" />
 <xs:element name="beta" type="xs:long" />
 <xs:element name="gamma" type="xs:long" />
-<xs:element minOccurs="0" name="productId" type="xs:string" />
+<xs:element minOccurs="0" name="productInstanceId" type="xs:string" />
 <xs:element minOccurs="0" name="referenceFrameName" type="xs:string" />
 <xs:element name="x" type="xs:long" />
 <xs:element name="y" type="xs:long" />
@@ -247,7 +368,7 @@
 <xs:extension base="tns:location">
 <xs:sequence>
 <xs:element minOccurs="0" name="location" type="xs:string" />
-<xs:element minOccurs="0" name="productId" type="xs:string" />
+<xs:element minOccurs="0" name="productInstanceId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -257,7 +378,16 @@
 <xs:extension base="tns:equipment">
 <xs:sequence>
 <xs:element maxOccurs="unbounded" minOccurs="0" name="internalModules" nillable="true" type="tns:module" />
+<xs:element minOccurs="0" name="parentId" type="xs:string" />
+<xs:element minOccurs="0" name="parentType" type="xs:string" />
 </xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="physicalPort">
+<xs:complexContent>
+<xs:extension base="tns:port">
+<xs:sequence />
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
@@ -266,72 +396,13 @@
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
 </xs:complexType>
-<xs:complexType name="orderRemoval">
+<xs:complexType name="orderInstanceRemoval">
 <xs:sequence>
 <xs:element minOccurs="0" name="orderId" type="xs:string" />
 <xs:element minOccurs="0" name="operationTimestamp" type="xs:string" />
 </xs:sequence>
 </xs:complexType>
-<xs:complexType name="orderRemovalResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="orderUpdate">
-<xs:sequence>
-<xs:element minOccurs="0" name="order" type="tns:order" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="order">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element name="priority" type="xs:int" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="productDescriptions" nillable="true" type="tns:productInstance" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="productInstance">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="modelId" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="orderId" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" nillable="true" type="tns:part" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="part">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="orderUpdateResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="acceptNewOrder">
-<xs:sequence>
-<xs:element minOccurs="0" name="newOrder" type="tns:order" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="acceptNewOrderResponse">
+<xs:complexType name="orderInstanceRemovalResponse">
 <xs:sequence>
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
@@ -358,10 +429,20 @@
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
 </xs:complexType>
+<xs:complexType name="acceptNewOrderInstance">
+<xs:sequence>
+<xs:element minOccurs="0" name="newOrder" type="tns:orderInstance" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="acceptNewOrderInstanceResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
 <xs:complexType name="initializePlatform">
 <xs:sequence>
 <xs:element maxOccurs="unbounded" minOccurs="0" name="cyberPhysicalAgentDescriptions" type="tns:subSystem" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="orders" type="tns:order" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="orders" type="tns:orderInstance" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="initializePlatformResponse">
@@ -399,24 +480,32 @@
     <wsdl:part element="tns:createNewTransportAgentResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="initializePlatformResponse">
-    <wsdl:part element="tns:initializePlatformResponse" name="parameters">
+  <wsdl:message name="acceptNewOrderInstanceResponse">
+    <wsdl:part element="tns:acceptNewOrderInstanceResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="orderUpdate">
-    <wsdl:part element="tns:orderUpdate" name="parameters">
+  <wsdl:message name="initializePlatformResponse">
+    <wsdl:part element="tns:initializePlatformResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createNewResourceAgentResponse">
     <wsdl:part element="tns:createNewResourceAgentResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="acceptNewOrder">
-    <wsdl:part element="tns:acceptNewOrder" name="parameters">
+  <wsdl:message name="orderInstanceRemoval">
+    <wsdl:part element="tns:orderInstanceRemoval" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="orderInstanceRemovalResponse">
+    <wsdl:part element="tns:orderInstanceRemovalResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="finishedProduct">
     <wsdl:part element="tns:finishedProduct" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="acceptNewOrderInstance">
+    <wsdl:part element="tns:acceptNewOrderInstance" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="initializePlatform">
@@ -431,16 +520,12 @@
     <wsdl:part element="tns:createNewSkillResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="acceptNewOrderResponse">
-    <wsdl:part element="tns:acceptNewOrderResponse" name="parameters">
+  <wsdl:message name="orderInstanceUpdate">
+    <wsdl:part element="tns:orderInstanceUpdate" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createNewResourceAgent">
     <wsdl:part element="tns:createNewResourceAgent" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="orderRemoval">
-    <wsdl:part element="tns:orderRemoval" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="removeAgentResponse">
@@ -451,6 +536,10 @@
     <wsdl:part element="tns:finishedProductResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="orderInstanceUpdateResponse">
+    <wsdl:part element="tns:orderInstanceUpdateResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="createNewTransportAgent">
     <wsdl:part element="tns:createNewTransportAgent" name="parameters">
     </wsdl:part>
@@ -459,19 +548,17 @@
     <wsdl:part element="tns:createNewRecipeResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="orderRemovalResponse">
-    <wsdl:part element="tns:orderRemovalResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="orderUpdateResponse">
-    <wsdl:part element="tns:orderUpdateResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="removeAgent">
     <wsdl:part element="tns:removeAgent" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="SystemConfigurator">
+    <wsdl:operation name="orderInstanceUpdate">
+      <wsdl:input message="tns:orderInstanceUpdate" name="orderInstanceUpdate">
+    </wsdl:input>
+      <wsdl:output message="tns:orderInstanceUpdateResponse" name="orderInstanceUpdateResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="createNewRecipe">
       <wsdl:input message="tns:createNewRecipe" name="createNewRecipe">
     </wsdl:input>
@@ -484,22 +571,10 @@
       <wsdl:output message="tns:createNewResourceAgentResponse" name="createNewResourceAgentResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="orderRemoval">
-      <wsdl:input message="tns:orderRemoval" name="orderRemoval">
+    <wsdl:operation name="orderInstanceRemoval">
+      <wsdl:input message="tns:orderInstanceRemoval" name="orderInstanceRemoval">
     </wsdl:input>
-      <wsdl:output message="tns:orderRemovalResponse" name="orderRemovalResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="orderUpdate">
-      <wsdl:input message="tns:orderUpdate" name="orderUpdate">
-    </wsdl:input>
-      <wsdl:output message="tns:orderUpdateResponse" name="orderUpdateResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="acceptNewOrder">
-      <wsdl:input message="tns:acceptNewOrder" name="acceptNewOrder">
-    </wsdl:input>
-      <wsdl:output message="tns:acceptNewOrderResponse" name="acceptNewOrderResponse">
+      <wsdl:output message="tns:orderInstanceRemovalResponse" name="orderInstanceRemovalResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="createNewTransportAgent">
@@ -512,6 +587,12 @@
       <wsdl:input message="tns:finishedProduct" name="finishedProduct">
     </wsdl:input>
       <wsdl:output message="tns:finishedProductResponse" name="finishedProductResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="acceptNewOrderInstance">
+      <wsdl:input message="tns:acceptNewOrderInstance" name="acceptNewOrderInstance">
+    </wsdl:input>
+      <wsdl:output message="tns:acceptNewOrderInstanceResponse" name="acceptNewOrderInstanceResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="initializePlatform">
@@ -535,21 +616,21 @@
   </wsdl:portType>
   <wsdl:binding name="SystemConfiguratorSoapBinding" type="tns:SystemConfigurator">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="orderInstanceUpdate">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="orderInstanceUpdate">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="orderInstanceUpdateResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="createNewRecipe">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="createNewRecipe">
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="createNewRecipeResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="orderRemoval">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="orderRemoval">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="orderRemovalResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -562,21 +643,12 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="orderUpdate">
+    <wsdl:operation name="orderInstanceRemoval">
       <soap:operation soapAction="" style="document" />
-      <wsdl:input name="orderUpdate">
+      <wsdl:input name="orderInstanceRemoval">
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="orderUpdateResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="acceptNewOrder">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="acceptNewOrder">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="acceptNewOrderResponse">
+      <wsdl:output name="orderInstanceRemovalResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -595,6 +667,15 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="finishedProductResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="acceptNewOrderInstance">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="acceptNewOrderInstance">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="acceptNewOrderInstanceResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

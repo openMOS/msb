@@ -36,7 +36,8 @@ public class DatabaseInteraction
 
   private static final Object lock = new Object();
   private static volatile DatabaseInteraction instance;
-  private final String DBINMEMORY = "jdbc:sqlite::memory:";
+  //private final String DBINMEMORY = "jdbc:sqlite::memory:";
+  private final String DBINMEMORY = "jdbc:sqlite:C:/Users/Introsys/Desktop/OpenMosWorksapce/msb/database/testing/test.db";
   private final String DBSQLPATH = "openmos.msb.database.creation.file.path.string";
   private final String DB_CONNECTION_PARAMETER = "openmos.msb.database.connection.string";
   private Connection conn = null;
@@ -793,5 +794,36 @@ public class DatabaseInteraction
     return null;
   }
 
+  
+  public boolean registerModule(String device_name, String module_name, String status, String address)
+  {
+    int device_id;
+    device_id = getDeviceIdByName(device_name);
+    if (device_id == -1)
+    {
+      return false;
+    }
+
+    try
+    {
+      Statement stmt = conn.createStatement();
+      {
+        String sql = "INSERT INTO Device"
+                + "(da_id, status, name, address)"
+                + " VALUES ("
+                + "'" + device_id + "','" + status + "','" + module_name + "','" + address + "')";
+        stmt.execute(sql);
+        ResultSet r = stmt.getGeneratedKeys();
+      }
+      stmt.close();
+      System.out.println("REGISTER MODULE  " + module_name + " " + status + " " + device_name);
+      return true;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return false;
+  }
   // **************************************************************************************************************** //
 }

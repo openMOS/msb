@@ -1,11 +1,6 @@
 package eu.openmos.model;
 
-import eu.openmos.model.utilities.SerializationConstants;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -17,20 +12,20 @@ import org.bson.Document;
  */
 public class Part extends Base implements Serializable {
     private static final Logger logger = Logger.getLogger(Part.class.getName());
-    private static final long serialVersionUID = 6529685098267757016L;
+    private static final long serialVersionUID = 6529685098267757018L;
 
     /**
      * Part unique identifier.
      */
-    private String uniqueId;
+    protected String uniqueId;
     /**
      * Part name.
      */
-    private String name;
+    protected String name;
     /**
      * Part description.
      */
-    private String description;
+    protected String description;
 
     /**
      * Default constructor.

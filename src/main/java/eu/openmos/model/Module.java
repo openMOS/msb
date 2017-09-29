@@ -110,9 +110,17 @@ public class Module extends Equipment implements Serializable {
     public Document toBSON() {
         Document doc = new Document();
 
-        List<String> skillIds = skills.stream().map(skill -> skill.getUniqueId()).collect(Collectors.toList());        
-        List<String> physicalPortIds = skills.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
-        List<String> moduleIds = skills.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
+        List<String> skillIds = null;
+        if (skills != null)
+            skillIds = skills.stream().map(skill -> skill.getUniqueId()).collect(Collectors.toList());        
+        
+        List<String> physicalPortIds = null;
+        if (physicalPorts != null)
+            physicalPortIds = physicalPorts.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
+        
+        List<String> moduleIds = null;
+        if (internalModules != null)
+            moduleIds = internalModules.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
         
         doc.append("uniqueId", uniqueId);
         doc.append("name", name);

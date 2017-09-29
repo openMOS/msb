@@ -11,6 +11,24 @@
 <jxb:bindings node="//xs:complexType[@name='base']">
     <jxb:class ref="eu.openmos.model.Base" />
 </jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='controlPort']">
+    <jxb:class ref="eu.openmos.model.ControlPort" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='informationPort']">
+    <jxb:class ref="eu.openmos.model.InformationPort" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='parameterPort']">
+    <jxb:class ref="eu.openmos.model.ParameterPort" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='physicalPort']">
+    <jxb:class ref="eu.openmos.model.PhysicalPort" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='port']">
+    <jxb:class ref="eu.openmos.model.Port" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='skillType']">
+    <jxb:class ref="eu.openmos.model.SkillType" />
+</jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='equipment']">
     <jxb:class ref="eu.openmos.model.Equipment" />
 </jxb:bindings>
@@ -23,8 +41,11 @@
 <jxb:bindings node="//xs:complexType[@name='logicalLocation']">
     <jxb:class ref="eu.openmos.model.LogicalLocation" />
 </jxb:bindings>
-<jxb:bindings node="//xs:complexType[@name='order']">
+<!-- jxb:bindings node="//xs:complexType[@name='order']">
     <jxb:class ref="eu.openmos.model.Order" />
+</jxb:bindings -->
+<jxb:bindings node="//xs:complexType[@name='orderInstance']">
+    <jxb:class ref="eu.openmos.model.OrderInstance" />
 </jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='physicalLocation']">
     <jxb:class ref="eu.openmos.model.PhysicalLocation" />
@@ -64,6 +85,9 @@
 </jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='skill']">
     <jxb:class ref="eu.openmos.model.Skill" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='skillReqPrecedent']">
+    <jxb:class ref="eu.openmos.model.SkillReqPrecedent" />
 </jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='skillRequirement']">
     <jxb:class ref="eu.openmos.model.SkillRequirement" />

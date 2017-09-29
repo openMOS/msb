@@ -152,11 +152,16 @@ public class KPISetting extends Base implements Serializable {
     public Document toBSON() {
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         String stringRegisteredTimestamp = sdf.format(this.registered);
+        
+        String kpiId = null;
+        if (kpi != null)
+            kpiId = kpi.getUniqueId();
+        
         return new Document()
                 .append("uniqueId", uniqueId)
                 .append("name", name)
                 .append("description", description)
-                .append("kpiId", kpi.getUniqueId())
+                .append("kpiId", kpiId)
                 .append("type", type)
                 .append("unit", unit)
                 .append("value", value)

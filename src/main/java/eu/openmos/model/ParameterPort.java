@@ -17,7 +17,7 @@ import org.bson.Document;
  */
 public class ParameterPort extends Port implements Serializable {
     private static final Logger logger = Logger.getLogger(Module.class.getName());    
-    private static final long serialVersionUID = 6529685098267757014L;
+    private static final long serialVersionUID = 6529685098267757016L;
     
     private List<Parameter> parameters;
 
@@ -47,8 +47,10 @@ public class ParameterPort extends Port implements Serializable {
     public Document toBSON() {
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         String stringRegisteredTimestamp = sdf.format(this.registered);
-
-        List<String> parameterIds = parameters.stream().map(parameter -> parameter.getUniqueId()).collect(Collectors.toList());        
+        
+        List<String> parameterIds = null;
+        if (parameters != null)
+            parameterIds = parameters.stream().map(parameter -> parameter.getUniqueId()).collect(Collectors.toList());        
 
         return new Document()
                 .append("description", description)

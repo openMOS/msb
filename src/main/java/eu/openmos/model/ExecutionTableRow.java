@@ -1,7 +1,10 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -117,6 +120,17 @@ public class ExecutionTableRow extends Base implements Serializable {
      */
     public Document toBSON() {
         return toBSON2();
+/*
+        Document doc = new Document();
+        
+        doc.append("uniqueId", uniqueId);
+        doc.append("productId", productId);
+        doc.append("recipeId", recipeId);
+        doc.append("nextRecipeId", nextRecipeId);        
+        doc.append("possibleRecipeChoices", possibleRecipeChoices);
+        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
+        return doc;
+*/        
     }
     
     /**
@@ -126,6 +140,6 @@ public class ExecutionTableRow extends Base implements Serializable {
      * @return Deserialized object.
      */
     public static ExecutionTableRow fromBSON(Document bsonRow) {
-        return (ExecutionTableRow)fromBSON2(bsonRow, ExecutionTableRow.class);
+        return (ExecutionTableRow)Base.fromBSON2(bsonRow, ExecutionTableRow.class);
     }
 }

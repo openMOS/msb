@@ -1,16 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.msb.cloud.cloudinterface.testactions;
 
 import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.model.Order;
-import eu.openmos.model.testdata.OrderTest;
+import eu.openmos.model.OrderInstance;
+import eu.openmos.model.testdata.OrderInstanceTest;
 import io.vertx.core.Vertx;
 import javax.xml.ws.BindingProvider;
 import org.apache.log4j.Logger;
@@ -40,9 +35,9 @@ public class CloudInterface_NewOrderTest {
 //////////////////////////////
 
 //        Order newOrder = getTestObject();
-        Order newOrder = OrderTest.getTestObject();
+        OrderInstance newOrder = OrderInstanceTest.getTestObject();
                 
-        ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrder(newOrder);
+        ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrderInstance(newOrder);
         logger.info(orderStatus.getCode());
         logger.info(orderStatus.getDescription());
         

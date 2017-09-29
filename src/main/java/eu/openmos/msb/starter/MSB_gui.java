@@ -40,10 +40,11 @@ import com.sun.net.httpserver.HttpServer;
 import eu.openmos.model.Equipment;
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
+import eu.openmos.model.SubSystem;
 import eu.openmos.msb.dds.DDSErrorHandler;
 import eu.openmos.msb.services.rest.CORSFilter;
-import eu.openmos.msb.services.rest.CPADController;
-import eu.openmos.msb.services.rest.EquipmentController;
+//import eu.openmos.msb.services.rest.CPADController;
+//import eu.openmos.msb.services.rest.EquipmentController;
 import eu.openmos.msb.services.rest.ExecutionTableController;
 import eu.openmos.msb.services.rest.OrderController;
 import eu.openmos.msb.services.rest.ProductController;
@@ -60,6 +61,10 @@ import org.glassfish.jersey.server.ResourceConfig;
 import java.net.URISyntaxException;
 import org.slf4j.LoggerFactory;
 import eu.openmos.msb.opcua.milo.server.IOPCNotifyGUI;
+//import eu.openmos.msb.services.rest.FileUploadController;
+import eu.openmos.msb.services.rest.ModuleController;
+import eu.openmos.msb.services.rest.SubSystemController;
+//import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 /**
  * *********************************************************************************************************************
@@ -1364,6 +1369,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           opc_comms_log.append("[ERROR] " + error + "\n");
         }
 
+        @Override
+        public void on_namespace_read(List<Recipe> recipeList, String daName)
+        {
+          //fillTableRecipes(recipeList, daName);
+        }
+        
+        
+
       };
 
       String LDS_uri = ldsSserverAddress.getText();
@@ -1492,14 +1505,16 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
       //.register(new Resource(new Core(), configuration)) // create instance of Resource and dynamically register        
       ResourceConfig resourceConfig = new ResourceConfig()
-              .register(CPADController.class)
               .register(ExecutionTableController.class)
-              .register(RecipeController.class)
-              .register(EquipmentController.class)
-              .register(SkillController.class)
+              //.register(FileUploadController.class)
+              .register(ModuleController.class)
+              .register(OrderController.class)
               .register(ProductController.class)
-              .register(OrderController.class);
-
+              .register(RecipeController.class)
+              .register(SkillController.class)
+              .register(SubSystemController.class);
+              //.register(MultiPartFeature.class);
+              
       resourceConfig.register(new CORSFilter());
 
       HttpServer server = JdkHttpServerFactory.createHttpServer(uri, resourceConfig);
@@ -1519,6 +1534,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   public static void fillRecipesTable()
   {
+    recipesTableModel.getDataVector().removeAllElements();
     DACManager instance = DACManager.getInstance(); //singleton to access hashmaps in other classes
     List<String> devices = instance.getDeviceAdapters();
     for (String daName : devices)
@@ -1562,6 +1578,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   public static void fillDevicesTable()
   {
+    devicesTableModel.getDataVector().removeAllElements();
     DACManager instance = DACManager.getInstance();
     List<String> adapters = instance.getDeviceAdapters();
     for (String adapter : adapters)
@@ -1608,7 +1625,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       recipeName, status, deviceAdapterName
     });
   }
-
+  
   /**
    * add a row to DeviceTable
    *
@@ -1623,6 +1640,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       DeviceName, Status, Endpoint, WorkStation
     });
+    /*
     try
     {
       Thread.sleep(1000);
@@ -1630,6 +1648,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
+    */
     Object[] rowData = new Object[devicesTableModel.getColumnCount()];
     for (int i = 0; i < devicesTableModel.getColumnCount(); i++)
     {

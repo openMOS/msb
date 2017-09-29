@@ -20,7 +20,7 @@ import org.bson.Document;
  */
 public class ParameterSetting extends Base implements Serializable {
     private static final Logger logger = Logger.getLogger(ParameterSetting.class.getName());
-    private static final long serialVersionUID = 6529685098267757015L;
+    private static final long serialVersionUID = 6529685098267757017L;
 
     /**
      * Parameter Setting ID.
@@ -123,11 +123,16 @@ public class ParameterSetting extends Base implements Serializable {
     public Document toBSON() {
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         String stringRegisteredTimestamp = sdf.format(this.registered);
+        
+        String parameterId = null;
+        if (parameter != null)
+            parameterId = parameter.getUniqueId();
+        
         return new Document("description", description)
                 .append("uniqueId", uniqueId)
                 .append("name", name)
                 .append("value", value)
-                .append("parameterId", parameter.getUniqueId())
+                .append("parameterId", parameterId)
                 .append("registered", stringRegisteredTimestamp);
     }
 }

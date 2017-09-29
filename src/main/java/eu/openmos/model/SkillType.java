@@ -13,7 +13,7 @@ import org.bson.Document;
  */
 public class SkillType extends Base implements Serializable {
     private static final Logger logger = Logger.getLogger(Module.class.getName());    
-    private static final long serialVersionUID = 6529685098267757025L;
+    private static final long serialVersionUID = 6529685098267757029L;
     
     /**
      * Skill type ID.

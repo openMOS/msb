@@ -19,20 +19,20 @@ import org.bson.Document;
 public class PartInstance extends Base implements Serializable {
     
     private static final Logger logger = Logger.getLogger(PartInstance.class.getName());
-    private static final long serialVersionUID = 6529685098267757116L;
+    private static final long serialVersionUID = 6529685098267757119L;
 
     /**
      * Part instance unique identifier.
      */
-    private String uniqueId;
+    protected String uniqueId;
     /**
      * Part instance name.
      */
-    private String name;
+    protected String name;
     /**
      * Part instance description.
      */
-    private String description;
+    protected String description;
     
     /**
      * Pointer to the part (to the model part).
@@ -103,11 +103,15 @@ public class PartInstance extends Base implements Serializable {
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);        
         String stringRegisteredTimestamp = sdf.format(this.registered);
         
+        String partId = null;
+        if (part != null)
+            partId = part.getUniqueId();
+        
         return new Document()
                 .append("uniqueId", uniqueId)
                 .append("name", name)
                 .append("description", description)
-                .append("partId", part.getUniqueId())
+                .append("partId", partId)
                 .append("registered", stringRegisteredTimestamp);
     }
     
