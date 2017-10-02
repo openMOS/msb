@@ -356,8 +356,14 @@ public class OPCServer
             .filter(e -> e.getSecurityMode().toString().compareTo(securityMode) == 0)
             .findFirst()
             .orElseThrow(() -> new Exception("no desired endpoints returned"));
-    X509IdentityProvider x509IdentityProvider = new X509IdentityProvider("C:\\Users\\Introsys\\Desktop\\OpenMosWorksapce\\msb\\openssl_crt.der",
-            "C:\\Users\\Introsys\\Desktop\\OpenMosWorksapce\\msb\\herong.key");
+
+    // openmos.msb.opcua.key.path=C:\\NetBeansProjects\\msb
+//    X509IdentityProvider x509IdentityProvider = new X509IdentityProvider("C:\\NetBeansProjects\\msb\\openssl_crt.der",
+//            "C:\\NetBeansProjects\\msb\\herong.key");
+    String OPCUA_KEY_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.key.path");    
+    X509IdentityProvider x509IdentityProvider = new X509IdentityProvider(OPCUA_KEY_PATH + "\\openssl_crt.der",
+            OPCUA_KEY_PATH + "\\herong.key");
+
     X509Certificate cert = x509IdentityProvider.getCertificate();
     KeyPair keyPair = new KeyPair(cert.getPublicKey(), x509IdentityProvider.getPrivateKey());
     OpcUaClientConfig clientConfig = OpcUaClientConfig.builder().setApplicationName(LocalizedText.english("opc-ua client"))

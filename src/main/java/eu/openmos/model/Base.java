@@ -24,8 +24,9 @@ public abstract class Base implements Serializable {
     
     /**
      * Timestamp attached to every model class.
+     * VaG - 28/09/2017 - defaulted to new Date()
      */
-    protected Date registered;
+    protected Date registered = new Date();
     
     public Base() {}
         

@@ -20,21 +20,21 @@ import org.bson.Document;
  * @author Pedro Monteiro <pedro.monteiro@uninova.pt>
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
-@XmlRootElement(name = "device")
-@XmlAccessorType(XmlAccessType.FIELD)
+// @XmlRootElement(name = "device")
+// @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class Equipment extends Base implements Serializable {    
         private static final long serialVersionUID = 6529685098267757003L;
     
     /**
      * Equipment ID.
      */
-    @XmlElement(name = "amlId")    
+//    @XmlElement(name = "amlId")    
     protected String uniqueId;
     
     /**
      * Equipment name.
      */
-    @XmlElement(name = "name")
+//    @XmlElement(name = "name")
     protected String name;
     
     /**
@@ -55,13 +55,13 @@ public abstract class Equipment extends Base implements Serializable {
     /**
      * Which address?
      */
-    @XmlElement(name = "address")
+//    @XmlElement(name = "address")
     protected String address = "";
 
     /**
      * Equipment status.
      */
-    @XmlElement(name = "status")
+//    @XmlElement(name = "status")
     protected String status = "";       // could be the "connected" field?
 
     /**

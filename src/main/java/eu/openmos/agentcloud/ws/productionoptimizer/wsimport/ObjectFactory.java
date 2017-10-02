@@ -5,9 +5,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
-import eu.openmos.model.Equipment;
-import eu.openmos.model.Recipe;
-import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 
 
@@ -31,14 +28,11 @@ public class ObjectFactory {
     private final static QName _StopOptimizerResponse_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "stopOptimizerResponse");
     private final static QName _ResetOptimizerResponse_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "resetOptimizerResponse");
     private final static QName _ResetOptimizer_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "resetOptimizer");
-    private final static QName _Skill_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "skill");
     private final static QName _Optimize_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "optimize");
     private final static QName _IsOptimizableResponse_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "isOptimizableResponse");
-    private final static QName _Device_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "device");
     private final static QName _InitializeOptimizerResponse_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "initializeOptimizerResponse");
     private final static QName _OptimizeResponse_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "optimizeResponse");
     private final static QName _StopOptimizer_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "stopOptimizer");
-    private final static QName _Recipe_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "recipe");
     private final static QName _ReparametrizeOptimizer_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "reparametrizeOptimizer");
     private final static QName _ReparametrizeOptimizerResponse_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "reparametrizeOptimizerResponse");
     private final static QName _InitializeOptimizer_QNAME = new QName("http://productionoptimizer.optimizer.agentcloud.openmos.eu/", "initializeOptimizer");
@@ -184,15 +178,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Skill }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "skill")
-    public JAXBElement<Skill> createSkill(Skill value) {
-        return new JAXBElement<Skill>(_Skill_QNAME, Skill.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Optimize }{@code >}}
      * 
      */
@@ -208,15 +193,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "isOptimizableResponse")
     public JAXBElement<IsOptimizableResponse> createIsOptimizableResponse(IsOptimizableResponse value) {
         return new JAXBElement<IsOptimizableResponse>(_IsOptimizableResponse_QNAME, IsOptimizableResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Equipment }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "device")
-    public JAXBElement<Equipment> createDevice(Equipment value) {
-        return new JAXBElement<Equipment>(_Device_QNAME, Equipment.class, null, value);
     }
 
     /**
@@ -244,15 +220,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "stopOptimizer")
     public JAXBElement<StopOptimizer> createStopOptimizer(StopOptimizer value) {
         return new JAXBElement<StopOptimizer>(_StopOptimizer_QNAME, StopOptimizer.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Recipe }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://productionoptimizer.optimizer.agentcloud.openmos.eu/", name = "recipe")
-    public JAXBElement<Recipe> createRecipe(Recipe value) {
-        return new JAXBElement<Recipe>(_Recipe_QNAME, Recipe.class, null, value);
     }
 
     /**

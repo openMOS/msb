@@ -20,8 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Luis Ribeiro
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
-@XmlRootElement(name = "skill")
-@XmlAccessorType(XmlAccessType.FIELD)
+//@XmlRootElement(name = "skill")
+//@XmlAccessorType(XmlAccessType.FIELD)
 public class Skill extends Base implements Serializable {    
     private static final Logger logger = Logger.getLogger(Skill.class.getName());
     private static final long serialVersionUID = 6529685098267757026L;
@@ -32,17 +32,17 @@ public class Skill extends Base implements Serializable {
     /**
      * Skill ID.
      */
-    @XmlElement(name = "amlId")
+    //@XmlElement(name = "amlId")
     private String uniqueId;
     /**
      * Skill name.
      */
-    @XmlElement(name = "name")
+    //@XmlElement(name = "name")
     private String name;
     /**
      * Skill description.
      */
-    @XmlElement(name = "description")
+    //@XmlElement(name = "description")
     private String description;
     /**
      * Skill type.

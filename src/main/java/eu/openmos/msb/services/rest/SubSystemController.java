@@ -13,6 +13,7 @@ import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.services.rest.data.ExecutionTableRowHelper;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -57,7 +58,17 @@ public class SubSystemController extends Base {
         for (String adapterName : aux.getDeviceAdapters())
         {
           DeviceAdapter adapter = aux.getDeviceAdapter(adapterName);
-          ls.add(adapter.getSubSystem());
+          // VaG - 28/09/2017
+          // begin
+          SubSystem ss = adapter.getSubSystem();
+          // assume the name is populated
+          if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
+            ss.setUniqueId(ss.getName());
+          if (ss.getDescription() == null || ss.getDescription().length() == 0)
+            ss.setDescription(ss.getName());
+          ss.setRegistered(new Date());
+          ls.add(ss);
+          // end
         }
 //        for (int i = 0; i < 5; i++)
 //        {
@@ -77,7 +88,7 @@ public class SubSystemController extends Base {
 //                
 //            ls.add(subsystem1);
 //        }
-//        logger.debug(ls);
+        logger.debug("susbsytem list from MSB: " + ls);
         return ls;
     }
 

@@ -17,9 +17,10 @@
 <jxb:bindings node="//xs:complexType[@name='parameterPort']">
     <jxb:class ref="eu.openmos.model.ParameterPort" />
 </jxb:bindings>
-<jxb:bindings node="//xs:complexType[@name='physicalPort']">
+<!-- VaG - 28/09/2017 - removed in lboro during integration tests
+jxb:bindings node="//xs:complexType[@name='physicalPort']">
     <jxb:class ref="eu.openmos.model.PhysicalPort" />
-</jxb:bindings>
+</jxb:bindings -->
 <jxb:bindings node="//xs:complexType[@name='part']">
     <jxb:class ref="eu.openmos.model.Part" />
 </jxb:bindings>
@@ -29,9 +30,10 @@
 <jxb:bindings node="//xs:complexType[@name='skillType']">
     <jxb:class ref="eu.openmos.model.SkillType" />
 </jxb:bindings>
-<jxb:bindings node="//xs:complexType[@name='equipment']">
+<!-- VaG - 28/09/2017 - removed in lboro during integration tests
+jxb:bindings node="//xs:complexType[@name='equipment']">
     <jxb:class ref="eu.openmos.model.Equipment" />
-</jxb:bindings>
+</jxb:bindings -->
 <jxb:bindings node="//xs:complexType[@name='recipe']">
     <jxb:class ref="eu.openmos.model.Recipe" />
 </jxb:bindings>
@@ -52,6 +54,9 @@
 </jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='skillRequirement']">
     <jxb:class ref="eu.openmos.model.SkillRequirement" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='skillReqPrecedent']">
+    <jxb:class ref="eu.openmos.model.SkillReqPrecedent" />
 </jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='optimizationParameter']">
     <jxb:class ref="eu.openmos.agentcloud.utilities.OptimizationParameter" />

@@ -103,7 +103,7 @@ public class MSBClientSubscription implements IClient
   public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception
   {
 
-    System.out.println("\n****RUNNING Milo MSB Instance" +client.getAddressSpace().toString()+ "****\n");
+    System.out.println("\n****RUNNING Milo MSB Instance****\n");
 
     // synchronous connect 
     

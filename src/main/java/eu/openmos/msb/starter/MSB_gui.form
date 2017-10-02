@@ -1025,7 +1025,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="restServiceAddress">
               <Properties>
-                <Property name="text" type="java.lang.String" value="http://localhost:9995/"/>
+                <Property name="text" type="java.lang.String" value="http://0.0.0.0:9995/"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[42, 120]"/>
                 </Property>

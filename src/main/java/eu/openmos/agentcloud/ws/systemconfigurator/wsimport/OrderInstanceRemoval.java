@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for orderInstanceRemoval complex type.
+ * <p>Classe Java per orderInstanceRemoval complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
  * 
  * <pre>
  * &lt;complexType name="orderInstanceRemoval">
@@ -37,7 +37,7 @@ public class OrderInstanceRemoval {
     protected String operationTimestamp;
 
     /**
-     * Gets the value of the orderId property.
+     * Recupera il valore della proprietà orderId.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class OrderInstanceRemoval {
     }
 
     /**
-     * Sets the value of the orderId property.
+     * Imposta il valore della proprietà orderId.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class OrderInstanceRemoval {
     }
 
     /**
-     * Gets the value of the operationTimestamp property.
+     * Recupera il valore della proprietà operationTimestamp.
      * 
      * @return
      *     possible object is
@@ -73,7 +73,7 @@ public class OrderInstanceRemoval {
     }
 
     /**
-     * Sets the value of the operationTimestamp property.
+     * Imposta il valore della proprietà operationTimestamp.
      * 
      * @param value
      *     allowed object is

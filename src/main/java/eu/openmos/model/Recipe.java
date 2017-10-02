@@ -21,8 +21,8 @@ import org.apache.log4j.Logger;
  * @author Luis Ribeiro
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
-@XmlRootElement(name = "recipe")
-@XmlAccessorType(XmlAccessType.FIELD)
+//@XmlRootElement(name = "recipe")
+//@XmlAccessorType(XmlAccessType.FIELD)
 public class Recipe extends Base implements Serializable {    
     private static final Logger logger = Logger.getLogger(Recipe.class.getName());
     private static final long serialVersionUID = 6529685098267757025L;
@@ -30,22 +30,22 @@ public class Recipe extends Base implements Serializable {
     /**
      * Recipe ID.
      */
-    @XmlElement(name = "amlId")
+    //@XmlElement(name = "amlId")
     private String uniqueId;
     /**
      * Recipe name.
      */
-    @XmlElement(name = "name")
+    //@XmlElement(name = "name")
     private String name;
     /**
      * Recipe description.
      */
-    @XmlElement(name = "description")    
+    //@XmlElement(name = "description")    
     private String description;
     /**
      * Whether the recipe is valid or not.
      */
-    @XmlElement(name = "valid")
+    //@XmlElement(name = "valid")
     private boolean valid = false;
     /**
      * Recipe's parameter settings. These must match the skill's parameters.
@@ -54,7 +54,7 @@ public class Recipe extends Base implements Serializable {
     /**
      * The skills necessary to execute this recipe.
      */
-    @XmlElement(name = "skillRequirements")
+    //@XmlElement(name = "skillRequirements")
     private List<SkillRequirement> skillRequirements;
     /**
      * Recipe's KPI Settings. These must match the skill's KPIs.
@@ -64,7 +64,7 @@ public class Recipe extends Base implements Serializable {
     /**
      * Pointer to the skill.
      */
-    @XmlElement(name = "skill")
+    //@XmlElement(name = "skill")
     private Skill skill;
     private ControlPort executedBySkillControlPort;
     

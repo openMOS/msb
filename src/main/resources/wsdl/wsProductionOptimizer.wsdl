@@ -1,19 +1,16 @@
 <wsdl:definitions name="ProductionOptimizer" targetNamespace="http://productionoptimizer.optimizer.agentcloud.openmos.eu/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://productionoptimizer.optimizer.agentcloud.openmos.eu/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <wsdl:types>
 <xs:schema elementFormDefault="unqualified" targetNamespace="http://productionoptimizer.optimizer.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://productionoptimizer.optimizer.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-<xs:element name="device" type="tns:equipment" />
 <xs:element name="initializeOptimizer" type="tns:initializeOptimizer" />
 <xs:element name="initializeOptimizerResponse" type="tns:initializeOptimizerResponse" />
 <xs:element name="isOptimizable" type="tns:isOptimizable" />
 <xs:element name="isOptimizableResponse" type="tns:isOptimizableResponse" />
 <xs:element name="optimize" type="tns:optimize" />
 <xs:element name="optimizeResponse" type="tns:optimizeResponse" />
-<xs:element name="recipe" type="tns:recipe" />
 <xs:element name="reparametrizeOptimizer" type="tns:reparametrizeOptimizer" />
 <xs:element name="reparametrizeOptimizerResponse" type="tns:reparametrizeOptimizerResponse" />
 <xs:element name="resetOptimizer" type="tns:resetOptimizer" />
 <xs:element name="resetOptimizerResponse" type="tns:resetOptimizerResponse" />
-<xs:element name="skill" type="tns:skill" />
 <xs:element name="skillRequirement" type="tns:skillRequirement" />
 <xs:element name="stopOptimizer" type="tns:stopOptimizer" />
 <xs:element name="stopOptimizerResponse" type="tns:stopOptimizerResponse" />
@@ -43,20 +40,20 @@
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
-<xs:element minOccurs="0" name="amlId" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element name="valid" type="xs:boolean" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="parameterSettings" nillable="true" type="tns:parameterSetting" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" type="tns:skillRequirement" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
-<xs:element minOccurs="0" name="skill" type="tns:skill" />
+<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
 <xs:element minOccurs="0" name="executedBySkillControlPort" type="tns:controlPort" />
-<xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
-<xs:element minOccurs="0" name="equipment" type="tns:equipment" />
-<xs:element name="optimized" type="xs:boolean" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
 <xs:element minOccurs="0" name="lastOptimizationTime" type="xs:dateTime" />
 <xs:element minOccurs="0" name="msbProtocolEndpoint" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element name="optimized" type="xs:boolean" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="parameterSettings" nillable="true" type="tns:parameterSetting" />
+<xs:element minOccurs="0" name="skill" type="tns:skill" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+<xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element name="valid" type="xs:boolean" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -66,69 +63,21 @@
 <xs:element minOccurs="0" name="registered" type="xs:dateTime" />
 </xs:sequence>
 </xs:complexType>
-<xs:complexType name="parameterSetting">
+<xs:complexType name="controlPort">
 <xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="parameter" type="tns:parameter" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="value" type="xs:string" />
-</xs:sequence>
+<xs:extension base="tns:port">
+<xs:sequence />
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
-<xs:complexType name="parameter">
+<xs:complexType abstract="true" name="port">
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
-<xs:element minOccurs="0" name="defaultValue" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="lowerBound" type="xs:string" />
+<xs:element minOccurs="0" name="direction" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="unit" type="xs:string" />
-<xs:element minOccurs="0" name="upperBound" type="xs:string" />
-<xs:element minOccurs="0" name="valueType" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="skillRequirement">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="precedentIds" nillable="true" type="xs:string" />
-<xs:element minOccurs="0" name="requiresPart" type="tns:part" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="skillType">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element name="decision" type="xs:boolean" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="part">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
@@ -166,25 +115,55 @@
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
+<xs:complexType name="parameterSetting">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="parameter" type="tns:parameter" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="parameter">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="defaultValue" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="lowerBound" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="unit" type="xs:string" />
+<xs:element minOccurs="0" name="upperBound" type="xs:string" />
+<xs:element minOccurs="0" name="valueType" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
 <xs:complexType name="skill">
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
-<xs:element minOccurs="0" name="amlId" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="kpis" nillable="true" type="tns:kpi" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="informationPorts" nillable="true" type="tns:informationPort" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="parameters" nillable="true" type="tns:parameter" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="parameterPorts" nillable="true" type="tns:parameterPort" />
 <xs:element name="classificationType" type="xs:int" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="recipeIds" nillable="true" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="controlPorts" nillable="true" type="tns:controlPort" />
-<xs:element minOccurs="0" name="subSystemId" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="informationPorts" nillable="true" type="tns:informationPort" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="kpis" nillable="true" type="tns:kpi" />
 <xs:element minOccurs="0" name="label" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="parameterPorts" nillable="true" type="tns:parameterPort" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="parameters" nillable="true" type="tns:parameter" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="recipeIds" nillable="true" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
+<xs:element minOccurs="0" name="subSystemId" type="xs:string" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -198,19 +177,6 @@
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
-<xs:complexType abstract="true" name="port">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="direction" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
 <xs:complexType name="parameterPort">
 <xs:complexContent>
 <xs:extension base="tns:port">
@@ -220,34 +186,51 @@
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
-<xs:complexType name="controlPort">
-<xs:complexContent>
-<xs:extension base="tns:port">
-<xs:sequence />
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType abstract="true" name="equipment">
+<xs:complexType name="skillRequirement">
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
-<xs:element minOccurs="0" name="amlId" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element name="connected" type="xs:boolean" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skills" nillable="true" type="tns:skill" />
-<xs:element minOccurs="0" name="address" type="xs:string" />
-<xs:element minOccurs="0" name="status" type="xs:string" />
-<xs:element minOccurs="0" name="manufacturer" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="physicalPorts" nillable="true" type="tns:physicalPort" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="precedents" nillable="true" type="tns:skillReqPrecedent" />
+<xs:element minOccurs="0" name="requiresPart" type="tns:part" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
-<xs:complexType name="physicalPort">
+<xs:complexType name="skillType">
 <xs:complexContent>
-<xs:extension base="tns:port">
-<xs:sequence />
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element name="decision" type="xs:boolean" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="skillReqPrecedent">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="part">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>

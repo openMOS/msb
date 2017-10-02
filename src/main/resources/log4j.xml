@@ -20,31 +20,31 @@
    <!-- CATEGORIES -->
    <!-- ============================ -->
   <category name="io.vertx" additivity="false">
-    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+    <priority value="${DD_MSB_LOG_PRIORITY}" />
         <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
         <appender-ref ref="OpenMOSMSBEmulatorConsole" />
   </category>
   
   <category name="eu.openmos.agentcloud" additivity="false">
-    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+    <priority value="${DD_MSB_LOG_PRIORITY}" />
         <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
         <appender-ref ref="OpenMOSMSBEmulatorConsole" />
   </category>
 
-  <category name="eu.openmos.fakemsb" additivity="false">
-    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+  <category name="eu.openmos.model" additivity="false">
+    <priority value="${DD_MSB_LOG_PRIORITY}" />
         <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
         <appender-ref ref="OpenMOSMSBEmulatorConsole" />
   </category>
 
   <category name="eu.openmos.msb" additivity="false">
-    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+    <priority value="${DD_MSB_LOG_PRIORITY}" />
         <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
         <appender-ref ref="OpenMOSMSBEmulatorConsole" />
   </category>
 
   <category name="_masmec" additivity="false">
-    <priority value="${DD_FAKEMSB_LOG_PRIORITY}" />
+    <priority value="${DD_MSB_LOG_PRIORITY}" />
         <appender-ref ref="OpenMOSMSBEmulatorLogFile"/>
         <appender-ref ref="OpenMOSMSBEmulatorConsole" />
   </category>

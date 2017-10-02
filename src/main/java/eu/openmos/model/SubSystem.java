@@ -26,8 +26,8 @@ import org.bson.Document;
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  *      
  */
-@XmlRootElement(name = "deviceAdapter")
-@XmlAccessorType(XmlAccessType.FIELD)
+// @XmlRootElement(name = "deviceAdapter")
+// @XmlAccessorType(XmlAccessType.FIELD)
 public class SubSystem extends Equipment implements Serializable {    
     private static final Logger logger = Logger.getLogger(SubSystem.class.getName());
     private static final long serialVersionUID = 6529685098267757032L;
@@ -40,20 +40,20 @@ public class SubSystem extends Equipment implements Serializable {
     /**
      * The recipes the agent can apply (Resource/Transport Agent).
      */
-    @XmlElement(name = "recipes")
+//    @XmlElement(name = "recipes")
     private List<Recipe> recipes;
 
     /**
      * The Physical Location of the device abstracted by this agent.
      */
-    @XmlElement(name = "physicalLocation")
+//    @XmlElement(name = "physicalLocation")
     private PhysicalLocation physicalLocation;
 
     /**
      * The Logical location of the agent.
      * TBV if we need it or not
      */
-    @XmlElement(name = "logicalLocation")
+//    @XmlElement(name = "logicalLocation")
     private LogicalLocation logicalLocation;
 
     /**
@@ -62,7 +62,7 @@ public class SubSystem extends Equipment implements Serializable {
      * 
      * TODO: check the value if "resource", "transport", "df_resource..." 
      */
-    @XmlElement(name = "type")    
+//    @XmlElement(name = "type")    
     private String type;
     
     
@@ -192,33 +192,54 @@ public class SubSystem extends Equipment implements Serializable {
     public Document toBSON() {
         Document doc = new Document();
 logger.debug("subsystem-toBSON - 1");
-        List<String> skillIds = skills.stream().map(skill -> skill.getUniqueId()).collect(Collectors.toList());        
+        List<String> skillIds = null;
+        if (skills != null)
+            skillIds = skills.stream().map(skill -> skill.getUniqueId()).collect(Collectors.toList());        
 logger.debug("subsystem-toBSON - 2");
-        List<String> portIds = physicalPorts.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
+        List<String> physicalPortIds = null;
+        if (physicalPorts != null)
+            physicalPortIds = physicalPorts.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
 logger.debug("subsystem-toBSON - 2.5");
-        List<String> recipeIds = recipes.stream().map(recipe -> recipe.getUniqueId()).collect(Collectors.toList());
+        List<String> recipeIds = null;
+        if (recipes != null)
+            recipeIds = recipes.stream().map(recipe -> recipe.getUniqueId()).collect(Collectors.toList());
 logger.debug("subsystem-toBSON - 3");
-        List<String> internalModuleIds = skills.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
+        List<String> internalModuleIds = null;
+        if (internalModules != null)
+            internalModuleIds = internalModules.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
 logger.debug("subsystem-toBSON - 4");
 
+        String executionTableId = null;
+        if (executionTable != null)
+            executionTableId = executionTable.getUniqueId();
+        
         
         doc.append("uniqueId", uniqueId);
         doc.append("name", name);
         doc.append("description", description);
-        doc.append("executionTableId", executionTable.getUniqueId());
+        doc.append("executionTableId", executionTableId);
         doc.append("connected", connected);
         doc.append("skillIds", skillIds);
         // doc.append("portIds", portIds);
 logger.debug("subsystem-toBSON - 5");
-        doc.append("physicalPorts", portIds);
+        doc.append("physicalPorts", physicalPortIds);
 logger.debug("subsystem-toBSON - 6");
         doc.append("recipeIds", recipeIds);
         doc.append("internalModuleIds", internalModuleIds);  
         doc.append("address", address);
         doc.append("status", status);
         doc.append("manufacturer", manufacturer);
-        doc.append("physicalLocation", physicalLocation.toBSON());
-        doc.append("logicalLocation", logicalLocation.toBSON());
+        
+        if (physicalLocation != null)
+            doc.append("physicalLocation", physicalLocation.toBSON());
+        else
+            doc.append("physicalLocation", null);
+        
+        if (logicalLocation != null)
+            doc.append("logicalLocation", logicalLocation.toBSON());
+        else
+            doc.append("logicalLocation", null);
+        
         doc.append("type", type);
         doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
 logger.debug("subsystem-toBSON - 7");

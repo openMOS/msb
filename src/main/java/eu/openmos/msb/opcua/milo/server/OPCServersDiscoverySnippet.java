@@ -26,6 +26,7 @@ import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import java.io.FileWriter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -152,6 +153,7 @@ public class OPCServersDiscoverySnippet extends Thread
       List<EndpointDescription> edList = new ArrayList<>();
       for (String url : discoveryUrls)
       {
+          logger.debug("url = " + url);
         String da_url = "";
         
         
@@ -162,6 +164,7 @@ public class OPCServersDiscoverySnippet extends Thread
           //UaTcpStackClient.findServers(url).get();
         } catch (Exception ex)
         {
+            logger.error("shit bad -> " + ex);
           try
           {
             System.out.println("shit bad");
@@ -177,7 +180,7 @@ public class OPCServersDiscoverySnippet extends Thread
           for (EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get())
           {
             edList.add(ed);
-            System.out.println("EndPoints from: " + url + " = " + ed);
+            logger.debug("VaG -> EndPoints from: " + url + " = " + ed);
 
             String daName = serverApp.getApplicationName().getText();
             // Creates a new Device Adapter
@@ -196,17 +199,26 @@ public class OPCServersDiscoverySnippet extends Thread
               }
               // if Device Adatper created ok, let's do some magic
               da.getSubSystem().setName(daName);
+              // VaG - 29/09/2017
+              da.getSubSystem().setUniqueId(daName);
+              da.getSubSystem().setDescription(daName);
+              da.getSubSystem().setRegistered(new Date());
               da_url = ed.getEndpointUrl();
  
+              // VaG FABIO PATCH 20170927
+              
               if(da_url.contains("4840"))
-                continue;
+                  continue;
+              if(da_url.contains("9995"))
+                  continue;
+              
+              
               ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get();
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
               {
 
                 DeviceAdapterOPC opc = (DeviceAdapterOPC) dacManager.getDeviceAdapter(daName);
                 MSBClientSubscription instance = opc.getClient();
-                
                 instance.startConnection(da_url);
                 OpcUaClient client = instance.getClientObject();
                 
@@ -249,8 +261,15 @@ public class OPCServersDiscoverySnippet extends Thread
                   // print to file the XML structure extracted from the browsing process             
                   XMLOutputter xmlOutput = new XMLOutputter();
                   xmlOutput.setFormat(Format.getPrettyFormat());
-                  xmlOutput.output(node, new FileWriter("C:\\Users\\Introsys\\Desktop\\OpenMosWorksapce\\msb\\xml/file.xml", false));
-                  xmlOutput.output(nSkills, new FileWriter("C:\\Users\\Introsys\\Desktop\\OpenMosWorksapce\\msb\\xml/file2.xml", false));
+                  
+                  String XML_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");                  
+                  // C:\Users\Introsys\Desktop\OpenMosWorksapce\msb\xml\file.xml
+//                  xmlOutput.output(node, new FileWriter("C:\\Users\\Introsys\\Desktop\\OpenMosWorksapce\\msb\\xml/file.xml", false));
+//                  xmlOutput.output(nSkills, new FileWriter("C:\\Users\\Introsys\\Desktop\\OpenMosWorksapce\\msb\\xml/file2.xml", false));
+////                  xmlOutput.output(node, new FileWriter("C:\\NetBeansProjects\\msb\\xml\\file.xml", false));
+////                  xmlOutput.output(nSkills, new FileWriter("C:\\NetBeansProjects\\msb\\xml\\file2.xml", false));
+                  xmlOutput.output(node, new FileWriter(XML_PATH + "\\file.xml", false));
+                  xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\file2.xml", false));
                   
                   System.out.println("Starting DA Parser **********************");
                   // TODO - WIP - parse the XML to java classes to be send up to the HMI and Agent Cloud
@@ -370,7 +389,9 @@ public class OPCServersDiscoverySnippet extends Thread
       // --------------------------------------------------------------------------------------------------------------
       // create new agent
       // TODO falar com o velerio
-      boolean withAGENTCloud = false;
+      // boolean withAGENTCloud = true;
+      String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
       if (withAGENTCloud)
       {
         // THIS CODE IS WORKING!! 
@@ -382,7 +403,18 @@ public class OPCServersDiscoverySnippet extends Thread
         // SubSystem cpad = dummySubSystemGeneration(parsedClass);
         //SubSystem cpad = SubSystemTest.getTestObject();
 
-        ServiceCallStatus agentStatus = systemConfigurator.createNewResourceAgent(da.getSubSystem());
+          // VaG - 28/09/2017
+          // begin
+          SubSystem ss = da.getSubSystem();
+          // assume the name is populated
+          if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
+            ss.setUniqueId(ss.getName());
+          if (ss.getDescription() == null || ss.getDescription().length() == 0)
+            ss.setDescription(ss.getName());  
+          ss.setRegistered(new Date());
+          ServiceCallStatus agentStatus = systemConfigurator.createNewResourceAgent(ss);
+          // end
+        
         
         System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
         String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
