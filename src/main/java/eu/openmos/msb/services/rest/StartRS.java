@@ -11,6 +11,7 @@ import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -33,14 +34,14 @@ public static void main(String[] args)
 //                .register(new Resource(new Core(), configuration)) // create instance of Resource and dynamically register        
         ResourceConfig resourceConfig = new ResourceConfig()                
                 .register(ExecutionTableController.class)
-                //.register(FileUploadController.class)
+                .register(FileUploadController.class)
                 .register(ModuleController.class)
                 .register(OrderController.class)
                 .register(ProductController.class)
                 .register(RecipeController.class)
                 .register(SkillController.class)
-                .register(SubSystemController.class);
-                //.register(MultiPartFeature.class);;
+                .register(SubSystemController.class)
+                .register(MultiPartFeature.class);
                 
         
         resourceConfig.register(new CORSFilter());

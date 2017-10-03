@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Classe Java per productionOptimizerResponseBean complex type.
+ * <p>Java class for productionOptimizerResponseBean complex type.
  * 
- * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="productionOptimizerResponseBean">
@@ -37,7 +37,7 @@ public class ProductionOptimizerResponseBean {
     protected String description;
 
     /**
-     * Recupera il valore della proprietà code.
+     * Gets the value of the code property.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class ProductionOptimizerResponseBean {
     }
 
     /**
-     * Imposta il valore della proprietà code.
+     * Sets the value of the code property.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class ProductionOptimizerResponseBean {
     }
 
     /**
-     * Recupera il valore della proprietà description.
+     * Gets the value of the description property.
      * 
      * @return
      *     possible object is
@@ -73,7 +73,7 @@ public class ProductionOptimizerResponseBean {
     }
 
     /**
-     * Imposta il valore della proprietà description.
+     * Sets the value of the description property.
      * 
      * @param value
      *     allowed object is
