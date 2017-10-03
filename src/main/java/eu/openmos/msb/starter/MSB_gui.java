@@ -65,6 +65,8 @@ import eu.openmos.msb.opcua.milo.server.IOPCNotifyGUI;
 import eu.openmos.msb.services.rest.ModuleController;
 import eu.openmos.msb.services.rest.SubSystemController;
 import java.net.BindException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.UriBuilder;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -138,6 +140,18 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     labelREST = new JLabel(redLight);
     OnOffREST.add(labelREST);
     OnOffREST.setMaximumSize(new Dimension(32, 32));
+    
+      //get dns name of the PC
+      try {
+          InetAddress addr;
+          addr = InetAddress.getLocalHost();
+          String HostName = addr.getHostName();
+          msbServerAddress.setText("opc.tcp://" + HostName + ":12637/MSB-OPCUA-SERVER");
+          ldsSserverAddress.setText("opc.tcp://" + HostName + ":4840");
+      } catch (UnknownHostException ex) {
+          System.out.println("hostname can not be resolved! " + ex);
+      }
+     
 
   }
 
@@ -328,7 +342,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         jLabel1.setText("MSB OPCUA Server");
 
-        msbServerAddress.setText("opc.tcp://DESKTOP-AO6QDEJ:12637/MSB-OPCUA-SERVER");
+        msbServerAddress.setText("opc.tcp://HOSTNAME:12637/MSB-OPCUA-SERVER");
         msbServerAddress.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 msbServerAddressActionPerformed(evt);
@@ -349,7 +363,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         jLabel7.setText("LDS Server");
 
-        ldsSserverAddress.setText("opc.tcp://DESKTOP-AO6QDEJ:4840");
+        ldsSserverAddress.setText("opc.tcp://VM-MSB:4840");
         ldsSserverAddress.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ldsSserverAddressActionPerformed(evt);
@@ -411,7 +425,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
             .addGap(0, 42, Short.MAX_VALUE)
         );
 
-        comboServers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No device adapters available!"}));
         comboServers.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboServersActionPerformed(evt);
@@ -445,8 +458,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                 btn_invoqueMethodActionPerformed(evt);
             }
         });
-
-        ComboMSB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No MSB available!"}));
 
         btn_DeviceRegistration.setText("Call DeviceRegistration");
         btn_DeviceRegistration.addActionListener(new java.awt.event.ActionListener() {
@@ -1432,7 +1443,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
 */    
       // uri = new URI(this.restServiceAddress.getText()); // may throw URISyntaxException
-      uri = UriBuilder.fromUri("http://localhost/").port(9995).build();
+      uri = UriBuilder.fromUri("http://localhost/").port(80).build(); //9995
 
       //.register(new Resource(new Core(), configuration)) // create instance of Resource and dynamically register        
       ResourceConfig resourceConfig = new ResourceConfig()

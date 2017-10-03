@@ -359,7 +359,7 @@ public class OPCServersDiscoverySnippet extends Thread
     try
     {
       DACManager dacManager = DACManager.getInstance();
-      if (da.getListOfEquipments().size() > 0)
+      if (da.getListOfEquipments() != null && da.getListOfEquipments().size() > 0)
       {
         for (Module auxModule : da.getListOfEquipments())
         {
@@ -369,7 +369,7 @@ public class OPCServersDiscoverySnippet extends Thread
         MSB_gui.fillDevicesTable();
       }
 
-      if (da.getListOfSkills().size() > 0)
+      if (da.getListOfSkills() != null && da.getListOfSkills().size() > 0)
       {
         for (Skill auxSkill : da.getListOfSkills())
         {
@@ -377,11 +377,12 @@ public class OPCServersDiscoverySnippet extends Thread
         }
       }
 
-      if (da.getListOfRecipes().size() > 0)
+      if (da.getListOfRecipes() != null && da.getListOfRecipes().size() > 0)
       {
         for (Recipe auxRecipe : da.getListOfRecipes())
         {
-          dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(), "true", auxRecipe.getName());
+          dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(), 
+                  "true", auxRecipe.getName(), auxRecipe.getMsbProtocolEndpoint());
         }
         MSB_gui.fillRecipesTable();
       }
@@ -391,7 +392,7 @@ public class OPCServersDiscoverySnippet extends Thread
       // TODO falar com o velerio
       // boolean withAGENTCloud = true;
       String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+      boolean withAGENTCloud = true;//new Boolean(USE_CLOUD_VALUE).booleanValue();
       if (withAGENTCloud)
       {
         // THIS CODE IS WORKING!! 
@@ -423,6 +424,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
         //add the sender client object to the respective agentID
         //da.setSubSystem(cpad);
+        MSB_gui.fillRecipesTable();
         
         return agentStatus.getCode(); //OK? ou KO?
       } else

@@ -476,7 +476,8 @@ public abstract class DeviceAdapter
               Node auxNode = auxNodeList.item(z);
               if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
               {
-                recipe.setMsbProtocolEndpoint(auxNode.getTextContent());
+                  String auxTest = auxNode.getAttributes().getNamedItem("ns").getNodeValue();
+                recipe.setMsbProtocolEndpoint(auxTest + ":" + auxNode.getTextContent());
               }
             }
           } else
@@ -509,7 +510,7 @@ public abstract class DeviceAdapter
 
   private static List<Module> ReadModules(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*/*[contains(name(),'Conveyor') or contains(name(),'Junction')]";
+    String query = "//DeviceAdapter/*/*[Module][Equipment]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 

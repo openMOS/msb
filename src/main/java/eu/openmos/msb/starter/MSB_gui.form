@@ -501,7 +501,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="msbServerAddress">
               <Properties>
-                <Property name="text" type="java.lang.String" value="opc.tcp://DESKTOP-AO6QDEJ:12637/MSB-OPCUA-SERVER"/>
+                <Property name="text" type="java.lang.String" value="opc.tcp://HOSTNAME:12637/MSB-OPCUA-SERVER"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="msbServerAddressActionPerformed"/>
@@ -523,7 +523,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="ldsSserverAddress">
               <Properties>
-                <Property name="text" type="java.lang.String" value="opc.tcp://DESKTOP-AO6QDEJ:4840"/>
+                <Property name="text" type="java.lang.String" value="opc.tcp://VM-MSB:4840"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ldsSserverAddressActionPerformed"/>
@@ -624,7 +624,6 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboServersActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="comboServers.setModel(new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;No device adapters available!&quot;}));"/>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
             </Component>
@@ -662,7 +661,6 @@
             </Component>
             <Component class="javax.swing.JComboBox" name="ComboMSB">
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="ComboMSB.setModel(new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;No MSB available!&quot;}));"/>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
             </Component>
