@@ -636,17 +636,17 @@ public class DatabaseInteraction
    * @param name
    * @return
    */
-  public boolean registerRecipe(String aml_id, int da_id, int sk_id, boolean valid, String name)
+  public boolean registerRecipe(String aml_id, int da_id, int sk_id, boolean valid, String name, String method_id)
   {
     try
     {
       Statement stmt = conn.createStatement();
-      String sql = "INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name)\n"
+      String sql = "INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name, method_id)\n"
               + "VALUES('" + aml_id + "','" + Integer.toString(da_id) + "','" + Integer.toString(sk_id)
-              + "','" + Boolean.toString(valid) + "','" + name + "');";
+              + "','" + Boolean.toString(valid) + "','" + name + "','" + method_id + "');";
       stmt.execute(sql);
       stmt.close();
-      System.out.println("NEW RECIPE: " + name + " " + aml_id + " " + da_id + " " + sk_id + " " + valid);
+      System.out.println("NEW RECIPE: " + name + " " + aml_id + " " + da_id + " " + sk_id + " " + valid + " " + method_id);
       return true;
     } catch (SQLException ex)
     {

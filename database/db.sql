@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS Recipe (
   sk_id   INTEGER NOT NULL,
   valid   BOOLEAN NOT NULL,
   name    VARCHAR2(50) NOT NULL,
+  method_id    VARCHAR2(100) NOT NULL,
   PRIMARY KEY(id),
   FOREIGN KEY(da_id) 
   REFERENCES DeviceAdapter(id)
