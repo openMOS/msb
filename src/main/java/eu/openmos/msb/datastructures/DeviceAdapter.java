@@ -238,9 +238,11 @@ public abstract class DeviceAdapter
       subSystem.setInternaleModules(ReadModules(deviceDescriptionDoc));
       subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc));
       subSystem.setSkills(ReadSkill(skillDescriptionDoc));
-
+      
       verifyRecipeSkill(subSystem.getRecipes(), subSystem.getSkills());
 
+       Logger.getLogger(SubSystem.class.getName()).log(Level.SEVERE, null, "testing");
+      
       return true;
     } catch (XPathExpressionException ex)
     {
@@ -276,6 +278,7 @@ public abstract class DeviceAdapter
     System.out.println("Elements " + nodeList.getLength());
 
     ExecutionTable execTable = new ExecutionTable();
+    execTable.setUniqueId(UUID.randomUUID().toString());
     List<ExecutionTableRow> auxRowList = new ArrayList<>();
     for (int i = 0; i < nodeList.getLength(); i++)
     {
@@ -520,6 +523,7 @@ public abstract class DeviceAdapter
     for (int i = 0; i < nodeList.getLength(); i++)
     {
       Module module = new Module();
+      module.setUniqueId(UUID.randomUUID().toString());
       Node n = nodeList.item(i);
 
       NodeList moduleChilds = n.getChildNodes();

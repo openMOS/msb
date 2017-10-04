@@ -61,6 +61,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import java.net.URISyntaxException;
 import org.slf4j.LoggerFactory;
 import eu.openmos.msb.opcua.milo.server.IOPCNotifyGUI;
+import eu.openmos.msb.services.rest.FileUploadController;
 //import eu.openmos.msb.services.rest.FileUploadController;
 import eu.openmos.msb.services.rest.ModuleController;
 import eu.openmos.msb.services.rest.SubSystemController;
@@ -69,6 +70,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.UriBuilder;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 /**
@@ -1449,14 +1451,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       ResourceConfig resourceConfig = new ResourceConfig()
               .register(new CORSFilter())
               .register(ExecutionTableController.class)
-              //.register(FileUploadController.class)
+              .register(FileUploadController.class)
               .register(ModuleController.class)
               .register(OrderController.class)
               .register(ProductController.class)
               .register(RecipeController.class)
               .register(SkillController.class)
-              .register(SubSystemController.class);
-              //.register(MultiPartFeature.class);
+              .register(SubSystemController.class)
+              .register(MultiPartFeature.class);
               
       // resourceConfig = resourceConfig.register(new CORSFilter());
 

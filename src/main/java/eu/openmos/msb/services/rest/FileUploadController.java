@@ -5,12 +5,17 @@
  */
 package eu.openmos.msb.services.rest;
 
+import _masmec.aml5;
+import eu.openmos.model.Product;
+import eu.openmos.msb.datastructures.DACManager;
+import eu.openmos.msb.datastructures.ProductManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -48,6 +53,12 @@ public Response uploadPdfFile(  @FormDataParam("file") InputStream fileInputStre
     out.flush();
     out.close();
 
+    List<Product> newProducts = aml5.getMasmecProductsFromFile(UPLOAD_PATH + fileMetaData.getFileName());
+    
+    ProductManager aux = ProductManager.getInstance();
+
+    aux.getProductList().addAll(newProducts);
+    
     return Response.ok("Data uploaded successfully !!").build();
 }    
 

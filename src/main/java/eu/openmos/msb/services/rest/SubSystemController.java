@@ -50,25 +50,47 @@ public class SubSystemController extends Base {
     public List<SubSystem> getList() {
         logger.debug("subsystems getList");
         List<SubSystem> ls = new LinkedList<>();
+        logger.debug("subsystems getList 1");
 
 //        ls = aml5.getMasmecSubSystems();
         //ls = MasmecModel.getInstance().getSubSystems();
         DACManager aux = DACManager.getInstance();
+        logger.debug("subsystems getList 2");
         
-        for (String adapterName : aux.getDeviceAdapters())
+        List<String> deviceAdapters = aux.getDeviceAdapters();
+        logger.debug("subsystems getList 2.5: " + deviceAdapters );
+        
+        for (String adapterName : deviceAdapters)
         {
+            if (adapterName.contains("MSB") || adapterName.contains("fortiss"))
+                continue;
+          logger.debug("subsystems getList 3: " + adapterName);
           DeviceAdapter adapter = aux.getDeviceAdapter(adapterName);
+            logger.debug("subsystems getList 4 ");
           // VaG - 28/09/2017
           // begin
-          SubSystem ss = adapter.getSubSystem();
-          // assume the name is populated
-          if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
-            ss.setUniqueId(ss.getName());
-          if (ss.getDescription() == null || ss.getDescription().length() == 0)
-            ss.setDescription(ss.getName());
-          ss.setRegistered(new Date());
-          ls.add(ss);
-          // end
+          if (adapter != null)
+          {
+            logger.debug("subsystems getList 5 - adapter is not null ");
+            SubSystem ss = adapter.getSubSystem();
+            if (ss != null)
+            {
+                logger.debug("subsystems getList 6 - subsystem is not null ");
+                logger.debug("subsystems getList 7 - subsystem name: " + ss.getName());
+                // assume the name is populated
+                if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
+                  ss.setUniqueId(ss.getName());
+                logger.debug("subsystems getList 8");
+                if (ss.getDescription() == null || ss.getDescription().length() == 0)
+                  ss.setDescription(ss.getName());
+                logger.debug("subsystems getList 9");
+                ss.setRegistered(new Date());
+                logger.debug("subsystems getList 10");
+                ls.add(ss);
+                logger.debug("subsystems getList 11");
+                  // end
+            }
+          }
         }
 //        for (int i = 0; i < 5; i++)
 //        {
@@ -88,7 +110,14 @@ public class SubSystemController extends Base {
 //                
 //            ls.add(subsystem1);
 //        }
-        logger.debug("susbsytem list from MSB: " + ls);
+        logger.debug("susbsytem list from MSB: ");
+        if (ls == null)
+            logger.debug("susbsytem list from MSB: ls is null");
+        if (ls.size() == 0)
+            logger.debug("susbsytem list from MSB: ls size is 0");            
+        if (ls.size() != 0)
+            logger.debug("susbsytem list from MSB: ls size is " + ls.size());            
+        // logger.debug("susbsytem list from MSB: " + ls);
         return ls;
     }
 

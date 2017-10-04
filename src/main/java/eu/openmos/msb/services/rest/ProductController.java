@@ -10,6 +10,7 @@ import eu.openmos.model.Product;
 import eu.openmos.model.*;
 import eu.openmos.model.testdata.ProductTest;
 import eu.openmos.model.testdata.SkillRequirementTest;
+import eu.openmos.msb.datastructures.ProductManager;
 import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.GET;
@@ -52,7 +53,9 @@ public class ProductController {
         }
 */
         //lp = MasmecModel.getInstance().getProducts();
-
+        ProductManager aux = ProductManager.getInstance();
+        lp = aux.getProductList();
+    
         return lp;
     }
 
@@ -71,6 +74,9 @@ public class ProductController {
     public Product getDetail(@PathParam("modelId") String modelId) {
         logger.debug("product getDetail - modelId = " + modelId);
 //        return ProductTest.getTestObject();
+
+        ProductManager aux = ProductManager.getInstance();
+
         for (Product product : getList()) {
             if (product.getName().equals(modelId)) {
                 logger.debug("product - found " + modelId + " - returning " + product.toString());
