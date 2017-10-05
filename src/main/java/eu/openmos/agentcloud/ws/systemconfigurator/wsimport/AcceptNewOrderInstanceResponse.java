@@ -8,9 +8,9 @@ import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 
 
 /**
- * <p>Java class for acceptNewOrderInstanceResponse complex type.
+ * <p>Classe Java per acceptNewOrderInstanceResponse complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
  * 
  * <pre>
  * &lt;complexType name="acceptNewOrderInstanceResponse">
@@ -35,7 +35,7 @@ public class AcceptNewOrderInstanceResponse {
     protected ServiceCallStatus serviceCallStatus;
 
     /**
-     * Gets the value of the serviceCallStatus property.
+     * Recupera il valore della proprietà serviceCallStatus.
      * 
      * @return
      *     possible object is
@@ -47,7 +47,7 @@ public class AcceptNewOrderInstanceResponse {
     }
 
     /**
-     * Sets the value of the serviceCallStatus property.
+     * Imposta il valore della proprietà serviceCallStatus.
      * 
      * @param value
      *     allowed object is

@@ -8,9 +8,9 @@ import eu.openmos.model.Recipe;
 
 
 /**
- * <p>Java class for createNewRecipe complex type.
+ * <p>Classe Java per createNewRecipe complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
  * 
  * <pre>
  * &lt;complexType name="createNewRecipe">
@@ -35,7 +35,7 @@ public class CreateNewRecipe {
     protected Recipe recipe;
 
     /**
-     * Gets the value of the recipe property.
+     * Recupera il valore della proprietà recipe.
      * 
      * @return
      *     possible object is
@@ -47,7 +47,7 @@ public class CreateNewRecipe {
     }
 
     /**
-     * Sets the value of the recipe property.
+     * Imposta il valore della proprietà recipe.
      * 
      * @param value
      *     allowed object is

@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for finishedProduct complex type.
+ * <p>Classe Java per finishedProduct complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
  * 
  * <pre>
  * &lt;complexType name="finishedProduct">
@@ -40,7 +40,7 @@ public class FinishedProduct {
     protected String operationTimestamp;
 
     /**
-     * Gets the value of the equipmentId property.
+     * Recupera il valore della proprietà equipmentId.
      * 
      * @return
      *     possible object is
@@ -52,7 +52,7 @@ public class FinishedProduct {
     }
 
     /**
-     * Sets the value of the equipmentId property.
+     * Imposta il valore della proprietà equipmentId.
      * 
      * @param value
      *     allowed object is
@@ -64,7 +64,7 @@ public class FinishedProduct {
     }
 
     /**
-     * Gets the value of the productId property.
+     * Recupera il valore della proprietà productId.
      * 
      * @return
      *     possible object is
@@ -76,7 +76,7 @@ public class FinishedProduct {
     }
 
     /**
-     * Sets the value of the productId property.
+     * Imposta il valore della proprietà productId.
      * 
      * @param value
      *     allowed object is
@@ -88,7 +88,7 @@ public class FinishedProduct {
     }
 
     /**
-     * Gets the value of the operationTimestamp property.
+     * Recupera il valore della proprietà operationTimestamp.
      * 
      * @return
      *     possible object is
@@ -100,7 +100,7 @@ public class FinishedProduct {
     }
 
     /**
-     * Sets the value of the operationTimestamp property.
+     * Imposta il valore della proprietà operationTimestamp.
      * 
      * @param value
      *     allowed object is

@@ -10,6 +10,6 @@ package eu.openmos.msb.services.rest;
  * @author valerio.gentile
  */
 public class Base {
-    protected static String PARAMSEPARATOR = "-";
+    protected static String PARAMSEPARATOR = "<";
     protected static String PARAMVALUESEPARATOR = ">";    
 }
