@@ -1206,7 +1206,13 @@ public static void main_OLD(String[] args) throws Exception
         return productsList;        
     }
 
-    private static Product getAMLProduct(Node productNode) throws Exception {
+    private static String getLinkID(Node internalLinkLine)
+    {
+        String recipeID = getNodeAttributeValue(internalLinkLine, "RefPartnerSideA").split(":")[0];
+        return recipeID;
+    }
+    
+    public static Product getAMLProduct(Node productNode) throws Exception {
         Product p = new Product();
         p.setRegistered(new Date());
         
@@ -1240,6 +1246,17 @@ public static void main_OLD(String[] args) throws Exception
             Node skillreqLine = skillreqLines.item(z);            
             logger.trace("skillreq line " + z + "\n" + NodeToStringConverter.convert(skillreqLine, true, true));
             SkillRequirement sr = getAMLSkillRequirement(skillreqLine);
+            
+            XPathExpression exprInternalLink = xpath.compile(".//InternalLink");
+            NodeList internalLinkLines = (NodeList) exprInternalLink.evaluate(skillreqLine, XPathConstants.NODESET);
+            
+            List<String> recipesIDs = new LinkedList<>();
+            for(int i = 0; i < internalLinkLines.getLength(); i++)
+            {
+                Node internalLinkLine = internalLinkLines.item(i);
+                recipesIDs.add(getLinkID(internalLinkLine));
+            }
+            sr.setRecipeIDs(recipesIDs);
             lsr.add(sr);
         }
         p.setSkillRequirements(lsr);

@@ -700,6 +700,23 @@ public class DatabaseInteraction
     return -1;
   }
 
+  public int removeRecipeByDaId(int da_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      int query = stmt.executeUpdate("DELETE FROM Recipe WHERE da_id = '" + da_id + "'");
+      stmt.close();
+
+      return query;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return -1;
+  }
+  
   /**
    *
    * @param recipe_name
@@ -829,6 +846,23 @@ public class DatabaseInteraction
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
     return false;
+  }
+  
+  public int removeModuleByDAId(int da_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      int query = stmt.executeUpdate("DELETE FROM Device WHERE da_id = '" + da_id + "'");
+      stmt.close();
+
+      return query;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return -1;
   }
   // **************************************************************************************************************** //
 }

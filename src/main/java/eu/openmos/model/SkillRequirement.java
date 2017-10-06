@@ -59,6 +59,8 @@ public class SkillRequirement extends Base implements Serializable  {
     
     private Part requiresPart;
     
+    
+    private List<String> recipeIDs;
     /**
      * Default constructor, for reflection
      */
@@ -179,6 +181,12 @@ public class SkillRequirement extends Base implements Serializable  {
         this.requiresPart = requiresPart;
     }
     
+     public List<String> getRecipeIDs() {
+        return recipeIDs;
+    }
+    public void setRecipeIDs(List<String> recipeIDs) {
+        this.recipeIDs = recipeIDs;
+    }
     /**
      * Method serializes the object into a BSON document.
      * 

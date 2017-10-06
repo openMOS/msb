@@ -5,10 +5,14 @@
  */
 package eu.openmos.msb.starter;
 
+import _masmec.NodeToStringConverter;
+import static _masmec.aml5.getAMLProduct;
+import static _masmec.aml5.getNodeAttributeValue;
 import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Module;
+import eu.openmos.model.Product;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
@@ -16,7 +20,10 @@ import eu.openmos.model.SubSystem;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.namespace.NamespaceContext;
@@ -25,6 +32,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
@@ -47,11 +55,15 @@ public class main_jax
   {
     try
     {
-      FileInputStream fileIS = new FileInputStream("aml.xml");
+        
+      FileInputStream fileIS = new FileInputStream("C:\\temp\\VER4 - Product.aml");
       DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = builderFactory.newDocumentBuilder();
       Document xmlDocument = builder.parse(fileIS);
       
+      List<Product> testing = loadProducts(xmlDocument);
+      
+      /*
       FileInputStream fileIS1 = new FileInputStream("C:\\Users\\Introsys\\Desktop\\XMLTest\\file2.xml");
       DocumentBuilderFactory builderFactory1 = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder1 = builderFactory1.newDocumentBuilder();
@@ -62,13 +74,50 @@ public class main_jax
       auxSystem.setRecipes(ReadRecipes(xmlDocument));
       //auxSystem.setInternaleModules(ReadModules(xmlDocument));
       //auxSystem.setSkills(ReadSkill(xmlDocument1));
+      */
       int i = 0;
+      
     } catch (IOException | ParserConfigurationException | XPathExpressionException | SAXException ex)
     {
       System.out.println("ERROR " + ex.getMessage());
-    }
+    } catch (Exception ex) {
+          Logger.getLogger(main_jax.class.getName()).log(Level.SEVERE, null, ex);
+      }
   }
 
+  
+  private static List<Product> loadProducts(Document document) throws XPathExpressionException, Exception {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPathExpression expr;
+
+        expr = xpath.compile(
+                "/CAEXFile/"
+                        + "InstanceHierarchy/"
+                        + "InternalElement[@RefBaseSystemUnitPath='openMOSSystemUnitClassLib/Part']"
+        );        
+        NodeList products = (NodeList) expr.evaluate(document, XPathConstants.NODESET);            
+        int productsCount = products.getLength();
+        //logger.trace("Total no of products -> " + productsCount);
+        List<Product> productsList = new LinkedList<>();
+        for(int l=0; l<productsCount ; l++) 
+        {
+            Node internalelElement = products.item(l);            
+//            Node internalelElement = subsystems.item(l).getParentNode();            
+            String xmlInString = NodeToStringConverter.convert(internalelElement, true, true);
+
+            //logger.trace("PRODUCT\n" + xmlInString);
+
+            Product p = getAMLProduct(internalelElement);
+            //logger.trace("FINAL PRODUCT " + l + "\n" + p);
+            productsList.add(p);
+        } 
+        //logger.trace("FINAL PRODUCTS LIST\n" + productsList);
+        
+        return productsList;        
+    }
+
+  
+  
   private static ExecutionTable ReadExecutionTable(Document xmlDocument) throws XPathExpressionException
   {
     String query = "//DeviceAdapter/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)]"; //isto é o IDdo subsystem -> ExecutionTable ExecutionTable row 

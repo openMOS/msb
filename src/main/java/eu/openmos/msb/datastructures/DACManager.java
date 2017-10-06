@@ -9,6 +9,7 @@ import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.model.Equipment;
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
+import eu.openmos.model.Skill;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,6 +106,7 @@ public class DACManager
       if (id != -1 && client != null) // the last condition should never happen
       {
         deviceAdapters.put(id, client);
+        
         return client;
       }
     } catch (UnsupportedOperationException ex)
@@ -134,9 +136,11 @@ public class DACManager
     
     try
     {
-      int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);      
+      int id = DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName);
+      
       if (id != -1 && DatabaseInteraction.getInstance().removeDeviceByName(deviceAdapterName) && deviceAdapters.containsKey(id))
       {
+          
         deviceAdapters.remove(id);
         return true;
       }
@@ -147,6 +151,24 @@ public class DACManager
     return false;
   }
 
+  public boolean deleteDAStuffByName(String deviceAdapterName)
+  {
+      DeviceAdapter auxDA = deviceAdapters.get(DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName));
+      /*
+      List<Skill> auxSkillList = auxDA.getListOfSkills();
+      for (int i = 0; i < auxSkillList.size(); i++)
+      {
+          DatabaseInteraction.getInstance().removeSkill(auxSkillList.get(i).getName());
+      }
+      */
+
+      DatabaseInteraction.getInstance().removeRecipeByDaId(DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName));
+      DatabaseInteraction.getInstance().removeModuleByDAId(DatabaseInteraction.getInstance().getDeviceIdByName(deviceAdapterName));
+      
+      //DatabaseInteraction.getInstance().remove
+      
+      return true;
+  }
   /**
    * @param deviceAdapterName
    * @brief WORKSTATIONName vs DEVICE data MAPS

@@ -318,6 +318,7 @@ public class OPCServersDiscoverySnippet extends Thread
             String daName = serverApp.getApplicationName().getText();
             if (dacManager.getDeviceAdapter(daName) != null)
             {
+              dacManager.deleteDAStuffByName(daName);
               removeDownServer(daName);
             }
           }
@@ -392,7 +393,7 @@ public class OPCServersDiscoverySnippet extends Thread
       // TODO falar com o velerio
       // boolean withAGENTCloud = true;
       String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-      boolean withAGENTCloud = true;//new Boolean(USE_CLOUD_VALUE).booleanValue();
+      boolean withAGENTCloud = false;//new Boolean(USE_CLOUD_VALUE).booleanValue();
       if (withAGENTCloud)
       {
         // THIS CODE IS WORKING!! 
