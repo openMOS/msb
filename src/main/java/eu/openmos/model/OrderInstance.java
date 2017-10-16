@@ -1,5 +1,6 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -110,12 +111,12 @@ public class OrderInstance extends Base implements Serializable {
         if (productInstances != null)
             productInstanceIds = productInstances.stream().map(pd -> pd.getUniqueId()).collect(Collectors.toList());
         
-        doc.append("uniqueId", uniqueId);
-        doc.append("name", name);
-        doc.append("description", description);
-        doc.append("priority", priority);
-        doc.append("productInstances", productInstanceIds);
-        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
+        doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
+        doc.append(DatabaseConstants.NAME, name);
+        doc.append(DatabaseConstants.DESCRIPTION, description);
+        doc.append(DatabaseConstants.PRIORITY, priority);
+        doc.append(DatabaseConstants.PRODUCT_INSTANCE_IDS, productInstanceIds);
+        doc.append(DatabaseConstants.REGISTERED, new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
         
         logger.debug("ORDER TOBSON: " + doc.toString());
         

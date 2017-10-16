@@ -123,6 +123,6 @@ public class SkillType extends Base implements Serializable {
     public static SkillType fromBSON(Document bsonPort)
     throws ParseException 
     {
-            return (SkillType)fromBSON2(bsonPort, SkillType.class);
+            return (SkillType)SkillType.fromBSON2(bsonPort, SkillType.class);
     }    
 }

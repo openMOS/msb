@@ -13,64 +13,18 @@
 <xs:element name="createNewTransportAgentResponse" type="tns:createNewTransportAgentResponse" />
 <xs:element name="finishedProduct" type="tns:finishedProduct" />
 <xs:element name="finishedProductResponse" type="tns:finishedProductResponse" />
+<xs:element name="getRecipes" type="tns:getRecipes" />
+<xs:element name="getRecipesResponse" type="tns:getRecipesResponse" />
 <xs:element name="initializePlatform" type="tns:initializePlatform" />
 <xs:element name="initializePlatformResponse" type="tns:initializePlatformResponse" />
 <xs:element name="orderInstanceRemoval" type="tns:orderInstanceRemoval" />
 <xs:element name="orderInstanceRemovalResponse" type="tns:orderInstanceRemovalResponse" />
 <xs:element name="orderInstanceUpdate" type="tns:orderInstanceUpdate" />
 <xs:element name="orderInstanceUpdateResponse" type="tns:orderInstanceUpdateResponse" />
+<xs:element name="putRecipes" type="tns:putRecipes" />
+<xs:element name="putRecipesResponse" type="tns:putRecipesResponse" />
 <xs:element name="removeAgent" type="tns:removeAgent" />
 <xs:element name="removeAgentResponse" type="tns:removeAgentResponse" />
-<xs:element name="skillRequirement" type="tns:skillRequirement" />
-<xs:complexType name="orderInstanceUpdate">
-<xs:sequence>
-<xs:element minOccurs="0" name="order" type="tns:orderInstance" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="orderInstance">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element name="priority" type="xs:int" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="productInstances" nillable="true" type="tns:productInstance" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType abstract="true" name="base">
-<xs:sequence>
-<xs:element minOccurs="0" name="registered" type="xs:dateTime" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="productInstance">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="modelId" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="orderId" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="orderInstanceUpdateResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="serviceCallStatus">
-<xs:sequence>
-<xs:element minOccurs="0" name="className" type="xs:string" />
-<xs:element minOccurs="0" name="code" type="xs:string" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="operationName" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
 <xs:complexType name="createNewRecipe">
 <xs:sequence>
 <xs:element minOccurs="0" name="recipe" type="tns:recipe" />
@@ -97,6 +51,11 @@
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
+</xs:complexType>
+<xs:complexType abstract="true" name="base">
+<xs:sequence>
+<xs:element minOccurs="0" name="registered" type="xs:dateTime" />
+</xs:sequence>
 </xs:complexType>
 <xs:complexType name="controlPort">
 <xs:complexContent>
@@ -225,24 +184,12 @@
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="precedents" nillable="true" type="tns:skillReqPrecedent" />
 <xs:element minOccurs="0" name="requiresPart" type="tns:part" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="skillType">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element name="decision" type="xs:boolean" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
@@ -269,14 +216,94 @@
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
+<xs:complexType name="skillType">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element name="decision" type="xs:boolean" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
 <xs:complexType name="createNewRecipeResponse">
 <xs:sequence>
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
 </xs:complexType>
-<xs:complexType name="createNewResourceAgent">
+<xs:complexType name="serviceCallStatus">
 <xs:sequence>
-<xs:element minOccurs="0" name="cyberPhysicalAgentDescription" type="tns:subSystem" />
+<xs:element minOccurs="0" name="className" type="xs:string" />
+<xs:element minOccurs="0" name="code" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="operationName" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="orderInstanceRemoval">
+<xs:sequence>
+<xs:element minOccurs="0" name="orderId" type="xs:string" />
+<xs:element minOccurs="0" name="operationTimestamp" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="orderInstanceRemovalResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="finishedProduct">
+<xs:sequence>
+<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+<xs:element minOccurs="0" name="productId" type="xs:string" />
+<xs:element minOccurs="0" name="operationTimestamp" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="finishedProductResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="acceptNewOrderInstance">
+<xs:sequence>
+<xs:element minOccurs="0" name="newOrder" type="tns:orderInstance" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="orderInstance">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element name="priority" type="xs:int" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="productInstances" nillable="true" type="tns:productInstance" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="productInstance">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="modelId" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="orderId" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="acceptNewOrderInstanceResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="initializePlatform">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="cyberPhysicalAgentDescriptions" type="tns:subSystem" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="orders" type="tns:orderInstance" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="subSystem">
@@ -374,60 +401,6 @@
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
-<xs:complexType name="createNewResourceAgentResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="orderInstanceRemoval">
-<xs:sequence>
-<xs:element minOccurs="0" name="orderId" type="xs:string" />
-<xs:element minOccurs="0" name="operationTimestamp" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="orderInstanceRemovalResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="createNewTransportAgent">
-<xs:sequence>
-<xs:element minOccurs="0" name="cyberPhysicalAgentDescription" type="tns:subSystem" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="createNewTransportAgentResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="finishedProduct">
-<xs:sequence>
-<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
-<xs:element minOccurs="0" name="productId" type="xs:string" />
-<xs:element minOccurs="0" name="operationTimestamp" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="finishedProductResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="acceptNewOrderInstance">
-<xs:sequence>
-<xs:element minOccurs="0" name="newOrder" type="tns:orderInstance" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="acceptNewOrderInstanceResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="initializePlatform">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="cyberPhysicalAgentDescriptions" type="tns:subSystem" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="orders" type="tns:orderInstance" />
-</xs:sequence>
-</xs:complexType>
 <xs:complexType name="initializePlatformResponse">
 <xs:sequence>
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
@@ -439,6 +412,54 @@
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="createNewSkillResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="orderInstanceUpdate">
+<xs:sequence>
+<xs:element minOccurs="0" name="order" type="tns:orderInstance" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="orderInstanceUpdateResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="putRecipes">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" type="tns:recipe" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="putRecipesResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="createNewResourceAgent">
+<xs:sequence>
+<xs:element minOccurs="0" name="cyberPhysicalAgentDescription" type="tns:subSystem" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="createNewResourceAgentResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="getRecipes">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="getRecipesResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" type="tns:recipe" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="createNewTransportAgent">
+<xs:sequence>
+<xs:element minOccurs="0" name="cyberPhysicalAgentDescription" type="tns:subSystem" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="createNewTransportAgentResponse">
 <xs:sequence>
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
@@ -459,16 +480,16 @@
     <wsdl:part element="tns:createNewRecipe" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="createNewTransportAgentResponse">
-    <wsdl:part element="tns:createNewTransportAgentResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="acceptNewOrderInstanceResponse">
     <wsdl:part element="tns:acceptNewOrderInstanceResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="initializePlatformResponse">
     <wsdl:part element="tns:initializePlatformResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createNewTransportAgentResponse">
+    <wsdl:part element="tns:createNewTransportAgentResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createNewResourceAgentResponse">
@@ -483,12 +504,20 @@
     <wsdl:part element="tns:orderInstanceRemovalResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="putRecipesResponse">
+    <wsdl:part element="tns:putRecipesResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="finishedProduct">
     <wsdl:part element="tns:finishedProduct" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="acceptNewOrderInstance">
     <wsdl:part element="tns:acceptNewOrderInstance" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRecipesResponse">
+    <wsdl:part element="tns:getRecipesResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="initializePlatform">
@@ -507,8 +536,16 @@
     <wsdl:part element="tns:orderInstanceUpdate" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="putRecipes">
+    <wsdl:part element="tns:putRecipes" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="createNewResourceAgent">
     <wsdl:part element="tns:createNewResourceAgent" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRecipes">
+    <wsdl:part element="tns:getRecipes" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="removeAgentResponse">
@@ -536,34 +573,16 @@
     </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="SystemConfigurator">
-    <wsdl:operation name="orderInstanceUpdate">
-      <wsdl:input message="tns:orderInstanceUpdate" name="orderInstanceUpdate">
-    </wsdl:input>
-      <wsdl:output message="tns:orderInstanceUpdateResponse" name="orderInstanceUpdateResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="createNewRecipe">
       <wsdl:input message="tns:createNewRecipe" name="createNewRecipe">
     </wsdl:input>
       <wsdl:output message="tns:createNewRecipeResponse" name="createNewRecipeResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createNewResourceAgent">
-      <wsdl:input message="tns:createNewResourceAgent" name="createNewResourceAgent">
-    </wsdl:input>
-      <wsdl:output message="tns:createNewResourceAgentResponse" name="createNewResourceAgentResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="orderInstanceRemoval">
       <wsdl:input message="tns:orderInstanceRemoval" name="orderInstanceRemoval">
     </wsdl:input>
       <wsdl:output message="tns:orderInstanceRemovalResponse" name="orderInstanceRemovalResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="createNewTransportAgent">
-      <wsdl:input message="tns:createNewTransportAgent" name="createNewTransportAgent">
-    </wsdl:input>
-      <wsdl:output message="tns:createNewTransportAgentResponse" name="createNewTransportAgentResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="finishedProduct">
@@ -590,6 +609,36 @@
       <wsdl:output message="tns:createNewSkillResponse" name="createNewSkillResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="orderInstanceUpdate">
+      <wsdl:input message="tns:orderInstanceUpdate" name="orderInstanceUpdate">
+    </wsdl:input>
+      <wsdl:output message="tns:orderInstanceUpdateResponse" name="orderInstanceUpdateResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="putRecipes">
+      <wsdl:input message="tns:putRecipes" name="putRecipes">
+    </wsdl:input>
+      <wsdl:output message="tns:putRecipesResponse" name="putRecipesResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createNewResourceAgent">
+      <wsdl:input message="tns:createNewResourceAgent" name="createNewResourceAgent">
+    </wsdl:input>
+      <wsdl:output message="tns:createNewResourceAgentResponse" name="createNewResourceAgentResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRecipes">
+      <wsdl:input message="tns:getRecipes" name="getRecipes">
+    </wsdl:input>
+      <wsdl:output message="tns:getRecipesResponse" name="getRecipesResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createNewTransportAgent">
+      <wsdl:input message="tns:createNewTransportAgent" name="createNewTransportAgent">
+    </wsdl:input>
+      <wsdl:output message="tns:createNewTransportAgentResponse" name="createNewTransportAgentResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="removeAgent">
       <wsdl:input message="tns:removeAgent" name="removeAgent">
     </wsdl:input>
@@ -599,15 +648,6 @@
   </wsdl:portType>
   <wsdl:binding name="SystemConfiguratorSoapBinding" type="tns:SystemConfigurator">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="orderInstanceUpdate">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="orderInstanceUpdate">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="orderInstanceUpdateResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="createNewRecipe">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="createNewRecipe">
@@ -617,30 +657,12 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createNewResourceAgent">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="createNewResourceAgent">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="createNewResourceAgentResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="orderInstanceRemoval">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="orderInstanceRemoval">
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="orderInstanceRemovalResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="createNewTransportAgent">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="createNewTransportAgent">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="createNewTransportAgentResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -677,6 +699,51 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="createNewSkillResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="orderInstanceUpdate">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="orderInstanceUpdate">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="orderInstanceUpdateResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="putRecipes">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="putRecipes">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="putRecipesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createNewResourceAgent">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="createNewResourceAgent">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="createNewResourceAgentResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRecipes">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="getRecipes">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRecipesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createNewTransportAgent">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="createNewTransportAgent">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="createNewTransportAgentResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

@@ -1,9 +1,8 @@
 package eu.openmos.model;
 
-import static eu.openmos.model.Base.fromBSON2;
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -53,12 +52,12 @@ public class ParameterPort extends Port implements Serializable {
             parameterIds = parameters.stream().map(parameter -> parameter.getUniqueId()).collect(Collectors.toList());        
 
         return new Document()
-                .append("description", description)
-                .append("uniqueId", uniqueId)
-                .append("name", name)
-                .append("type", type)
-                .append("direction", direction)
-                .append("parameterIds", parameterIds)
-                .append("registered", stringRegisteredTimestamp);
+                .append(DatabaseConstants.DESCRIPTION, description)
+                .append(DatabaseConstants.UNIQUE_ID, uniqueId)
+                .append(DatabaseConstants.NAME, name)
+                .append(DatabaseConstants.TYPE, type)
+                .append(DatabaseConstants.DIRECTION, direction)
+                .append(DatabaseConstants.PARAMETER_IDS, parameterIds)
+                .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
     }    
 }

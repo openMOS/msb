@@ -35,7 +35,7 @@ public class CloudInterface_NewRecipeTest {
         BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
         bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
 
-        Recipe r = RecipeTest.getTestObject("equipmentId");
+        Recipe r = RecipeTest.getTestObject();
         ServiceCallStatus recipeStatus = systemConfigurator.createNewRecipe(r);
           
         logger.info("New Recipe Test main end");

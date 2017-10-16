@@ -1,16 +1,8 @@
 package eu.openmos.model;
 
-import eu.openmos.model.utilities.*;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import org.bson.Document;
 
 /**
  * Abstract base class for SubSytem and Module classes.
@@ -188,36 +180,5 @@ public abstract class Equipment extends Base implements Serializable {
 
     public void setPhysicalPorts(List<PhysicalPort> ports) {
         this.physicalPorts = ports;
-    }    
-        
-     /**
-     * Method that serializes the object into a BSON document.
-     * Useless, because this is just the abstract class.
-     * 
-     * @return BSON form of the object. 
-     */
-/*    
-    public Document toBSON() {
-        Document doc = new Document();
-
-        List<String> skillIds = skills.stream().map(skill -> skill.getUniqueId()).collect(Collectors.toList());        
-        List<String> physicalPortIds = skills.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
-        List<String> moduleIds = skills.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
-        
-        doc.append("id", uniqueId);
-        doc.append("name", name);
-        doc.append("description", description);
-        doc.append("connected", connected);
-        doc.append("skillIds", skillIds);        
-        doc.append("physicalPortIds", physicalPortIds);        
-        doc.append("moduleIds", moduleIds);        
-        doc.append("address", address);
-        doc.append("status", status);
-        doc.append("manifacturer", manufacturer);
-        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
-        
-        return doc;
     }
-*/
-
 }

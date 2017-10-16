@@ -11,7 +11,6 @@
 <xs:element name="reparametrizeOptimizerResponse" type="tns:reparametrizeOptimizerResponse" />
 <xs:element name="resetOptimizer" type="tns:resetOptimizer" />
 <xs:element name="resetOptimizerResponse" type="tns:resetOptimizerResponse" />
-<xs:element name="skillRequirement" type="tns:skillRequirement" />
 <xs:element name="stopOptimizer" type="tns:stopOptimizer" />
 <xs:element name="stopOptimizerResponse" type="tns:stopOptimizerResponse" />
 <xs:complexType name="resetOptimizer">
@@ -190,24 +189,12 @@
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
-<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="precedents" nillable="true" type="tns:skillReqPrecedent" />
 <xs:element minOccurs="0" name="requiresPart" type="tns:part" />
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-<xs:complexType name="skillType">
-<xs:complexContent>
-<xs:extension base="tns:base">
-<xs:sequence>
-<xs:element name="decision" type="xs:boolean" />
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="skillType" type="tns:skillType" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
@@ -227,6 +214,18 @@
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="skillType">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element name="decision" type="xs:boolean" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />

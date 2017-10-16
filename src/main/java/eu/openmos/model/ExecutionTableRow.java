@@ -1,12 +1,10 @@
 package eu.openmos.model;
 
-import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.bson.Document;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  * Execution table row.
@@ -41,6 +39,8 @@ public class ExecutionTableRow extends Base implements Serializable {
      * Also some optimizer will be able to update this field and notify the MSB.
      */
     private String nextRecipeId;
+    
+    private NodeId nextRecipeIdPath;
     
     /**
      * List of possible recipe choices.
@@ -105,6 +105,14 @@ public class ExecutionTableRow extends Base implements Serializable {
         this.nextRecipeId = nextRecipeId;
     }
 
+    public NodeId getNextRecipeIdPath() {
+        return nextRecipeIdPath;
+    }
+
+    public void setNextRecipeIdPath(NodeId nextRecipeIdPath) {
+        this.nextRecipeIdPath = nextRecipeIdPath;
+    }
+    
     public List<String> getPossibleRecipeChoices() {
         return possibleRecipeChoices;
     }
@@ -120,17 +128,6 @@ public class ExecutionTableRow extends Base implements Serializable {
      */
     public Document toBSON() {
         return toBSON2();
-/*
-        Document doc = new Document();
-        
-        doc.append("uniqueId", uniqueId);
-        doc.append("productId", productId);
-        doc.append("recipeId", recipeId);
-        doc.append("nextRecipeId", nextRecipeId);        
-        doc.append("possibleRecipeChoices", possibleRecipeChoices);
-        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
-        return doc;
-*/        
     }
     
     /**
@@ -140,6 +137,6 @@ public class ExecutionTableRow extends Base implements Serializable {
      * @return Deserialized object.
      */
     public static ExecutionTableRow fromBSON(Document bsonRow) {
-        return (ExecutionTableRow)Base.fromBSON2(bsonRow, ExecutionTableRow.class);
+        return (ExecutionTableRow)ExecutionTableRow.fromBSON2(bsonRow, ExecutionTableRow.class);
     }
 }

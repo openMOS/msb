@@ -8,9 +8,9 @@ import eu.openmos.model.SubSystem;
 
 
 /**
- * <p>Classe Java per createNewTransportAgent complex type.
+ * <p>Java class for createNewTransportAgent complex type.
  * 
- * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="createNewTransportAgent">
@@ -35,7 +35,7 @@ public class CreateNewTransportAgent {
     protected SubSystem cyberPhysicalAgentDescription;
 
     /**
-     * Recupera il valore della proprietà cyberPhysicalAgentDescription.
+     * Gets the value of the cyberPhysicalAgentDescription property.
      * 
      * @return
      *     possible object is
@@ -47,7 +47,7 @@ public class CreateNewTransportAgent {
     }
 
     /**
-     * Imposta il valore della proprietà cyberPhysicalAgentDescription.
+     * Sets the value of the cyberPhysicalAgentDescription property.
      * 
      * @param value
      *     allowed object is

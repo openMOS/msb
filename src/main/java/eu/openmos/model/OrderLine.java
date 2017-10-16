@@ -1,11 +1,7 @@
 package eu.openmos.model;
 
-import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -29,7 +25,7 @@ public class OrderLine extends Base implements Serializable {
     /**
      * Id of the product family, of the model of the product.
      */
-    private String productId;    
+    private String modelId;    
     /**
      * Amount of products to be produced.
      */
@@ -45,7 +41,7 @@ public class OrderLine extends Base implements Serializable {
         
         this.uniqueId = uniqueId;
         this.orderId = orderId;
-        this.productId = productId;
+        this.modelId = productId;
         this.quantity = quantity;
     }
 
@@ -65,12 +61,12 @@ public class OrderLine extends Base implements Serializable {
         this.orderId = orderId;
     }
 
-    public String getProductId() {
-        return productId;
+    public String getModelId() {
+        return modelId;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setModelId(String modelId) {
+        this.modelId = modelId;
     }
 
     public int getQuantity() {

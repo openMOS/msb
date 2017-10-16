@@ -1,5 +1,6 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -122,19 +123,19 @@ public class Module extends Equipment implements Serializable {
         if (internalModules != null)
             moduleIds = internalModules.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
         
-        doc.append("uniqueId", uniqueId);
-        doc.append("name", name);
-        doc.append("description", description);
-        doc.append("connected", connected);
-        doc.append("skillIds", skillIds);        
-        doc.append("physicalPortIds", physicalPortIds);        
-        doc.append("moduleIds", moduleIds);        
-        doc.append("address", address);
-        doc.append("status", status);
-        doc.append("manifacturer", manufacturer);
-        doc.append("parentId", parentId);
-        doc.append("parentType", parentType);
-        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
+        doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
+        doc.append(DatabaseConstants.NAME, name);
+        doc.append(DatabaseConstants.DESCRIPTION, description);
+        doc.append(DatabaseConstants.CONNECTED, connected);
+        doc.append(DatabaseConstants.SKILL_IDS, skillIds);        
+        doc.append(DatabaseConstants.PHYSICAL_PORT_IDS, physicalPortIds);        
+        doc.append(DatabaseConstants.INTERNAL_MODULE_IDS, moduleIds);        
+        doc.append(DatabaseConstants.ADDRESS, address);
+        doc.append(DatabaseConstants.STATUS, status);
+        doc.append(DatabaseConstants.MANUFACTURER, manufacturer);
+        doc.append(DatabaseConstants.PARENT_ID, parentId);
+        doc.append(DatabaseConstants.PARENT_TYPE, parentType);
+        doc.append(DatabaseConstants.REGISTERED, new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
         
         return doc;
     }

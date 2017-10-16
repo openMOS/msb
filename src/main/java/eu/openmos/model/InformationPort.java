@@ -1,6 +1,5 @@
 package eu.openmos.model;
 
-import static eu.openmos.model.Base.fromBSON2;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Date;
@@ -69,6 +68,6 @@ public class InformationPort extends Port implements Serializable {
     public static InformationPort fromBSON(Document bsonPort)
     throws ParseException 
     {
-            return (InformationPort)fromBSON2(bsonPort, InformationPort.class);
+            return (InformationPort)InformationPort.fromBSON2(bsonPort, InformationPort.class);
     }        
 }

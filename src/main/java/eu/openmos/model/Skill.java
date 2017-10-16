@@ -8,10 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.bson.Document;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Object that describes an action a device can perform.
@@ -309,7 +305,8 @@ public class Skill extends Base implements Serializable {
 //        List<String> skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getUniqueId()).collect(Collectors.toList());
         List<String> skillRequirementIds = null;
         if (skillRequirements != null)
-            skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());
+            skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getUniqueId()).collect(Collectors.toList());
+            //skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());
 
         List<String> controlPortIds = null;
         if (controlPorts != null)
@@ -330,22 +327,22 @@ public class Skill extends Base implements Serializable {
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         String stringRegisteredTimestamp = sdf.format(this.registered);       
         
-        doc.append("description", description);
-        doc.append("id", uniqueId);
-        doc.append("kpis", kpiIds);
-        doc.append("informationPortIds", informationPortIds);
-        doc.append("name", name);
-        doc.append("label", label);
-        doc.append("parameters", parameterIds);      
-        doc.append("parameterPortIds", parameterPortIds);
-        doc.append("type", type);     
-        doc.append("skillType", skillTypeId);     
-        doc.append("classificationType", classificationType);
-        doc.append("skillRequirements", skillRequirementIds);           
-        doc.append("recipes", recipeIds);
-        doc.append("controlPortIds", controlPortIds);
-        doc.append("equipmentId", subSystemId);
-        doc.append("registered", stringRegisteredTimestamp);
+        doc.append(DatabaseConstants.DESCRIPTION, description);
+        doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
+        doc.append(DatabaseConstants.KPI_IDS, kpiIds);
+        doc.append(DatabaseConstants.INFORMATION_PORT_IDS, informationPortIds);
+        doc.append(DatabaseConstants.NAME, name);
+        doc.append(DatabaseConstants.LABEL, label);
+        doc.append(DatabaseConstants.PARAMETER_IDS, parameterIds);      
+        doc.append(DatabaseConstants.PARAMETER_PORT_IDS, parameterPortIds);
+        doc.append(DatabaseConstants.TYPE, type);     
+        doc.append(DatabaseConstants.SKILL_TYPE_ID, skillTypeId);     
+        doc.append(DatabaseConstants.CLASSIFICATION_TYPE, classificationType);
+        doc.append(DatabaseConstants.SKILL_REQUIREMENT_IDS, skillRequirementIds);           
+        doc.append(DatabaseConstants.RECIPE_IDS, recipeIds);
+        doc.append(DatabaseConstants.CONTROL_PORT_IDS, controlPortIds);
+        doc.append(DatabaseConstants.EQUIPMENT_ID, subSystemId);
+        doc.append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
     
         return doc;
     }

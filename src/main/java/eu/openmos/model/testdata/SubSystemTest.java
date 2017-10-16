@@ -35,8 +35,7 @@ public class SubSystemTest {
         List<KPISetting> kpiSettings = KPISettingTest.getTestList();
         List<ParameterSetting> parameterSettings = ParameterSettingTest.getTestList();
         List<SkillRequirement> skillRequirements = SkillRequirementTest.getTestList();
-        // List<Recipe> recipes = RecipeTest.getTestList();
-        List<Recipe> recipes = RecipeTest.getTestList(equipmentId);
+        List<Recipe> recipes = RecipeTest.getTestList();
         List<KPI> kpis = KPITest.getTestList();
         List<Skill> skills = SkillTest.getTestList();
         List<PhysicalPort> ports = PhysicalPortTest.getTestList();

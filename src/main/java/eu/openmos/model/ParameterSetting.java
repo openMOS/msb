@@ -1,10 +1,8 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import java.util.Date;
 import eu.openmos.model.utilities.SerializationConstants;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import org.apache.log4j.Logger;
@@ -128,11 +126,11 @@ public class ParameterSetting extends Base implements Serializable {
         if (parameter != null)
             parameterId = parameter.getUniqueId();
         
-        return new Document("description", description)
-                .append("uniqueId", uniqueId)
-                .append("name", name)
-                .append("value", value)
-                .append("parameterId", parameterId)
-                .append("registered", stringRegisteredTimestamp);
+        return new Document(DatabaseConstants.DESCRIPTION, description)
+                .append(DatabaseConstants.UNIQUE_ID, uniqueId)
+                .append(DatabaseConstants.NAME, name)
+                .append(DatabaseConstants.VALUE, value)
+                .append(DatabaseConstants.PARAMETER_ID, parameterId)
+                .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
     }
 }

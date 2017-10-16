@@ -3,7 +3,6 @@ package eu.openmos.model;
 import java.util.Date;
 import java.io.Serializable;
 import org.apache.log4j.Logger;
-import org.bson.Document;
 
 /**
  * Abstract base class for port concept.
@@ -100,24 +99,4 @@ public abstract class Port extends Base implements Serializable {
     public void setDirection(String direction) {
         this.direction = direction;
     }
-        
-    /**
-     * Method that serializes the object into a BSON document.
-     * 
-     * @return BSON Document format of the object. 
-     */
-//    public Document toBSON() {
-//        return toBSON2();
-//    }
-    
-    /**
-     * Method that deserializes a BSON object.
-     * 
-     * @param bsonPort - BSON to be deserialized.
-     * @return Deserialized object.
-     */
-//    public static Port fromBSON(Document bsonPort)
-//    {
-//            return (Port)Port.fromBSON2(bsonPort, Port.class);
-//    }    
 }

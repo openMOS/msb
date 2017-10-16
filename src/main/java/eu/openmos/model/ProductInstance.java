@@ -1,5 +1,6 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -40,7 +41,13 @@ public class ProductInstance extends Base implements Serializable {
     /**
      * Id of the order.
      */
-    private String orderId;    
+    private String orderId; 
+    
+    /**
+     * Id of the order line.
+     */
+    private String orderLineId;
+    
     /**
      * List of parts.
      * MSB and WP4 Bari decision: we will not use parts for any demonstrator so far.
@@ -81,7 +88,7 @@ public class ProductInstance extends Base implements Serializable {
      * @param registeredTimestamp - timestamp of object creation
      */
     public ProductInstance(String uniqueId, String productId, String name, 
-            String description, String orderId, 
+            String description, String orderId, String orderLineID, 
             List<PartInstance> partInstances, 
 //            List<SkillRequirement> skillRequirements, 
             Date registeredTimestamp) {
@@ -93,6 +100,7 @@ public class ProductInstance extends Base implements Serializable {
         this.description = description;
         this.orderId = orderId;
         this.partInstances = partInstances;
+        this.orderLineId = orderLineID;
 //        this.skillRequirements = skillRequirements;
     }
 
@@ -124,16 +132,24 @@ public class ProductInstance extends Base implements Serializable {
     public String getOrderId() {
         return orderId;
     }
+    
+     public String getOrderLineId() {
+        return orderLineId;
+    }
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
+    
+    public void setOrderLineId(String orderLineId) {
+        this.orderLineId = orderLineId;
+    }
 
-    public String getModelId() {
+    public String getProductId() {
         return productId;
     }
 
-    public void setModelId(String modelId) {
+    public void setProductId(String modelId) {
         this.productId = modelId;
     }
 
@@ -166,16 +182,16 @@ public class ProductInstance extends Base implements Serializable {
             partInstanceIds = partInstances.stream().map(partInstance -> partInstance.getUniqueId()).collect(Collectors.toList());
 //        List<String> skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());  
         
-        doc.append("uniqueId", uniqueId);
-        doc.append("productId", productId);
-        doc.append("name", name);
-        doc.append("description", description);
-        doc.append("orderId", orderId);
-        doc.append("partInstanceIds", partInstanceIds);
+        doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
+        doc.append(DatabaseConstants.PRODUCT_ID, productId);
+        doc.append(DatabaseConstants.NAME, name);
+        doc.append(DatabaseConstants.DESCRIPTION, description);
+        doc.append(DatabaseConstants.ORDER_ID, orderId);
+        doc.append(DatabaseConstants.PART_INSTANCE_IDS, partInstanceIds);
 //        doc.append("skillRequirements", skillRequirementIds);      
-        doc.append("finished", finished);         
-        doc.append("finishedTimestamp", finishedTime == null ? null : new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.finishedTime));  
-        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
+        doc.append(DatabaseConstants.FINISHED, finished);         
+        doc.append(DatabaseConstants.FINISHED_TIME, finishedTime == null ? null : new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.finishedTime));  
+        doc.append(DatabaseConstants.REGISTERED, new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
         
         return doc;
     }

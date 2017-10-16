@@ -181,6 +181,6 @@ public class KPI extends Base implements Serializable {
     * @return Deserialized object.
      */
     public static KPI fromBSON(Document bsonKPI) {   
-        return (KPI)fromBSON2(bsonKPI, KPI.class);
+        return (KPI)KPI.fromBSON2(bsonKPI, KPI.class);
     }
 }

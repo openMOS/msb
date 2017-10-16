@@ -180,6 +180,6 @@ public class Parameter extends Base implements Serializable {
     public static Parameter fromBSON(Document bsonParameter)
     throws ParseException 
     {
-            return (Parameter)fromBSON2(bsonParameter, Parameter.class);
+            return (Parameter)Parameter.fromBSON2(bsonParameter, Parameter.class);
     }    
 }

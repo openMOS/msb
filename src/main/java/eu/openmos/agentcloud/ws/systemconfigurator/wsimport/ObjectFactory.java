@@ -5,7 +5,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
-import eu.openmos.model.SkillRequirement;
 
 
 /**
@@ -29,17 +28,20 @@ public class ObjectFactory {
     private final static QName _AcceptNewOrderInstanceResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "acceptNewOrderInstanceResponse");
     private final static QName _CreateNewTransportAgentResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewTransportAgentResponse");
     private final static QName _InitializePlatformResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "initializePlatformResponse");
-    private final static QName _SkillRequirement_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "skillRequirement");
     private final static QName _CreateNewResourceAgentResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewResourceAgentResponse");
     private final static QName _OrderInstanceRemoval_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceRemoval");
     private final static QName _OrderInstanceRemovalResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceRemovalResponse");
+    private final static QName _PutRecipesResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "putRecipesResponse");
     private final static QName _FinishedProduct_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "finishedProduct");
     private final static QName _AcceptNewOrderInstance_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "acceptNewOrderInstance");
+    private final static QName _GetRecipesResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getRecipesResponse");
     private final static QName _InitializePlatform_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "initializePlatform");
     private final static QName _CreateNewSkill_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewSkill");
     private final static QName _CreateNewSkillResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewSkillResponse");
     private final static QName _OrderInstanceUpdate_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceUpdate");
+    private final static QName _PutRecipes_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "putRecipes");
     private final static QName _CreateNewResourceAgent_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewResourceAgent");
+    private final static QName _GetRecipes_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getRecipes");
     private final static QName _RemoveAgentResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "removeAgentResponse");
     private final static QName _FinishedProductResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "finishedProductResponse");
     private final static QName _CreateNewTransportAgent_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewTransportAgent");
@@ -52,6 +54,14 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link PutRecipesResponse }
+     * 
+     */
+    public PutRecipesResponse createPutRecipesResponse() {
+        return new PutRecipesResponse();
     }
 
     /**
@@ -116,6 +126,14 @@ public class ObjectFactory {
      */
     public AcceptNewOrderInstance createAcceptNewOrderInstance() {
         return new AcceptNewOrderInstance();
+    }
+
+    /**
+     * Create an instance of {@link GetRecipesResponse }
+     * 
+     */
+    public GetRecipesResponse createGetRecipesResponse() {
+        return new GetRecipesResponse();
     }
 
     /**
@@ -199,6 +217,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PutRecipes }
+     * 
+     */
+    public PutRecipes createPutRecipes() {
+        return new PutRecipes();
+    }
+
+    /**
      * Create an instance of {@link RemoveAgentResponse }
      * 
      */
@@ -212,6 +238,14 @@ public class ObjectFactory {
      */
     public CreateNewResourceAgent createCreateNewResourceAgent() {
         return new CreateNewResourceAgent();
+    }
+
+    /**
+     * Create an instance of {@link GetRecipes }
+     * 
+     */
+    public GetRecipes createGetRecipes() {
+        return new GetRecipes();
     }
 
     /**
@@ -251,15 +285,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SkillRequirement }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "skillRequirement")
-    public JAXBElement<SkillRequirement> createSkillRequirement(SkillRequirement value) {
-        return new JAXBElement<SkillRequirement>(_SkillRequirement_QNAME, SkillRequirement.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CreateNewResourceAgentResponse }{@code >}}
      * 
      */
@@ -287,6 +312,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PutRecipesResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "putRecipesResponse")
+    public JAXBElement<PutRecipesResponse> createPutRecipesResponse(PutRecipesResponse value) {
+        return new JAXBElement<PutRecipesResponse>(_PutRecipesResponse_QNAME, PutRecipesResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FinishedProduct }{@code >}}
      * 
      */
@@ -302,6 +336,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "acceptNewOrderInstance")
     public JAXBElement<AcceptNewOrderInstance> createAcceptNewOrderInstance(AcceptNewOrderInstance value) {
         return new JAXBElement<AcceptNewOrderInstance>(_AcceptNewOrderInstance_QNAME, AcceptNewOrderInstance.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetRecipesResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getRecipesResponse")
+    public JAXBElement<GetRecipesResponse> createGetRecipesResponse(GetRecipesResponse value) {
+        return new JAXBElement<GetRecipesResponse>(_GetRecipesResponse_QNAME, GetRecipesResponse.class, null, value);
     }
 
     /**
@@ -341,12 +384,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PutRecipes }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "putRecipes")
+    public JAXBElement<PutRecipes> createPutRecipes(PutRecipes value) {
+        return new JAXBElement<PutRecipes>(_PutRecipes_QNAME, PutRecipes.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CreateNewResourceAgent }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "createNewResourceAgent")
     public JAXBElement<CreateNewResourceAgent> createCreateNewResourceAgent(CreateNewResourceAgent value) {
         return new JAXBElement<CreateNewResourceAgent>(_CreateNewResourceAgent_QNAME, CreateNewResourceAgent.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetRecipes }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getRecipes")
+    public JAXBElement<GetRecipes> createGetRecipes(GetRecipes value) {
+        return new JAXBElement<GetRecipes>(_GetRecipes_QNAME, GetRecipes.class, null, value);
     }
 
     /**

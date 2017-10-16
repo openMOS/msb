@@ -1,14 +1,13 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.bson.Document;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  * Object that describes an actual setting of a KPI, i.e., a possible value for 
@@ -52,6 +51,7 @@ public class KPISetting extends Base implements Serializable {
      */
     private String value;
     
+    private NodeId path;
     /**
      * Default constructor, for reflection.
      */
@@ -144,6 +144,15 @@ public class KPISetting extends Base implements Serializable {
         this.unit = unit;
     }
     
+    public NodeId getPath() {
+        return path;
+    }
+
+    public void setPath(NodeId path) {
+        this.path = path;
+    }
+
+    
     /**
      * Method that serializes the object into a BSON document.
      * 
@@ -158,13 +167,13 @@ public class KPISetting extends Base implements Serializable {
             kpiId = kpi.getUniqueId();
         
         return new Document()
-                .append("uniqueId", uniqueId)
-                .append("name", name)
-                .append("description", description)
-                .append("kpiId", kpiId)
-                .append("type", type)
-                .append("unit", unit)
-                .append("value", value)
-                .append("registered", stringRegisteredTimestamp);
+                .append(DatabaseConstants.UNIQUE_ID, uniqueId)
+                .append(DatabaseConstants.NAME, name)
+                .append(DatabaseConstants.DESCRIPTION, description)
+                .append(DatabaseConstants.KPI_ID, kpiId)
+                .append(DatabaseConstants.TYPE, type)
+                .append(DatabaseConstants.UNIT, unit)
+                .append(DatabaseConstants.VALUE, value)
+                .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
     }
 }

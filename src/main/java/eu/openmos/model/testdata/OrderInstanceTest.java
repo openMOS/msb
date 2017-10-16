@@ -57,7 +57,7 @@ public class OrderInstanceTest {
             comps.add(c1);
             pd1.setParts(comps);
             pd1.setDescription("product description");
-            pd1.setModelId("model_xpto");
+            pd1.setProductId("model_xpto");
             pd1.setName(pdName);
             pd1.setOrderId(o.getUniqueId());
             pd1.setRegistered(new Date());

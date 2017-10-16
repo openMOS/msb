@@ -1,25 +1,25 @@
 
-package eu.openmos.agentcloud.ws.productionoptimizer.wsimport;
+package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import eu.openmos.agentcloud.utilities.OptimizationParameter;
+import eu.openmos.model.Recipe;
 
 
 /**
- * <p>Java class for reparametrizeOptimizer complex type.
+ * <p>Java class for putRecipes complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="reparametrizeOptimizer">
+ * &lt;complexType name="putRecipes">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="newParameters" type="{http://productionoptimizer.optimizer.agentcloud.openmos.eu/}optimizationParameter" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="recipes" type="{http://cloudinterface.agentcloud.openmos.eu/}recipe" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,40 +29,40 @@ import eu.openmos.agentcloud.utilities.OptimizationParameter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "reparametrizeOptimizer", propOrder = {
-    "newParameters"
+@XmlType(name = "putRecipes", propOrder = {
+    "recipes"
 })
-public class ReparametrizeOptimizer {
+public class PutRecipes {
 
-    protected List<OptimizationParameter> newParameters;
+    protected List<Recipe> recipes;
 
     /**
-     * Gets the value of the newParameters property.
+     * Gets the value of the recipes property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the newParameters property.
+     * This is why there is not a <CODE>set</CODE> method for the recipes property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getNewParameters().add(newItem);
+     *    getRecipes().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link OptimizationParameter }
+     * {@link Recipe }
      * 
      * 
      */
-    public List<OptimizationParameter> getNewParameters() {
-        if (newParameters == null) {
-            newParameters = new ArrayList<OptimizationParameter>();
+    public List<Recipe> getRecipes() {
+        if (recipes == null) {
+            recipes = new ArrayList<Recipe>();
         }
-        return this.newParameters;
+        return this.recipes;
     }
 
 }

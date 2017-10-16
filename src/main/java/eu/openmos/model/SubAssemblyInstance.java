@@ -1,5 +1,6 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -68,12 +69,12 @@ public class SubAssemblyInstance extends PartInstance implements Serializable {
         if (subAssembly != null)
             subAssemblyId = subAssembly.getUniqueId();
         
-        doc.append("uniqueId", uniqueId);
-        doc.append("name", name);
-        doc.append("description", description);
-        doc.append("subAssemblyId", subAssemblyId);
-        doc.append("partInstanceIds", internalPartInstanceIds);
-        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
+        doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
+        doc.append(DatabaseConstants.NAME, name);
+        doc.append(DatabaseConstants.DESCRIPTION, description);
+        doc.append(DatabaseConstants.SUB_ASSEMBLY_ID, subAssemblyId);
+        doc.append(DatabaseConstants.PART_INSTANCE_IDS, internalPartInstanceIds);
+        doc.append(DatabaseConstants.REGISTERED, new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
         
         return doc;
     }    

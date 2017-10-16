@@ -1,15 +1,12 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.util.Date;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -18,8 +15,8 @@ import org.bson.Document;
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
-@XmlRootElement(name = "skillRequirement")
-@XmlAccessorType(XmlAccessType.FIELD)
+//@XmlRootElement(name = "skillRequirement")
+//@XmlAccessorType(XmlAccessType.FIELD)
 public class SkillRequirement extends Base implements Serializable  {
     private static final Logger logger = Logger.getLogger(SkillRequirement.class.getName());
     private static final long serialVersionUID = 6529685098267757028L;
@@ -31,7 +28,7 @@ public class SkillRequirement extends Base implements Serializable  {
     /**
      * Skill Requirement name.
      */
-  @XmlElement(name = "name")    
+  //@XmlElement(name = "name")    
     private String name;
     /**
      * Skill Requirement description.
@@ -45,7 +42,7 @@ public class SkillRequirement extends Base implements Serializable  {
      * but..... for now we keep it as it is.
      */
     // private int type;    
-  @XmlElement(name = "type")    
+  //@XmlElement(name = "type")    
     private String type;
   private SkillType skillType;
 
@@ -209,14 +206,14 @@ public class SkillRequirement extends Base implements Serializable  {
         if (requiresPart != null)
             requiresPartId = requiresPart.getUniqueId();
         
-        return new Document("description", description)
-                .append("uniqueId", uniqueId)
-                .append("name", name)
-                .append("type", type)
-                .append("skillTypeId", skillTypeId)
-                .append("precedentIds", precedentIds)
-                .append("requiresPartId", requiresPartId)
-                .append("registered", stringRegisteredTimestamp);
+        return new Document(DatabaseConstants.DESCRIPTION, description)
+                .append(DatabaseConstants.UNIQUE_ID, uniqueId)
+                .append(DatabaseConstants.NAME, name)
+                .append(DatabaseConstants.TYPE, type)
+                .append(DatabaseConstants.SKILL_TYPE_ID, skillTypeId)
+                .append(DatabaseConstants.PRECEDENT_IDS, precedentIds)
+                .append(DatabaseConstants.REQUIRES_PART_ID, requiresPartId)
+                .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
     }
 //                .append("precedents", skillRequirementIds)
     

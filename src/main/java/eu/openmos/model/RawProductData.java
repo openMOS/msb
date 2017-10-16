@@ -1,5 +1,6 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -150,11 +151,11 @@ public class RawProductData extends Base implements Serializable {
         if (recipes != null)
             recipeIds = recipes.stream().map(recipe -> recipe.getUniqueId()).collect(Collectors.toList());
         
-        doc.append("id", productId);
-        doc.append("logicalLocation", logicalLocation);
-        doc.append("recipes", recipeIds);
-        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
-                
+        doc.append(DatabaseConstants.PRODUCT_ID, productId);
+        doc.append(DatabaseConstants.LOGICAL_LOCATION, logicalLocation.toBSON());
+        doc.append(DatabaseConstants.RECIPE_IDS, recipeIds);
+        doc.append(DatabaseConstants.REGISTERED, new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
+            
         return doc;        
     }
 }

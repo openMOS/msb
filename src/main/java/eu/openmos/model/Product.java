@@ -137,12 +137,12 @@ public class Product extends Base implements Serializable {
         if (skillRequirements != null)
             skillRequirementIds = skillRequirements.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());        
         
-        doc.append("uniqueId", uniqueId);
-        doc.append("name", name);
-        doc.append("description", description);
-        doc.append("partIds", partIds);
-        doc.append("skillRequirementIds", skillRequirementIds);      
-        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
+        doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
+        doc.append(DatabaseConstants.NAME, name);
+        doc.append(DatabaseConstants.DESCRIPTION, description);
+        doc.append(DatabaseConstants.PART_IDS, partIds);
+        doc.append(DatabaseConstants.SKILL_REQUIREMENT_IDS, skillRequirementIds);      
+        doc.append(DatabaseConstants.REGISTERED, new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
         
         return doc;
     }

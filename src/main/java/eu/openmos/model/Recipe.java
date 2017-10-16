@@ -7,11 +7,8 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 import org.bson.Document;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
        
 
 /**
@@ -95,6 +92,14 @@ public class Recipe extends Base implements Serializable {
      */
     private String msbProtocolEndpoint;
 
+    private String invokeObjectID;
+    
+    private String invokeMethodID;
+    
+    private String state;
+    
+    private NodeId statePath;
+    
     /**
      * Default constructor, for reflection
      */
@@ -263,6 +268,22 @@ public class Recipe extends Base implements Serializable {
         this.msbProtocolEndpoint = msbProtocolEndpoint;
     }
 
+    public String getInvokeObjectID() {
+        return invokeObjectID;
+    }
+
+    public void setInvokeObjectID(String invokeObjectID) {
+        this.invokeObjectID = invokeObjectID;
+    }
+    
+    public String getInvokeMethodID() {
+        return invokeMethodID;
+    }
+
+    public void setInvokeMethodID(String invokeMethodID) {
+        this.invokeMethodID = invokeMethodID;
+    }
+    
     public boolean isValid() {
         return valid;
     }
@@ -279,6 +300,21 @@ public class Recipe extends Base implements Serializable {
         this.executedBySkillControlPort = executedBySkillControlPort;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+    
+    public NodeId getStatePath() {
+        return statePath;
+    }
+
+    public void setStatePath(NodeId statePath) {
+        this.statePath = statePath;
+    }
     
      /**
      * Method that serializes the object into a BSON document.
@@ -310,23 +346,23 @@ public class Recipe extends Base implements Serializable {
         
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         
-        doc.append("description", description);
-        doc.append("id", uniqueId);
-        doc.append("kpiSettings", kpiSettingIds);
-        doc.append("name", name);
-        doc.append("parameterSettings", parameterSettingIds);        
-        doc.append("uniqueAgentName", uniqueAgentName);
-        doc.append("skillRequirements", skillRequirementIds);           
-        doc.append("skillId", skillId);
-        doc.append("executedBySkillControlPortId", controlPortId);
-        doc.append("equipmentId", equipmentId);
-        doc.append("optimized", optimized);
-        doc.append("lastOptimizationTime", this.lastOptimizationTime == null ? "null" : sdf.format(this.lastOptimizationTime));
-        doc.append("msbProtocolEndpoint", msbProtocolEndpoint);
+        doc.append(DatabaseConstants.DESCRIPTION, description);
+        doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
+        doc.append(DatabaseConstants.KPI_SETTING_IDS, kpiSettingIds);
+        doc.append(DatabaseConstants.NAME, name);
+        doc.append(DatabaseConstants.PARAMETER_SETTING_IDS, parameterSettingIds);        
+        doc.append(DatabaseConstants.UNIQUE_AGENT_NAME, uniqueAgentName);
+        doc.append(DatabaseConstants.SKILL_REQUIREMENT_IDS, skillRequirementIds);           
+        doc.append(DatabaseConstants.SKILL_ID, skillId);
+        doc.append(DatabaseConstants.EXECUTED_BY_SKILL_CONTROL_PORT_ID, controlPortId);
+        doc.append(DatabaseConstants.EQUIPMENT_ID, equipmentId);
+        doc.append(DatabaseConstants.OPTIMIZED, optimized);
+        doc.append(DatabaseConstants.OPTIMIZED_TIME, this.lastOptimizationTime == null ? "null" : sdf.format(this.lastOptimizationTime));
+        doc.append(DatabaseConstants.MSB_PROTOCOL_ENDPOINT, msbProtocolEndpoint);
         
-        doc.append("valid", valid);
+        doc.append(DatabaseConstants.VALID, valid);
         
-        doc.append("registered", sdf.format(this.registered));
+        doc.append(DatabaseConstants.REGISTERED, this.registered == null ? "null" : sdf.format(this.registered));
         
         return doc;
     }

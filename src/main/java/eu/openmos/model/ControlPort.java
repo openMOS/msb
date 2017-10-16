@@ -1,8 +1,6 @@
 package eu.openmos.model;
 
-import static eu.openmos.model.Base.fromBSON2;
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -40,6 +38,6 @@ public class ControlPort extends Port implements Serializable {
      */
     public static ControlPort fromBSON(Document bsonPort)
     {
-        return (ControlPort)fromBSON2(bsonPort, ControlPort.class);
+        return (ControlPort)ControlPort.fromBSON2(bsonPort, ControlPort.class);
     }        
 }

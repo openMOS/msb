@@ -8,9 +8,9 @@ import eu.openmos.model.Skill;
 
 
 /**
- * <p>Classe Java per createNewSkill complex type.
+ * <p>Java class for createNewSkill complex type.
  * 
- * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="createNewSkill">
@@ -35,7 +35,7 @@ public class CreateNewSkill {
     protected Skill skill;
 
     /**
-     * Recupera il valore della proprietà skill.
+     * Gets the value of the skill property.
      * 
      * @return
      *     possible object is
@@ -47,7 +47,7 @@ public class CreateNewSkill {
     }
 
     /**
-     * Imposta il valore della proprietà skill.
+     * Sets the value of the skill property.
      * 
      * @param value
      *     allowed object is

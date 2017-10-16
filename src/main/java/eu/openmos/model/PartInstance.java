@@ -5,6 +5,7 @@
  */
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -108,11 +109,11 @@ public class PartInstance extends Base implements Serializable {
             partId = part.getUniqueId();
         
         return new Document()
-                .append("uniqueId", uniqueId)
-                .append("name", name)
-                .append("description", description)
-                .append("partId", partId)
-                .append("registered", stringRegisteredTimestamp);
+                .append(DatabaseConstants.UNIQUE_ID, uniqueId)
+                .append(DatabaseConstants.NAME, name)
+                .append(DatabaseConstants.DESCRIPTION, description)
+                .append(DatabaseConstants.PART_ID, partId)
+                .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
     }
     
 }

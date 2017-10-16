@@ -43,7 +43,7 @@ public class SkillTest {
                 0, 
                 // SkillRequirementTest.getTestList(), 
                 null,                
-                RecipeTest.getTestRecipeIdsList(ModuleTest.getTestObject().getUniqueId()),
+                RecipeTest.getTestRecipeIdsList(),
                 ControlPortTest.getTestList(),
                 ModuleTest.getTestObject().getUniqueId(),
                 registeredTimestamp);

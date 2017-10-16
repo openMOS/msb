@@ -8,12 +8,12 @@ import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 
 
 /**
- * <p>Java class for orderInstanceRemovalResponse complex type.
+ * <p>Java class for putRecipesResponse complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="orderInstanceRemovalResponse">
+ * &lt;complexType name="putRecipesResponse">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -27,10 +27,10 @@ import eu.openmos.agentcloud.utilities.ServiceCallStatus;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "orderInstanceRemovalResponse", propOrder = {
+@XmlType(name = "putRecipesResponse", propOrder = {
     "serviceCallStatus"
 })
-public class OrderInstanceRemovalResponse {
+public class PutRecipesResponse {
 
     protected ServiceCallStatus serviceCallStatus;
 

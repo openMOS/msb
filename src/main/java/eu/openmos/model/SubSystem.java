@@ -1,5 +1,6 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
 import eu.openmos.model.utilities.SerializationConstants;
 import eu.openmos.model.utilities.ListsToString;
 import java.io.Serializable;
@@ -7,12 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
 import org.bson.Document;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  * Describes workstation and transport:
@@ -65,6 +63,9 @@ public class SubSystem extends Equipment implements Serializable {
 //    @XmlElement(name = "type")    
     private String type;
     
+    private String state;
+    
+    private NodeId statePath;
     
     private boolean valid = true;
     
@@ -173,6 +174,21 @@ public class SubSystem extends Equipment implements Serializable {
         this.type = type;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+    
+    public NodeId getStatePath() {
+        return statePath;
+    }
+
+    public void setStatePath(NodeId statePath) {
+        this.statePath = statePath;
+    }
     
     /**
      * To check if the object is valid.... for now it returns always "true"
@@ -191,58 +207,64 @@ public class SubSystem extends Equipment implements Serializable {
      */
     public Document toBSON() {
         Document doc = new Document();
-logger.debug("subsystem-toBSON - 1");
+        
+        logger.trace("subsystem-toBSON - 1");
         List<String> skillIds = null;
         if (skills != null)
             skillIds = skills.stream().map(skill -> skill.getUniqueId()).collect(Collectors.toList());        
-logger.debug("subsystem-toBSON - 2");
+        
+        logger.trace("subsystem-toBSON - 2");
         List<String> physicalPortIds = null;
         if (physicalPorts != null)
             physicalPortIds = physicalPorts.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
-logger.debug("subsystem-toBSON - 2.5");
+
+        logger.trace("subsystem-toBSON - 2.5");
         List<String> recipeIds = null;
         if (recipes != null)
             recipeIds = recipes.stream().map(recipe -> recipe.getUniqueId()).collect(Collectors.toList());
-logger.debug("subsystem-toBSON - 3");
+
+        logger.trace("subsystem-toBSON - 3");
         List<String> internalModuleIds = null;
         if (internalModules != null)
             internalModuleIds = internalModules.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
-logger.debug("subsystem-toBSON - 4");
+
+        logger.trace("subsystem-toBSON - 4");
 
         String executionTableId = null;
         if (executionTable != null)
             executionTableId = executionTable.getUniqueId();
-        
-        
-        doc.append("uniqueId", uniqueId);
-        doc.append("name", name);
-        doc.append("description", description);
-        doc.append("executionTableId", executionTableId);
-        doc.append("connected", connected);
-        doc.append("skillIds", skillIds);
-        // doc.append("portIds", portIds);
-logger.debug("subsystem-toBSON - 5");
-        doc.append("physicalPorts", physicalPortIds);
-logger.debug("subsystem-toBSON - 6");
-        doc.append("recipeIds", recipeIds);
-        doc.append("internalModuleIds", internalModuleIds);  
-        doc.append("address", address);
-        doc.append("status", status);
-        doc.append("manufacturer", manufacturer);
+                
+        doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
+        doc.append(DatabaseConstants.NAME, name);
+        doc.append(DatabaseConstants.DESCRIPTION, description);
+        doc.append(DatabaseConstants.EXECUTION_TABLE_ID, executionTableId);
+        doc.append(DatabaseConstants.CONNECTED, connected);
+        doc.append(DatabaseConstants.SKILL_IDS, skillIds);
+
+        logger.trace("subsystem-toBSON - 5");
+        doc.append(DatabaseConstants.PHYSICAL_PORT_IDS, physicalPortIds);
+
+        logger.trace("subsystem-toBSON - 6");
+        doc.append(DatabaseConstants.RECIPE_IDS, recipeIds);
+        doc.append(DatabaseConstants.INTERNAL_MODULE_IDS, internalModuleIds);  
+        doc.append(DatabaseConstants.ADDRESS, address);
+        doc.append(DatabaseConstants.STATUS, status);
+        doc.append(DatabaseConstants.MANUFACTURER, manufacturer);
         
         if (physicalLocation != null)
-            doc.append("physicalLocation", physicalLocation.toBSON());
+            doc.append(DatabaseConstants.PHYSICAL_LOCATION, physicalLocation.toBSON());
         else
-            doc.append("physicalLocation", null);
+            doc.append(DatabaseConstants.PHYSICAL_LOCATION, null);
         
         if (logicalLocation != null)
-            doc.append("logicalLocation", logicalLocation.toBSON());
+            doc.append(DatabaseConstants.LOGICAL_LOCATION, logicalLocation.toBSON());
         else
-            doc.append("logicalLocation", null);
+            doc.append(DatabaseConstants.LOGICAL_LOCATION, null);
         
-        doc.append("type", type);
-        doc.append("registered", new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
-logger.debug("subsystem-toBSON - 7");
+        doc.append(DatabaseConstants.TYPE, type);
+        doc.append(DatabaseConstants.REGISTERED, new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
+
+        logger.trace("subsystem-toBSON - 7");
                 
         return doc;
     }
