@@ -7,8 +7,10 @@ package eu.openmos.msb.services.rest;
 
 import _masmec.aml5;
 import eu.openmos.model.Product;
+import eu.openmos.model.SkillRequirement;
+import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
-import eu.openmos.msb.datastructures.ProductManager;
+import eu.openmos.msb.datastructures.PECManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -55,9 +57,21 @@ public Response uploadPdfFile(  @FormDataParam("file") InputStream fileInputStre
 
     List<Product> newProducts = aml5.getMasmecProductsFromFile(UPLOAD_PATH + fileMetaData.getFileName());
     
-    ProductManager aux = ProductManager.getInstance();
+    PECManager aux = PECManager.getInstance();
 
     aux.getProductList().addAll(newProducts);
+    
+    //******************************************* SR links into the DB
+    for (int i = 0; i < newProducts.size(); i++)
+    {
+        Product auxProduct = newProducts.get(i);
+        for (int j = 0; j < auxProduct.getSkillRequirements().size(); j++)
+        {
+            SkillRequirement auxSR = auxProduct.getSkillRequirements().get(j);
+            DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
+        }
+    }
+    //***********************************************************************************************************
     
     return Response.ok("Data uploaded successfully !!").build();
 }    

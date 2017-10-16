@@ -29,5 +29,7 @@ public class DeviceAdapterOPC extends DeviceAdapter
   {
     return opcClient;
   }
+  
+  
 
 }

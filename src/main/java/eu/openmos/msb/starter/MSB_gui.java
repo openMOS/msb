@@ -236,6 +236,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         pb_produceProduct = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         cb_productSelection = new javax.swing.JComboBox<>();
+        btnProductSubmit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -863,6 +864,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         cb_productSelection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No recipes available!"}));
         cb_productSelection.setMaximumSize(new java.awt.Dimension(100, 30));
 
+        btnProductSubmit.setText("Upload Product");
+        btnProductSubmit.setActionCommand("");
+        btnProductSubmit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProductSubmitActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout p_productExecutionLayout = new javax.swing.GroupLayout(p_productExecution);
         p_productExecution.setLayout(p_productExecutionLayout);
         p_productExecutionLayout.setHorizontalGroup(
@@ -871,16 +880,15 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                 .addContainerGap()
                 .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p_productExecutionLayout.createSequentialGroup()
-                        .addGap(0, 13, Short.MAX_VALUE)
+                    .addGroup(p_productExecutionLayout.createSequentialGroup()
                         .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cb_productSelection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(pb_produceProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE))
-                        .addContainerGap(22, Short.MAX_VALUE))))
+                            .addComponent(cb_productSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(p_productExecutionLayout.createSequentialGroup()
+                                .addComponent(btnProductSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(pb_produceProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
-
-        p_productExecutionLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cb_productSelection, pb_produceProduct});
-
         p_productExecutionLayout.setVerticalGroup(
             p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(p_productExecutionLayout.createSequentialGroup()
@@ -888,8 +896,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cb_productSelection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pb_produceProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pb_produceProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                    .addComponent(btnProductSubmit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(50, Short.MAX_VALUE))
         );
 
@@ -912,7 +922,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                                 .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addComponent(jScrollPane1)
                             .addComponent(p_productExecution, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -920,7 +930,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel5)
                                     .addComponent(jLabel3))
-                                .addGap(0, 312, Short.MAX_VALUE)))))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(493, 493, 493)
@@ -953,7 +963,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1485,6 +1495,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 */      
   }//GEN-LAST:event_startRESTWebServiceActionPerformed
 
+    private void btnProductSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductSubmitActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnProductSubmitActionPerformed
+
   /**
    *
    */
@@ -1943,6 +1957,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private javax.swing.JTable TableServers;
     private static javax.swing.JButton b_DDSCallRecipe;
     private javax.swing.JButton b_startMSBDDS;
+    private javax.swing.JButton btnProductSubmit;
     private javax.swing.JButton btn_ChangedState;
     private javax.swing.JButton btn_DeviceRegistration;
     private javax.swing.JButton btn_RecipeExecutionDone;

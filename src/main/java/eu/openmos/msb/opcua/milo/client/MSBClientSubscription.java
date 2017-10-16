@@ -249,14 +249,14 @@ public class MSBClientSubscription implements IClient
   }
 
   /**
-   * TODO - fabio Documentation
+   * TODO - Documentation
    *
    * @param client
    * @param objectId
    * @param methodId
    * @return
    */
-  public CompletableFuture<String> InvoqueDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId)
+  public CompletableFuture<String> InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId)
   {
 
     CallMethodRequest request = new CallMethodRequest(

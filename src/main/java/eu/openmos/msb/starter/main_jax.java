@@ -17,6 +17,10 @@ import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
+import eu.openmos.msb.database.interaction.DatabaseInteraction;
+import eu.openmos.msb.datastructures.DACManager;
+import eu.openmos.msb.datastructures.DecisionTree;
+import eu.openmos.msb.datastructures.DeviceAdapter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +51,7 @@ import org.xml.sax.SAXException;
  */
 public class main_jax
 {
-
+    static DecisionTree newTree;
   /**
    * @param args the command line arguments
    */
@@ -55,13 +59,23 @@ public class main_jax
   {
     try
     {
-        
+        /*
       FileInputStream fileIS = new FileInputStream("C:\\temp\\VER4 - Product.aml");
       DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = builderFactory.newDocumentBuilder();
       Document xmlDocument = builder.parse(fileIS);
       
-      List<Product> testing = loadProducts(xmlDocument);
+        List<Product> newProducts = loadProducts(xmlDocument);
+
+        for (int i = 0; i < newProducts.size(); i++) {
+            Product auxProduct = newProducts.get(i);
+            for (int j = 0; j < auxProduct.getSkillRequirements().size(); j++) {
+                SkillRequirement auxSR = auxProduct.getSkillRequirements().get(j);
+                DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
+            }
+        }
+      */
+      //CreateTree(testing.get(0));
       
       /*
       FileInputStream fileIS1 = new FileInputStream("C:\\Users\\Introsys\\Desktop\\XMLTest\\file2.xml");
@@ -75,18 +89,20 @@ public class main_jax
       //auxSystem.setInternaleModules(ReadModules(xmlDocument));
       //auxSystem.setSkills(ReadSkill(xmlDocument1));
       */
+        
+        
+        
       int i = 0;
       
-    } catch (IOException | ParserConfigurationException | XPathExpressionException | SAXException ex)
+    } catch (Exception ex)
     {
       System.out.println("ERROR " + ex.getMessage());
-    } catch (Exception ex) {
-          Logger.getLogger(main_jax.class.getName()).log(Level.SEVERE, null, ex);
-      }
+    }
   }
 
   
-  private static List<Product> loadProducts(Document document) throws XPathExpressionException, Exception {
+  private static List<Product> loadProducts(Document document) throws XPathExpressionException, Exception 
+  {
         XPath xpath = XPathFactory.newInstance().newXPath();
         XPathExpression expr;
 
@@ -113,11 +129,10 @@ public class main_jax
         } 
         //logger.trace("FINAL PRODUCTS LIST\n" + productsList);
         
+        
         return productsList;        
     }
 
-  
-  
   private static ExecutionTable ReadExecutionTable(Document xmlDocument) throws XPathExpressionException
   {
     String query = "//DeviceAdapter/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)]"; //isto é o IDdo subsystem -> ExecutionTable ExecutionTable row 
@@ -441,4 +456,141 @@ public class main_jax
     }
     return skillList;
   }
+   
+   public static void CreateTree(Product product){
+       // Create instance of class DecisionTree
+
+        newTree = new DecisionTree();
+
+        // Generate tree
+
+        generateTree(product);
+
+        // Output tree
+
+        System.out.println("\nOUTPUT DECISION TREE");
+        System.out.println("====================");
+        newTree.outputBinTree();
+
+        // Query tree
+
+        //queryTree();
+   } 
+   
+      /* GENERATE TREE */
+
+    static void generateTree(Product product) {
+        System.out.println("\nGENERATE DECISION TREE");
+        System.out.println("======================");
+        List<Integer> rootIndex = new ArrayList<>();
+        String currentNodeID = "";
+
+        //check which one has no precedence ->rootnode       
+        for (int i = 0; i < product.getSkillRequirements().size(); i++) {
+            if (product.getSkillRequirements().get(i).getPrecedents() == null) {
+                newTree.createRoot(product.getSkillRequirements().get(i).getUniqueId(), product.getSkillRequirements().get(i).getName());
+                rootIndex.add(i);
+                currentNodeID = product.getSkillRequirements().get(i).getUniqueId();
+                break;
+            }
+        }
+        //**********************************
+
+        for (int i = 0; i < product.getSkillRequirements().size(); i++) {
+            if (rootIndex.contains(i)) {
+                continue;
+            } else /*if(product.getSkillRequirements().get(i).getPrecedents()==null)*/ {
+                for (int j = 0; j < product.getSkillRequirements().get(i).getPrecedents().size(); j++) {
+                    if (product.getSkillRequirements().get(i).getPrecedents().get(j).getUniqueId() == currentNodeID) 
+                    {
+                        for (int z=0; z < product.getSkillRequirements().get(i).getRecipeIDs().size(); z++){
+                        newTree.addYesNode(currentNodeID, product.getSkillRequirements().get(i).getUniqueId(),
+                                product.getSkillRequirements().get(i).getName());
+                        }
+                    }
+                }
+                rootIndex.add(i);
+            }
+        }
+
+    }
+
+    /* QUERY TREE */
+	
+    static void queryTree() throws IOException {
+        System.out.println("\nQUERY DECISION TREE");
+        System.out.println("===================");
+        newTree.queryBinTree();
+    }
+    
+     private Boolean checkNextValidation(String nextRecipeID) {
+        String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
+        if (Daid != null) {
+            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
+            DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
+            for (int i = 0; i < da.getExecutionTable().getRows().size(); i++) {
+                if (da.getExecutionTable().getRows().get(i).getRecipeId() == nextRecipeID) {
+                    String auxNextLKT1 = da.getExecutionTable().getRows().get(i).getNextRecipeId();
+                    boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(auxNextLKT1);
+                    return valid;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private String doStuff2(String recipeID) {
+
+        //get execTable
+        String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID);
+
+        if (Daid != null) {
+            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
+            DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
+            for (int i = 0; i < da.getExecutionTable().getRows().size(); i++) {
+                if (da.getExecutionTable().getRows().get(i).getRecipeId() == recipeID) {
+                    String NextRecipe = da.getExecutionTable().getRows().get(i).getNextRecipeId();
+                    List<String> PossibleRecipeChoices = da.getExecutionTable().getRows().get(i).getPossibleRecipeChoices();
+                    if (!PossibleRecipeChoices.isEmpty()) {
+                        boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(NextRecipe);
+                        if (valid) {
+                            //yes
+                            if (checkNextValidation(NextRecipe)) {
+                                return NextRecipe;
+                            }
+                        } else {
+                            for (int j = 0; j < PossibleRecipeChoices.size(); j++) {
+                                String choice = PossibleRecipeChoices.get(j);
+                                String Daid1 = DatabaseInteraction.getInstance().getDAIDbyRecipeID(choice);
+                                if (Daid1 != null) {
+                                    String DA_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid1);
+                                    DeviceAdapter da1 = DACManager.getInstance().getDeviceAdapter(DA_name1);
+                                    for (int l = 0; l < da1.getExecutionTable().getRows().size(); l++) {
+                                        if (da1.getExecutionTable().getRows().get(l).getRecipeId() == choice) {
+                                            String NextRecipe1 = da1.getExecutionTable().getRows().get(l).getNextRecipeId();
+                                            boolean valid1 = DatabaseInteraction.getInstance().getRecipeIdIsValid(NextRecipe1);
+                                            if (valid1) {
+                                                //yes
+                                                if (checkNextValidation(NextRecipe1)) {
+                                                    return NextRecipe1;
+                                                } else {
+                                                    return "";
+                                                }
+                                            } else {
+                                                return "";
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return "";
+    }
+
 }

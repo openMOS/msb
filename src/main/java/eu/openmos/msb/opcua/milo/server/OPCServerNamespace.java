@@ -674,12 +674,12 @@ public class OPCServerNamespace implements Namespace
    */
   private void addChangeStateNode(UaFolderNode folderNode)
   {
-    UaMethodNode methodChangeSate = UaMethodNode.builder(server.getNodeMap())
+    UaMethodNode methodChangeState = UaMethodNode.builder(server.getNodeMap())
             .setNodeId(new NodeId(namespaceIndex, "MSB/ChangeState"))
             .setBrowseName(new QualifiedName(namespaceIndex, "ChangeState"))
             .setDisplayName(new LocalizedText(null, "ChangeState"))
             .setDescription(
-                    LocalizedText.english("Returns the sum of two values."))
+                    LocalizedText.english("Inform the MSB of the recipe execution state."))
             .build();
 
     try
@@ -687,31 +687,31 @@ public class OPCServerNamespace implements Namespace
       AnnotationBasedInvocationHandler invocationHandler
               = AnnotationBasedInvocationHandler.fromAnnotatedObject(server.getNodeMap(), new ChangeState());
 
-      methodChangeSate.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
-      methodChangeSate.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
-      methodChangeSate.setInvocationHandler(invocationHandler);
+      methodChangeState.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
+      methodChangeState.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
+      methodChangeState.setInvocationHandler(invocationHandler);
 
-      server.getNodeMap().addNode(methodChangeSate);
+      server.getNodeMap().addNode(methodChangeState);
 
       folderNode.addReference(new Reference(
               folderNode.getNodeId(),
               Identifiers.HasComponent,
-              methodChangeSate.getNodeId().expanded(),
-              methodChangeSate.getNodeClass(),
+              methodChangeState.getNodeId().expanded(),
+              methodChangeState.getNodeClass(),
               true
       ));
 
       System.out.println("folderNode.getNodeId():" + folderNode.getNodeId().toString());
 
-      methodChangeSate.addReference(new Reference(
-              methodChangeSate.getNodeId(),
+      methodChangeState.addReference(new Reference(
+              methodChangeState.getNodeId(),
               Identifiers.HasComponent,
               folderNode.getNodeId().expanded(),
               folderNode.getNodeClass(),
               false
       ));
 
-      System.out.println("methodNodeSUM.getNodeId():" + methodChangeSate.getNodeId().toString());
+      System.out.println("methodChangeState.getNodeId():" + methodChangeState.getNodeId().toString());
 
     } catch (Exception e)
     {

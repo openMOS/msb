@@ -156,25 +156,6 @@ public class OPCServersDiscoverySnippet extends Thread
           logger.debug("url = " + url);
         String da_url = "";
         
-        
-        try
-        {
-          ApplicationDescription[] i = UaTcpStackClient.findServers(url).get();
-          //EndpointDescription[] ed2 = UaTcpStackClient.getEndpoints(url).get();
-          //UaTcpStackClient.findServers(url).get();
-        } catch (Exception ex)
-        {
-            logger.error("shit bad -> " + ex);
-          try
-          {
-            System.out.println("shit bad");
-            ApplicationDescription[] i = UaTcpStackClient.findServers(url).get();
-          } catch (InterruptedException | ExecutionException ex1)
-          {
-            java.util.logging.Logger.getLogger(OPCServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex1);
-          }
-        }
-        
         try
         {
           for (EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get())
@@ -199,6 +180,7 @@ public class OPCServersDiscoverySnippet extends Thread
               }
               // if Device Adatper created ok, let's do some magic
               da.getSubSystem().setName(daName);
+              da.getSubSystem().setAddress(da_url);
               // VaG - 29/09/2017
               da.getSubSystem().setUniqueId(daName);
               da.getSubSystem().setDescription(daName);
@@ -274,6 +256,7 @@ public class OPCServersDiscoverySnippet extends Thread
                   System.out.println("Starting DA Parser **********************");
                   // TODO - WIP - parse the XML to java classes to be send up to the HMI and Agent Cloud
                   boolean ok = da.parseDNToObjects(node, nSkills);
+                  
                   
                   System.out.println("***** End namespace browsing ***** \n\n");                  
                   
@@ -383,7 +366,7 @@ public class OPCServersDiscoverySnippet extends Thread
         for (Recipe auxRecipe : da.getListOfRecipes())
         {
           dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(), 
-                  "true", auxRecipe.getName(), auxRecipe.getMsbProtocolEndpoint());
+                  "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
         }
         MSB_gui.fillRecipesTable();
       }

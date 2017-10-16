@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -274,7 +275,7 @@ public class DatabaseInteraction
    * @param deviceName
    * @return
    */
-  public boolean removeDeviceByName(String deviceName)
+  public boolean removeDeviceAdapterByName(String deviceName)
   {
     try
     {
@@ -297,7 +298,7 @@ public class DatabaseInteraction
    * @param deviceId
    * @return
    */
-  public boolean removeDeviceById(String deviceId)
+  public boolean removeDeviceAdapterById(String deviceId)
   {
     try
     {
@@ -319,7 +320,7 @@ public class DatabaseInteraction
    * @param deviceId
    * @return
    */
-  public ArrayList<String> getDeviceAddressProtocolById(String deviceId)
+  public ArrayList<String> getDeviceAdapterAddressProtocolById(String deviceId)
   {
     try
     {
@@ -351,7 +352,7 @@ public class DatabaseInteraction
    * @param address
    * @return
    */
-  public String getDeviceName(String address)
+  public String getDeviceAdapterName(String address)
   {
     try
     {
@@ -408,7 +409,7 @@ public class DatabaseInteraction
    * @param agent_id
    * @return
    */
-  public boolean updateDevice(String name, String protocol, String short_descriptor, String long_descriptor, String client_id, String agent_id)
+  public boolean updateDeviceAdapter(String name, String protocol, String short_descriptor, String long_descriptor, String client_id, String agent_id)
   {
     try
     {
@@ -438,7 +439,7 @@ public class DatabaseInteraction
    * @param deviceName
    * @return
    */
-  public int getDeviceIdByName(String deviceName)
+  public int getDeviceAdapterIdByName(String deviceName)
   {
 
     int id = -1;
@@ -463,6 +464,30 @@ public class DatabaseInteraction
     return id;
   }
 
+  public String getDeviceAdapterNameByID(String deviceID)
+  {
+
+    String name = "";
+    String sql = "SELECT name FROM DeviceAdapter WHERE id = '" + deviceID + "'";
+
+    try (Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql))
+    {
+
+      while (rs.next())
+      {
+        name = rs.getString("name");
+        System.out.println("Found device with name:  " + name);
+        break;
+      }
+
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return name;
+  }
   /**
    *
    * @param deviceName
@@ -508,7 +533,7 @@ public class DatabaseInteraction
 
     int device_id;
     int skill_id;
-    device_id = getDeviceIdByName(device_name);
+    device_id = getDeviceAdapterIdByName(device_name);
     if (device_id == -1)
     {
       return false;
@@ -571,7 +596,7 @@ public class DatabaseInteraction
    * @param device_name
    * @return
    */
-  public ArrayList<String> getSkillsByDevice(String device_name)
+  public ArrayList<String> getSkillsByDeviceAdapter(String device_name)
   {
     try
     {
@@ -624,6 +649,27 @@ public class DatabaseInteraction
     }
     return null;
   }
+  
+  public boolean getRecipeIdIsValid(String r_id)
+  {
+    try
+    {
+
+      Statement stmt = conn.createStatement();
+      String sql = "SELECT Recipe.valid "
+              + "FROM Recipe"
+              + "WHERE Recipe.id =" + r_id + ";";
+      ResultSet rs = stmt.executeQuery(sql);
+      boolean valid = rs.getBoolean("valid");
+      stmt.close();
+      return valid;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return false;
+  }
 
   // **************************************************************************************************************** //
   // **************************************************************************************************************** //
@@ -636,17 +682,17 @@ public class DatabaseInteraction
    * @param name
    * @return
    */
-  public boolean registerRecipe(String aml_id, int da_id, int sk_id, boolean valid, String name, String method_id)
+  public boolean registerRecipe(String aml_id, int da_id, int sk_id, boolean valid, String name, String object_id, String method_id)
   {
     try
     {
       Statement stmt = conn.createStatement();
-      String sql = "INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name, method_id)\n"
+      String sql = "INSERT INTO Recipe (aml_id, da_id, sk_id, valid, name, obj_id, method_id)\n"
               + "VALUES('" + aml_id + "','" + Integer.toString(da_id) + "','" + Integer.toString(sk_id)
-              + "','" + Boolean.toString(valid) + "','" + name + "','" + method_id + "');";
+              + "','" + Boolean.toString(valid) + "','" + name + "','" + object_id + "','" + method_id + "');";
       stmt.execute(sql);
       stmt.close();
-      System.out.println("NEW RECIPE: " + name + " " + aml_id + " " + da_id + " " + sk_id + " " + valid + " " + method_id);
+      System.out.println("NEW RECIPE: " + name + " " + aml_id + " " + da_id + " " + sk_id + " " + valid + " " + object_id + " " + method_id);
       return true;
     } catch (SQLException ex)
     {
@@ -761,46 +807,61 @@ public class DatabaseInteraction
     return result;
   }
 
-  /**
-   *
-   * @param deviceAdapterName
-   * @return
-   */
-  public ArrayList<Recipe> getRecipesByDAName(String deviceAdapterName)
-  {
-    ArrayList<Recipe> result = new ArrayList<>();
-    try
-    {
-      try (Statement stmt = conn.createStatement())
-      {
-        String sql = "SELECT Recipe.aml_id, Recipe.sk_id, Recipe.da_id, Recipe.valid, Recipe.name, DeviceAdapter.id, DeviceAdapter.name\n"
-                + "FROM Recipe, DeviceAdapter\n"
-                + "WHERE Recipe.da_id = DeviceAdapter.id AND DeviceAdapter.name = '" + deviceAdapterName + "';";
-        ResultSet rs = stmt.executeQuery(sql);
-        while (rs.next())
-        {
-          Recipe recipe = new Recipe();
-          recipe.setUniqueId(rs.getString(1));
-          recipe.setName(rs.getString(5));
-          recipe.setValid(trueSet.contains(rs.getString(4)));
-          result.add(recipe);
+    /**
+     *
+     * @param deviceAdapterName
+     * @return
+     */
+    public ArrayList<Recipe> getRecipesByDAName(String deviceAdapterName) {
+        ArrayList<Recipe> result = new ArrayList<>();
+        try {
+            try (Statement stmt = conn.createStatement()) {
+                String sql = "SELECT Recipe.aml_id, Recipe.sk_id, Recipe.da_id, Recipe.valid, Recipe.name, DeviceAdapter.id, DeviceAdapter.name\n"
+                        + "FROM Recipe, DeviceAdapter\n"
+                        + "WHERE Recipe.da_id = DeviceAdapter.id AND DeviceAdapter.name = '" + deviceAdapterName + "';";
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next()) {
+                    Recipe recipe = new Recipe();
+                    recipe.setUniqueId(rs.getString(1));
+                    recipe.setName(rs.getString(5));
+                    recipe.setValid(trueSet.contains(rs.getString(4)));
+                    result.add(recipe);
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("[ERROR] getRecipesByDAName " + ex.getMessage());
+            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
         }
-      }
-    } catch (SQLException ex)
-    {
-      System.out.println("[ERROR] getRecipesByDAName " + ex.getMessage());
-      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+
+        return result;
     }
 
-    return result;
-  }
+    public ArrayList<String> getRecipesIDbySkillReqID(String sr_id) {
+
+        ArrayList<String> result = new ArrayList<>();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet query = stmt.executeQuery("SELECT SR.r_id FROM SR WHERE sr_id = '" + sr_id + "'");
+
+            while (query.next()) {
+                result.add(query.getString(1));
+            }
+            stmt.close();
+            return result;
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
   /**
    *
    * @param recipe_name
    * @return
    */
-  public String getRecipeEndpoint(String recipe_name)
+  public String getRecipeMethodByName(String recipe_name)
   {
     try
     {
@@ -815,12 +876,75 @@ public class DatabaseInteraction
     }
     return null;
   }
+  
+  public String getRecipeMethodByID(String recipe_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      ResultSet query = stmt.executeQuery("SELECT Recipe.method_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
+      stmt.close();
+      return query.getString(1);
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+  }
+  
+  public String getRecipeObjectByID(String recipe_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      ResultSet query = stmt.executeQuery("SELECT Recipe.obj_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
+      stmt.close();
+      return query.getString(1);
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+  }
+  
+   public String getDAIDbyRecipeID(String recipe_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      ResultSet query = stmt.executeQuery("SELECT Recipe.da_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
+      stmt.close();
+      return query.getString(1);
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+  }
 
+  public String getSkillReqIDbyRecipeID(String recipe_id){
+      
+      try {
+          Statement stmt = conn.createStatement();
+          ResultSet query = stmt.executeQuery("SELECT SR.sr_id FROM SR WHERE r_id = '" + recipe_id + "'");
+          stmt.close();
+          return query.getString(1);
+
+      } catch (SQLException ex) {
+          System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+          Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      return null;
+  }
+  
   
   public boolean registerModule(String device_name, String module_name, String status, String address)
   {
     int device_id;
-    device_id = getDeviceIdByName(device_name);
+    device_id = getDeviceAdapterIdByName(device_name);
     if (device_id == -1)
     {
       return false;
@@ -830,7 +954,7 @@ public class DatabaseInteraction
     {
       Statement stmt = conn.createStatement();
       {
-        String sql = "INSERT INTO Device"
+        String sql = "INSERT INTO Modules"
                 + "(da_id, status, name, address)"
                 + " VALUES ("
                 + "'" + device_id + "','" + status + "','" + module_name + "','" + address + "')";
@@ -853,7 +977,7 @@ public class DatabaseInteraction
     try
     {
       Statement stmt = conn.createStatement();
-      int query = stmt.executeUpdate("DELETE FROM Device WHERE da_id = '" + da_id + "'");
+      int query = stmt.executeUpdate("DELETE FROM Modules WHERE da_id = '" + da_id + "'");
       stmt.close();
 
       return query;
@@ -864,5 +988,29 @@ public class DatabaseInteraction
     }
     return -1;
   }
-  // **************************************************************************************************************** //
+  
+    public boolean associateRecipeToSR(String sr_id, List<String> recipes_id) {
+        try {
+            for (int i = 0; i < recipes_id.size(); i++) {
+                String auxRecipe_id = recipes_id.get(i);
+                Statement stmt = conn.createStatement();
+                {
+                    String sql = "INSERT INTO SR"
+                            + "(r_id, sr_id)"
+                            + " VALUES ("
+                            + "'" + auxRecipe_id + "','" + sr_id + "')";
+                    stmt.execute(sql);
+                    ResultSet r = stmt.getGeneratedKeys();
+                }
+                stmt.close();
+                System.out.println("REGISTER SR  " + auxRecipe_id + " " + sr_id);
+            }
+            return true;
+        } catch (SQLException ex) {
+            System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    // **************************************************************************************************************** //
 }

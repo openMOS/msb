@@ -10,7 +10,7 @@ import eu.openmos.model.Product;
 import eu.openmos.model.*;
 import eu.openmos.model.testdata.ProductTest;
 import eu.openmos.model.testdata.SkillRequirementTest;
-import eu.openmos.msb.datastructures.ProductManager;
+import eu.openmos.msb.datastructures.PECManager;
 import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.GET;
@@ -41,19 +41,8 @@ public class ProductController {
     {     
         logger.debug("products getList");       
         List<Product> lp = new LinkedList<>();
-/*        
-        for (int i = 0; i < 5; i++)
-        {
-            Product p = ProductTest.getTestObject();
-            String currentP = "PRODUCT " + Character.getNumericValue("A".charAt(0)) + i;
-            p.setUniqueId(currentP);
-            p.setName("name_" + currentP);
-            p.setDescription("description_" + currentP);
-            ls.add(p);
-        }
-*/
-        //lp = MasmecModel.getInstance().getProducts();
-        ProductManager aux = ProductManager.getInstance();
+
+        PECManager aux = PECManager.getInstance();
         lp = aux.getProductList();
     
         return lp;
@@ -75,7 +64,7 @@ public class ProductController {
         logger.debug("product getDetail - modelId = " + modelId);
 //        return ProductTest.getTestObject();
 
-        ProductManager aux = ProductManager.getInstance();
+        PECManager aux = PECManager.getInstance();
 
         for (Product product : getList()) {
             if (product.getName().equals(modelId)) {
