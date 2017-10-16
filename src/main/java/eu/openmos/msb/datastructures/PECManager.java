@@ -6,7 +6,9 @@
 package eu.openmos.msb.datastructures;
 
 import eu.openmos.model.Order;
+import eu.openmos.model.OrderInstance;
 import eu.openmos.model.Product;
+import eu.openmos.model.ProductInstance;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -25,7 +27,9 @@ public class PECManager
   private static volatile PECManager instance = null;
   private final List<Product> availableProducts;
   private final List<Order> orders;
+  private final List<OrderInstance> orderInstances;
   private final HashMap<String,Queue> orderMap;
+  private final Queue<ProductInstance> productsToDo;
   private boolean state;  
   //private final HashMap<>
   
@@ -35,7 +39,8 @@ public class PECManager
         availableProducts = new ArrayList<>();
         orders = new ArrayList<>();
         orderMap = new HashMap<>();
-
+        orderInstances = new ArrayList<>();
+        productsToDo = new LinkedList<>();
     }
 
   
@@ -76,6 +81,13 @@ public class PECManager
         PECManager aux = PECManager.getInstance();
         return aux.orders;
     }
+    
+        public List<OrderInstance> getOrderInstanceList() {
+        PECManager aux = PECManager.getInstance();
+        return aux.orderInstances;
+    }
+    
+    
 
     public void setState(boolean state) {
         PECManager aux = PECManager.getInstance();
@@ -109,7 +121,10 @@ public class PECManager
         return aux.availableProducts;
     }
 
-
+     public Queue<ProductInstance> getProductsToDo() {
+        PECManager aux = PECManager.getInstance();
+        return aux.productsToDo;
+    }
 
    
    

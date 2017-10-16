@@ -36,11 +36,25 @@ import DDS.HANDLE_NIL;
 import MSB2ADAPTER.StringMessage;
 import MSB2ADAPTER.StringMessageDataWriter;
 import MSB2ADAPTER.StringMessageDataWriterHelper;
+import _masmec.aml5;
 import com.sun.net.httpserver.HttpServer;
 import eu.openmos.model.Equipment;
 import eu.openmos.model.Module;
+import eu.openmos.model.Order;
+import eu.openmos.model.OrderInstance;
+import eu.openmos.model.OrderLine;
+import eu.openmos.model.Part;
+import eu.openmos.model.PartInstance;
+import eu.openmos.model.Product;
+import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
+import eu.openmos.model.SkillReqPrecedent;
+import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
+import eu.openmos.model.testdata.OrderTest;
+import eu.openmos.msb.database.interaction.DatabaseInteraction;
+import eu.openmos.msb.datastructures.PECManager;
+import eu.openmos.msb.datastructures.ProductExecution;
 import eu.openmos.msb.dds.DDSErrorHandler;
 import eu.openmos.msb.services.rest.CORSFilter;
 //import eu.openmos.msb.services.rest.CPADController;
@@ -65,9 +79,20 @@ import eu.openmos.msb.services.rest.FileUploadController;
 //import eu.openmos.msb.services.rest.FileUploadController;
 import eu.openmos.msb.services.rest.ModuleController;
 import eu.openmos.msb.services.rest.SubSystemController;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.UUID;
+import javax.swing.JFileChooser;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -111,7 +136,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     adaptersTableModel = (DefaultTableModel) TableServers.getModel();
     recipesTableModel = (DefaultTableModel) recipesTable.getModel();
     devicesTableModel = (DefaultTableModel) devicesTable.getModel();
-    pb_produceProduct.hide();
 
     recipesTable.getModel().addTableModelListener(new CheckBoxModelListener());
 
@@ -222,6 +246,15 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         l_DDSDevice = new javax.swing.JLabel();
         l_DDSRecipe = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        jTable3 = new javax.swing.JTable();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         startWebService = new javax.swing.JButton();
         soapServiceAddress = new javax.swing.JTextField();
@@ -233,10 +266,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         OnOffREST = new javax.swing.JPanel();
         l_openmosLogo = new javax.swing.JLabel();
         p_productExecution = new javax.swing.JPanel();
-        pb_produceProduct = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         cb_productSelection = new javax.swing.JComboBox<>();
         btnProductSubmit = new javax.swing.JButton();
+        btnProductExecute = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -582,7 +615,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(LDSRegisterserver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
@@ -722,18 +755,85 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         jTabbedPane1.addTab("DDS", p_dds);
 
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "OrderID", "ProductID", "OrderLineID", "Quantity"
+            }
+        ));
+        jScrollPane7.setViewportView(jTable1);
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "OrderID", "ProductID", "OrderLineID", "Quantity"
+            }
+        ));
+        jScrollPane8.setViewportView(jTable2);
+
+        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "OrderID", "ProductID", "OrderLineID", "CurrentProductInstance"
+            }
+        ));
+        jScrollPane9.setViewportView(jTable3);
+
+        jLabel9.setText("Submitted Orders");
+
+        jLabel12.setText("Executed Orders");
+
+        jLabel13.setText("Current Order");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel9)
+                    .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
+                    .addComponent(jScrollPane8)
+                    .addComponent(jScrollPane7))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
+                .addComponent(jLabel13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(216, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("MQTT", jPanel4);
+        jTabbedPane1.addTab("Orders", jPanel4);
 
         startWebService.setText("Start");
         startWebService.addActionListener(new java.awt.event.ActionListener() {
@@ -768,7 +868,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         jLabel11.setText("REST Server Address:");
 
-        restServiceAddress.setText("http://0.0.0.0:9995/");
+        restServiceAddress.setText("http://0.0.0.0:80/");
         restServiceAddress.setMaximumSize(new java.awt.Dimension(42, 120));
         restServiceAddress.setMinimumSize(new java.awt.Dimension(42, 20));
         restServiceAddress.addActionListener(new java.awt.event.ActionListener() {
@@ -850,25 +950,28 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         l_openmosLogo.setIcon(new javax.swing.ImageIcon(new javax.swing.ImageIcon(getClass().getResource("/eu/openmos/msb/icons/OpenMos-logo-RGB-colours.png")).getImage().getScaledInstance(l_openmosLogo.getWidth(), l_openmosLogo.getHeight(), Image.SCALE_DEFAULT)) );
 
         p_productExecution.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        pb_produceProduct.setText("Produce Product");
-        pb_produceProduct.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pb_produceProductActionPerformed(evt);
-            }
-        });
+        p_productExecution.setMaximumSize(new java.awt.Dimension(479, 160));
+        p_productExecution.setMinimumSize(new java.awt.Dimension(479, 160));
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("Product Execution");
 
-        cb_productSelection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No recipes available!"}));
         cb_productSelection.setMaximumSize(new java.awt.Dimension(100, 30));
 
         btnProductSubmit.setText("Upload Product");
         btnProductSubmit.setActionCommand("");
+        btnProductSubmit.setMaximumSize(new java.awt.Dimension(160, 30));
+        btnProductSubmit.setMinimumSize(new java.awt.Dimension(160, 30));
         btnProductSubmit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnProductSubmitActionPerformed(evt);
+            }
+        });
+
+        btnProductExecute.setText("Execute Product");
+        btnProductExecute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProductExecuteActionPerformed(evt);
             }
         });
 
@@ -877,33 +980,29 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         p_productExecutionLayout.setHorizontalGroup(
             p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(p_productExecutionLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(5, 5, 5)
                 .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(p_productExecutionLayout.createSequentialGroup()
-                        .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cb_productSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(p_productExecutionLayout.createSequentialGroup()
-                                .addComponent(btnProductSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(pb_produceProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p_productExecutionLayout.createSequentialGroup()
+                        .addComponent(btnProductExecute, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
+                        .addComponent(btnProductSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0))
+                    .addComponent(cb_productSelection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         p_productExecutionLayout.setVerticalGroup(
             p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(p_productExecutionLayout.createSequentialGroup()
-                .addGap(12, 12, 12)
+                .addGap(5, 5, 5)
                 .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cb_productSelection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(pb_produceProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                    .addComponent(btnProductSubmit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cb_productSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnProductSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnProductExecute, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(68, 68, 68))
         );
-
-        p_productExecutionLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cb_productSelection, pb_produceProduct});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -922,7 +1021,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                                 .addComponent(l_openmosLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addComponent(jScrollPane1)
                             .addComponent(p_productExecution, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -957,13 +1056,13 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(p_productExecution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(16, 16, 16)
+                        .addComponent(p_productExecution, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(21, 21, 21)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1088,15 +1187,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_cb_DDSDeviceActionPerformed
     // TODO add your handling code here:
   }//GEN-LAST:event_cb_DDSDeviceActionPerformed
-
-  /**
-   *
-   * @param evt
-   */
-  private void pb_produceProductActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_pb_produceProductActionPerformed
-  {//GEN-HEADEREND:event_pb_produceProductActionPerformed
-
-  }//GEN-LAST:event_pb_produceProductActionPerformed
 
   private void textToSendActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_textToSendActionPerformed
   {//GEN-HEADEREND:event_textToSendActionPerformed
@@ -1449,13 +1539,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_startRESTWebServiceActionPerformed
     // handle stop
     opc_comms_log.append("StartRS - starting...");
-    URI uri;
-/*    
+    URI uri;   
     try
     {
-*/    
-      // uri = new URI(this.restServiceAddress.getText()); // may throw URISyntaxException
-      uri = UriBuilder.fromUri("http://localhost/").port(80).build(); //9995
+      uri = new URI(this.restServiceAddress.getText()); // may throw URISyntaxException
+      //uri = UriBuilder.fromUri("http://localhost/").port(80).build(); //9995
 
       //.register(new Resource(new Core(), configuration)) // create instance of Resource and dynamically register        
       ResourceConfig resourceConfig = new ResourceConfig()
@@ -1485,20 +1573,195 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
       setConnectionColor(true, false, OnOffREST, labelREST);
       logger.info("Start Rest services at " + uri.toString());
-      opc_comms_log.append("Start Rest services at " + uri.toString());
-/*      
+      opc_comms_log.append("Start Rest services at " + uri.toString());   
     } catch (URISyntaxException ex)
     {
       setConnectionColor(false, false, OnOffREST, labelREST);
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    }
-*/      
+    }  
   }//GEN-LAST:event_startRESTWebServiceActionPerformed
 
     private void btnProductSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductSubmitActionPerformed
-        // TODO add your handling code here:
+      try {
+          // TODO add your handling code here:
+          //call new product aml file and populate the available products class
+          List<Product> newProducts=readProductAML();
+          for(int i=0;i<newProducts.size();i++){
+              cb_productSelection.addItem(newProducts.get(i).getName() + "/" + newProducts.get(i).getUniqueId());
+          }
+          
+      } catch (FileNotFoundException ex) {
+          Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      
+      
+        
     }//GEN-LAST:event_btnProductSubmitActionPerformed
 
+    private void btnProductExecuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductExecuteActionPerformed
+      // TODO add your handling code here:
+      
+        String ProductID = cb_productSelection.getSelectedItem().toString().split("/")[1];
+        //call new order with quantity of 1 of the selected product
+        Product prodToExecute = null;
+
+        //search for the selected product on the PECmanager and get it
+        PECManager pec = PECManager.getInstance();
+        List<Product> productList = pec.getProductList();
+        for (int z = 0; z < productList.size(); z++) {
+            if (productList.get(z).getUniqueId() == ProductID) {
+                prodToExecute = productList.get(z);
+                System.out.println("Found product to execute in the Available products "+ ProductID);
+            }
+        }
+
+        //create an order for the requestedproduct
+        Order newOrder = fillOrder(prodToExecute);
+        
+        //CREATE ORDERINSTANCE AND PRODUCTINSTANCE
+        OrderInstance oi= new OrderInstance();
+        List<ProductInstance> piList = null;
+        
+        for (int z = 0; z < newOrder.getOrderLines().size(); z++) { //iterate between all orderlines
+            int quantity = newOrder.getOrderLines().get(z).getQuantity();
+
+            for (int prodIDX = 0; prodIDX < quantity; prodIDX++) { //create product instances for each quantity of the orderline
+                ProductInstance pi = new ProductInstance();
+                pi.setDescription("my Pinstance description");
+                pi.setName(prodToExecute.getName());
+                pi.setOrderId(newOrder.getUniqueId());
+
+                List<PartInstance> comps = new LinkedList();
+                Part p1 = new Part("uniqueCpID", "CpName", "CpDescription", new Date());
+                PartInstance c1 = new PartInstance("uniqueCpinstanceID", "CpinstanceName", "CpinstanceDescription", p1, new Date());
+                comps.add(c1);
+
+                pi.setParts(comps);
+                pi.setProductId(ProductID);
+                pi.setUniqueId(UUID.randomUUID().toString());
+                pi.setRegistered(new Date());
+                
+                piList.add(pi);
+            } 
+        }
+        
+        oi.setDescription(newOrder.getDescription());
+        oi.setName(newOrder.getName());
+        oi.setPriority(newOrder.getPriority());
+        oi.setProductInstances(piList);
+        oi.setRegistered(new Date());
+        oi.setUniqueId(newOrder.getUniqueId());
+
+        logger.debug("orders newOrder - order to insert = " + newOrder.toString());
+
+        PECManager pecManager = PECManager.getInstance();
+
+        //set order on the pecManager?
+        //set executedOrders
+        //set executedRecipesFromProduct
+        //setOrdersToExecute
+        //setRecipesFromProducttoExecute
+        
+        pecManager.getOrderList().add(newOrder);
+        pecManager.getOrderInstanceList().add(oi);
+        
+   /*     
+        List<OrderLine> orderLines = newOrder.getOrderLines();
+
+        //List<ProductInstance> prods;
+        Queue<HashMap> orderLinesQueue = new LinkedList<>();
+
+        for (int i = 0; i < orderLines.size(); i++) {
+
+            HashMap<String, ProductInstance> prods = new HashMap();
+            String productToDO = orderLines.get(i).getProductId();
+            int quantity = orderLines.get(i).getQuantity();
+
+            for (int j = 0; j < quantity; j++) {
+
+                String instanceID = UUID.randomUUID().toString();
+                ProductInstance instance = new ProductInstance(instanceID, productToDO, "ProdDummy", "ProdDescDummy",
+                        newOrder.getUniqueId(), orderLines.get(i).getUniqueId(), null, new Date());
+
+                prods.put(instanceID, instance); //create an hashmap
+            }
+
+            orderLinesQueue.add(prods); //add queue of all productinstances for each orderline 
+
+        }
+
+        pecManager.getOrderMap().put(newOrder.getUniqueId(), orderLinesQueue); //add a queue for each order on pecmanager singleton
+*/
+        //get first product instance and start doing stuff
+        new Thread(new ProductExecution()).start();
+
+
+       
+    }//GEN-LAST:event_btnProductExecuteActionPerformed
+
+    
+    public static Order fillOrder(Product prod) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String now = sdf.format(new Date());
+
+        String orderUID="order_unique_id_" + now;
+        
+        //populate Order
+        Order o = new Order();
+        o.setUniqueId(orderUID);
+        o.setDescription("my description_" + now);
+        o.setName("order_name_" + now);
+        o.setPriority(1);
+        List<OrderLine> line = new ArrayList();
+        List<ProductInstance> lpd = new LinkedList();
+        
+        //populate OrderLines on Order
+        for(int i=0;i<2;i++){
+            OrderLine ol=new OrderLine();
+            ol.setOrderId(orderUID);
+            ol.setProductId(prod.getUniqueId());
+            ol.setQuantity(5);
+            ol.setUniqueId(now);
+            line.add(ol);
+        }
+        
+        
+        
+        
+       /* for (int y = 1000; y < 1500; y += 100) {
+            ProductInstance pd1 = new ProductInstance();
+            
+            List<PartInstance> comps = new LinkedList();
+            Part p1 = new Part("uniqueCpID", "CpName", "CpDescription", new Date());
+            PartInstance c1 = new PartInstance("uniqueCpinstanceID", "CpinstanceName", "CpinstanceDescription", p1, new Date());
+            comps.add(c1);
+            pd1.setParts(comps);
+            pd1.setDescription("product description");
+            pd1.setProductId(prod.getUniqueId());
+            pd1.setName(prod.getName());
+            pd1.setOrderId(o.getUniqueId());
+            pd1.setRegistered(new Date());
+//            pd1.setSkillRequirements(lsr);
+
+            pd1.setUniqueId("pd" + y + "uniqueid_" + now.toString());
+
+            // o.getProductDescriptions().add(pd1);
+            lpd.add(pd1);
+            line.setModelId(prod.getUniqueId());
+            line.setOrderId(orderUID);
+            line.
+        }*/
+       
+       
+        o.setOrderLines(line);
+        //o.setProductInstances(lpd);
+        o.setRegistered(new Date());
+      
+        return o;
+        
+        
+    }
   /**
    *
    */
@@ -1515,6 +1778,37 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         addToTableRecipes(r.getName(), r.isValid(), daName); //add each product from the list for each workstation
       }
     }
+  }
+  
+  public static List<Product> readProductAML() throws FileNotFoundException{
+    final JFileChooser fc = new JFileChooser();
+    File selectedFile=null;
+    fc.setCurrentDirectory(new File(System.getProperty("user.home")));
+    int returnVal = fc.showOpenDialog(null);
+    if (returnVal == JFileChooser.APPROVE_OPTION) {
+    // user selects a file
+    selectedFile = fc.getSelectedFile();
+}
+    
+    List<Product> newProducts = aml5.getMasmecProductsFromFile(selectedFile.getAbsolutePath());
+    
+    PECManager aux = PECManager.getInstance();
+
+    aux.getProductList().addAll(newProducts);
+    
+    //******************************************* SR links into the DB
+    for (int i = 0; i < newProducts.size(); i++)
+    {
+        Product auxProduct = newProducts.get(i);
+        for (int j = 0; j < auxProduct.getSkillRequirements().size(); j++)
+        {
+            SkillRequirement auxSR = auxProduct.getSkillRequirements().get(j);
+            DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
+        }
+    }
+    //***********************************************************************************************************
+    
+    return newProducts;
   }
 
   /**
@@ -1957,6 +2251,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private javax.swing.JTable TableServers;
     private static javax.swing.JButton b_DDSCallRecipe;
     private javax.swing.JButton b_startMSBDDS;
+    private javax.swing.JButton btnProductExecute;
     private javax.swing.JButton btnProductSubmit;
     private javax.swing.JButton btn_ChangedState;
     private javax.swing.JButton btn_DeviceRegistration;
@@ -1980,6 +2275,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1987,6 +2284,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
@@ -1996,11 +2294,17 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTable3;
     private javax.swing.JLabel l_DDSDevice;
     private javax.swing.JLabel l_DDSRecipe;
     private javax.swing.JLabel l_ddsDomain;
@@ -2011,7 +2315,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     private static javax.swing.JTextArea opc_comms_log;
     private static javax.swing.JPanel p_dds;
     private javax.swing.JPanel p_productExecution;
-    private static javax.swing.JButton pb_produceProduct;
     private javax.swing.JTable recipesTable;
     private javax.swing.JTextField restServiceAddress;
     private javax.swing.JTextField soapServiceAddress;

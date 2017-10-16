@@ -1221,7 +1221,7 @@ public static void main_OLD(String[] args) throws Exception
         
         // NodeToStringConverter.convert(productNode, true, true);
 
-        p.setUniqueId(getNodeAttributeValue(productNode, "Name"));
+        p.setUniqueId(getNodeAttributeValue(productNode, "ID"));
         p.setName(getNodeAttributeValue(productNode, "Name"));    
         // p.setDescription(getNodeAttributeValue(productNode, "description"));    
         p.setDescription(getAMLAttributeValue(productNode, "description", "Description"));

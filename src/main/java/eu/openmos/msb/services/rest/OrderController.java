@@ -91,7 +91,7 @@ public class OrderController {
         for (int i = 0; i < orderLines.size(); i++) {
 
             HashMap<String, ProductInstance> prods = new HashMap();
-            String productToDO = orderLines.get(i).getModelId();
+            String productToDO = orderLines.get(i).getProductId();
             int quantity = orderLines.get(i).getQuantity();
 
             for (int j = 0; j < quantity; j++) {

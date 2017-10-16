@@ -9,7 +9,6 @@ import _masmec.aml5;
 import eu.openmos.model.Product;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
-import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.PECManager;
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -25,7 +25,7 @@ public class OrderLine extends Base implements Serializable {
     /**
      * Id of the product family, of the model of the product.
      */
-    private String modelId;    
+    private String productId;    
     /**
      * Amount of products to be produced.
      */
@@ -41,7 +41,7 @@ public class OrderLine extends Base implements Serializable {
         
         this.uniqueId = uniqueId;
         this.orderId = orderId;
-        this.modelId = productId;
+        this.productId = productId;
         this.quantity = quantity;
     }
 
@@ -61,12 +61,12 @@ public class OrderLine extends Base implements Serializable {
         this.orderId = orderId;
     }
 
-    public String getModelId() {
-        return modelId;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setModelId(String modelId) {
-        this.modelId = modelId;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public int getQuantity() {
