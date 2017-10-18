@@ -7,6 +7,9 @@ package eu.openmos.msb.services.soap;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
+import eu.openmos.msb.database.interaction.DatabaseInteraction;
+import eu.openmos.msb.datastructures.DACManager;
+import eu.openmos.msb.datastructures.DeviceAdapter;
 import io.vertx.core.Vertx;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,6 +31,16 @@ public class EventConfirmationImpl implements EventConfirmation
     @Override
     public boolean agentCreated(String agentId) 
     {
+      DeviceAdapter deviceAdapter = null;
+      deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(agentId));
+      if (deviceAdapter != null)
+      {
+        deviceAdapter.setHasAgent(true);
+      } else
+      {
+        System.out.println("No DA found for the created agent ! " + agentId);
+      }
+      
         logger.debug(getClass().getName() + " - agentCreated - begin - starting websocket for agentId [" + agentId + "]");
         
         // some stuff...
@@ -59,16 +72,26 @@ public class EventConfirmationImpl implements EventConfirmation
         return true;
     }
 
-    @Override
-    public boolean agentNotCreated(String agentId) {
-        logger.debug(getClass().getName() + " - agentNotCreated - begin - tracing for agentId [" + agentId + "]");
+   @Override
+  public boolean agentNotCreated(String agentId)
+  {
+    logger.debug(getClass().getName() + " - agentNotCreated - begin - tracing for agentId [" + agentId + "]");
 
-        // some stuff...
-        
-        logger.debug(getClass().getName() + " - agentNotCreated - end for agentId [" + agentId + "]");
-
-        return true;
+    // some stuff...
+    DeviceAdapter deviceAdapter = null;
+    deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(agentId));
+    if (deviceAdapter != null)
+    {
+      deviceAdapter.setHasAgent(false);
+    } else
+    {
+      System.out.println("No DA found for the created agent ! " + agentId);
     }
+
+    logger.debug(getClass().getName() + " - agentNotCreated - end for agentId [" + agentId + "]");
+
+    return true;
+  }
     
     @Override
     public boolean agentRemoved(String agentId) 
@@ -79,6 +102,16 @@ public class EventConfirmationImpl implements EventConfirmation
             logger.warn(getClass().getName() + " - agentRemoved - agentId [" + agentId + "] null or empty - returning");
             return false;
         }
+        
+      DeviceAdapter deviceAdapter = null;
+      deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(agentId));
+      if (deviceAdapter != null)
+      {
+        deviceAdapter.setHasAgent(false);
+      } else
+      {
+        System.out.println("No DA found for the created agent ! " + agentId);
+      }
         
 //                // emulation!
 //                // remove the created agent from the agents list

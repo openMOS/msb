@@ -105,6 +105,7 @@ public class DACManager
       int id = DatabaseInteraction.getInstance().createDeviceAdapter(deviceAdapterName, protocol, short_info, long_info);
       if (id != -1 && client != null) // the last condition should never happen
       {
+        client.setId(id);
         deviceAdapters.put(id, client);
         
         return client;
@@ -140,7 +141,7 @@ public class DACManager
       
       if (id != -1 && DatabaseInteraction.getInstance().removeDeviceAdapterByName(deviceAdapterName) && deviceAdapters.containsKey(id))
       {
-          
+         
         deviceAdapters.remove(id);
         return true;
       }
@@ -153,22 +154,48 @@ public class DACManager
 
   public boolean deleteDAStuffByName(String deviceAdapterName)
   {
-      DeviceAdapter auxDA = deviceAdapters.get(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
-      /*
+    DeviceAdapter auxDA = deviceAdapters.get(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
+    /*
       List<Skill> auxSkillList = auxDA.getListOfSkills();
       for (int i = 0; i < auxSkillList.size(); i++)
       {
           DatabaseInteraction.getInstance().removeSkill(auxSkillList.get(i).getName());
       }
-      */
+     */
 
-      DatabaseInteraction.getInstance().removeRecipeByDaId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
-      DatabaseInteraction.getInstance().removeModuleByDAId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
-      
-      //DatabaseInteraction.getInstance().remove
-      
-      return true;
+    DatabaseInteraction.getInstance().removeRecipeByDaId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
+    DatabaseInteraction.getInstance().removeModuleByDAId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
+
+    //remove skills for a DA. from DAS table
+    DatabaseInteraction.getInstance().removeSkillByDaId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
+    //remove skills that don't have a DA associated
+    ArrayList<String> availableSkillIDList = DatabaseInteraction.getInstance().getAvailableSkillIDList();
+    ArrayList<String> DAassociatedSkillIDList = DatabaseInteraction.getInstance().getDAassociatedSkillIDList();
+
+    //check if all the available skills are associated with a da
+    for (int i = 0; i < availableSkillIDList.size(); i++)
+    {
+      String availableSkillID=availableSkillIDList.get(i);
+      boolean exists = false;
+      for (int j = 0; j < DAassociatedSkillIDList.size(); j++)
+      {
+        if (availableSkillID == null ? DAassociatedSkillIDList.get(j) == null : availableSkillID.equals(DAassociatedSkillIDList.get(j)))
+        {
+          exists = true;
+          System.out.println(availableSkillID+" Exists");
+        }
+      }
+      if (!exists)
+      {
+        int ret=DatabaseInteraction.getInstance().removeSkillByID(availableSkillIDList.get(i));
+      }
+    }
+
+    //DatabaseInteraction.getInstance().remove
+    return true;
   }
+  
+  
   /**
    * @param deviceAdapterName
    * @brief WORKSTATIONName vs DEVICE data MAPS

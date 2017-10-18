@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS DeviceAdapter;
 CREATE TABLE IF NOT EXISTS DeviceAdapter (
 	id                  INTEGER       NOT NULL UNIQUE,
+	aml_id       		VARCHAR2(50)  ,
 	name	            VARCHAR2(50)  NOT NULL UNIQUE,
 	short_description	VARCHAR2(50)  NOT NULL,
 	long_description	VARCHAR2(200) NOT NULL,

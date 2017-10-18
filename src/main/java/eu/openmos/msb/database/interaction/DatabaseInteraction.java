@@ -574,7 +574,7 @@ public class DatabaseInteraction
    * @param skill_name
    * @return
    */
-  public int removeSkill(String skill_name)
+  public int removeSkillByName(String skill_name)
   {
     try
     {
@@ -591,6 +591,23 @@ public class DatabaseInteraction
     return -1;
   }
 
+    public int removeSkillByID(String skill_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      int query = stmt.executeUpdate("DELETE FROM Skill WHERE id = '" + skill_id + "'");
+      stmt.close();
+
+      return query;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return -1;
+  }
+    
   /**
    *
    * @param device_name
@@ -752,6 +769,23 @@ public class DatabaseInteraction
     {
       Statement stmt = conn.createStatement();
       int query = stmt.executeUpdate("DELETE FROM Recipe WHERE da_id = '" + da_id + "'");
+      stmt.close();
+
+      return query;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return -1;
+  }
+  
+  public int removeSkillByDaId(int da_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      int query = stmt.executeUpdate("DELETE FROM DAS WHERE da_id = '" + da_id + "'");
       stmt.close();
 
       return query;
@@ -940,6 +974,53 @@ public class DatabaseInteraction
       return null;
   }
   
+  public ArrayList<String> getAvailableSkillIDList()
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      ArrayList<String> myresult;
+      try (ResultSet query = stmt.executeQuery("SELECT Skill.id  FROM Skill"))
+      {
+        myresult = new ArrayList<>();
+        while (query.next())
+        {
+          myresult.add(query.getString(1));
+        }
+      }
+      stmt.close();
+      return myresult;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+  }
+  
+   public ArrayList<String> getDAassociatedSkillIDList()
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      ArrayList<String> myresult;
+      try (ResultSet query = stmt.executeQuery("SELECT DAS.sk_id  FROM DAS"))
+      {
+        myresult = new ArrayList<>();
+        while (query.next())
+        {
+          myresult.add(query.getString(1));
+        }
+      }
+      stmt.close();
+      return myresult;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+  }
   
   public boolean registerModule(String device_name, String module_name, String status, String address)
   {
