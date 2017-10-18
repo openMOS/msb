@@ -265,11 +265,15 @@ public class OPCServersDiscoverySnippet extends Thread
                   {
                     //notify_channel.on_namespace_read(da.getListOfRecipes(), daName);
                     workStationRegistration(da);
+                  }else{
+                    System.out.println("parseDNToObjects FAILED!");       
                   }
                   
                   // TODO next step validate this
                   // TODO fabio check if this will be valid after changes from fortiss
-                  instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
+                  
+                  //deprecated
+                  /*instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
                   {
                     System.out.println("error invoking SendServerURL() for server: " + daName + "\n" + ex);
                     //logger.error("error invoking SendServerURL()", ex);
@@ -277,7 +281,7 @@ public class OPCServersDiscoverySnippet extends Thread
                   }).thenAccept(v ->
                   {
                     System.out.println("SendServerURL(uri)={}\n" + v);
-                  });
+                  });*/
 
                 }
                 if (client == null)
@@ -301,7 +305,7 @@ public class OPCServersDiscoverySnippet extends Thread
             String daName = serverApp.getApplicationName().getText();
             if (dacManager.getDeviceAdapter(daName) != null)
             {
-              dacManager.deleteDAStuffByName(daName);
+              dacManager.deleteDAStuffByName(daName); //remove from DB?
               removeDownServer(daName);
             }
           }
@@ -324,18 +328,73 @@ public class OPCServersDiscoverySnippet extends Thread
    */
   private int removeDownServer(String serverName)
   {
-    if (DACManager.getInstance().deleteDeviceAdapter(serverName))
+    DeviceAdapter da = null;
+    da = DACManager.getInstance().getDeviceAdapter(serverName);
+
+    if (da != null) //check if the da exists on the system
     {
-      System.out.println("DownServer successfully deleted from DB!");
-      notify_channel.on_endpoint_dissapeared(serverName);
-      return 1;
+      //remove agent stuff
+      String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+
+      if (withAGENTCloud) //check if the agentcloud is active
+      {
+        // THIS CODE IS WORKING!! 
+        SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+        SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+        BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+        // SubSystem cpad = dummySubSystemGeneration(parsedClass);
+        //SubSystem cpad = SubSystemTest.getTestObject();
+
+        SubSystem ss = da.getSubSystem();
+        // assume the name is populated
+        if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
+        {
+          ss.setUniqueId(ss.getName());
+        }
+        if (ss.getDescription() == null || ss.getDescription().length() == 0)
+        {
+          ss.setDescription(ss.getName());
+        }
+        //ss.setRegistered(new Date());
+        ServiceCallStatus agentStatus = systemConfigurator.removeAgent(ss.getUniqueId());
+        // end
+
+        System.out.println("\n\n Removing Resource or Transport Agent: " + agentStatus + "\n\n");
+        String resCode = agentStatus.getCode();
+        
+        System.out.println("Successfully removed Agent with UID: "+ss.getUniqueId()+"with status: "+resCode);
+        //String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
+        //Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName())); // TODO - DELETE THIS
+        //da.getVertx().deployVerticle(new WebSocketsSender(da.getSubSystem().getUniqueName()));
+
+        //add the sender client object to the respective agentID
+        //da.setSubSystem(cpad);
+        //return agentStatus.getCode(); //OK? ou KO?
+      }
+      if (DACManager.getInstance().deleteDeviceAdapter(serverName)) //if da removed from the system
+      {
+        System.out.println("DownServer successfully deleted from DB!");
+        notify_channel.on_endpoint_dissapeared(serverName);
+
+        //end
+        return 1;
+      } else
+      {
+        String error = "Unable to remove  " + serverName + " from DB!";
+        notify_channel.on_notify_error(error);
+        System.out.println(error);
+        return -1;
+      }
+
     } else
     {
-      String error = "Unable to remove  " + serverName + " from DB!";
-      notify_channel.on_notify_error(error);
-      System.out.println(error);
+      System.out.println("DA: " + serverName + " is null. Doens't exist on the system!");
       return -1;
     }
+
   }
   
   private String workStationRegistration(DeviceAdapter da)
@@ -376,7 +435,7 @@ public class OPCServersDiscoverySnippet extends Thread
       // TODO falar com o velerio
       // boolean withAGENTCloud = true;
       String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-      boolean withAGENTCloud = false;//new Boolean(USE_CLOUD_VALUE).booleanValue();
+      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
       if (withAGENTCloud)
       {
         // THIS CODE IS WORKING!! 

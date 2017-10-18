@@ -40,6 +40,8 @@ import org.w3c.dom.NodeList;
 public abstract class DeviceAdapter {
 
     protected int bd_id;
+    
+    protected boolean hasAgent;
 
     /*
    * device name || devices in the workstation and its data
@@ -50,6 +52,7 @@ public abstract class DeviceAdapter {
     public DeviceAdapter() {
         subSystem = new SubSystem(); // will be depreceated
         vert = Vertx.vertx();
+        hasAgent=false;
     }
 
     /**
@@ -58,6 +61,12 @@ public abstract class DeviceAdapter {
     public int getId() {
         return bd_id;
     }
+    
+    public void setId(int ID) {
+        this.bd_id=ID;
+    }
+    
+
 
     /**
      * @param name
@@ -91,6 +100,16 @@ public abstract class DeviceAdapter {
     public SubSystem getSubSystem() {
         return this.subSystem;
     }
+    
+    public boolean getHasAgent()
+  {
+    return this.hasAgent;
+  }
+    
+     public void setHasAgent(boolean hasAgent)
+  {
+    this.hasAgent = hasAgent;
+  }
 
     /**
      *
@@ -215,6 +234,10 @@ public abstract class DeviceAdapter {
             org.w3c.dom.Document deviceDescriptionDoc = new DOMOutputter().output(new org.jdom2.Document(deviceDescriptionNode));
             org.w3c.dom.Document skillDescriptionDoc = new DOMOutputter().output(new org.jdom2.Document(skillsDescriptionNode));
 
+            //TEST
+            subSystem.setUniqueId(ReadDeviceAdapterID(deviceDescriptionDoc));
+            subSystem.setConnected(true);
+            //
             subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc));
             subSystem.setExecutionTable(ReadExecutionTable(deviceDescriptionDoc));
             subSystem.setInternaleModules(ReadModules(deviceDescriptionDoc));
@@ -678,6 +701,25 @@ public abstract class DeviceAdapter {
         
         return "";
     }
+    
+  private static String ReadDeviceAdapterID(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  {
+    String query = "//DeviceAdapter/*/ID/Value";
+    XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+    NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
+
+    System.out.println("Elements " + nodeList.getLength());
+
+    NodeList nodeChilds = nodeList.item(0).getChildNodes();
+    if (nodeChilds.getLength() == 1)
+    {
+      return nodeChilds.item(0).getTextContent();
+    } else
+    {
+      return "";
+    }
+
+  }
 // ------------------------------------------------------------------------------------------------------------------ //
 // ------------------------------------------------------------------------------------------------------------------ //
     /**
