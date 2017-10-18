@@ -65,7 +65,7 @@ public class SubSystem extends Equipment implements Serializable {
     
     private String state;
     
-    private NodeId statePath;
+    private transient String statePath;
     
     private boolean valid = true;
     
@@ -182,11 +182,11 @@ public class SubSystem extends Equipment implements Serializable {
         this.state = state;
     }
     
-    public NodeId getStatePath() {
+    public String getStatePath() {
         return statePath;
     }
 
-    public void setStatePath(NodeId statePath) {
+    public void setStatePath(String statePath) {
         this.statePath = statePath;
     }
     

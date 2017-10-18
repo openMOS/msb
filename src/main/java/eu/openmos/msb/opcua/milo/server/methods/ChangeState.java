@@ -117,7 +117,7 @@ public class ChangeState {
                 if (da.getExecutionTable().getRows().get(i).getRecipeId() == recipeID) {
                     //get the nextRecipe on its executionTables
                     //String NextRecipe = da.getExecutionTable().getRows().get(i).getNextRecipeId(); //NO PUEDE
-                    NodeId nextRecipeNode = da.getExecutionTable().getRows().get(i).getNextRecipeIdPath();
+                    NodeId nextRecipeNode = new NodeId(Integer.parseInt(da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[0]),da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[1]); //CHECK THIS
                     DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
                     String nextRecipeID = "";
                     try {

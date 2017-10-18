@@ -364,7 +364,7 @@ public abstract class DeviceAdapter {
                                                 execRow.setNextRecipeId(IdChildNodes.getTextContent());
                                             }else if(IdChildNodes.getNodeName().equals("Path")){
                                                 int ns = Integer.parseInt(IdChildNodes.getAttributes().getNamedItem("ns").getNodeValue());
-                                                execRow.setNextRecipeIdPath(new NodeId(ns, IdChildNodes.getTextContent()));
+                                                execRow.setNextRecipeIdPath(IdChildNodes.getAttributes().getNamedItem("ns").getNodeValue()+":"+IdChildNodes.getTextContent()); //CHECK THIS
                                             }
                                         }
                                     }
@@ -527,7 +527,7 @@ public abstract class DeviceAdapter {
                                             if (auxNode1.getNodeName().equals("Path")) {
                                                 int ns = Integer.parseInt(auxNode1.getAttributes().getNamedItem("ns").getNodeValue());
                                                 //auxKPISetting.setPath(new NodeId(ns,auxNode1.getTextContent())); //CHANGE IT TO STRING NODE ID KPI SETTINGS
-                                                auxKPISetting.setPath(auxNode1.getAttributes().getNamedItem("ns").getNodeValue().toString()+ auxNode1.getTextContent()); //CHECK THIS!
+                                                auxKPISetting.setPath(auxNode1.getAttributes().getNamedItem("ns").getNodeValue().toString() + ":" + auxNode1.getTextContent()); //CHECK THIS!
                                                 System.out.println("KPI path: " + auxKPISetting.getDescription());
                                             }
                                         }
@@ -551,7 +551,7 @@ public abstract class DeviceAdapter {
                             Node auxNode = auxNodeList.item(z);
                             if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path")) {
                                 int ns = Integer.parseInt(auxNode.getAttributes().getNamedItem("ns").getNodeValue());
-                                recipe.setStatePath(auxNode.getAttributes().getNamedItem("ns").getNodeValue().toString()+ auxNode.getTextContent()); //CHECK THIS!
+                                recipe.setStatePath(auxNode.getAttributes().getNamedItem("ns").getNodeValue().toString() + ":" + auxNode.getTextContent()); //CHECK THIS!
                             }else if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Value")){
                                 recipe.setState(auxNode.getTextContent());
                             }

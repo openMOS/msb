@@ -1100,7 +1100,7 @@ public class DatabaseInteraction
     try
     {
       Statement stmt = conn.createStatement();
-      int query = stmt.executeUpdate("UPDATE DeviceAdapter SET aml_id = '" + aml_id + "' WHERE da_id = '" + da_id + "'");
+      int query = stmt.executeUpdate("UPDATE DeviceAdapter SET aml_id = '" + aml_id + "' WHERE id = '" + da_id + "'");
       stmt.close();
 
       return true;

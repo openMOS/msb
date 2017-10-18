@@ -40,7 +40,7 @@ public class ExecutionTableRow extends Base implements Serializable {
      */
     private String nextRecipeId;
     
-    private NodeId nextRecipeIdPath;
+    private String nextRecipeIdPath;
     
     /**
      * List of possible recipe choices.
@@ -105,11 +105,11 @@ public class ExecutionTableRow extends Base implements Serializable {
         this.nextRecipeId = nextRecipeId;
     }
 
-    public NodeId getNextRecipeIdPath() {
+    public String getNextRecipeIdPath() {
         return nextRecipeIdPath;
     }
 
-    public void setNextRecipeIdPath(NodeId nextRecipeIdPath) {
+    public void setNextRecipeIdPath(String nextRecipeIdPath) {
         this.nextRecipeIdPath = nextRecipeIdPath;
     }
     
