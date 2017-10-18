@@ -10,9 +10,9 @@ import eu.openmos.model.Recipe;
 
 
 /**
- * <p>Java class for putRecipes complex type.
+ * <p>Classe Java per putRecipes complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
  * 
  * <pre>
  * &lt;complexType name="putRecipes">

@@ -42,6 +42,8 @@
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="equipmentId" type="xs:string" />
 <xs:element minOccurs="0" name="executedBySkillControlPort" type="tns:controlPort" />
+<xs:element minOccurs="0" name="invokeMethodID" type="xs:string" />
+<xs:element minOccurs="0" name="invokeObjectID" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
 <xs:element minOccurs="0" name="lastOptimizationTime" type="xs:dateTime" />
 <xs:element minOccurs="0" name="msbProtocolEndpoint" type="xs:string" />
@@ -50,6 +52,8 @@
 <xs:element maxOccurs="unbounded" minOccurs="0" name="parameterSettings" nillable="true" type="tns:parameterSetting" />
 <xs:element minOccurs="0" name="skill" type="tns:skill" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+<xs:element minOccurs="0" name="state" type="xs:string" />
+<xs:element minOccurs="0" name="statePath" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element name="valid" type="xs:boolean" />
@@ -89,6 +93,7 @@
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="kpi" type="tns:kpi" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="path" type="xs:string" />
 <xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="unit" type="xs:string" />

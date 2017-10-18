@@ -8,9 +8,9 @@ import eu.openmos.model.Base;
 
 
 /**
- * <p>Java class for skillReqPrecedent complex type.
+ * <p>Classe Java per skillReqPrecedent complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
  * 
  * <pre>
  * &lt;complexType name="skillReqPrecedent">
@@ -40,7 +40,7 @@ public class SkillReqPrecedent
     protected String uniqueId;
 
     /**
-     * Gets the value of the name property.
+     * Recupera il valore della proprietà name.
      * 
      * @return
      *     possible object is
@@ -52,7 +52,7 @@ public class SkillReqPrecedent
     }
 
     /**
-     * Sets the value of the name property.
+     * Imposta il valore della proprietà name.
      * 
      * @param value
      *     allowed object is
@@ -64,7 +64,7 @@ public class SkillReqPrecedent
     }
 
     /**
-     * Gets the value of the uniqueId property.
+     * Recupera il valore della proprietà uniqueId.
      * 
      * @return
      *     possible object is
@@ -76,7 +76,7 @@ public class SkillReqPrecedent
     }
 
     /**
-     * Sets the value of the uniqueId property.
+     * Imposta il valore della proprietà uniqueId.
      * 
      * @param value
      *     allowed object is
