@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 import org.bson.Document;
 import org.apache.log4j.Logger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
        
 
 /**
@@ -98,7 +97,7 @@ public class Recipe extends Base implements Serializable {
     
     private String state;
     
-    private NodeId statePath;
+    private transient String statePath;
     
     /**
      * Default constructor, for reflection
@@ -308,11 +307,11 @@ public class Recipe extends Base implements Serializable {
         this.state = state;
     }
     
-    public NodeId getStatePath() {
+    public String getStatePath() {
         return statePath;
     }
 
-    public void setStatePath(NodeId statePath) {
+    public void setStatePath(String statePath) {
         this.statePath = statePath;
     }
     

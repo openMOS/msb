@@ -11,6 +11,7 @@ import eu.openmos.model.Skill;
 import eu.openmos.model.SubSystem;
 import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsReceiver;
 import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
+import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -171,7 +172,7 @@ public class OPCServersDiscoverySnippet extends Thread
             {
               System.out.println("\n\n Registered the " + daName + "\n\n");
               
-              da = dacManager.addDeviceAdapter(daName, EProtocol.OPC, "", "");
+              da = dacManager.addDeviceAdapter(daName, EProtocol.OPC, "", ""); //add to DB
               if (da == null)
               {
                 this.logger.error("Unable to create Device Adatper {} at {}", daName, url);
@@ -402,6 +403,8 @@ public class OPCServersDiscoverySnippet extends Thread
     try
     {
       DACManager dacManager = DACManager.getInstance();
+      DatabaseInteraction.getInstance().UpdateDAamlID(da.getSubSystem().getUniqueId(), da.getId()); //insert aml ID into the 
+      
       if (da.getListOfEquipments() != null && da.getListOfEquipments().size() > 0)
       {
         for (Module auxModule : da.getListOfEquipments())

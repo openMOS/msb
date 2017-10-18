@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.bson.Document;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  * Object that describes an actual setting of a KPI, i.e., a possible value for 
@@ -51,7 +50,10 @@ public class KPISetting extends Base implements Serializable {
      */
     private String value;
     
-    private NodeId path;
+    //private transient NodeId path;
+    
+    private transient String path;
+
     /**
      * Default constructor, for reflection.
      */
@@ -86,6 +88,8 @@ public class KPISetting extends Base implements Serializable {
         this.value = value;
         
         this.kpi = kpi;
+        
+        this.path = null;
     }
 
     public String getDescription() {
@@ -144,11 +148,11 @@ public class KPISetting extends Base implements Serializable {
         this.unit = unit;
     }
     
-    public NodeId getPath() {
-        return path;
+    public String getPath() {
+        return this.path;
     }
 
-    public void setPath(NodeId path) {
+    public void setPath(String path) {
         this.path = path;
     }
 

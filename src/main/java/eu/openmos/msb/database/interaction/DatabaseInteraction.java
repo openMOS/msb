@@ -1093,5 +1093,24 @@ public class DatabaseInteraction
         }
         return false;
     }
+    
+    
+   public boolean UpdateDAamlID(String aml_id, int da_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      int query = stmt.executeUpdate("UPDATE DeviceAdapter SET aml_id = '" + aml_id + "' WHERE da_id = '" + da_id + "'");
+      stmt.close();
+
+      return true;
+
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return false;
+  }
     // **************************************************************************************************************** //
 }

@@ -235,7 +235,7 @@ public abstract class DeviceAdapter {
             org.w3c.dom.Document skillDescriptionDoc = new DOMOutputter().output(new org.jdom2.Document(skillsDescriptionNode));
 
             //TEST
-            subSystem.setUniqueId(ReadDeviceAdapterID(deviceDescriptionDoc));
+            subSystem.setUniqueId(ReadDeviceAdapterID(deviceDescriptionDoc)); //aml_id
             subSystem.setConnected(true);
             //
             subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc));
@@ -526,7 +526,8 @@ public abstract class DeviceAdapter {
                                             Node auxNode1 = auxNodeList1.item(index);
                                             if (auxNode1.getNodeName().equals("Path")) {
                                                 int ns = Integer.parseInt(auxNode1.getAttributes().getNamedItem("ns").getNodeValue());
-                                                auxKPISetting.setPath(new NodeId(ns,auxNode1.getTextContent()));
+                                                //auxKPISetting.setPath(new NodeId(ns,auxNode1.getTextContent())); //CHANGE IT TO STRING NODE ID KPI SETTINGS
+                                                auxKPISetting.setPath(auxNode1.getAttributes().getNamedItem("ns").getNodeValue().toString()+ auxNode1.getTextContent()); //CHECK THIS!
                                                 System.out.println("KPI path: " + auxKPISetting.getDescription());
                                             }
                                         }
@@ -550,7 +551,7 @@ public abstract class DeviceAdapter {
                             Node auxNode = auxNodeList.item(z);
                             if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path")) {
                                 int ns = Integer.parseInt(auxNode.getAttributes().getNamedItem("ns").getNodeValue());
-                                recipe.setStatePath(new NodeId(ns, auxNode.getTextContent()));
+                                recipe.setStatePath(auxNode.getAttributes().getNamedItem("ns").getNodeValue().toString()+ auxNode.getTextContent()); //CHECK THIS!
                             }else if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Value")){
                                 recipe.setState(auxNode.getTextContent());
                             }
