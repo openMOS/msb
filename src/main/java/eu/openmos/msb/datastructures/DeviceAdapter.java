@@ -711,13 +711,19 @@ public abstract class DeviceAdapter {
 
     System.out.println("Elements " + nodeList.getLength());
 
-    NodeList nodeChilds = nodeList.item(0).getChildNodes();
-    if (nodeChilds.getLength() == 1)
+    if (nodeList.getLength() > 0)
     {
-      return nodeChilds.item(0).getTextContent();
+      NodeList nodeChilds = nodeList.item(0).getChildNodes();
+      if (nodeChilds.getLength() == 1)
+      {
+        return nodeChilds.item(0).getTextContent();
+      } else
+      {
+        return "NOAMLID";
+      }
     } else
     {
-      return "";
+      return "NOAMLID";
     }
 
   }
