@@ -63,7 +63,10 @@ public class ModuleController extends Base {
         
         for (SubSystem subsystem : (new SubSystemController()).getList()) {
 //            if (subsystem.getName().equals(n[0])) {
-            if (subsystem.getName().equals(subSystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subSystemId)) {
                 logger.debug("subsystem - found " + subSystemId);
 
                 // listToReturn = searchForModule(subsystem.getInternalModules(), n, 1);
@@ -107,7 +110,10 @@ public class ModuleController extends Base {
         
         for (SubSystem subsystem : (new SubSystemController()).getList()) {
 //            if (subsystem.getName().equals(n[0])) {
-            if (subsystem.getName().equals(subSystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subSystemId)) {
                 logger.debug("subsystem - found " + subSystemId);
 
 //                listToReturn = searchForModule(subsystem.getInternalModules(), n, 1);
@@ -132,8 +138,11 @@ public class ModuleController extends Base {
         for (Module mod : modulesList)
         {
 //            if (mod.getName().equals(moduleNames[currentModuleNamesIndex]))
-            if (mod.getName().equals(moduleId))
-            {
+//            if (mod.getName().equals(moduleId))
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (mod.getUniqueId().equals(moduleId)) {
 //                logger.debug("module - found " + moduleNames[currentModuleNamesIndex]);
                 logger.debug("module - found " + moduleId);
                 // found 
@@ -159,8 +168,10 @@ public class ModuleController extends Base {
         for (Module mod : modulesList)
         {
 //            if (mod.getName().equals(moduleNames[currentModuleNamesIndex]))
-            if (mod.getName().equals(moduleId))
-            {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (mod.getUniqueId().equals(moduleId)) {
 //                logger.debug("module - found " + moduleNames[currentModuleNamesIndex]);
                 logger.debug("module - found " + moduleId);
                 // found 

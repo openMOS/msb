@@ -138,7 +138,10 @@ public class SubSystemController extends Base {
     public SubSystem getDetail(@PathParam("subsystemId") String subsystemId) {
         logger.debug("subsystem - getDetail - subsystemId = " + subsystemId);
         for (SubSystem subsystem : getList()) {
-            if (subsystem.getName().equals(subsystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem;
             }
@@ -163,7 +166,10 @@ public class SubSystemController extends Base {
         logger.debug("subsystem getRecipesList - of the subsystem = " + subsystemId);
 //        return RecipeTest.getTestList();
         for (SubSystem subsystem : getList()) {
-            if (subsystem.getName().equals(subsystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getRecipes();
             }
@@ -211,7 +217,10 @@ public class SubSystemController extends Base {
         logger.debug("subsystem getEquipmentsList - of the subsystem = " + subsystemId);
 //        return ModuleTest.getTestList(subsystemId);
         for (SubSystem subsystem : getList()) {
-            if (subsystem.getName().equals(subsystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getInternalModules();
             }
@@ -236,7 +245,10 @@ public class SubSystemController extends Base {
         logger.debug("subsystem getSkillsList - of the subsystem = " + subsystemId);
 //        return SkillTest.getTestList();
         for (SubSystem subsystem : getList()) {
-            if (subsystem.getName().equals(subsystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getSkills();
             }
@@ -282,7 +294,10 @@ public class SubSystemController extends Base {
     public ExecutionTable getExecutionTable(@PathParam("subsystemId") String subsystemId) {
         logger.debug("execution table getDetail of subsystem  = " + subsystemId);
         for (SubSystem subsystem : getList()) {
-            if (subsystem.getName().equals(subsystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getExecutionTable();
             }
