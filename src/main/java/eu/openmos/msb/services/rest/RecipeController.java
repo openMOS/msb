@@ -116,7 +116,10 @@ public class RecipeController extends Base {
 */
         for (SubSystem subsystem : (new SubSystemController()).getList()) {
 //            if (subsystem.getName().equals(n[0])) {
-            if (subsystem.getName().equals(realSubSystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(realSubSystemId)) {
                 logger.debug("subsystem - found " + realSubSystemId);
 
                 if (!realRecipeId.equalsIgnoreCase("-1") && realSkillId.equalsIgnoreCase("-1") )

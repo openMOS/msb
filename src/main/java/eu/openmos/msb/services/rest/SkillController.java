@@ -78,7 +78,11 @@ public class SkillController extends Base {
 
         for (SubSystem subsystem : (new SubSystemController()).getList()) {
 //            if (subsystem.getName().equals(n[0])) {
-            if (subsystem.getName().equals(subSystemId)) {
+//            if (subsystem.getName().equals(subSystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subSystemId)) {
                 logger.debug("subsystem - found " + subSystemId);
 
                 for (Skill sk : subsystem.getSkills())
@@ -153,7 +157,10 @@ public class SkillController extends Base {
     List<Recipe> lrToReturn = new LinkedList<>();
         for (SubSystem subsystem : (new SubSystemController()).getList()) {
 //            if (subsystem.getName().equals(n[0])) {
-            if (subsystem.getName().equals(subSystemId)) {
+            // VaG - 19/10/2017
+            // Since we have ids....
+//            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subSystemId)) {
                 logger.debug("subsystem - found " + subSystemId);
 
                 for (Recipe r : subsystem.getRecipes())
