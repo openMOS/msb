@@ -159,7 +159,6 @@ public class PECManager
     return aux.productsToDo;
   }
 
-
   public String PendejoCheckerThread(String daID) throws InterruptedException, ExecutionException
   {
 
@@ -177,7 +176,7 @@ public class PECManager
   public void PendejoChecker(String DaID){
     
     List<PendingProdInstance> prodInst = this.pendejos.get(DaID);
-    if (prodInst.size() > 0)
+    if (prodInst != null && prodInst.size() > 0)
     {
       try {
         //EXECUTOR AGAIN
