@@ -134,7 +134,7 @@ public class DACManager
    */
   public boolean deleteDeviceAdapter(String deviceAdapterName)
   {
-    
+
     try
     {
       int id = DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName);
@@ -171,6 +171,9 @@ public class DACManager
     //remove skills that don't have a DA associated
     ArrayList<String> availableSkillIDList = DatabaseInteraction.getInstance().getAvailableSkillIDList();
     ArrayList<String> DAassociatedSkillIDList = DatabaseInteraction.getInstance().getDAassociatedSkillIDList();
+    
+    //remove Devices 
+    DatabaseInteraction.getInstance().removeDeviceByDAId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
 
     //check if all the available skills are associated with a da
     for (int i = 0; i < availableSkillIDList.size(); i++)

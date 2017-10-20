@@ -1290,7 +1290,6 @@
                           <Component id="btnProductExecute" min="-2" pref="181" max="-2" attributes="0"/>
                           <EmptySpace pref="132" max="32767" attributes="0"/>
                           <Component id="btnProductSubmit" min="-2" pref="180" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                       </Group>
                       <Component id="cb_productSelection" alignment="0" max="32767" attributes="0"/>
                   </Group>

@@ -254,13 +254,14 @@ public class MSBClientSubscription implements IClient
    * @param client
    * @param objectId
    * @param methodId
+   * @param productId
    * @return
    */
-  public CompletableFuture<String> InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId)
+  public CompletableFuture<String> InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId, String productId)
   {
 
     CallMethodRequest request = new CallMethodRequest(
-            objectId, methodId, null); //new Variant[]{new Variant(null)}
+            objectId, methodId, new Variant[]{new Variant(productId)});
 
     return client.call(request).thenCompose(result
             ->
@@ -280,6 +281,33 @@ public class MSBClientSubscription implements IClient
     });
   }
 
+  public CompletableFuture<String> InvokeDeviceMARTELO(OpcUaClient client, NodeId objectId, NodeId methodId, String productId , String daid, String repid)
+  {
+
+    CallMethodRequest request = new CallMethodRequest(
+            objectId, methodId, new Variant[]{new Variant(daid),
+              new Variant(repid),
+              new Variant(productId),
+            });
+
+    return client.call(request).thenCompose(result
+            ->
+    {
+      StatusCode statusCode = result.getStatusCode();
+
+      if (statusCode.isGood())
+      {
+        String value = (String) l(result.getOutputArguments()).get(0).getValue();
+        return CompletableFuture.completedFuture(value);
+      } else
+      {
+        CompletableFuture<String> f = new CompletableFuture<>();
+        f.completeExceptionally(new UaException(statusCode));
+        return f;
+      }
+    });
+  }
+  
   /**
    * TODO - fabio Documentation
    *
@@ -431,6 +459,13 @@ public class MSBClientSubscription implements IClient
         {
           continue;
         }
+        /*
+        String attributeName = rd.getNodeId().getIdentifier().toString();
+        if (attributeName.contains("openMOSRoleClassLib"))
+        {
+          continue;
+        }
+        */
 
         Element node = new Element(referenceName.replaceAll(":", "").replaceAll(" ", "_"));
 
@@ -483,7 +518,7 @@ public class MSBClientSubscription implements IClient
             if (!list.isEmpty())
             {
               // the recursive function returns a list of nodes (XML), so if a node has children they are added here
-              // for each recursvie call
+              // for each recursvie call   
               node.addContent(list);
             }
           });

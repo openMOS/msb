@@ -622,7 +622,7 @@ public class DatabaseInteraction
       Statement stmt = conn.createStatement();
       String sql = "SELECT DeviceAdapter.id, DeviceAdapter.name, Skill.name "
               + "FROM Skill, DeviceAdapter, DAS "
-              + "WHERE DeviceAdapter.id = DAS.da_id AND Skill.id = DAS.sk_id AND DeviceAdapter.name =" + device_name + ";";
+              + "WHERE DeviceAdapter.id = DAS.da_id AND Skill.id = DAS.sk_id AND DeviceAdapter.name = '" + device_name + "';";
       ResultSet query = stmt.executeQuery(sql);
       myresult = new ArrayList<>();
       while (query.next())
@@ -646,15 +646,15 @@ public class DatabaseInteraction
    * @param id
    * @return
    */
-  public String getSkillNameById(int id)
+  public String getSkillNameById(String id)
   {
     try
     {
 
       Statement stmt = conn.createStatement();
       String sql = "SELECT Skill.name "
-              + "FROM Skill"
-              + "WHERE Skill.id =" + id + ";";
+              + "FROM Skill "
+              + "WHERE Skill.id = '" + id + "';";
       ResultSet rs = stmt.executeQuery(sql);
       String name = rs.getString(1);
       stmt.close();
@@ -671,15 +671,19 @@ public class DatabaseInteraction
   {
     try
     {
-
+      //String temp= "'"+r_id+"'";
       Statement stmt = conn.createStatement();
       String sql = "SELECT Recipe.valid "
-              + "FROM Recipe"
-              + "WHERE Recipe.id =" + r_id + ";";
+              + "FROM Recipe "
+              + "WHERE Recipe.aml_id = '" + r_id + "';";
       ResultSet rs = stmt.executeQuery(sql);
-      boolean valid = rs.getBoolean("valid");
+      
+      //int numberOfRows = rs.getRow();
+      //System.out.println("ResultSet number of rows: "+numberOfRows);
+     
+      String valid = rs.getString("valid");
       stmt.close();
-      return valid;
+      return valid.equals("true");
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
@@ -697,6 +701,8 @@ public class DatabaseInteraction
    * @param sk_id
    * @param valid
    * @param name
+   * @param object_id
+   * @param method_id
    * @return
    */
   public boolean registerRecipe(String aml_id, int da_id, int sk_id, boolean valid, String name, String object_id, String method_id)
@@ -823,13 +829,13 @@ public class DatabaseInteraction
    * @param id
    * @return
    */
-  public String getRecipeName(int id)
+  public String getRecipeNameByID(String aml_id)
   {
     String result = "";
     try
     {
       Statement stmt = conn.createStatement();
-      String sql = "Select Recipe.id FROM Recipe WHERE id = '" + id + "';";
+      String sql = "Select Recipe.name FROM Recipe WHERE aml_id = '" + aml_id + "';";
       ResultSet query = stmt.executeQuery(sql);
       result = query.getString(1);
       stmt.close();
@@ -1059,6 +1065,23 @@ public class DatabaseInteraction
     {
       Statement stmt = conn.createStatement();
       int query = stmt.executeUpdate("DELETE FROM Modules WHERE da_id = '" + da_id + "'");
+      stmt.close();
+
+      return query;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return -1;
+  }
+  
+  public int removeDeviceByDAId(int da_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      int query = stmt.executeUpdate("DELETE FROM Device WHERE da_id = '" + da_id + "'");
       stmt.close();
 
       return query;

@@ -42,7 +42,7 @@ public abstract class DeviceAdapter {
     protected int bd_id;
     
     protected boolean hasAgent;
-
+    
     /*
    * device name || devices in the workstation and its data
      */
@@ -238,13 +238,17 @@ public abstract class DeviceAdapter {
             subSystem.setUniqueId(ReadDeviceAdapterID(deviceDescriptionDoc)); //aml_id
             subSystem.setConnected(true);
             //
+            subSystem.setSkills(ReadSkill(skillDescriptionDoc));
+            
             subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc));
             subSystem.setExecutionTable(ReadExecutionTable(deviceDescriptionDoc));
             subSystem.setInternaleModules(ReadModules(deviceDescriptionDoc));
             subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc));
-            subSystem.setSkills(ReadSkill(skillDescriptionDoc));
             
-            verifyRecipeSkill(subSystem.getRecipes(), subSystem.getSkills());
+            subSystem.setType(ReadDeviceAdapterType(deviceDescriptionDoc));
+                        
+            subSystem.setState(MSBConstants.ADAPTER_STATE_READY);
+            //verifyRecipeSkill(subSystem.getRecipes(), subSystem.getSkills());
 
             //Logger.getLogger(SubSystem.class.getName()).log(Level.SEVERE, null, "testing");
 
@@ -269,7 +273,7 @@ public abstract class DeviceAdapter {
     }
 
     private static ExecutionTable ReadExecutionTable(org.w3c.dom.Document xmlDocument) throws XPathExpressionException {
-        String query = "//DeviceAdapter/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)]"; //isto é o IDdo subsystem -> ExecutionTable ExecutionTable row 
+        String query = "//DeviceAdapter/*/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)]"; //isto é o IDdo subsystem -> ExecutionTable ExecutionTable row 
         XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -292,86 +296,90 @@ public abstract class DeviceAdapter {
                     }
                 }
             } else {
+              String name1=n.getNodeName();
                 NodeList execTableAux = n.getChildNodes();
                 ExecutionTableRow execRow = new ExecutionTableRow();
 
                 for (int j = 0; j < execTableAux.getLength(); j++) {
                     Node n2 = execTableAux.item(j);
+                    String name=n2.getNodeName();
                     if (n2.getNodeName().equals("ID")) {
                         for (int k = 0; k < n2.getChildNodes().getLength(); k++) {
                             Node IdChildNodes = n2.getChildNodes().item(k);
                             if (IdChildNodes.getNodeName().equals("Value")) {
+                              if (execRow.getUniqueId()== null){
                                 execRow.setUniqueId(IdChildNodes.getTextContent());
+                                break;
+                              }
                             }
                         }
                     } else if (n2.getNodeName().equals("Recipe")) {
-                        NodeList recipes = n2.getChildNodes();
-                        for (int k = 0; k < recipes.getLength(); k++) {
-                            if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE && !recipes.item(k).getNodeName().contains("Column")
+                      NodeList recipes = n2.getChildNodes();
+                      for (int k = 0; k < recipes.getLength(); k++)
+                      {
+                        /*if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE && !recipes.item(k).getNodeName().contains("Column")
                                     && !recipes.item(k).getNodeName().equals("Path") && !recipes.item(k).getNodeName().equals("Type")
-                                    && !recipes.item(k).getNodeName().equals("ID")) {
-
-                                Node nID = recipes.item(k);
-                                NodeList nIDChild = nID.getChildNodes();
-                                for (int x = 0; x < nIDChild.getLength(); x++) {
-                                    if ("ID".equals(nIDChild.item(x).getNodeName())) {
-                                        for (int z = 0; z < nIDChild.item(x).getChildNodes().getLength(); z++) {
-                                            Node IdChildNodes = nIDChild.item(x).getChildNodes().item(z);
-                                            if (IdChildNodes.getNodeName().equals("Value")) {
-                                                execRow.setRecipeId(IdChildNodes.getTextContent());
-                                            }
-                                        }
-                                    }
-                                }
+                                    && !recipes.item(k).getNodeName().equals("ID")) {*/
+                        if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE && recipes.item(k).getNodeName().equals("ID"))
+                        {
+                          Node nID = recipes.item(k);
+                          NodeList nIDChild = nID.getChildNodes();
+                          for (int x = 0; x < nIDChild.getLength(); x++)
+                          {
+                            Node IdChildNodes = nIDChild.item(x);
+                            if (IdChildNodes.getNodeName().equals("Value"))
+                            {
+                              execRow.setRecipeId(IdChildNodes.getTextContent());
                             }
+                          }
                         }
-                    } else if (n2.getNodeName().equals("Product")) {
-                        NodeList products = n2.getChildNodes();
-                        for (int k = 0; k < products.getLength(); k++) {
-                            if (products.item(k).getNodeType() == Node.ELEMENT_NODE && !products.item(k).getNodeName().contains("Column")
-                                    && !products.item(k).getNodeName().equals("Path") && !products.item(k).getNodeName().equals("Type")
-                                    && !products.item(k).getNodeName().equals("ID")) {
-
-                                Node nID = products.item(k);
-                                NodeList nIDChild = nID.getChildNodes();
-                                for (int x = 0; x < nIDChild.getLength(); x++) {
-                                    if ("ID".equals(nIDChild.item(x).getNodeName())) {
-                                        for (int z = 0; z < nIDChild.item(x).getChildNodes().getLength(); z++) {
-                                            Node IdChildNodes = nIDChild.item(x).getChildNodes().item(z);
-                                            if (IdChildNodes.getNodeName().equals("Value")) {
-                                                execRow.setProductId(IdChildNodes.getTextContent());
-                                            }
-                                        }
-                                    }
-                                }
-
+                      }
+                    } else if (n2.getNodeName().equals("Product"))
+                    {
+                      NodeList products = n2.getChildNodes();
+                      for (int k = 0; k < products.getLength(); k++)
+                      {
+                        if (products.item(k).getNodeType() == Node.ELEMENT_NODE && products.item(k).getNodeName().equals("ID")
+                                    /*&& !products.item(k).getNodeName().contains("Column")
+                                    && !products.item(k).getNodeName().equals("Path") && !products.item(k).getNodeName().equals("Type")*/) {
+                          Node nID = products.item(k);
+                          NodeList nIDChild = nID.getChildNodes();
+                          for (int x = 0; x < nIDChild.getLength(); x++)
+                          {
+                            Node IdChildNodes = nIDChild.item(x);
+                            if (IdChildNodes.getNodeName().equals("Value"))
+                            {
+                              execRow.setProductId(IdChildNodes.getTextContent());
                             }
+                          }
                         }
+                      }
                     } else if (n2.getNodeName().equals("NextRecipeToExecute")) {
                         NodeList nRtE = n2.getChildNodes();
                         for (int k = 0; k < nRtE.getLength(); k++) {
-                            if (nRtE.item(k).getNodeType() == Node.ELEMENT_NODE && !nRtE.item(k).getNodeName().contains("Column")
-                                    && !nRtE.item(k).getNodeName().equals("Path") && !nRtE.item(k).getNodeName().equals("Type")
-                                    && !nRtE.item(k).getNodeName().equals("ID")) {
+                            if (nRtE.item(k).getNodeType() == Node.ELEMENT_NODE && nRtE.item(k).getNodeName().equals("ID")
+                                    /*&& !nRtE.item(k).getNodeName().contains("Column")
+                                    && !nRtE.item(k).getNodeName().equals("Path") && !nRtE.item(k).getNodeName().equals("Type")*/) {
 
                                 Node nID = nRtE.item(k);
-                                NodeList nIDChild = nID.getChildNodes();
-                                for (int x = 0; x < nIDChild.getLength(); x++) {
-                                    if ("ID".equals(nIDChild.item(x).getNodeName())) {
-                                        for (int z = 0; z < nIDChild.item(x).getChildNodes().getLength(); z++) {
-                                            Node IdChildNodes = nIDChild.item(x).getChildNodes().item(z);
-                                            if (IdChildNodes.getNodeName().equals("Value")) {
-                                                execRow.setNextRecipeId(IdChildNodes.getTextContent());
-                                            }else if(IdChildNodes.getNodeName().equals("Path")){
-                                                int ns = Integer.parseInt(IdChildNodes.getAttributes().getNamedItem("ns").getNodeValue());
-                                                execRow.setNextRecipeIdPath(IdChildNodes.getAttributes().getNamedItem("ns").getNodeValue()+":"+IdChildNodes.getTextContent()); //CHECK THIS
-                                            }
-                                        }
-                                    }
-                                }
+                          NodeList nIDChild = nID.getChildNodes();
+                          for (int x = 0; x < nIDChild.getLength(); x++)
+                          {
+
+                            Node IdChildNodes = nIDChild.item(x);
+                            if (IdChildNodes.getNodeName().equals("Value"))
+                            {
+                              execRow.setNextRecipeId(IdChildNodes.getTextContent());
+                            } else if (IdChildNodes.getNodeName().equals("Path"))
+                            {
+                              String ns = IdChildNodes.getAttributes().getNamedItem("ns").getNodeValue();
+                              execRow.setNextRecipeIdPath(ns + ":" + IdChildNodes.getTextContent()); //CHECK THIS
                             }
+
+                          }
                         }
-                    } else if (n2.getNodeName().equals("ListOfPossibleRecipeChoices")) {
+                      }
+                    } else if (n2.getNodeName().equals("ListOfPossibleRecipeChoices")) { //TODO WHEN THERE IS SOMETHING WITH DATA HERE
                         NodeList ListOfpossRchoices = n2.getChildNodes();
                         List<String> PossibleRC = new ArrayList<>();
                         for (int k = 0; k < ListOfpossRchoices.getLength(); k++) {
@@ -403,8 +411,8 @@ public abstract class DeviceAdapter {
         return execTable;
     }
 
-    private static List<Recipe> ReadRecipes(org.w3c.dom.Document xmlDocument) throws XPathExpressionException {
-        String query = "//DeviceAdapter/*/*[contains(name(),'Recipe')]";
+    private List<Recipe> ReadRecipes(org.w3c.dom.Document xmlDocument) throws XPathExpressionException {
+        String query = "//DeviceAdapter/*/*/*[contains(name(),'Recipe')]";
         XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -557,24 +565,28 @@ public abstract class DeviceAdapter {
                             }
                         }
                     }
-                    else {
-                        if (gogogo) {
-                            //get skill - first node with SR inside
-                            NodeList auxNodeList = n2.getChildNodes();
-                            for (int z = 0; z < auxNodeList.getLength(); z++) {
-                                Node auxNode = auxNodeList.item(z);
-                                if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().matches("SR(\\d).*")) {
-                                    Skill auxSkill = new Skill();
-                                    auxSkill.setName(n2.getNodeName());
-                                    recipe.setSkill(auxSkill);
-                                    gogogo = false;
-                                    break;
-                                }
-                            }
+                    else
+              {
+                if (gogogo)
+                {
+                  //get skill - first node with SR inside                                  
+                    if (n2.getNodeType() == Node.ELEMENT_NODE)
+                    {
+                      for (Skill auxSkill : subSystem.getSkills())
+                      {
+                        String auxSkillName= auxSkill.getName();
+                        if (n2.getNodeName().equals(auxSkill.getName()))
+                        {
+                          recipe.setSkill(auxSkill);
+                          gogogo = false;
+                          break;
                         }
                     }
+                  }
                 }
+              }
             }
+          }
             recipe.setKpiSettings(KPIs);
             recipe.setSkillRequirements(SRs);
             recipeList.add(recipe);
@@ -583,7 +595,7 @@ public abstract class DeviceAdapter {
     }
 
     private static List<Module> ReadModules(org.w3c.dom.Document xmlDocument) throws XPathExpressionException {
-        String query = "//DeviceAdapter/*/*[Module][Equipment]";
+        String query = "//DeviceAdapter/*/*/*[Module][Equipment]";
         XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -629,9 +641,12 @@ public abstract class DeviceAdapter {
     }
 
     private static List<Skill> ReadSkill(org.w3c.dom.Document xmlDocument) throws XPathExpressionException {
+        //String query = "//Skills/*[contains(name(),'AtomicSkill') or contains(name(),'CompositeSkill')]/Type[not(contains(@namespace, 'openMOSSystemUnitClassLib'))]";
         String query = "//Skills/*[contains(name(),'AtomicSkill') or contains(name(),'CompositeSkill')]";
         XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
+        
+        
 
         System.out.println("Elements " + nodeList.getLength());
         List<Skill> skillList = new ArrayList<>();
@@ -649,11 +664,12 @@ public abstract class DeviceAdapter {
                     List<SkillRequirement> auxReq = new ArrayList<>();
                     System.out.println("***SKILL NAME: " + n2.getNodeName());
                     auxSkill.setName(n2.getNodeName());
-                    auxSkill.setUniqueId(UUID.randomUUID().toString());
+                    
 
                     NodeList auxChilds = n2.getChildNodes();
                     for (int k = 0; k < auxChilds.getLength(); k++) {
                         Node auxData = auxChilds.item(k);
+                        String name=auxData.getNodeName();
                         if (auxData.getNodeType() == Node.ELEMENT_NODE) {
                             if (auxData.getNodeName().matches("SR(\\d).*")) //SR+um digito pelo menos
                             {
@@ -662,6 +678,19 @@ public abstract class DeviceAdapter {
                                 SkillRequirement auxSR = new SkillRequirement();
                                 auxSR.setName(auxData.getNodeName());
                                 auxReq.add(auxSR);
+                            }else if(auxData.getNodeName().matches("ID")){
+                              NodeList IDchilds = auxData.getChildNodes();
+                              for(int z=0;z<IDchilds.getLength();z++){
+                                String name2=IDchilds.item(z).getNodeName();
+                                String value=IDchilds.item(z).getNodeValue();
+                                String txtcntn=IDchilds.item(z).getTextContent();
+                                
+                                if(IDchilds.item(z).getNodeName().matches("Value")){
+                                  auxSkill.setUniqueId(IDchilds.item(z).getTextContent());
+                                  System.out.println("Skill TEM ID! :O "+IDchilds.item(z).getTextContent());
+                                }
+                              }
+                              //System.out.println("Skill TEM ID! ");
                             }
                             /*
               NodeList auxChilds2 = auxData.getChildNodes();
@@ -673,17 +702,43 @@ public abstract class DeviceAdapter {
                         }
                     }
                     auxSkill.setSkillRequirements(auxReq);
+                    if(auxSkill.getUniqueId()==null)
+                      auxSkill.setUniqueId(UUID.randomUUID().toString());
+                    
                     skillList.add(auxSkill);
                 }
             }
         }
+       
+      List<Skill> indexToRemove = new ArrayList<>();
 
-        return skillList;
-    }
+      for (int i = 0; i < skillList.size(); i++)
+      {
+        for (int j = i; j < skillList.size(); j++)
+        {
+          if (i == j)
+          {
+            continue;
+          } else
+          {
+            if (skillList.get(i).getName().equals(skillList.get(j).getName()))
+            {
+              if (!indexToRemove.contains(skillList.get(j)))
+              {
+                indexToRemove.add(skillList.get(j));
+              }
+            }
+          }
+        }
+      }
+      skillList.removeAll(indexToRemove);
+
+    return skillList;
+  }
 
     private static String ReadManufacturer(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
     {
-        String query = "//DeviceAdapter/*/manufacturer/Type[contains(@namespace, 'manufacturer')]";
+        String query = "//DeviceAdapter/*/*/manufacturer/Type[contains(@namespace, 'manufacturer')]";
         XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -691,7 +746,6 @@ public abstract class DeviceAdapter {
         
         System.out.println("Elements " + nodeList.getLength());
 
-        
         NodeList nodeChilds = nodeList.item(0).getChildNodes();
             
         for (int i = 0; i < nodeChilds.getLength(); i++) {
@@ -705,7 +759,7 @@ public abstract class DeviceAdapter {
     
   private static String ReadDeviceAdapterID(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*/ID/Value";
+    String query = "//DeviceAdapter/*/*/ID/Value";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -724,6 +778,37 @@ public abstract class DeviceAdapter {
     } else
     {
       return "NOAMLID";
+    }
+
+  }
+  
+  
+  private static String ReadDeviceAdapterType(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  {
+    //String query1 = "//DeviceAdapter/*/*/*/Path[contains(@ns, 'TransportSystem')]";
+    //String query2 = "//DeviceAdapter/*/*/*/Path[contains(@ns, 'WorkStation')]";
+    
+    String query1 = "//DeviceAdapter/*/*/TransportSystem";
+    String query2 = "//DeviceAdapter/*/*/WorkStation";
+
+    XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+    NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
+
+    System.out.println("Type elements Transport: " + nodeList.getLength());
+
+    NodeList nodeList2 = (NodeList) xPath.compile(query2).evaluate(xmlDocument, XPathConstants.NODESET);
+
+    System.out.println("Type elements Workstation: " + nodeList2.getLength());
+
+    if (nodeList.getLength() > 0)
+    {
+      return "TransportSystem";
+    } else if (nodeList2.getLength() > 0)
+    {
+      return "WorkStation";
+    } else
+    {
+      return "UnknownType";
     }
 
   }

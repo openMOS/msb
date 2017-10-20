@@ -53,6 +53,7 @@ import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import eu.openmos.model.testdata.OrderTest;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
+import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.ProductExecution;
 import eu.openmos.msb.dds.DDSErrorHandler;
@@ -95,6 +96,7 @@ import java.util.UUID;
 import javax.swing.JFileChooser;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.UriBuilder;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
@@ -1227,9 +1229,24 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   private void btn_ChangedStateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_ChangedStateActionPerformed
   {//GEN-HEADEREND:event_btn_ChangedStateActionPerformed
-    String ret = "null";
+   String MSBName=ComboMSB.getSelectedItem().toString();
+    DeviceAdapterOPC da= (DeviceAdapterOPC) DACManager.getInstance().getDeviceAdapter(MSBName);
+    NodeId obj = new NodeId(2, "MSB");
+    NodeId meth  = new NodeId(2, "MSB/ChangeState");
+    String chupa = "";
+    try
+    {
+      chupa = da.getClient().InvokeDeviceMARTELO(da.getClient().getClientObject(), obj, meth , "prodID", "yrryry", "dryedrydry").get();
+    } catch (InterruptedException ex)
+    {
+      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (ExecutionException ex)
+    {
+      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    
     //ret = DeviceITF.allCases("changedstate", textToSend.getText()); //simulate a device registration
-    opc_comms_log.append("Changed State method called. Returned: " + ret + "\n");
+    opc_comms_log.append("Changed State method called. Returned: " + chupa + "\n");
   }//GEN-LAST:event_btn_ChangedStateActionPerformed
 
   /**
@@ -1609,7 +1626,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         PECManager pec = PECManager.getInstance();
         List<Product> productList = pec.getProductList();
         for (int z = 0; z < productList.size(); z++) {
-            if (productList.get(z).getUniqueId() == ProductID) {
+            if (productList.get(z).getUniqueId() == null ? ProductID == null : productList.get(z).getUniqueId().equals(ProductID)) {
                 prodToExecute = productList.get(z);
                 System.out.println("Found product to execute in the Available products "+ ProductID);
             }
@@ -1620,7 +1637,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         
         //CREATE ORDERINSTANCE AND PRODUCTINSTANCE
         OrderInstance oi= new OrderInstance();
-        List<ProductInstance> piList = null;
+        List<ProductInstance> piList =  new ArrayList<>();
         
         for (int z = 0; z < newOrder.getOrderLines().size(); z++) { //iterate between all orderlines
             int quantity = newOrder.getOrderLines().get(z).getQuantity();
