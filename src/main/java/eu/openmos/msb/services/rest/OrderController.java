@@ -40,9 +40,11 @@ public class OrderController {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<OrderInstance> getList()
+//    public List<OrderInstance> getList()
+    public List<Order> getList()
     {
         logger.debug("orders getList");
+/*        
         List<OrderInstance> ls = new LinkedList<>();
         
         for (int i = 0; i < 5; i++)
@@ -52,6 +54,16 @@ public class OrderController {
         }
         
         return ls;
+*/
+        PECManager pecManager = PECManager.getInstance();
+        
+        //set order on the pecManager?
+        //set executedOrders
+        //set executedRecipesFromProduct
+        //setOrdersToExecute
+        //setRecipesFromProducttoExecute
+        
+        return pecManager.getOrderList();
     }
 
      /**
@@ -68,7 +80,7 @@ public class OrderController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public OrderInstance newOrder(Order newOrder)
+    public Order newOrder(Order newOrder)
     {
         logger.debug("orders newOrder - order to insert = " + newOrder.toString());
         
@@ -113,7 +125,8 @@ public class OrderController {
         new Thread(new ProductExecution()).start();
         
 
-        return OrderTest.getTestObject();
+//        return OrderTest.getTestObject();
+        return newOrder;
     }
 
    /**
@@ -128,8 +141,15 @@ public class OrderController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path(value = "/{orderId}")
-    public OrderInstance getDetail(@PathParam("orderId") String orderId) {
+//    public OrderInstance getDetail(@PathParam("orderId") String orderId) {
+    public Order getDetail(@PathParam("orderId") String orderId) {
         logger.debug("order getDetail - orderId = " + orderId);
-        return OrderTest.getTestObject();
+ //       return OrderTest.getTestObject();
+        PECManager pecManager = PECManager.getInstance();       
+        List<Order> lo = pecManager.getOrderList();
+        for (Order o : lo)
+            if (o.getUniqueId().equalsIgnoreCase(orderId))
+                return o;
+        return null;
    }
 }

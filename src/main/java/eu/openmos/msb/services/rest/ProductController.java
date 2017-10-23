@@ -67,7 +67,8 @@ public class ProductController {
         PECManager aux = PECManager.getInstance();
 
         for (Product product : getList()) {
-            if (product.getName().equals(modelId)) {
+//            if (product.getName().equals(modelId)) {
+            if (product.getUniqueId().equals(modelId)) {
                 logger.debug("product - found " + modelId + " - returning " + product.toString());
                 return product;
             }
