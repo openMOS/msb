@@ -1,5 +1,7 @@
 package eu.openmos.msb.opcua.milo.server.methods;
 
+import eu.openmos.model.KPISetting;
+import eu.openmos.model.Recipe;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.MSBConstants;
@@ -52,17 +54,23 @@ public class ChangeState
     //TODO Check nextRecipe namespace
     //TODO Check if the next recipe of the nextRecipe exists and is valid - get sk_id of the recipe and check if there are more identical sk_id's. Check if there is at least one available
     //Free DA state
-    DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(da_id));
+    
     //CurrentDA.getSubSystem().setState(MSBConstants.ADAPTER_STATE_READY);
+    
+      //read recipe KPIs
+      Thread threadKPI = new Thread() {
+          public synchronized void run() {
+              readKPIs(da_id, recipe_id);
+          }
+      };
+      threadKPI.start();
 
-    Thread th = new Thread()
-    {
-      public synchronized void run()
-      {
-        ChangeStateChecker(recipe_id, product_id, da_id);
-      }
-    };
-    th.start();
+      Thread threadCheck = new Thread() {
+          public synchronized void run() {
+              ChangeStateChecker(recipe_id, product_id, da_id);
+          }
+      };
+      threadCheck.start();
 
     //TODO Check current recipeState (running, idle, ready, etc?)
     result.set(1); //ok or nok
@@ -284,4 +292,39 @@ public class ChangeState
     
   }
   
+  private static NodeId convertStringToNodeId(String toConvert)
+  {
+
+    int ns = Integer.parseInt(toConvert);
+    String aux = toConvert.substring(toConvert.indexOf(":"));
+    return new NodeId(ns, aux);
+  }
+  
+  /**
+   * Read KPIs of recipe_id from OPCServer
+   * @param da_id
+   * @param recipe_id 
+   */
+    private void readKPIs(String da_id, String recipe_id) 
+    {
+        DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(da_id));
+        List<Recipe> auxRepList = CurrentDA.getListOfRecipes();
+
+        for (Recipe recipe : auxRepList) {
+            if (recipe.getUniqueId().equals(recipe_id)) {
+                for (KPISetting kpi : recipe.getKpiSettings()) {
+                    try {
+                        NodeId kpiPath = convertStringToNodeId(kpi.getPath());
+                        DeviceAdapterOPC client = (DeviceAdapterOPC) CurrentDA.getClient();
+                        String kpiValue = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, kpiPath).get().toString();
+                        kpi.setValue(kpiValue);
+                    } catch (InterruptedException | ExecutionException ex) {
+                        java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+            }
+        }
+    }
+
 }
