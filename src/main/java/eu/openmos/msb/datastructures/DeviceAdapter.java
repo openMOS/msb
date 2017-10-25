@@ -30,6 +30,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.DOMOutputter;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -429,6 +430,7 @@ public abstract class DeviceAdapter {
 
             for (int j = 0; j < recipeChilds.getLength(); j++) {
                 Node n2 = recipeChilds.item(j);
+                                
                 if ("Path".equals(n2.getNodeName())) {
                     
                     String auxTest = n2.getAttributes().getNamedItem("ns").getNodeValue();
@@ -497,7 +499,7 @@ public abstract class DeviceAdapter {
                             }
                         }
                         SRs.add(auxSkillReq);
-                    } else if (n2.getNodeName().equals("Path_InformationPort")) {
+                    } else if (n2.getTextContent().contains("/InformationPort/")/*n2.getNodeName().equals("Path_InformationPort")*/) { //MASMEC CHANGE 24/10/17
 
                         NodeList auxNodeList = n2.getChildNodes();
                         for (int z = 0; z < auxNodeList.getLength(); z++) {
@@ -505,6 +507,7 @@ public abstract class DeviceAdapter {
                             if (kpiNode.getNodeName().toLowerCase().contains("kpi")) {
                                 System.out.println("KPI NAME: " + kpiNode.getNodeName());
                                 KPISetting auxKPISetting = new KPISetting();
+                                auxKPISetting.setName(kpiNode.getNodeName()); //MASMEC
 
                                 NodeList auxNodeList12 = kpiNode.getChildNodes();
                                 for (int h = 0; h < auxNodeList12.getLength(); h++) {
@@ -519,7 +522,7 @@ public abstract class DeviceAdapter {
                                                 System.out.println("KPI ID: " + auxKPISetting.getUniqueId());
                                             }
                                         }
-                                    } else if (auxNode.getNodeName().equals("name")) {
+                                    } /*else if (auxNode.getNodeName().equals("name")) {
                                         NodeList auxNodeList1 = auxNode.getChildNodes();
                                         for (int index = 0; index < auxNodeList1.getLength(); index++) {
                                             Node auxNode1 = auxNodeList1.item(index);
@@ -528,15 +531,17 @@ public abstract class DeviceAdapter {
                                                 System.out.println("KPI Name: " + auxKPISetting.getName());
                                             }
                                         }
-                                    } else if (auxNode.getNodeName().equals("value")) {
+                                    }*/ else if (auxNode.getNodeName().equals("value")) {
                                         NodeList auxNodeList1 = auxNode.getChildNodes();
                                         for (int index = 0; index < auxNodeList1.getLength(); index++) {
                                             Node auxNode1 = auxNodeList1.item(index);
                                             if (auxNode1.getNodeName().equals("Path")) {
                                                 int ns = Integer.parseInt(auxNode1.getAttributes().getNamedItem("ns").getNodeValue());
-                                                //auxKPISetting.setPath(new NodeId(ns,auxNode1.getTextContent())); //CHANGE IT TO STRING NODE ID KPI SETTINGS
-                                                auxKPISetting.setPath(auxNode1.getAttributes().getNamedItem("ns").getNodeValue().toString() + ":" + auxNode1.getTextContent()); //CHECK THIS!
-                                                System.out.println("KPI path: " + auxKPISetting.getDescription());
+                                              //auxKPISetting.setPath(new NodeId(ns,auxNode1.getTextContent())); //CHANGE IT TO STRING NODE ID KPI SETTINGS
+                                              
+                              
+                                                auxKPISetting.setPath(ns + ":" + auxNode1.getTextContent()); //CHECK THIS!
+                                                System.out.println("KPI path: " + auxKPISetting.getPath());
                                             }
                                         }
                                     }
@@ -746,13 +751,19 @@ public abstract class DeviceAdapter {
         
         System.out.println("Elements " + nodeList.getLength());
 
+      if (nodeList.getLength() > 0)
+      {
         NodeList nodeChilds = nodeList.item(0).getChildNodes();
-            
-        for (int i = 0; i < nodeChilds.getLength(); i++) {
-            Node n = nodeChilds.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName() == "Value")
-                return n.getTextContent();
+
+        for (int i = 0; i < nodeChilds.getLength(); i++)
+        {
+          Node n = nodeChilds.item(i);
+          if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName() == "Value")
+          {
+            return n.getTextContent();
+          }
         }
+      }
         
         return "";
     }

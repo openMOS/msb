@@ -234,6 +234,7 @@ public class ChangeState
       { //if is ready
         try
         {
+          System.out.println("[Change State] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State");
           String method = DatabaseInteraction.getInstance().getRecipeMethodByID(nextRecipeID);
           NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":")));
           String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(nextRecipeID);
@@ -243,6 +244,8 @@ public class ChangeState
           String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
           DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
 
+          System.out.println("Trying to Invoke the nextRecipe in DA: " + DA_name);
+          
           DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
           String res = client.getClient().InvokeDeviceSkill(client.getClient().getClientObject(), objNode, methodNode, product_id).get();
           System.out.println("Invoke output: " + res);
@@ -273,13 +276,18 @@ public class ChangeState
           auxProdId.add(new PendingProdInstance(nextRecipeID, product_id, Daid_Next));
           PECManager.getInstance().getPendejos().put(Daid_Next, auxProdId);
         }
-        System.out.println("The adapter state is not idle! The recipe could not be called" + nextRecipeID);
+        
+        System.out.println("The adapter state is not ready! The recipe: " + nextRecipeID + "could not be called.\nIt was added to the pendent product list for DA ID: "+Daid_Next);
 
       }
     } else if(nextRecipeID.equals("last"))
     {
       PECManager.getInstance().getProductsDoing().remove(product_id);
-      System.out.println("RecipeId is not valid");
+      System.out.println("[ChangeState] Next Recipe is the last one for product instance ID: "+product_id);
+      
+    }else if(nextRecipeID.isEmpty()){
+      
+      System.out.println("NextRecipeId is empty. What now? just sent the KPIs?");
     }
     
     try

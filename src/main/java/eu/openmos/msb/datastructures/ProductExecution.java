@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -114,6 +116,7 @@ public class ProductExecution implements Runnable
                   {
                     if (executeRecipe(recipeID,auxProdInstance.getUniqueId()))
                     {
+                      System.out.println("The execution of Recipe: " + recipeID + " Returned true");
                       ProdManager.getProductsDoing().put(auxProdInstance.getProductId(), ProdManager.getProductsToDo().poll()); //the first recipe of the product is done, put it into "doing"
                       getOut = true;
                       break;
@@ -171,11 +174,23 @@ public class ProductExecution implements Runnable
           String invokeObjectID = auxRep.getInvokeObjectID();
           String invokeMethodID = auxRep.getInvokeMethodID();
           DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-          /*String result = invokeMethod(daOPC.getClient().getClientObject(),
-          convertStringToNodeId(invokeObjectID),
-          convertStringToNodeId(invokeMethodID)).get();*/
-          daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInstID);
+          String result="";
+          try
+          {
+            /*String result = invokeMethod(daOPC.getClient().getClientObject(),
+            convertStringToNodeId(invokeObjectID),
+            convertStringToNodeId(invokeMethodID)).get();*/
+            
+            result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInstID).get();
+            System.out.println("Trying to execute invokeSkill");
+          } catch (InterruptedException | ExecutionException ex)
+          {
+            Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+            //return false;
+            return true;
+          }
           da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
+          System.out.println("Executing Recipe: " + recipeID + " of product instance: "+ prodInstID + " returned: " + result.toString());
           return true;
         }
       }
@@ -210,8 +225,9 @@ public class ProductExecution implements Runnable
   private static NodeId convertStringToNodeId(String toConvert)
   {
 
-    int ns = Integer.parseInt(toConvert);
-    String aux = toConvert.substring(toConvert.indexOf(":"));
+    int ns = Integer.parseInt(toConvert.split(":")[0]);
+    //int ns = Integer.parseInt(toConvert);
+    String aux = toConvert.substring(toConvert.indexOf(":")+1);
     return new NodeId(ns, aux);
   }
 }

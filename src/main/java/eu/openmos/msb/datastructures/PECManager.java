@@ -179,6 +179,7 @@ public class PECManager
     if (prodInst != null && prodInst.size() > 0)
     {
       try {
+        System.out.println("Adapter: "+ DaID +" is ready and with pending product instances todo");
         //EXECUTOR AGAIN
         PendingProdInstance prodInstToDo = prodInst.remove(0);
         DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(DaID));

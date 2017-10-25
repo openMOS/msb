@@ -953,10 +953,21 @@ public class DatabaseInteraction
   {
     try
     {
+      ArrayList<String> result = new ArrayList<>();
+      
       Statement stmt = conn.createStatement();
       ResultSet query = stmt.executeQuery("SELECT Recipe.da_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
-      stmt.close();
-      return query.getString(1);
+      
+       while (query.next()) {
+                result.add(query.getString(1));
+            }
+            stmt.close();
+            
+      //stmt.close();
+      //String res= query.getString("da_id");
+      if(result.size()>0)
+      return result.get(0);
+      
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
