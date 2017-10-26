@@ -452,7 +452,7 @@ public class DatabaseInteraction
       while (rs.next())
       {
         id = rs.getInt("id");
-        System.out.println("Found divce with id:  " + id);
+        //System.out.println("Found divce with id:  " + id);
         break;
       }
 
@@ -477,7 +477,7 @@ public class DatabaseInteraction
       while (rs.next())
       {
         name = rs.getString("name");
-        System.out.println("Found device with name:  " + name);
+        //System.out.println("Found device with name:  " + name);
         break;
       }
 
@@ -921,10 +921,25 @@ public class DatabaseInteraction
   {
     try
     {
+      //System.out.println("*DB query* trying to get method for recipe:" + recipe_id);
+      
+      ArrayList<String> result = new ArrayList<>();
+      
       Statement stmt = conn.createStatement();
-      ResultSet query = stmt.executeQuery("SELECT Recipe.method_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
+      ResultSet query = stmt.executeQuery("SELECT Recipe.method_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");  
+      
+       while (query.next())
+      {
+        result.add(query.getString(1));
+      }
       stmt.close();
-      return query.getString(1);
+            
+      //stmt.close();
+      //String res= query.getString("da_id");
+      if(result.size()>0)
+      return result.get(0);
+      
+      
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
@@ -937,10 +952,26 @@ public class DatabaseInteraction
   {
     try
     {
+      //System.out.println("*DB query* trying to get object for recipe:" + recipe_id);
+      
+      ArrayList<String> result = new ArrayList<>();
+      
       Statement stmt = conn.createStatement();
       ResultSet query = stmt.executeQuery("SELECT Recipe.obj_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
+      
+       while (query.next())
+      {
+        result.add(query.getString(1));
+      }
       stmt.close();
-      return query.getString(1);
+            
+      //stmt.close();
+      //String res= query.getString("da_id");
+      if(result.size()>0)
+      return result.get(0);
+      
+      //stmt.close();
+      //return query.getString(1);
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
@@ -953,6 +984,7 @@ public class DatabaseInteraction
   {
     try
     {
+      //System.out.println("*DB query* gtting DAID from RecipeID: " + recipe_id);
       ArrayList<String> result = new ArrayList<>();
       
       Statement stmt = conn.createStatement();
