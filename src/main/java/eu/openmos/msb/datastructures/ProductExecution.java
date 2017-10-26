@@ -49,7 +49,7 @@ public class ProductExecution implements Runnable
 
     } else
     {
-      System.out.println("Starting Executor!");
+      System.out.println("\n\n\n\n**************Starting Executor!********************\n\n\n\n\n");
       ExecuteOrder();
     }
   }
@@ -78,6 +78,7 @@ public class ProductExecution implements Runnable
       //put all the product instances from the orderinstance in the todo Queue
       ProdManager.getProductsToDo().addAll(orderInstanceToExecute.getProductInstances());
 
+      System.out.println("...Creating Order Instances...");
       //add to pec manager doing
       ExecuteProdsInstance();
     }
@@ -87,8 +88,17 @@ public class ProductExecution implements Runnable
   {
     PECManager ProdManager = PECManager.getInstance();
     
+    System.out.println("number of product instances to be done: "+ProdManager.getProductsToDo().size());
+    
     while (ProdManager.getProductsToDo().size() > 0)
     {
+      /*try
+      {
+        Thread.sleep(5000);
+      } catch (InterruptedException ex)
+      {
+        Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+      }*/
       ProductInstance auxProdInstance = ProdManager.getProductsToDo().peek();
       System.out.println(auxProdInstance.getUniqueId()); //da instancia
       String productId = auxProdInstance.getProductId(); //prod type
@@ -111,7 +121,7 @@ public class ProductExecution implements Runnable
                 boolean getOut = false;
                 for (String recipeID : auxSR.getRecipeIDs())
                 {
-                  System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
+                  //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
                   if (checkRecipeAvailable(recipeID))
                   {
                     if (executeRecipe(recipeID,auxProdInstance.getUniqueId()))
@@ -120,6 +130,8 @@ public class ProductExecution implements Runnable
                       ProdManager.getProductsDoing().put(auxProdInstance.getProductId(), ProdManager.getProductsToDo().poll()); //the first recipe of the product is done, put it into "doing"
                       getOut = true;
                       break;
+                    }else{
+                      System.out.println("[ERROR] The execution of Recipe: " + recipeID + " Returned false!");
                     }
                   }
                 }
@@ -133,6 +145,7 @@ public class ProductExecution implements Runnable
           break;
         }
       }
+      //break;//MARTELO -> só fazer uma vez a primeira instancia do produto MASMEC 25-10-17
     }
     //acabou a order, começar a proxima
     ProdManager.getOrderInstanceList().remove(HighOrderIndex); //remove the orderInstance that finished
@@ -174,24 +187,16 @@ public class ProductExecution implements Runnable
           String invokeObjectID = auxRep.getInvokeObjectID();
           String invokeMethodID = auxRep.getInvokeMethodID();
           DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-          String result="";
-          try
-          {
-            /*String result = invokeMethod(daOPC.getClient().getClientObject(),
-            convertStringToNodeId(invokeObjectID),
-            convertStringToNodeId(invokeMethodID)).get();*/
-            
-            result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInstID).get();
-            System.out.println("Trying to execute invokeSkill");
-          } catch (InterruptedException | ExecutionException ex)
-          {
-            Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
-            //return false;
-            return true;
-          }
+          boolean result=false;
+          /*String result = invokeMethod(daOPC.getClient().getClientObject(),
+          convertStringToNodeId(invokeObjectID),
+          convertStringToNodeId(invokeMethodID)).get();*/
+          System.out.println("\nTrying to execute recipe: " + recipeID + " from prodInstance: " + prodInstID);
+          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInstID);
+          System.out.println("Execute invokeSkill Successfull");
           da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
-          System.out.println("Executing Recipe: " + recipeID + " of product instance: "+ prodInstID + " returned: " + result.toString());
-          return true;
+          System.out.println("Executing Recipe: " + recipeID + " of product instance: "+ prodInstID + " from the adapter:"+DA_name+" returned: " + result);
+          return result;
         }
       }
     }

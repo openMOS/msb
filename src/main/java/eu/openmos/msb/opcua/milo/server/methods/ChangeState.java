@@ -9,6 +9,7 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PendingProdInstance;
+import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -46,10 +47,11 @@ public class ChangeState
                   description = "current Recipe ID") String recipe_id,
           @UaOutputArgument(
                   name = "Ackowledge",
-                  description = "Ackowledge 1-OK 0-NOK") AnnotationBasedInvocationHandler.Out<Integer> result)
+                  description = "Acknowledge 1-OK 0-NOK") AnnotationBasedInvocationHandler.Out<Integer> result)
   {
+    
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
-
+    System.out.println("Change State invoked with parameters-> DaID:" + da_id + " productID: " + product_id + " recipeID:" + recipe_id);
     //TODO add code handler af-silva
     //TODO Check nextRecipe namespace
     //TODO Check if the next recipe of the nextRecipe exists and is valid - get sk_id of the recipe and check if there are more identical sk_id's. Check if there is at least one available
@@ -60,7 +62,7 @@ public class ChangeState
       //read recipe KPIs
       Thread threadKPI = new Thread() {
           public synchronized void run() {
-              readKPIs(da_id, recipe_id);
+              //readKPIs(da_id, recipe_id); //MASMEC comment
           }
       };
       threadKPI.start();
@@ -85,7 +87,7 @@ public class ChangeState
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
       for (int i = 0; i < da.getExecutionTable().getRows().size(); i++)
       {
-        if (da.getExecutionTable().getRows().get(i).getRecipeId() == nextRecipeID)
+        if (da.getExecutionTable().getRows().get(i).getRecipeId() == null ? nextRecipeID == null : da.getExecutionTable().getRows().get(i).getRecipeId().equals(nextRecipeID))
         {
           String auxNextLKT1 = da.getExecutionTable().getRows().get(i).getNextRecipeId();
           boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(auxNextLKT1);
@@ -100,25 +102,38 @@ public class ChangeState
   {
     //get deviceAdapter that does the required recipe
     String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID); //there can be only one?
+    System.out.println("DA id from checkNExtRecipe: "+Daid);
 
     if (Daid != null)
     {
       //get DA name
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
+      System.out.println("DA name from checkNExtRecipe: "+DA_name);
       //get DA object from it's name
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
+      if(da!=null){
+        System.out.println("The DA is null!");
+      }
       for (int i = 0; i < da.getExecutionTable().getRows().size(); i++)
       {
-        if (da.getExecutionTable().getRows().get(i).getRecipeId() == recipeID)
+        if (da.getExecutionTable().getRows().get(i).getRecipeId() == null ? recipeID == null : da.getExecutionTable().getRows().get(i).getRecipeId().equals(recipeID))
         {
           //get the nextRecipe on its executionTables
           //String NextRecipe = da.getExecutionTable().getRows().get(i).getNextRecipeId(); //NO PUEDE
-          NodeId nextRecipeNode = new NodeId(Integer.parseInt(da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[0]), da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[1]); //CHECK THIS
-          DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+          
+          int nsindex=Integer.parseInt(da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[0]);
+          String identifier = da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[1]+":"+ da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[2];
+          
+          NodeId nextRecipeNode = new NodeId(nsindex, identifier+"ID"); //CHECK THIS
+           
+          //NodeId nextRecipeNode = convertStringToNodeId(da.getExecutionTable().getRows().get(i).getNextRecipeIdPath());
+          //DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+          MSBClientSubscription client = (MSBClientSubscription) da.getClient();
+          
           String nextRecipeID = "";
           try
           {
-            nextRecipeID = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, nextRecipeNode).get().toString();
+            nextRecipeID = client.getClientObject().readValue(0, TimestampsToReturn.Neither, nextRecipeNode).get().getValue().getValue().toString();
           } catch (InterruptedException | ExecutionException ex)
           {
             java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
@@ -149,16 +164,24 @@ public class ChangeState
                 if (Daid1 != null)
                 {
                   String DA_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid1);
+                  System.out.println("DA_name1: " + DA_name1);
                   DeviceAdapter da1 = DACManager.getInstance().getDeviceAdapter(DA_name1);
+                  
+                  if(da1==null){
+                    System.out.println("DA class not found!! for daname: "+DA_name1);
+                  }
+                  
                   for (int l = 0; l < da1.getExecutionTable().getRows().size(); l++)
                   {
-                    if (da1.getExecutionTable().getRows().get(l).getRecipeId() == choice)
+                    if (da1.getExecutionTable().getRows().get(l).getRecipeId() == null ? choice == null : da1.getExecutionTable().getRows().get(l).getRecipeId().equals(choice))
                     {
                       String NextRecipe1 = da1.getExecutionTable().getRows().get(l).getNextRecipeId();
+                      System.out.println("NextRecipe from execution table: "+NextRecipe1);
                       boolean valid1 = DatabaseInteraction.getInstance().getRecipeIdIsValid(NextRecipe1);
                       if (valid1)
                       {
                         //yes
+                        System.out.println("Recipe is valid!");
                         if (checkNextValidation(NextRecipe1))
                         {
                           return NextRecipe1;
@@ -217,6 +240,7 @@ public class ChangeState
       //add adapter states strings to properties
       if (da.getSubSystem().getState() == null ? MSBConstants.ADAPTER_STATE_READY == null : da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
       {
+        System.out.println("the next recipe Adapter (" + DA_name + ") is ready for execution!");
         return true;
       } else
       {
@@ -228,37 +252,38 @@ public class ChangeState
 
   private void ChangeStateChecker(String recipe_id, String product_id, String da_id){
     String nextRecipeID = checkNextRecipe(recipe_id); //returns the next recipe to execute
+    System.out.println("Next Recipe to execute will be: "+nextRecipeID);
+    //String nextRecipeID=recipe_id; //MASMEC
+    
     if (!nextRecipeID.isEmpty() && !nextRecipeID.equals("last"))
     {
       if (checkAdapterState(nextRecipeID)) //check if adapter is ready
       { //if is ready
-        try
-        {
-          System.out.println("[Change State] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State");
-          String method = DatabaseInteraction.getInstance().getRecipeMethodByID(nextRecipeID);
-          NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":")));
-          String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(nextRecipeID);
-          NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":")));
+        System.out.println("[Change State] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State");
+        String method = DatabaseInteraction.getInstance().getRecipeMethodByID(nextRecipeID); //CRASHED HERE MASMEC! CHECK THIS
+        System.out.println("method returned from DB: "+method);
+        NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":")+1));
+        String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(nextRecipeID);
+        System.out.println("objectID returned from DB: "+obj);
 
-          String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
-          String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
-          DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
-
-          System.out.println("Trying to Invoke the nextRecipe in DA: " + DA_name);
-          
-          DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
-          String res = client.getClient().InvokeDeviceSkill(client.getClient().getClientObject(), objNode, methodNode, product_id).get();
-          System.out.println("Invoke output: " + res);
-          if (res == "OK")
-          {
-            //do happy flow stuff
-          } else
-          {
-            //something wrong happened :c
-          }
-        } catch (InterruptedException | ExecutionException ex)
+        NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":")+1));
+        String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
+        System.out.println("Daid from DB: "+Daid);
+        
+        String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
+        System.out.println("DA_name from DB: "+DA_name);
+        
+        DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
+        System.out.println("Trying to Invoke the nextRecipe"+ "(" + nextRecipeID + ")" +" in DA: " + DA_name);
+        MSBClientSubscription client = (MSBClientSubscription) da.getClient();
+        boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, product_id);
+        System.out.println("Invoke output: " + res);
+        if (res)
         {
-          java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
+          //do happy flow stuff
+        } else
+        {
+          //something wrong happened :c
         }
       } else //if adapter is not ready
       {
@@ -301,10 +326,9 @@ public class ChangeState
   }
   
   private static NodeId convertStringToNodeId(String toConvert)
-  {
-
-    int ns = Integer.parseInt(toConvert);
-    String aux = toConvert.substring(toConvert.indexOf(":"));
+  {    
+    int ns = Integer.parseInt(toConvert.split(":")[0]);
+    String aux = toConvert.substring(toConvert.indexOf(":")+1);
     return new NodeId(ns, aux);
   }
   
