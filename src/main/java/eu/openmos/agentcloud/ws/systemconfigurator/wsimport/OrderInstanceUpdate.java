@@ -8,9 +8,9 @@ import eu.openmos.model.OrderInstance;
 
 
 /**
- * <p>Classe Java per orderInstanceUpdate complex type.
+ * <p>Java class for orderInstanceUpdate complex type.
  * 
- * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="orderInstanceUpdate">
@@ -35,7 +35,7 @@ public class OrderInstanceUpdate {
     protected OrderInstance order;
 
     /**
-     * Recupera il valore della proprietà order.
+     * Gets the value of the order property.
      * 
      * @return
      *     possible object is
@@ -47,7 +47,7 @@ public class OrderInstanceUpdate {
     }
 
     /**
-     * Imposta il valore della proprietà order.
+     * Sets the value of the order property.
      * 
      * @param value
      *     allowed object is

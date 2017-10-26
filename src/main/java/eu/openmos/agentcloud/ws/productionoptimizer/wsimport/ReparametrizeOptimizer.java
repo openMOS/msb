@@ -10,9 +10,9 @@ import eu.openmos.agentcloud.utilities.OptimizationParameter;
 
 
 /**
- * <p>Classe Java per reparametrizeOptimizer complex type.
+ * <p>Java class for reparametrizeOptimizer complex type.
  * 
- * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="reparametrizeOptimizer">

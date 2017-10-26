@@ -8,9 +8,9 @@ import eu.openmos.model.OrderInstance;
 
 
 /**
- * <p>Classe Java per acceptNewOrderInstance complex type.
+ * <p>Java class for acceptNewOrderInstance complex type.
  * 
- * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="acceptNewOrderInstance">
@@ -35,7 +35,7 @@ public class AcceptNewOrderInstance {
     protected OrderInstance newOrder;
 
     /**
-     * Recupera il valore della proprietà newOrder.
+     * Gets the value of the newOrder property.
      * 
      * @return
      *     possible object is
@@ -47,7 +47,7 @@ public class AcceptNewOrderInstance {
     }
 
     /**
-     * Imposta il valore della proprietà newOrder.
+     * Sets the value of the newOrder property.
      * 
      * @param value
      *     allowed object is
