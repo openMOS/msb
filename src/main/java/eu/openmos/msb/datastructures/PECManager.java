@@ -166,7 +166,7 @@ public class PECManager
     {
       public synchronized void run()
       {
-        PendejoChecker(daID);
+        //PendejoChecker(daID);
       }
     };
     th.start();
@@ -178,23 +178,18 @@ public class PECManager
     List<PendingProdInstance> prodInst = this.pendejos.get(DaID);
     if (prodInst != null && prodInst.size() > 0)
     {
-      try {
-        System.out.println("Adapter: "+ DaID +" is ready and with pending product instances todo");
-        //EXECUTOR AGAIN
-        PendingProdInstance prodInstToDo = prodInst.remove(0);
-        DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(DaID));
-        DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter.getClient();
-        
-        String method = DatabaseInteraction.getInstance().getRecipeMethodByID(prodInstToDo.getNextRecipeID());
-        NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":")));
-        String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(prodInstToDo.getNextRecipeID());
-        NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":")));
-        String res = client.getClient().InvokeDeviceSkill(client.getClient().getClientObject(), objNode, methodNode, prodInstToDo.getProductInstanceID()).get();
-        
-      } catch (InterruptedException | ExecutionException ex) {
-        Logger.getLogger(PECManager.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      System.out.println("Adapter: "+ DaID +" is ready and with pending product instances todo");
+      //EXECUTOR AGAIN
+      PendingProdInstance prodInstToDo = prodInst.remove(0);
+      DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(DaID));
+      DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter.getClient();
+      String method = DatabaseInteraction.getInstance().getRecipeMethodByID(prodInstToDo.getNextRecipeID());
+      NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":")));
+      String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(prodInstToDo.getNextRecipeID());
+      NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":")));
+      boolean res = client.getClient().InvokeDeviceSkill(client.getClient().getClientObject(), objNode, methodNode, prodInstToDo.getProductInstanceID());
 
+      System.out.println("[PECmanager] result from the invokeDeviceSkill: "+res);
     } else
     {
       System.out.println("Adapter is ready! no pendejos found");

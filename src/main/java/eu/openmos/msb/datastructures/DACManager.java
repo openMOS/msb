@@ -120,6 +120,7 @@ public class DACManager
   public DeviceAdapter getDeviceAdapter(String deviceAdapterName)
   {
 
+    //System.out.println("getDeviceAdapter id from name: "+deviceAdapterName);
     int id = DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {

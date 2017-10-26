@@ -114,8 +114,8 @@ public class OPCServersDiscoverySnippet extends Thread
       {
         ApplicationDescription server = serverList[i];
 
-        System.out.println("getApplicationUri output " + server.getApplicationUri());
-        System.out.println("getDiscoveryUrls output " + server.getDiscoveryUrls()[0]);
+        //System.out.println("getApplicationUri output " + server.getApplicationUri());
+        //System.out.println("getDiscoveryUrls output " + server.getDiscoveryUrls()[0]);
 
         try
         {
@@ -154,7 +154,7 @@ public class OPCServersDiscoverySnippet extends Thread
       List<EndpointDescription> edList = new ArrayList<>();
       for (String url : discoveryUrls)
       {
-          logger.debug("url = " + url);
+          //logger.debug("url = " + url);
         String da_url = "";
         
         try
@@ -162,7 +162,7 @@ public class OPCServersDiscoverySnippet extends Thread
           for (EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get())
           {
             edList.add(ed);
-            logger.debug("VaG -> EndPoints from: " + url + " = " + ed);
+            //logger.debug("VaG -> EndPoints from: " + url + " = " + ed);
 
             String daName = serverApp.getApplicationName().getText();
             // Creates a new Device Adapter
@@ -175,8 +175,8 @@ public class OPCServersDiscoverySnippet extends Thread
               da = dacManager.addDeviceAdapter(daName, EProtocol.OPC, "", ""); //add to DB
               if (da == null)
               {
-                this.logger.error("Unable to create Device Adatper {} at {}", daName, url);
-                System.out.println("Unable to create Device Adatper " + daName + " at " + url);
+                this.logger.error("Unable to create Device Adapter {} at {}", daName, url);
+                System.out.println("Unable to create Device Adapter " + daName + " at " + url);
                 continue;
               }
               // if Device Adatper created ok, let's do some magic
@@ -427,13 +427,13 @@ public class OPCServersDiscoverySnippet extends Thread
       {
         for (Recipe auxRecipe : da.getListOfRecipes())
         {
-          if(da.getSubSystem().getName()!=null && auxRecipe.getSkill().getName()!=null){
+          if(da.getSubSystem().getName()!=null && auxRecipe.getSkill()!=null && auxRecipe.getSkill().getName()!=null){
             
           dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(), 
                   "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
           
           }else{
-            System.out.println("\nCouldn't register recipe!\n");
+            System.out.println("\nCouldn't register recipe: "+auxRecipe.getName()+"\n");
           }
         }
         MSB_gui.fillRecipesTable();

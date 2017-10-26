@@ -257,28 +257,45 @@ public class MSBClientSubscription implements IClient
    * @param productId
    * @return
    */
-  public CompletableFuture<String> InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId, String productId)
+  public boolean InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId, String productId)
   {
 
     CallMethodRequest request = new CallMethodRequest(
             objectId, methodId, new Variant[]{new Variant(productId)});
 
-    return client.call(request).thenCompose(result
-            ->
+    try
     {
+      StatusCode res=client.call(request).get().getStatusCode();
+      
+      if(res.isGood()){
+        return true;
+      }else if(res.isBad()){
+        return false;
+      }else{
+        return false;
+      }
+      
+      /*return client.call(request).thenCompose(result
+      ->
+      {
       StatusCode statusCode = result.getStatusCode();
 
       if (statusCode.isGood())
       {
-        String value = (String) l(result.getOutputArguments()).get(0).getValue();
-        return CompletableFuture.completedFuture(value);
+      String value = (String) l(result.getOutputArguments()).get(0).getValue();
+      return CompletableFuture.completedFuture(value);
       } else
       {
-        CompletableFuture<String> f = new CompletableFuture<>();
-        f.completeExceptionally(new UaException(statusCode));
-        return f;
+      CompletableFuture<String> f = new CompletableFuture<>();
+      f.completeExceptionally(new UaException(statusCode));
+      return f;
       }
-    });
+      });*/
+    } catch (InterruptedException | ExecutionException ex)
+    {
+      java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return false;
   }
 
   public CompletableFuture<String> InvokeDeviceMARTELO(OpcUaClient client, NodeId objectId, NodeId methodId, String productId , String daid, String repid)
