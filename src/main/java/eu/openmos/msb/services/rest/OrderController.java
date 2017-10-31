@@ -1,12 +1,21 @@
 package eu.openmos.msb.services.rest;
 
+import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.agentcloud.utilities.ServiceCallStatus;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.model.Order;
 import eu.openmos.model.OrderInstance;
 import eu.openmos.model.OrderLine;
+import eu.openmos.model.Part;
+import eu.openmos.model.PartInstance;
+import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.model.testdata.OrderTest;
 import eu.openmos.msb.datastructures.PECManager;
+import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.datastructures.ProductExecution;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,6 +29,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
+import javax.xml.ws.BindingProvider;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
 
 
@@ -31,6 +42,7 @@ import org.apache.log4j.Logger;
 @Path("/api/v1/orders")
 public class OrderController {
     private final Logger logger = Logger.getLogger(OrderController.class.getName());
+    private final StopWatch OrderWatch = new StopWatch();
     
     /**
      * Returns the list of orders.
@@ -57,12 +69,6 @@ public class OrderController {
 */
         PECManager pecManager = PECManager.getInstance();
         
-        //set order on the pecManager?
-        //set executedOrders
-        //set executedRecipesFromProduct
-        //setOrdersToExecute
-        //setRecipesFromProducttoExecute
-        
         return pecManager.getOrderList();
     }
 
@@ -82,17 +88,55 @@ public class OrderController {
     @Produces(MediaType.APPLICATION_JSON)
     public Order newOrder(Order newOrder)
     {
-        logger.debug("orders newOrder - order to insert = " + newOrder.toString());
+      OrderWatch.start();
+      logger.debug("orders newOrder - order to insert = " + newOrder.toString());
+   
+      PECManager pec = PECManager.getInstance();
         
-        PECManager pecManager = PECManager.getInstance();
+        //CREATE ORDERINSTANCE AND PRODUCTINSTANCE
+        OrderInstance oi= new OrderInstance();
+        List<ProductInstance> piList =  new ArrayList<>();
         
-        //set order on the pecManager?
-        //set executedOrders
-        //set executedRecipesFromProduct
-        //setOrdersToExecute
-        //setRecipesFromProducttoExecute
+        for (int z = 0; z < newOrder.getOrderLines().size(); z++) { //iterate between all orderlines
+            int quantity = newOrder.getOrderLines().get(z).getQuantity();
+
+            for (int prodIDX = 0; prodIDX < quantity; prodIDX++) { //create product instances for each quantity of the orderline
+                ProductInstance pi = new ProductInstance();
+                pi.setDescription("my Pinstance description");
+                pi.setName(pec.getProductNameByID(newOrder.getOrderLines().get(z).getProductId())); //GET THE PRODUCT NAME from the ID
+                pi.setOrderId(newOrder.getUniqueId());
+
+                //??
+                List<PartInstance> comps = new LinkedList();
+                Part p1 = new Part("uniqueCpID", "CpName", "CpDescription", new Date());
+                PartInstance c1 = new PartInstance("uniqueCpinstanceID", "CpinstanceName", "CpinstanceDescription", p1, new Date());
+                comps.add(c1);
+
+                pi.setParts(comps);
+                pi.setProductId(newOrder.getOrderLines().get(z).getProductId());
+                pi.setUniqueId(UUID.randomUUID().toString()); //generate unique IDs for each product instance
+                pi.setRegistered(new Date());
+                
+                piList.add(pi);
+            } 
+        }
         
-        pecManager.getOrderList().add(newOrder);
+        oi.setDescription(newOrder.getDescription());
+        oi.setName(newOrder.getName());
+        oi.setPriority(newOrder.getPriority());
+        oi.setProductInstances(piList);
+        oi.setRegistered(new Date());
+        oi.setUniqueId(newOrder.getUniqueId());
+
+        logger.debug("Order instance created and added to ProductManagerClass");
+
+        pec.getOrderList().add(newOrder);
+        pec.getOrderInstanceList().add(oi);
+        
+        //get first product instance and start doing stuff
+        new Thread(new ProductExecution()).start();    
+        
+        /*pecManager.getOrderList().add(newOrder);
         
         List<OrderLine> orderLines = newOrder.getOrderLines();
         
@@ -122,10 +166,39 @@ public class OrderController {
         pecManager.getOrderMap().put(newOrder.getUniqueId(),orderLinesQueue); //add a queue for each order on pecmanager singleton
         
         //get first product instance and start doing stuff
-        new Thread(new ProductExecution()).start();
+        new Thread(new ProductExecution()).start();*/
         
+      //Forward the order from HMI to AC
+      String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
 
-//        return OrderTest.getTestObject();
+      if (withAGENTCloud)
+      { //check if the agentcloud is active
+        SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+        SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+/////////////////////////////
+        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+        logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");
+
+        BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+        bindingProvider.getRequestContext().put(
+                BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+//////////////////////////////              
+        ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrderInstance(oi);
+        logger.info("Order Instance sent to the Agent Cloud with code: " + orderStatus.getCode());
+        logger.info("Order Instance status: " + orderStatus.getDescription());
+      } else
+      {
+        logger.info("Order Instance not sent to the Agent Cloud because the cloud is deactivated");
+      }
+
+      //PERFORMANCE MEASUREMENT
+      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+      Long time=OrderWatch.getTime();
+      perfMeasure.getOrderTillOrderInstanceCreationTimers().add(time);
+      logger.info("Order Instance took "+time.toString()+"ms to be created from the received order");
+      OrderWatch.stop();
+                
         return newOrder;
     }
 

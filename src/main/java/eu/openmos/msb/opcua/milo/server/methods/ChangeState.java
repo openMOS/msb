@@ -1,5 +1,6 @@
 package eu.openmos.msb.opcua.milo.server.methods;
 
+import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Recipe;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
@@ -9,11 +10,15 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PendingProdInstance;
+import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
+import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaOutputArgument;
@@ -32,6 +37,7 @@ public class ChangeState
 {
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
+  StopWatch changeStateAndNextRecipeTimer = new StopWatch();
 
   @UaMethod
   public void invoke(
@@ -50,6 +56,8 @@ public class ChangeState
                   description = "Acknowledge 1-OK 0-NOK") AnnotationBasedInvocationHandler.Out<Integer> result)
   {
     
+    changeStateAndNextRecipeTimer.start();   
+      
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
     System.out.println("Change State invoked with parameters-> DaID:" + da_id + " productID: " + product_id + " recipeID:" + recipe_id);
     //TODO add code handler af-silva
@@ -62,7 +70,7 @@ public class ChangeState
       //read recipe KPIs
       Thread threadKPI = new Thread() {
           public synchronized void run() {
-              //readKPIs(da_id, recipe_id); //MASMEC comment
+              readKPIs(da_id, recipe_id); //MASMEC comment
           }
       };
       threadKPI.start();
@@ -276,6 +284,11 @@ public class ChangeState
         DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
         System.out.println("Trying to Invoke the nextRecipe"+ "(" + nextRecipeID + ")" +" in DA: " + DA_name);
         MSBClientSubscription client = (MSBClientSubscription) da.getClient();
+        
+        PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+        perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
+        changeStateAndNextRecipeTimer.stop();
+        
         boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, product_id);
         System.out.println("Invoke output: " + res);
         if (res)
@@ -287,6 +300,10 @@ public class ChangeState
         }
       } else //if adapter is not ready
       {
+        PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+        perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
+        changeStateAndNextRecipeTimer.stop();
+        
         //save daIDnext, nextRecipe and prodID to execute later
         String Daid_Next = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
         List<PendingProdInstance> auxProdId = PECManager.getInstance().getPendejos().get(Daid_Next);
@@ -337,26 +354,45 @@ public class ChangeState
    * @param da_id
    * @param recipe_id 
    */
-    private void readKPIs(String da_id, String recipe_id) 
-    {
-        DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(da_id));
-        List<Recipe> auxRepList = CurrentDA.getListOfRecipes();
+  private void readKPIs(String da_id, String recipe_id)
+  {
+    DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(da_id));
+    List<Recipe> auxRepList = CurrentDA.getListOfRecipes();
 
-        for (Recipe recipe : auxRepList) {
-            if (recipe.getUniqueId().equals(recipe_id)) {
-                for (KPISetting kpi : recipe.getKpiSettings()) {
-                    try {
-                        NodeId kpiPath = convertStringToNodeId(kpi.getPath());
-                        DeviceAdapterOPC client = (DeviceAdapterOPC) CurrentDA.getClient();
-                        String kpiValue = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, kpiPath).get().toString();
-                        kpi.setValue(kpiValue);
-                    } catch (InterruptedException | ExecutionException ex) {
-                        java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                break;
-            }
+    for (Recipe recipe : auxRepList)
+    {
+      if (recipe.getUniqueId().equals(recipe_id))
+      {
+        for (KPISetting kpi : recipe.getKpiSettings())
+        {
+          try
+          {
+            NodeId kpiPath = convertStringToNodeId(kpi.getPath());
+            DeviceAdapterOPC client = (DeviceAdapterOPC) CurrentDA.getClient();
+            String kpiValue = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, kpiPath).get().toString();
+            kpi.setValue(kpiValue);
+
+          } catch (InterruptedException | ExecutionException ex)
+          {
+            java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
+          }
         }
+        break;
+      }
+      //IF THE AC is activated, send the KPIs upwards
+      String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+
+      if (withAGENTCloud)
+      {
+        DeliveryOptions options = new DeliveryOptions();
+        options.addHeader(eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA, "some-value"); //use this??
+        CurrentDA.getVertx().eventBus().publish(da_id,recipe.toString(),options); //serialize the entire class??
+      } else
+      {
+
+      }
     }
+  }
 
 }
