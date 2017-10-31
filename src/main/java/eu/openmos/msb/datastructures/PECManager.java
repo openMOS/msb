@@ -146,6 +146,23 @@ public class PECManager
     PECManager aux = PECManager.getInstance();
     return aux.orderMap;
   }
+  
+  public String getProductNameByID(String productUUID)
+  {
+
+    PECManager pec = PECManager.getInstance();
+    List<Product> productList = pec.getProductList();
+    for (int prodIDX = 0; prodIDX < productList.size(); prodIDX++)
+    {
+      if (productUUID.equals(productList.get(prodIDX).getUniqueId()))
+      {
+        return productList.get(prodIDX).getName();
+      }
+    }
+
+    return "";
+
+  }
 
   public List<Product> getAvailableProducts()
   {
@@ -166,7 +183,7 @@ public class PECManager
     {
       public synchronized void run()
       {
-        //PendejoChecker(daID);
+        PendejoChecker(daID);
       }
     };
     th.start();
