@@ -488,6 +488,33 @@ public class DatabaseInteraction
     }
     return name;
   }
+  
+  
+  
+  public String getDeviceAdapterNameByAmlID(String deviceAMLID)
+  {
+
+    String name = "";
+    String sql = "SELECT name FROM DeviceAdapter WHERE aml_id = '" + deviceAMLID + "'";
+
+    try (Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql))
+    {
+
+      while (rs.next())
+      {
+        name = rs.getString("name");
+        //System.out.println("Found device with name:  " + name);
+        break;
+      }
+
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return name;
+  }
   /**
    *
    * @param deviceName
