@@ -346,7 +346,7 @@ public class OPCServersDiscoverySnippet extends Thread
         String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
         BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
         bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-        // SubSystem cpad = dummySubSystemGeneration(parsedClass);
+        //SubSystem cpad = dummySubSystemGeneration(parsedClass);
         //SubSystem cpad = SubSystemTest.getTestObject();
 
         SubSystem ss = da.getSubSystem();

@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -33,6 +34,7 @@ public class ProductExecution implements Runnable
 {
   List<String> recipesExecuted = new ArrayList<>();
   int HighOrderIndex = -1;
+  StopWatch firstRecipeCallTime = new StopWatch();
 
   @Override
   public void run()
@@ -56,6 +58,8 @@ public class ProductExecution implements Runnable
 
   public void ExecuteOrder()
   {
+    firstRecipeCallTime.start();
+    
     PECManager ProdManager = PECManager.getInstance();
 
     //Get priority and execute the higher value order
@@ -192,6 +196,12 @@ public class ProductExecution implements Runnable
           convertStringToNodeId(invokeObjectID),
           convertStringToNodeId(invokeMethodID)).get();*/
           System.out.println("\nTrying to execute recipe: " + recipeID + " from prodInstance: " + prodInstID);
+          
+          
+          PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+          perfMeasurement.getOrderTillRecipeCallTimers().add(firstRecipeCallTime.getTime());
+          firstRecipeCallTime.stop();
+          
           result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInstID);
           System.out.println("Execute invokeSkill Successfull");
           da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);

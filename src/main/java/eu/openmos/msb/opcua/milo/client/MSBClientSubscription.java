@@ -5,6 +5,7 @@ package eu.openmos.msb.opcua.milo.client;
 
 // IMPORTS
 import static com.google.common.collect.Lists.newArrayList;
+import eu.openmos.msb.datastructures.PerformanceMasurement;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
@@ -72,6 +74,7 @@ public class MSBClientSubscription implements IClient
   private ArrayList<ReadValueId> readValueList;
   private final AtomicLong clientHandles = new AtomicLong(1L);
   private List<UaMonitoredItem> items;
+  private final StopWatch recipeExecutionWatch = new StopWatch();
 
   /**
    *
@@ -259,7 +262,9 @@ public class MSBClientSubscription implements IClient
    */
   public boolean InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId, String productId)
   {
-
+    PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+    recipeExecutionWatch.start();
+    
     CallMethodRequest request = new CallMethodRequest(
             objectId, methodId, new Variant[]{new Variant(productId)});
 
@@ -268,10 +273,16 @@ public class MSBClientSubscription implements IClient
       StatusCode res=client.call(request).get().getStatusCode();
       
       if(res.isGood()){
+        perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
+        recipeExecutionWatch.stop();
         return true;
       }else if(res.isBad()){
+        perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
+        recipeExecutionWatch.stop();
         return false;
       }else{
+        perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
+        recipeExecutionWatch.stop();
         return false;
       }
       
@@ -293,8 +304,14 @@ public class MSBClientSubscription implements IClient
       });*/
     } catch (InterruptedException | ExecutionException ex)
     {
+      perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
+      recipeExecutionWatch.stop();
       java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
     }
+    
+    perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
+    recipeExecutionWatch.stop();
+    
     return false;
   }
 

@@ -1282,16 +1282,24 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabel8" max="32767" attributes="0"/>
-                      <Group type="102" alignment="1" attributes="0">
-                          <Component id="btnProductExecute" min="-2" pref="181" max="-2" attributes="0"/>
-                          <EmptySpace pref="132" max="32767" attributes="0"/>
-                          <Component id="btnProductSubmit" min="-2" pref="180" max="-2" attributes="0"/>
-                      </Group>
                       <Component id="cb_productSelection" alignment="0" max="32767" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="recipeidtxt" max="32767" attributes="0"/>
+                              <Component id="btnProductExecute" pref="181" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+                          <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="daidtxt" min="-2" pref="178" max="-2" attributes="0"/>
+                              <Component id="btnProductSubmit" min="-2" pref="180" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                   </Group>
               </Group>
           </Group>
@@ -1308,7 +1316,13 @@
                       <Component id="btnProductSubmit" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       <Component id="btnProductExecute" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="68" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="recipeidtxt" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="daidtxt" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -1352,6 +1366,24 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnProductExecuteActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButton1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="jButton1"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JTextField" name="recipeidtxt">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="recipeid"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="daidtxt">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="daid"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

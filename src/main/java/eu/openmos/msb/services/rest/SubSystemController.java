@@ -11,6 +11,7 @@ import eu.openmos.model.testdata.ModuleTest;
 import eu.openmos.model.testdata.SubSystemTest;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.services.rest.data.ExecutionTableRowHelper;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**
@@ -37,6 +39,7 @@ import org.apache.log4j.Logger;
 public class SubSystemController extends Base {
 
     private final Logger logger = Logger.getLogger(SubSystemController.class.getName());
+    private final StopWatch HMIsubsystemUpdateWatch = new StopWatch();
 
     /**
      * Returns the list of workstations and transports, e.g. resource and
@@ -48,6 +51,9 @@ public class SubSystemController extends Base {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<SubSystem> getList() {
+      
+      HMIsubsystemUpdateWatch.start();
+      
         logger.debug("subsystems getList");
         List<SubSystem> ls = new LinkedList<>();
         logger.debug("subsystems getList 1");
@@ -118,6 +124,11 @@ public class SubSystemController extends Base {
         if (ls.size() != 0)
             logger.debug("susbsytem list from MSB: ls size is " + ls.size());            
         // logger.debug("susbsytem list from MSB: " + ls);
+         
+        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+        perfMeasure.getHMISubsystemUpdateTimers().add(HMIsubsystemUpdateWatch.getTime());
+        HMIsubsystemUpdateWatch.stop();
+                
         return ls;
     }
 
