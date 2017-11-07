@@ -5,8 +5,12 @@
  */
 package eu.openmos.msb.datastructures;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -26,7 +30,11 @@ public class PerformanceMasurement
   private final List<Long> AgentCreationTillAgentConfirmationTimers;
   private final List<Long> HMISubsystemUpdateTimers;
   private final List<Long> DatabaseQueryTimers;
-
+  private final List<Long> NamespaceParsing;
+  
+  private final Map<String, Long> agentCreationTimers;
+  private final Map<String, Long> agentRemovalTimers;
+   
   public PerformanceMasurement()
   {    
     OrderTillRecipeCallTimers = new ArrayList<>();
@@ -37,9 +45,29 @@ public class PerformanceMasurement
     AgentCreationTillAgentConfirmationTimers = new ArrayList<>();
     HMISubsystemUpdateTimers = new ArrayList<>();
     DatabaseQueryTimers = new ArrayList<>();
+    NamespaceParsing = new ArrayList<>();
+    agentCreationTimers = new HashMap<>();
+    agentRemovalTimers = new HashMap<>();
+    
+  }
+  
+    public Map<String, Long> getAgentRemovalTimers()
+  {
+    PerformanceMasurement aux = PerformanceMasurement.getInstance();
+    return aux.agentRemovalTimers;
   }
 
-
+  public Map<String, Long> getAgentCreationTimers()
+  {
+    PerformanceMasurement aux = PerformanceMasurement.getInstance();
+    return aux.agentCreationTimers;
+  }
+  
+  public List<Long> getNameSpaceParsingTimers()
+  {
+    PerformanceMasurement aux = PerformanceMasurement.getInstance();
+    return aux.NamespaceParsing;
+  }
 
   public List<Long> getOrderTillRecipeCallTimers()
   {
@@ -89,6 +117,79 @@ public class PerformanceMasurement
     return aux.DatabaseQueryTimers;
   }
   
+  public void exportTimers() throws IOException
+  {
+    PerformanceMasurement aux = PerformanceMasurement.getInstance();
+
+    try (FileWriter writer = new FileWriter("outputMSBPerformanceTimers.txt"))
+    {
+      writer.write("\n");
+      writer.write("AdapterReadyTillRecipeCall: ");
+      for (Long time : aux.getAdapterReadyTillRecipeCallTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("AgentCreationTillAgentConfirmation: ");
+      for (Long time : aux.getAgentCreationTillAgentConfirmationTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("ChangeStateTillNextRecipeCall: ");
+      for (Long time : aux.getChangeStateTillNextRecipeCallTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("DatabaseQuery: ");
+      for (Long time : aux.getDatabaseQueryTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("HMISubsystemUpdate: ");
+      for (Long time : aux.getHMISubsystemUpdateTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("NameSpaceParsing: ");
+      for (Long time : aux.getNameSpaceParsingTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("OrderTillOrderInstanceCreation: ");
+      for (Long time : aux.getOrderTillOrderInstanceCreationTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("OrderTillRecipeCall: ");
+      for (Long time : aux.getOrderTillRecipeCallTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("RecipeCallMethodTillResult: ");
+      for (Long time : aux.getRecipeCallMethodTillResultTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+
+    }
+  }
 
   /**
    * @brief obtain the Device Adapter Clients Manager unique instance

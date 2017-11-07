@@ -58,6 +58,7 @@ import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.PECManager;
+import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.datastructures.ProductExecution;
 import eu.openmos.msb.dds.DDSErrorHandler;
 import eu.openmos.msb.services.rest.CORSFilter;
@@ -98,6 +99,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
+import javax.swing.ComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.UriBuilder;
@@ -121,6 +123,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private static DefaultTableModel adaptersTableModel;
   private static DefaultTableModel recipesTableModel;
   private static DefaultTableModel devicesTableModel;
+  private static DefaultTableModel ordersTableSubmittedModel;
   private static ImageIcon redLight;
   private static ImageIcon greenLight;
   private static ImageIcon greyLight;
@@ -133,6 +136,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private final ClassLoader classLoader = getClass().getClassLoader();
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
   private StopWatch guiWatch;
+  
 
   /**
    *
@@ -149,7 +153,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     adaptersTableModel = (DefaultTableModel) TableServers.getModel();
     recipesTableModel = (DefaultTableModel) recipesTable.getModel();
     devicesTableModel = (DefaultTableModel) devicesTable.getModel();
-
+    ordersTableSubmittedModel = (DefaultTableModel) tableSubmittedOrders.getModel();
+    
     recipesTable.getModel().addTableModelListener(new CheckBoxModelListener());
 
     OnOffServerPanel.setLayout(new FlowLayout());
@@ -264,7 +269,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     l_DDSRecipe = new javax.swing.JLabel();
     jPanel4 = new javax.swing.JPanel();
     jScrollPane7 = new javax.swing.JScrollPane();
-    jTable1 = new javax.swing.JTable();
+    tableSubmittedOrders = new javax.swing.JTable();
     jScrollPane8 = new javax.swing.JScrollPane();
     jTable2 = new javax.swing.JTable();
     jScrollPane9 = new javax.swing.JScrollPane();
@@ -290,6 +295,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     jButton1 = new javax.swing.JButton();
     recipeidtxt = new javax.swing.JTextField();
     daidtxt = new javax.swing.JTextField();
+    exportTimers = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -839,28 +845,22 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     jTabbedPane1.addTab("DDS", p_dds);
 
-    jTable1.setModel(new javax.swing.table.DefaultTableModel(
+    tableSubmittedOrders.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][]
       {
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null}
+
       },
       new String []
       {
         "OrderID", "ProductID", "OrderLineID", "Quantity"
       }
     ));
-    jScrollPane7.setViewportView(jTable1);
+    jScrollPane7.setViewportView(tableSubmittedOrders);
 
     jTable2.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][]
       {
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null}
+
       },
       new String []
       {
@@ -872,14 +872,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     jTable3.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][]
       {
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null}
+
       },
       new String []
       {
-        "OrderID", "ProductID", "OrderLineID", "CurrentProductInstance"
+        "OrderID", "ProductID", "Waiting PiID", "In Production PiID"
       }
     ));
     jScrollPane9.setViewportView(jTable3);
@@ -1090,6 +1087,15 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     daidtxt.setText("daid");
 
+    exportTimers.setText("Export Timers");
+    exportTimers.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        exportTimersActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout p_productExecutionLayout = new javax.swing.GroupLayout(p_productExecution);
     p_productExecution.setLayout(p_productExecutionLayout);
     p_productExecutionLayout.setHorizontalGroup(
@@ -1099,16 +1105,20 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(cb_productSelection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p_productExecutionLayout.createSequentialGroup()
+          .addGroup(p_productExecutionLayout.createSequentialGroup()
             .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
               .addComponent(recipeidtxt)
               .addComponent(btnProductExecute, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE))
             .addGap(30, 30, 30)
             .addComponent(jButton1)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
             .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(daidtxt, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(btnProductSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p_productExecutionLayout.createSequentialGroup()
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addComponent(exportTimers)
+        .addGap(197, 197, 197))
     );
     p_productExecutionLayout.setVerticalGroup(
       p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1126,7 +1136,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           .addComponent(jButton1)
           .addComponent(recipeidtxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(daidtxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(17, 17, 17))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(exportTimers)
+        .addContainerGap())
     );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1276,6 +1288,20 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   }//GEN-LAST:event_b_startMSBDDSActionPerformed
 
+  /**
+   *
+   * @param newProducts
+   */
+  public static void addToProductcb(List<Product> newProducts)
+  {
+    for (int i = 0; i < newProducts.size(); i++)
+    {
+      cb_productSelection.addItem(newProducts.get(i).getName() + "/" + newProducts.get(i).getUniqueId());
+    }
+  }
+
+
+          
   private void b_DDSCallRecipeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_DDSCallRecipeActionPerformed
   {//GEN-HEADEREND:event_b_DDSCallRecipeActionPerformed
     DDSDeviceManager dm = DDSDeviceManager.getInstance();
@@ -1726,16 +1752,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           // TODO add your handling code here:
           //call new product aml file and populate the available products class
           List<Product> newProducts=readProductAML();
-          for(int i=0;i<newProducts.size();i++){
-              cb_productSelection.addItem(newProducts.get(i).getName() + "/" + newProducts.get(i).getUniqueId());
-          }
+          addToProductcb(newProducts); //add to combo products
           
       } catch (FileNotFoundException ex) {
           Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      
-      
-        
+      }  
     }//GEN-LAST:event_btnProductSubmitActionPerformed
 
     private void btnProductExecuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductExecuteActionPerformed
@@ -1763,6 +1784,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         
         for (int z = 0; z < newOrder.getOrderLines().size(); z++) { //iterate between all orderlines
             int quantity = newOrder.getOrderLines().get(z).getQuantity();
+            
+            if(!newOrder.getUniqueId().isEmpty()&&newOrder.getUniqueId()!=null&&!newOrder.getOrderLines().isEmpty()&&newOrder.getOrderLines()!=null)
+            MSB_gui.addToTableSubmittedOrder(newOrder.getUniqueId(), newOrder.getOrderLines().get(z).getProductId(), newOrder.getOrderLines().get(z).getUniqueId(), quantity); //add to GUI table of submitted orders
 
             for (int prodIDX = 0; prodIDX < quantity; prodIDX++) { //create product instances for each quantity of the orderline
                 ProductInstance pi = new ProductInstance();
@@ -1872,6 +1896,20 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       }*/
     }
   }//GEN-LAST:event_jButton1ActionPerformed
+
+  private void exportTimersActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exportTimersActionPerformed
+  {//GEN-HEADEREND:event_exportTimersActionPerformed
+    // TODO add your handling code here:
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    try
+    {
+      perfMeasure.exportTimers();
+    } catch (IOException ex)
+    {
+      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    
+  }//GEN-LAST:event_exportTimersActionPerformed
 
     
     public static Order fillOrder(Product prod) {
@@ -2097,6 +2135,24 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     }
     opc_comms_log.append("Devices successfully added to table. Name: " + DeviceName + "\n");
   }
+  
+   public static void addToTableSubmittedOrder(String OrderID, String ProductID, String OrderLineID, int Quantity)
+  {           
+    ordersTableSubmittedModel.addRow(new Object[]
+    {
+      OrderID, ProductID, OrderLineID, Quantity
+    });
+
+    Object[] rowData = new Object[ordersTableSubmittedModel.getColumnCount()];
+    for (int i = 0; i < ordersTableSubmittedModel.getColumnCount(); i++)
+    {
+      rowData[i] = ordersTableSubmittedModel.getValueAt(0, i);
+      System.out.println("Devices NA TABELA: " + rowData[i].toString());
+    }
+    opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
+  }
+  
+  
 
   /**
    * @todo this is to use??????
@@ -2439,13 +2495,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private javax.swing.JButton btn_updatestatus;
   private static javax.swing.JComboBox<String> cb_DDSDevice;
   private static javax.swing.JComboBox<String> cb_DDSRecipeList;
-  private javax.swing.JComboBox<String> cb_productSelection;
+  private static javax.swing.JComboBox<String> cb_productSelection;
   private java.awt.Choice choice1;
   private java.awt.Choice choice2;
   private java.awt.Choice choice3;
   private javax.swing.JComboBox<String> comboServers;
   private javax.swing.JTextField daidtxt;
   private javax.swing.JTable devicesTable;
+  private javax.swing.JButton exportTimers;
   private javax.swing.JButton jButton1;
   private javax.swing.JComboBox<String> jComboBox1;
   private javax.swing.JLabel jLabel1;
@@ -2478,7 +2535,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private javax.swing.JSeparator jSeparator3;
   private javax.swing.JSeparator jSeparator4;
   private javax.swing.JTabbedPane jTabbedPane1;
-  private javax.swing.JTable jTable1;
   private javax.swing.JTable jTable2;
   private javax.swing.JTable jTable3;
   private javax.swing.JLabel l_DDSDevice;
@@ -2497,6 +2553,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private javax.swing.JTextField soapServiceAddress;
   private javax.swing.JButton startRESTWebService;
   private javax.swing.JButton startWebService;
+  private javax.swing.JTable tableSubmittedOrders;
   private javax.swing.JTextField textToSend;
   // End of variables declaration//GEN-END:variables
 }

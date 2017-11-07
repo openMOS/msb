@@ -935,10 +935,10 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTable" name="jTable1">
+                <Component class="javax.swing.JTable" name="tableSubmittedOrders">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="4">
+                      <Table columnCount="4" rowCount="0">
                         <Column editable="true" title="OrderID" type="java.lang.Object"/>
                         <Column editable="true" title="ProductID" type="java.lang.Object"/>
                         <Column editable="true" title="OrderLineID" type="java.lang.Object"/>
@@ -986,7 +986,7 @@
                 <Component class="javax.swing.JTable" name="jTable2">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="4">
+                      <Table columnCount="4" rowCount="0">
                         <Column editable="true" title="OrderID" type="java.lang.Object"/>
                         <Column editable="true" title="ProductID" type="java.lang.Object"/>
                         <Column editable="true" title="OrderLineID" type="java.lang.Object"/>
@@ -1034,11 +1034,11 @@
                 <Component class="javax.swing.JTable" name="jTable3">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="4">
+                      <Table columnCount="4" rowCount="0">
                         <Column editable="true" title="OrderID" type="java.lang.Object"/>
                         <Column editable="true" title="ProductID" type="java.lang.Object"/>
-                        <Column editable="true" title="OrderLineID" type="java.lang.Object"/>
-                        <Column editable="true" title="CurrentProductInstance" type="java.lang.Object"/>
+                        <Column editable="true" title="Waiting PiID" type="java.lang.Object"/>
+                        <Column editable="true" title="In Production PiID" type="java.lang.Object"/>
                       </Table>
                     </Property>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -1287,20 +1287,25 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabel8" max="32767" attributes="0"/>
                       <Component id="cb_productSelection" alignment="0" max="32767" attributes="0"/>
-                      <Group type="102" alignment="1" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="recipeidtxt" max="32767" attributes="0"/>
                               <Component id="btnProductExecute" pref="181" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="29" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="daidtxt" min="-2" pref="178" max="-2" attributes="0"/>
                               <Component id="btnProductSubmit" min="-2" pref="180" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
+              </Group>
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="exportTimers" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="197" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -1322,7 +1327,9 @@
                       <Component id="recipeidtxt" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="daidtxt" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="exportTimers" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -1342,6 +1349,7 @@
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="btnProductSubmit">
@@ -1384,6 +1392,14 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="daid"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="exportTimers">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Export Timers"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportTimersActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

@@ -197,7 +197,6 @@ public class ProductExecution implements Runnable
           convertStringToNodeId(invokeMethodID)).get();*/
           System.out.println("\nTrying to execute recipe: " + recipeID + " from prodInstance: " + prodInstID);
           
-          
           PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
           perfMeasurement.getOrderTillRecipeCallTimers().add(firstRecipeCallTime.getTime());
           firstRecipeCallTime.stop();
