@@ -10,10 +10,12 @@ import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.PerformanceMasurement;
 import io.vertx.core.Vertx;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import javax.jws.WebService;
@@ -69,6 +71,11 @@ public class EventConfirmationImpl implements EventConfirmation
         
         logger.debug(getClass().getName() + " - agentCreated - end - websocket started for agentId [" + agentId + "]");
 
+      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+      Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
+      Long diffTime= new Date().getTime()-getStartTime;
+      perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
+         
         return true;
     }
 
@@ -90,6 +97,11 @@ public class EventConfirmationImpl implements EventConfirmation
 
     logger.debug(getClass().getName() + " - agentNotCreated - end for agentId [" + agentId + "]");
 
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
+    Long diffTime = new Date().getTime() - getStartTime;
+    perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
+      
     return true;
   }
     
@@ -140,6 +152,11 @@ public class EventConfirmationImpl implements EventConfirmation
         
         logger.debug(getClass().getName() + " - agentRemoved - end for agentId [" + agentId + "]");
 
+        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+        Long getStartTime = perfMeasure.getAgentRemovalTimers().get(agentId);
+        Long diffTime = new Date().getTime() - getStartTime;
+        perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
+        
         return true;
     }
 
@@ -150,6 +167,11 @@ public class EventConfirmationImpl implements EventConfirmation
         // some stuff...
         
         logger.debug(getClass().getName() + " - agentNotRemoved - end for agentId [" + agentId + "]");
+
+      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+      Long getStartTime = perfMeasure.getAgentRemovalTimers().get(agentId);
+      Long diffTime = new Date().getTime() - getStartTime;
+      perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
 
         return true;
     }

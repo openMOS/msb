@@ -385,6 +385,7 @@ public class ChangeState
 
       if (withAGENTCloud)
       {
+        //add header to vertX message?
         DeliveryOptions options = new DeliveryOptions();
         options.addHeader(eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA, "some-value"); //use this??
         CurrentDA.getVertx().eventBus().publish(da_id,recipe.toString(),options); //serialize the entire class??

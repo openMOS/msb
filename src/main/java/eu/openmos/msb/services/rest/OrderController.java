@@ -15,6 +15,7 @@ import eu.openmos.model.testdata.OrderTest;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.datastructures.ProductExecution;
+import eu.openmos.msb.starter.MSB_gui;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -99,6 +100,8 @@ public class OrderController {
         
         for (int z = 0; z < newOrder.getOrderLines().size(); z++) { //iterate between all orderlines
             int quantity = newOrder.getOrderLines().get(z).getQuantity();
+            
+            MSB_gui.addToTableSubmittedOrder(newOrder.getUniqueId(), newOrder.getOrderLines().get(z).getProductId(), newOrder.getOrderLines().get(z).getUniqueId(), quantity); //add to GUI table of submitted orders
 
             for (int prodIDX = 0; prodIDX < quantity; prodIDX++) { //create product instances for each quantity of the orderline
                 ProductInstance pi = new ProductInstance();
@@ -167,7 +170,7 @@ public class OrderController {
         
         //get first product instance and start doing stuff
         new Thread(new ProductExecution()).start();*/
-        
+               
       //Forward the order from HMI to AC
       String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
       boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();

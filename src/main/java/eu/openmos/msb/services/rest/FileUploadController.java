@@ -10,6 +10,7 @@ import eu.openmos.model.Product;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.PECManager;
+import eu.openmos.msb.starter.MSB_gui;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -71,6 +72,11 @@ public Response uploadPdfFile(  @FormDataParam("file") InputStream fileInputStre
         }
     }
     //***********************************************************************************************************
+    
+    //ADD to products Combobox on GUI
+     MSB_gui.addToProductcb(newProducts);
+   
+
     
     return Response.ok("Data uploaded successfully !!").build();
 }    

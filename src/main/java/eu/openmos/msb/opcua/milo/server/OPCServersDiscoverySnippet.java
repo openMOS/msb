@@ -23,6 +23,7 @@ import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
+import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import java.io.FileWriter;
@@ -34,6 +35,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import javax.xml.ws.BindingProvider;
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
@@ -55,6 +57,7 @@ public class OPCServersDiscoverySnippet extends Thread
   private final IOPCNotifyGUI notify_channel;
   private final Logger logger = LoggerFactory.getLogger(getClass());
   private final String MSB_OPCUA_SERVER_ADDRESS;
+  private final StopWatch namespaceParsingTimer = new StopWatch();
 
   /**
    * @param _msb_address
@@ -213,8 +216,8 @@ public class OPCServersDiscoverySnippet extends Thread
                 // call SendServerURL() method from device
                 if (daName != null && !daName.contains("MSB") && !daName.contains("discovery"))
                 {
-
-                  // oompa loompas at work here
+                  namespaceParsingTimer.start();
+                  
                   System.out.println("\n");
                   System.out.println("***** Starting namespace browsing ***** \n");
                   
@@ -232,33 +235,19 @@ public class OPCServersDiscoverySnippet extends Thread
                           new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
                           Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level.skills")),
                           ignore));
-                  // add the skills node to the main doc, not necessary 
-//                  node.addContent(nSkills);
-                  
-//                  // Print to console
-
-//                  System.out.println("\n");
-//                  new XMLOutputter(Format.getPrettyFormat()).output(node, System.out); // this is only for debug
-//                  System.out.println("\n");
-                  
+                   
                   // print to file the XML structure extracted from the browsing process             
                   XMLOutputter xmlOutput = new XMLOutputter();
                   xmlOutput.setFormat(Format.getPrettyFormat());
                   
                   String XML_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");                  
-                  // C:\Users\Introsys\Desktop\OpenMosWorksapce\msb\xml\file.xml
-//                  xmlOutput.output(node, new FileWriter("C:\\Users\\Introsys\\Desktop\\OpenMosWorksapce\\msb\\xml/file.xml", false));
-//                  xmlOutput.output(nSkills, new FileWriter("C:\\Users\\Introsys\\Desktop\\OpenMosWorksapce\\msb\\xml/file2.xml", false));
-////                  xmlOutput.output(node, new FileWriter("C:\\NetBeansProjects\\msb\\xml\\file.xml", false));
-////                  xmlOutput.output(nSkills, new FileWriter("C:\\NetBeansProjects\\msb\\xml\\file2.xml", false));
                   xmlOutput.output(node, new FileWriter(XML_PATH + "\\file.xml", false));
                   xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\file2.xml", false));
                   
                   System.out.println("Starting DA Parser **********************");
-                  // TODO - WIP - parse the XML to java classes to be send up to the HMI and Agent Cloud
+                              
                   boolean ok = da.parseDNToObjects(node, nSkills);
-                  
-                  
+                                    
                   System.out.println("***** End namespace browsing ***** \n\n");                  
                   
                   //FILL TABLES
@@ -269,6 +258,12 @@ public class OPCServersDiscoverySnippet extends Thread
                   }else{
                     System.out.println("parseDNToObjects FAILED!");       
                   }
+                  
+                  PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();  
+                  Long time = namespaceParsingTimer.getTime();
+                  perfMeasure.getNameSpaceParsingTimers().add(time);
+                  logger.info("Namespace Parsing took " + time.toString() + "ms to be executed");
+                  namespaceParsingTimer.stop();
                   
                   // TODO next step validate this
                   // TODO fabio check if this will be valid after changes from fortiss
@@ -359,6 +354,10 @@ public class OPCServersDiscoverySnippet extends Thread
         {
           ss.setDescription(ss.getName());
         }
+        
+        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+        perfMeasure.getAgentRemovalTimers().put(ss.getUniqueId(), new Date().getTime());
+         
         //ss.setRegistered(new Date());
         ServiceCallStatus agentStatus = systemConfigurator.removeAgent(ss.getUniqueId());
         // end
@@ -464,8 +463,21 @@ public class OPCServersDiscoverySnippet extends Thread
             ss.setUniqueId(ss.getName());
           if (ss.getDescription() == null || ss.getDescription().length() == 0)
             ss.setDescription(ss.getName());  
+          
           ss.setRegistered(new Date());
-          ServiceCallStatus agentStatus = systemConfigurator.createNewResourceAgent(ss);
+          
+         PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+         perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
+        //perfMeasure.getNameSpaceParsingTimers().add(time);
+                  
+          ServiceCallStatus agentStatus;
+          if(ss.getType().equals("TransportSystem")){
+             
+             agentStatus = systemConfigurator.createNewTransportAgent(ss);
+          }else{
+             agentStatus = systemConfigurator.createNewResourceAgent(ss);
+          }
+          
           // end
         
         
@@ -478,8 +490,16 @@ public class OPCServersDiscoverySnippet extends Thread
         //da.setSubSystem(cpad);
         MSB_gui.fillRecipesTable();
         
-        return agentStatus.getCode(); //OK? ou KO?
-      } else
+        if (agentStatus != null)
+        {
+          return agentStatus.getCode(); //OK? ou KO?
+        } else
+        {
+          return "KO";
+        }
+        
+        
+      } else //without AC
       {
         //call mainwindow filltables
         MSB_gui.fillRecipesTable();
