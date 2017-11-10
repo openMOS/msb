@@ -263,6 +263,7 @@ public class MSBClientSubscription implements IClient
   public boolean InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId, String productId)
   {
     PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+    recipeExecutionWatch.reset();
     recipeExecutionWatch.start();
     
     CallMethodRequest request = new CallMethodRequest(
@@ -307,10 +308,9 @@ public class MSBClientSubscription implements IClient
       perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
       recipeExecutionWatch.stop();
       java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
+      
     }
-    
-    perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
-    recipeExecutionWatch.stop();
+
     
     return false;
   }

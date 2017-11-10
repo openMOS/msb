@@ -216,6 +216,7 @@ public class OPCServersDiscoverySnippet extends Thread
                 // call SendServerURL() method from device
                 if (daName != null && !daName.contains("MSB") && !daName.contains("discovery"))
                 {
+                  namespaceParsingTimer.reset();
                   namespaceParsingTimer.start();
                   
                   System.out.println("\n");

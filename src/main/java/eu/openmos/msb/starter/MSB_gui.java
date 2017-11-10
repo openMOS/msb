@@ -1074,7 +1074,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       }
     });
 
-    jButton1.setText("jButton1");
+    jButton1.setText("DummyKPI");
     jButton1.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -1111,14 +1111,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               .addComponent(btnProductExecute, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE))
             .addGap(30, 30, 30)
             .addComponent(jButton1)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
             .addGroup(p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(daidtxt, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(btnProductSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p_productExecutionLayout.createSequentialGroup()
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+      .addGroup(p_productExecutionLayout.createSequentialGroup()
+        .addGap(204, 204, 204)
         .addComponent(exportTimers)
-        .addGap(197, 197, 197))
+        .addGap(0, 0, Short.MAX_VALUE))
     );
     p_productExecutionLayout.setVerticalGroup(
       p_productExecutionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1193,7 +1193,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(p_productExecution, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addComponent(p_productExecution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addGap(21, 21, 21)
         .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1876,7 +1876,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         for (KPISetting kpi : recipe.getKpiSettings())
         {
-            String kpiValue = "mandafoder";
+            String kpiValue = "dummyKPI";
             kpi.setValue(kpiValue);  
         }
         break;

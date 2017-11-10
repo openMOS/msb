@@ -211,7 +211,8 @@ public class PECManager
     {
       System.out.println("Adapter is ready! no pendejos found");
       DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(DaID));
-      deviceAdapter.getSubSystem().setState(MSBConstants.ADAPTER_STATE_READY);
+      if (deviceAdapter != null)
+        deviceAdapter.getSubSystem().setState(MSBConstants.ADAPTER_STATE_READY);
     }
     
   }
