@@ -55,8 +55,8 @@ public class ChangeState
                   name = "Ackowledge",
                   description = "Acknowledge 1-OK 0-NOK") AnnotationBasedInvocationHandler.Out<Integer> result)
   {
-    
-    changeStateAndNextRecipeTimer.start();   
+    changeStateAndNextRecipeTimer.reset();
+    changeStateAndNextRecipeTimer.start();
       
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
     System.out.println("Change State invoked with parameters-> DaID:" + da_id + " productID: " + product_id + " recipeID:" + recipe_id);

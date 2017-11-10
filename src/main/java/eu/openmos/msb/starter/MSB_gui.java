@@ -1378,24 +1378,23 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   private void btn_ChangedStateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_ChangedStateActionPerformed
   {//GEN-HEADEREND:event_btn_ChangedStateActionPerformed
-   String MSBName=ComboMSB.getSelectedItem().toString();
-    DeviceAdapterOPC da= (DeviceAdapterOPC) DACManager.getInstance().getDeviceAdapter(MSBName);
+    String MSBName = ComboMSB.getSelectedItem().toString();
+    DeviceAdapterOPC msb= (DeviceAdapterOPC) DACManager.getInstance().getDeviceAdapter(MSBName);
     NodeId obj = new NodeId(2, "MSB");
     NodeId meth  = new NodeId(2, "MSB/ChangeState");
-    String chupa = "";
+    String result = "";
     try
     {
-      chupa = da.getClient().InvokeDeviceMARTELO(da.getClient().getClientObject(), obj, meth , "prodID", "yrryry", "dryedrydry").get();
-    } catch (InterruptedException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (ExecutionException ex)
+      DeviceAdapterOPC da= (DeviceAdapterOPC) DACManager.getInstance().getDeviceAdapter(comboServers.getSelectedItem().toString());
+      if (da != null)
+        result = msb.getClient().InvokeDeviceMARTELO(msb.getClient().getClientObject(), obj, meth , "prodID", da.getSubSystem().getUniqueId(), "dryedrydry").get();
+    } catch (InterruptedException | ExecutionException ex)
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
     
     //ret = DeviceITF.allCases("changedstate", textToSend.getText()); //simulate a device registration
-    opc_comms_log.append("Changed State method called. Returned: " + chupa + "\n");
+    opc_comms_log.append("Changed State method called. Returned: " + result + "\n");
   }//GEN-LAST:event_btn_ChangedStateActionPerformed
 
   /**
