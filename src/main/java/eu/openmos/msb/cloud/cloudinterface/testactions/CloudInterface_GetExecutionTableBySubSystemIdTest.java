@@ -1,17 +1,20 @@
 package eu.openmos.msb.cloud.cloudinterface.testactions;
 
 import eu.openmos.agentcloud.utilities.ServiceCallStatus;
+// import eu.openmos.agentcloud.data.recipe.Recipe;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.model.FinishedProductInfo;
+import eu.openmos.model.ExecutionTable;
+import eu.openmos.model.Recipe;
 // import eu.openmos.agentcloud.data.recipe.Skill;
-import eu.openmos.model.utilities.SerializationConstants;
-import eu.openmos.model.testdata.ModuleTest;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import eu.openmos.model.testdata.RecipeTest;
+import eu.openmos.model.testdata.SkillTest;
 import javax.xml.ws.BindingProvider;
 import org.apache.log4j.Logger;
+import eu.openmos.model.Skill;
+import eu.openmos.model.SubSystem;
+import java.util.List;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -25,11 +28,11 @@ import org.apache.log4j.Logger;
 * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
 * @author Valerio Gentile <valerio.gentile@we-plus.eu>
 */
-public class CloudInterface_FinishedProductTest {
-    private static final Logger logger = Logger.getLogger(CloudInterface_NewResourceAgentTest.class.getName());
+public class CloudInterface_GetExecutionTableBySubSystemIdTest {
+    private static final Logger logger = Logger.getLogger(CloudInterface_GetExecutionTableBySubSystemIdTest.class.getName());
     
     public static void main(String[] args) {
-        logger.info("Finished Product Test main start");
+        logger.info("CloudInterface_GetExecutionTableBySubSystemIdTest Test main start");
         
         SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
 	SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
@@ -38,15 +41,9 @@ public class CloudInterface_FinishedProductTest {
         BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
         bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
 
-        String equipmentId = ModuleTest.getTestObject("TO FIX", -1).getUniqueId();
-        String productId = "pd1400uniqueid_20171031163108";
-        String date = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(new Date());
-//        ServiceCallStatus skillStatus = systemConfigurator.finishedProduct(equipmentId, productId, date);
-        FinishedProductInfo finishedProductInfo = new FinishedProductInfo();
-        finishedProductInfo.setProductInstanceId(productId);
-        finishedProductInfo.setFinishedTime(new Date());
-        ServiceCallStatus skillStatus = systemConfigurator.finishedProduct(finishedProductInfo);
-          
-        logger.info("New Finished Product Test main end");
+        ExecutionTable executionTable = systemConfigurator.getExecutionTableBySubSystemId("2b30d0eb-5cc7-4e26-864e-8748a9ce487f");
+        logger.debug("executionTable detail = " + executionTable);
+                  
+        logger.info("CloudInterface_GetExecutionTableBySubSystemIdTest Test main end");
     }
 }

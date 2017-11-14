@@ -76,7 +76,9 @@ public class Recipe extends Base implements Serializable {
      */
     //private Equipment equipment;
     // private SubSystem equipment;
-    private String equipmentId;
+//    private String equipmentId;
+    private List<String> equipmentIds;
+    
     /**
      * Whether the recipe is optimized or not.
      */
@@ -132,7 +134,8 @@ public class Recipe extends Base implements Serializable {
             ControlPort executedBySkillControlPort,
             // Equipment equipment,
             // SubSystem equipment,
-            String equipmentId,
+//            String equipmentId,
+            List<String> equipmentIds,
             String msbProtocolEndpoint,
             boolean valid,
             Date registeredTimestamp) {
@@ -150,7 +153,9 @@ public class Recipe extends Base implements Serializable {
         this.executedBySkillControlPort = executedBySkillControlPort;
         
         // this.equipment = equipment;
-        this.equipmentId = equipmentId;
+//        this.equipmentId = equipmentId;
+        this.equipmentIds = equipmentIds;
+        
         this.msbProtocolEndpoint = msbProtocolEndpoint;        
         this.valid = valid;
     }
@@ -219,28 +224,33 @@ public class Recipe extends Base implements Serializable {
         this.skill = skill;
     }
 
-    /* public Equipment getEquipment() {
-        return equipment;
+    public List<String> getEquipmentIds() {
+        return equipmentIds;
     }
 
+    /* public Equipment getEquipment() {
+    return equipment;
+    }
     public void setEquipment(Equipment equipment) {
-        this.equipment = equipment;
+    this.equipment = equipment;
     } */
-/*    
+/*
     public SubSystem getEquipment() {
-        return equipment;
+    return equipment;
     }
-    
     public void setEquipment(SubSystem equipment) {
-        this.equipment = equipment;
+    this.equipment = equipment;
     }
-*/
-    public String getEquipmentId() {
-        return equipmentId;
-    }
-    
-    public void setEquipmentId(String equipmentId) {
-        this.equipmentId = equipmentId;
+     */
+//    public String getEquipmentId() {
+//        return equipmentId;
+//    }
+//    
+//    public void setEquipmentId(String equipmentId) {
+//        this.equipmentId = equipmentId;
+//    }
+    public void setEquipmentIds(List<String> equipmentIds) {
+        this.equipmentIds = equipmentIds;
     }
 
     public boolean isOptimized() {
@@ -354,7 +364,8 @@ public class Recipe extends Base implements Serializable {
         doc.append(DatabaseConstants.SKILL_REQUIREMENT_IDS, skillRequirementIds);           
         doc.append(DatabaseConstants.SKILL_ID, skillId);
         doc.append(DatabaseConstants.EXECUTED_BY_SKILL_CONTROL_PORT_ID, controlPortId);
-        doc.append(DatabaseConstants.EQUIPMENT_ID, equipmentId);
+//        doc.append(DatabaseConstants.EQUIPMENT_ID, equipmentId);
+        doc.append(DatabaseConstants.EQUIPMENT_IDS, equipmentIds);
         doc.append(DatabaseConstants.OPTIMIZED, optimized);
         doc.append(DatabaseConstants.OPTIMIZED_TIME, this.lastOptimizationTime == null ? "null" : sdf.format(this.lastOptimizationTime));
         doc.append(DatabaseConstants.MSB_PROTOCOL_ENDPOINT, msbProtocolEndpoint);

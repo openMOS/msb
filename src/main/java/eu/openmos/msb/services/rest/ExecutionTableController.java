@@ -75,7 +75,7 @@ public class ExecutionTableController {
         }        
         logger.debug(subSystem != null ? "execution update - ExecutionTable successfully updated" :
             "execution table update - can not find subSystem with Id: " + subSystemId);
-        return subSystem != null ? subSystem.getExecutionTable() : null;
+        return subSystem != null ? subSystem.getExecutionTable() : executionTable;
    }   
 
     /**
@@ -98,6 +98,16 @@ public class ExecutionTableController {
         logger.debug("execution table insert - Insert new row in ExecutionTable from SubSystem: " + subSystemId);
         SubSystem subSystem = getSubSystemById(subSystemId);
         if(subSystem != null) {
+            if (subSystem.getExecutionTable().getRows() != null
+                    && subSystem.getExecutionTable().getRows().isEmpty()
+                    && rowToInsert.getRowPosition() > 0) {
+                
+                logger.debug("execution table insert - corretting new row position, setting to 0");
+                rowToInsert.setRowPosition(0);
+            }
+            
+            logger.debug("execution table insert - new row position: " + rowToInsert.getRowPosition());
+            
             subSystem.getExecutionTable().getRows()
                     .add(rowToInsert.getRowPosition(), rowToInsert.getRow());
         }        
@@ -208,7 +218,7 @@ public class ExecutionTableController {
     
     private SubSystem getSubSystemById(String subSystemId) {
         for(SubSystem ss : (new SubSystemController()).getList()) {
-            if(ss.getName().equalsIgnoreCase(subSystemId)){
+            if(ss.getUniqueId().equalsIgnoreCase(subSystemId)){
                 return ss;
             }
         }

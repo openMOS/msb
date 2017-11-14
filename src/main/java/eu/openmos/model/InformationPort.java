@@ -1,9 +1,13 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
+import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -55,9 +59,26 @@ public class InformationPort extends Port implements Serializable {
      * 
      * @return BSON Document format of the object. 
      */
+//    public Document toBSON() {
+//        return toBSON2();
+//    }
     public Document toBSON() {
-        return toBSON2();
-    }
+        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
+        String stringRegisteredTimestamp = sdf.format(this.registered);
+        
+        List<String> kpiIds = null;
+        if (kpis != null)
+            kpiIds = kpis.stream().map(kpi -> kpi.getUniqueId()).collect(Collectors.toList());        
+
+        return new Document()
+                .append(DatabaseConstants.DESCRIPTION, description)
+                .append(DatabaseConstants.UNIQUE_ID, uniqueId)
+                .append(DatabaseConstants.NAME, name)
+                .append(DatabaseConstants.TYPE, type)
+                .append(DatabaseConstants.DIRECTION, direction)
+                .append(DatabaseConstants.KPI_IDS, kpiIds)
+                .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
+    }    
     
     /**
      * Method that deserializes a BSON object.
@@ -65,9 +86,9 @@ public class InformationPort extends Port implements Serializable {
      * @param bsonPort - BSON to be deserialized.
      * @return Deserialized object.
      */
-    public static InformationPort fromBSON(Document bsonPort)
-    throws ParseException 
-    {
-            return (InformationPort)InformationPort.fromBSON2(bsonPort, InformationPort.class);
-    }        
+//    public static InformationPort fromBSON(Document bsonPort)
+//    throws ParseException 
+//    {
+//            return (InformationPort)InformationPort.fromBSON2(bsonPort, InformationPort.class);
+//    }        
 }

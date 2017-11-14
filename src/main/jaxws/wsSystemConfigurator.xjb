@@ -77,6 +77,12 @@
 <jxb:bindings node="//xs:complexType[@name='part']">
     <jxb:class ref="eu.openmos.model.Part" />
 </jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='product']">
+    <jxb:class ref="eu.openmos.model.Product" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='finishedProductInfo']">
+    <jxb:class ref="eu.openmos.model.FinishedProductInfo" />
+</jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='productInstance']">
     <jxb:class ref="eu.openmos.model.ProductInstance" />
 </jxb:bindings>

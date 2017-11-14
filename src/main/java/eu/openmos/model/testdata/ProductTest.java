@@ -27,8 +27,10 @@ public class ProductTest {
         String modelId = "modelId";
         String name = "modelName";
         String description = "description";
-        List<Part> lc = new LinkedList<>();
-        List<SkillRequirement> lsr = new LinkedList<>();
+        
+        List<Part> lc = PartTest.getTestList();    //  = new LinkedList<>();
+        
+        List<SkillRequirement> lsr = SkillRequirementTest.getTestList();    // new LinkedList<>();
         
         Product product = new Product(
                 modelId, 

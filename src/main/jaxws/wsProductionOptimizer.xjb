@@ -53,6 +53,9 @@
 <jxb:bindings node="//xs:complexType[@name='skillRequirement']">
     <jxb:class ref="eu.openmos.model.SkillRequirement" />
 </jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='skillReqPrecedent']">
+    <jxb:class ref="eu.openmos.model.SkillReqPrecedent" />
+</jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='optimizationParameter']">
     <jxb:class ref="eu.openmos.agentcloud.utilities.OptimizationParameter" />
 </jxb:bindings>

@@ -41,13 +41,7 @@ public class ProductInstance extends Base implements Serializable {
     /**
      * Id of the order.
      */
-    private String orderId; 
-    
-    /**
-     * Id of the order line.
-     */
-    private String orderLineId;
-    
+    private String orderId;    
     /**
      * List of parts.
      * MSB and WP4 Bari decision: we will not use parts for any demonstrator so far.
@@ -61,10 +55,13 @@ public class ProductInstance extends Base implements Serializable {
      * Whether the product instance is finished or not.
     */
     private boolean finished = false;
+    private ProductInstanceStatus status = ProductInstanceStatus.TO_BE_PRODUCED;
     /**
      * Timestamp of product finish.
     */
-    private Date finishedTime;
+    private Date finishedTime = null;
+    
+    private Date startedProductionTime = null;
     
 //    private static final int FIELDS_COUNT = 10;
     
@@ -88,9 +85,13 @@ public class ProductInstance extends Base implements Serializable {
      * @param registeredTimestamp - timestamp of object creation
      */
     public ProductInstance(String uniqueId, String productId, String name, 
-            String description, String orderId, String orderLineID, 
+            String description, String orderId, 
             List<PartInstance> partInstances, 
 //            List<SkillRequirement> skillRequirements, 
+            boolean finished,
+            Date finishedTime,
+            ProductInstanceStatus status,
+            Date startedProductionTime,
             Date registeredTimestamp) {
         super(registeredTimestamp);
 
@@ -100,8 +101,13 @@ public class ProductInstance extends Base implements Serializable {
         this.description = description;
         this.orderId = orderId;
         this.partInstances = partInstances;
-        this.orderLineId = orderLineID;
 //        this.skillRequirements = skillRequirements;
+
+        this.status = status; 
+        this.startedProductionTime = startedProductionTime;
+
+        this.finished = finished; 
+        this.finishedTime = finishedTime;
     }
 
     
@@ -132,26 +138,18 @@ public class ProductInstance extends Base implements Serializable {
     public String getOrderId() {
         return orderId;
     }
-    
-     public String getOrderLineId() {
-        return orderLineId;
-    }
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
-    
-    public void setOrderLineId(String orderLineId) {
-        this.orderLineId = orderLineId;
-    }
 
-    public String getProductId() {
-        return productId;
-    }
-
-    public void setProductId(String modelId) {
-        this.productId = modelId;
-    }
+//    public String getModelId() {
+//        return productId;
+//    }
+//
+//    public void setModelId(String modelId) {
+//        this.productId = modelId;
+//    }
 
     public String getDescription() {
         return description;
@@ -168,6 +166,47 @@ public class ProductInstance extends Base implements Serializable {
     public void setParts(List<PartInstance> partInstances) {
         this.partInstances = partInstances;
     }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+
+    public ProductInstanceStatus getStatus() {
+        return status;
+    }
+
+    public void setState(ProductInstanceStatus status) {
+        this.status = status;
+    }
+
+    public Date getFinishedTime() {
+        return finishedTime;
+    }
+
+    public void setFinishedTime(Date finishedTime) {
+        this.finishedTime = finishedTime;
+    }
+
+    public Date getStartedProductionTime() {
+        return startedProductionTime;
+    }
+
+    public void setStartedProductionTime(Date startedProductionTime) {
+        this.startedProductionTime = startedProductionTime;
+    }
+    
     
     /**
      * Method that serializes the object into a BSON document.
@@ -191,6 +230,10 @@ public class ProductInstance extends Base implements Serializable {
 //        doc.append("skillRequirements", skillRequirementIds);      
         doc.append(DatabaseConstants.FINISHED, finished);         
         doc.append(DatabaseConstants.FINISHED_TIME, finishedTime == null ? null : new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.finishedTime));  
+
+        doc.append(DatabaseConstants.STATUS, status.toString());         
+        doc.append(DatabaseConstants.STARTED_PRODUCTION_TIME, startedProductionTime == null ? null : new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.startedProductionTime));  
+
         doc.append(DatabaseConstants.REGISTERED, new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(registered));
         
         return doc;

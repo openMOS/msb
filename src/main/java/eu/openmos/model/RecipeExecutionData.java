@@ -1,8 +1,12 @@
 package eu.openmos.model;
 
+import eu.openmos.model.utilities.DatabaseConstants;
+import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.bson.Document;
 
 /**
@@ -17,8 +21,10 @@ public class RecipeExecutionData extends Base implements Serializable {
     
     private String productId;
     private String recipeId;
-    private List<String> kpiIds;
-    private List<String> parameterIds;
+    // private List<String> kpiIds;
+    private List<KPISetting> kpiSettings;
+    // private List<String> parameterIds;
+    private List<ParameterSetting> parameterSettings;
 
 //    private static final int FIELDS_COUNT = 5;
     
@@ -29,16 +35,18 @@ public class RecipeExecutionData extends Base implements Serializable {
     public RecipeExecutionData(
             String productId, 
             String recipeId, 
-            List<String> kpiIds, 
-            List<String> parameterIds, 
+//            List<String> kpiIds, 
+//            List<String> parameterIds, 
+            List<KPISetting> kpiSettings, 
+            List<ParameterSetting> parameterSettings, 
             Date registeredTimestamp) 
     {
         super(registeredTimestamp);
         
         this.productId = productId;
         this.recipeId = recipeId;
-        this.kpiIds = kpiIds;
-        this.parameterIds = parameterIds;
+        this.kpiSettings = kpiSettings;
+        this.parameterSettings = parameterSettings;
 //        this.registered = registered;
     }
 
@@ -58,32 +66,46 @@ public class RecipeExecutionData extends Base implements Serializable {
         this.recipeId = recipeId;
     }
 
-    public List<String> getKpiIds() {
-        return kpiIds;
+    public List<KPISetting> getKpiSettings() {
+        return kpiSettings;
+    }
+    
+    public void setKpiSettings(List<KPISetting> kpiSettings) {
+        this.kpiSettings = kpiSettings;
     }
 
-    public void setKpiIds(List<String> kpiIds) {
-        this.kpiIds = kpiIds;
+    public List<ParameterSetting> getParameterSettings() {
+        return parameterSettings;
     }
 
-    public List<String> getParameterIds() {
-        return parameterIds;
-    }
-
-    public void setParameterIds(List<String> parameterIds) {
-        this.parameterIds = parameterIds;
+//    public List<String> getKpiIds() {
+//        return kpiIds;
+//    }
+//
+//    public void setKpiIds(List<String> kpiIds) {
+//        this.kpiIds = kpiIds;
+//    }
+//
+//    public List<String> getParameterIds() {
+//        return parameterIds;
+//    }
+//
+//    public void setParameterIds(List<String> parameterIds) {
+//        this.parameterIds = parameterIds;
+//    }
+    public void setParameterSettings(List<ParameterSetting> parameterSettings) {
+        this.parameterSettings = parameterSettings;
     }
 
     /**
      * Method that serializes the object.
      * The returned string has the following format:
- 
- productId
- recipeId
- list of kpi ids
- list of parameter ids
- registered
-     * 
+    productId
+    recipeId
+    list of kpi ids
+    list of parameter ids
+    registered
+     *
      * @return Serialized form of the object. 
      */
 //    @Override
@@ -110,19 +132,17 @@ public class RecipeExecutionData extends Base implements Serializable {
 //        return builder.toString();
 //        
 //    }
-    
     /**
-    * Method that deserializes a String object.
+     * Method that deserializes a String object.
      * The input string needs to have the following format:
- 
- productId
- recipeId
- list of kpi ids
- list of parameter ids
- registered
-    * 
-    * @param object - String to be deserialized.
-    * @return Deserialized object.
+    productId
+    recipeId
+    list of kpi ids
+    list of parameter ids
+    registered
+     *
+     * @param object - String to be deserialized.
+     * @return Deserialized object.
      * @throws java.text.ParseException
      */
 //    public static RecipeExecutionData fromString(String object) throws ParseException {
@@ -142,21 +162,38 @@ public class RecipeExecutionData extends Base implements Serializable {
 ////                tokenizer.nextToken()                                // registered                
 //        );
 //    }
-    
     /**
      * Method that serializes the object into a BSON document.
      * The returned BSON document has the following format:
- 
- productId
- recipeId
- list of kpi ids
- list of parameter ids
- registered
-     * 
+    productId
+    recipeId
+    list of kpi ids
+    list of parameter ids
+    registered
+     *
      * @return BSON form of the object. 
      */
     public Document toBSON() {
-        return toBSON2();
+        Document doc = new Document();
+        
+        List<String> kpiSettingIds = null;
+        if (kpiSettings != null)
+            kpiSettingIds = kpiSettings.stream().map(kpiSetting -> kpiSetting.getUniqueId()).collect(Collectors.toList());
+        
+        List<String> parameterSettingIds = null;
+        if (parameterSettings != null)
+            parameterSettingIds = parameterSettings.stream().map(parameterSetting -> parameterSetting.getUniqueId()).collect(Collectors.toList());        
+        
+        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
+        
+        doc.append(DatabaseConstants.PRODUCT_ID, productId);
+        doc.append(DatabaseConstants.RECIPE_ID, recipeId);
+        doc.append(DatabaseConstants.KPI_SETTING_IDS, kpiSettingIds);
+        doc.append(DatabaseConstants.PARAMETER_SETTING_IDS, parameterSettingIds);        
+        doc.append(DatabaseConstants.REGISTERED, this.registered == null ? "null" : sdf.format(this.registered));
+        
+        return doc;
+//////////////////////////////        return toBSON2();
 //        Document doc = new Document();
 //        
 //        doc.append("productId", productId);
@@ -167,10 +204,9 @@ public class RecipeExecutionData extends Base implements Serializable {
 //        
 //        return doc;        
     }
-    
 //    public Document toBSON2() {
 //        Document doc2 = Document.parse(toJSON());
-//        
+//
 //        return doc2;        
 //    }
 //    public String toJSON() {
@@ -187,7 +223,7 @@ public class RecipeExecutionData extends Base implements Serializable {
 //			// Convert object to JSON string and pretty print
 //			jsonInFormattedString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
 //			// System.out.println(jsonInFormattedString);
-//                        
+//
 //                        
 //		} catch (JsonGenerationException e) {
 //			e.printStackTrace();
@@ -197,8 +233,7 @@ public class RecipeExecutionData extends Base implements Serializable {
 //			e.printStackTrace();
 //		}
 //                return jsonInString;
-//	}    
-    
+//	}
 //    public static RecipeExecutionData fromJSON(String jsonString) {
 //        RecipeExecutionData red = null;
 //		ObjectMapper mapper = new ObjectMapper();
@@ -216,8 +251,7 @@ public class RecipeExecutionData extends Base implements Serializable {
 //		}
 //                
 //                return red;
-//	}    
-    
+//	}
 //    public static void main(String[] args)
 //    {
 //        RecipeExecutionData red = RecipeExecutionDataTest.getTestObject();

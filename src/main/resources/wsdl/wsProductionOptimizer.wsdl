@@ -40,7 +40,7 @@
 <xs:extension base="tns:base">
 <xs:sequence>
 <xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="equipmentIds" nillable="true" type="xs:string" />
 <xs:element minOccurs="0" name="executedBySkillControlPort" type="tns:controlPort" />
 <xs:element minOccurs="0" name="invokeMethodID" type="xs:string" />
 <xs:element minOccurs="0" name="invokeObjectID" type="xs:string" />

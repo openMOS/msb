@@ -6,6 +6,7 @@
 package eu.openmos.msb.services.soap;
 
 // import eu.openmos.agentcloud.data.recipe.Recipe;
+import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.Recipe;
 import java.util.List;
 import javax.jws.WebMethod;
@@ -19,8 +20,11 @@ import javax.jws.WebService;
  */
 @WebService
 public interface RecipesDeployment {
-    @WebMethod(operationName = "sendRecipes")
+    @WebMethod(operationName = "updateRecipes")
     @WebResult(name="recipesDeploymentStatus")
-    public boolean sendRecipes(@WebParam(name = "deviceName") String deviceName, @WebParam(name = "mode") int mode, @WebParam(name = "recipes") List<Recipe> recipes);
+    public boolean updateRecipes(@WebParam(name = "deviceName") String deviceName, @WebParam(name = "mode") int mode, @WebParam(name = "recipes") List<Recipe> recipes);
     
+    @WebMethod(operationName = "updateExecutionTable")
+    @WebResult(name="executionTableDeploymentStatus")
+    public boolean updateExecutionTable(@WebParam(name = "executionTable") ExecutionTable executionTable);
 }

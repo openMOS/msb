@@ -33,8 +33,10 @@ public class CloudInterface_RemoveAgentTest {
         }*/
         
         String[] agentsToRemove = {
+            "equipmentId"
+                /*
             "Resource_1501492847237",
-            "Transport_1501493152921"   /*,
+            "Transport_1501493152921"   / *,
             "pd1300uniqueid_20170728152555",
             "pd1200uniqueid_20170728152555",
             "pd1100uniqueid_20170728152555" */ /* ,

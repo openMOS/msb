@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.bson.Document;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+// import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  * Describes workstation and transport:

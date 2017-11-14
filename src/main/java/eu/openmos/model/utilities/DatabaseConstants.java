@@ -15,6 +15,7 @@ public class DatabaseConstants {
     public final static String OPTIMIZED_TIME = "optimized_time";
     public final static String REMOVED_TIME = "removed_time";
     public final static String FINISHED_TIME = "finishedTime";
+    public final static String STARTED_PRODUCTION_TIME = "startedProductionTime";
 
     public final static String UNIQUE_ID = "uniqueId";
     public final static String NAME = "name";
@@ -72,6 +73,8 @@ public class DatabaseConstants {
     
     public final static String PART_IDS = "partIds";
     public final static String PART_INSTANCE_IDS = "partInstanceIds";
+
+    public final static String EQUIPMENT_IDS = "equipmentIds";
     
     public final static String PRIORITY = "priority";
     public final static String ORDER_LINE_IDS = "orderLineIds";

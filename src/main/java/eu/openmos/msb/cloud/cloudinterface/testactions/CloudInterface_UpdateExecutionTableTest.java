@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.msb.cloud.cloudinterface.testactions;
 
 import eu.openmos.agentcloud.utilities.ServiceCallStatus;
@@ -11,7 +6,9 @@ import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.utilities.Constants;
+import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.SubSystem;
+import eu.openmos.model.testdata.ExecutionTableTest;
 import eu.openmos.model.testdata.SubSystemTest;
 //import eu.openmos.model.testdata.CyberPhysicalAgentDescriptionTest;
 import io.vertx.core.Vertx;
@@ -24,9 +21,9 @@ import org.apache.log4j.Logger;
  *
  * @author valerio.gentile
  */
-public class CloudInterface_NewResourceAgentTest {
+public class CloudInterface_UpdateExecutionTableTest {
     
-    private static final Logger logger = Logger.getLogger(CloudInterface_NewResourceAgentTest.class.getName());
+    private static final Logger logger = Logger.getLogger(CloudInterface_UpdateExecutionTableTest.class.getName());
     
     public static void main(String[] args) {
         logger.info("New Resource Agent Test main start");
@@ -40,23 +37,17 @@ public class CloudInterface_NewResourceAgentTest {
         bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
         //////////////////////////////
 
-//         String myAgentId = "Resource_" + Calendar.getInstance().getTimeInMillis();
-        String myAgentId = "equipmentId"; // + Calendar.getInstance().getTimeInMillis();
-//        CyberPhysicalAgentDescription cpad = CyberPhysicalAgentDescriptionTest.getTestObject();
-        SubSystem cpad = SubSystemTest.getTestObject();
-        cpad.setType(Constants.DF_RESOURCE);
-//        cpad.setEquipmentId(myAgentId);
-        cpad.setName(myAgentId);
+        logger.debug("before calling update execution table");
         
-        logger.debug("before calling createNewResourceAgent: " + cpad);
-        
-        ServiceCallStatus agentStatus = systemConfigurator.createNewResourceAgent(cpad);
+        ExecutionTable et = ExecutionTableTest.getTestObject();
+        et.setDescription("updated exec table");
+        ServiceCallStatus agentStatus = systemConfigurator.updateExecutionTable("Resource_1", et);
         
         logger.info("return code on MSB side: " + agentStatus.getCode());
         logger.info("description on MSB side: " + agentStatus.getDescription());
 
         // Vertx.vertx().deployVerticle(new WebSocketsSender(myAgentId));
         
-        logger.info("New Resource Agent Test main end");
+        logger.info("update execution table Test main end");
     }
 }

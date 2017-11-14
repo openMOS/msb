@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.msb.services.soap;
 
-// import eu.openmos.agentcloud.data.recipe.Recipe;
+import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.Recipe;
 import java.util.List;
 import javax.jws.WebService;
@@ -23,7 +18,8 @@ public class RecipesDeploymentImpl implements RecipesDeployment {
     private static final Logger logger = Logger.getLogger(RecipesDeploymentImpl.class.getName());
 
     @Override
-    public boolean sendRecipes(String deviceName, int mode, List<Recipe> recipes) {
+    public boolean updateRecipes(String deviceName, int mode, List<Recipe> recipes) {
+        logger.debug("updateRecipes MSB method");
         logger.debug("device name = [" + deviceName + "]");
         
         logger.debug("mode = [" + mode + "]");
@@ -38,6 +34,13 @@ public class RecipesDeploymentImpl implements RecipesDeployment {
         
         logger.debug("recipes list = [" + recipes + "]");
         
+        return true;
+    }
+
+    @Override
+    public boolean updateExecutionTable(ExecutionTable executionTable) {
+        logger.debug("updateExecutionTable MSB method");
+        logger.debug("executionTable: " + executionTable);
         return true;
     }
     
