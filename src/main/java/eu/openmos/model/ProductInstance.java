@@ -63,6 +63,8 @@ public class ProductInstance extends Base implements Serializable {
     
     private Date startedProductionTime = null;
     
+    private Boolean hasAgent = false;
+    
 //    private static final int FIELDS_COUNT = 10;
     
     /**
@@ -206,6 +208,18 @@ public class ProductInstance extends Base implements Serializable {
     public void setStartedProductionTime(Date startedProductionTime) {
         this.startedProductionTime = startedProductionTime;
     }
+
+  public Boolean getHasAgent()
+  {
+    return hasAgent;
+  }
+
+  public void setHasAgent(Boolean hasAgent)
+  {
+    this.hasAgent = hasAgent;
+  }
+
+    
     
     
     /**

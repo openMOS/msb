@@ -126,7 +126,7 @@ public class ProductExecution implements Runnable
                 for (String recipeID : auxSR.getRecipeIDs())
                 {
                   //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
-                  if (checkRecipeAvailable(recipeID))
+                  if (checkRecipeAvailable(recipeID)&&checkProductAgentComms(productId))
                   {
                     if (executeRecipe(recipeID, auxProdInstance))
                     {
@@ -183,6 +183,44 @@ public class ProductExecution implements Runnable
     }
     return false;
   }
+  
+  private boolean checkProductAgentComms(String productInstID){
+    
+    for (ProductInstance prodInst : PECManager.getInstance().getProductsToDo())
+    {
+      if (productInstID.equals(prodInst.getUniqueId()))
+      {
+        System.out.println("Checking if the current product instance has agent representation...");
+        Boolean hasAgent = prodInst.getHasAgent();
+
+        if (hasAgent)
+        {
+          System.out.println("It has!");
+        }
+
+        String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+        boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+
+        if (withAGENTCloud && hasAgent)
+        {
+          return true;
+        } else if (!withAGENTCloud && !hasAgent)
+        {
+          return true;
+        } else if (!withAGENTCloud && hasAgent)
+        {
+          return true;
+        } else
+        {
+          return false;
+        }
+        
+      }
+    }
+    
+    return false;
+    
+  }
 
   private boolean executeRecipe(String recipeID, ProductInstance prodInst)
   {
@@ -214,8 +252,6 @@ public class ProductExecution implements Runnable
           da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
           System.out.println("[2FIRST RECIPE]Executing Recipe: " + recipeID + " of product instance: "+ prodInst.getUniqueId() + " from the adapter:"+DA_name+" returned: " + result + "\n");
           prodInst.setStartedProductionTime(new Date());
-          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInst.getUniqueId());
-          //System.out.println("[FIRST RECIPE]Execute invokeSkill Successfull\n");        
           
           String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
           boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
@@ -229,6 +265,11 @@ public class ProductExecution implements Runnable
             bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
             systemConfigurator.startedProduct(prodInst);
           }
+
+          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInst.getUniqueId());
+          //System.out.println("[FIRST RECIPE]Execute invokeSkill Successfull\n");        
+          
+
             
           
           return result;

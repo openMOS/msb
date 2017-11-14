@@ -38,7 +38,6 @@ public class PECManager
   private final HashMap<String, Queue> orderMap;
   private final Queue<ProductInstance> productsToDo;
   private final HashMap<String,ProductInstance> productsDoing;
-
   private final HashMap<String, List<PendingProdInstance>> pendejos;
 
   private boolean state;
@@ -53,7 +52,6 @@ public class PECManager
     orderInstances = new ArrayList<>();
     productsToDo = new LinkedList<>();
     productsDoing = new HashMap<>();
-
     pendejos = new HashMap<>();
 
   }

@@ -6,10 +6,12 @@
 package eu.openmos.msb.services.soap;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.model.ProductInstance;
 import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import io.vertx.core.Vertx;
 import java.io.IOException;
@@ -41,8 +43,18 @@ public class EventConfirmationImpl implements EventConfirmation
       } else
       {
         System.out.println("No DA found for the created agent ! " + agentId);
+        System.out.println("Trying to check if it is a product agent... ");
+        for (ProductInstance prodInst : PECManager.getInstance().getProductsToDo())
+        {
+          System.out.println("[agentCreated]prod instances Todo: " + prodInst.getUniqueId());
+          if (agentId.equals(prodInst.getUniqueId()))
+          {
+            System.out.println("It is!");
+            prodInst.setHasAgent(true);
+          }
+        }
       }
-      
+
         logger.debug(getClass().getName() + " - agentCreated - begin - starting websocket for agentId [" + agentId + "]");
         
         // some stuff...
