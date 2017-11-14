@@ -195,10 +195,10 @@ public class PECManager
     List<PendingProdInstance> prodInst = this.pendejos.get(DaID);
     if (prodInst != null && prodInst.size() > 0)
     {
-      System.out.println("Adapter: "+ DaID +" is ready and with pending product instances todo");
+      System.out.println("[PendejoChecker] Adapter: "+ DaID +" is ready and with pending product instances todo");
       //EXECUTOR AGAIN
       PendingProdInstance prodInstToDo = prodInst.remove(0);
-      DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(DaID));
+      DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(DaID));
       DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter.getClient();
       String method = DatabaseInteraction.getInstance().getRecipeMethodByID(prodInstToDo.getNextRecipeID());
       NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":")));
@@ -206,13 +206,18 @@ public class PECManager
       NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":")));
       boolean res = client.getClient().InvokeDeviceSkill(client.getClient().getClientObject(), objNode, methodNode, prodInstToDo.getProductInstanceID());
 
-      System.out.println("[PECmanager] result from the invokeDeviceSkill: "+res);
+      System.out.println("[[PendejoChecker]] result from the invokeDeviceSkill: "+res);
     } else
     {
-      System.out.println("Adapter is ready! no pendejos found");
-      DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(DaID));
+      System.out.println("[PendejoChecker]Adapter " + DaID + " is ready! no pendejos found");
+      DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(DaID));
       if (deviceAdapter != null)
+      {
         deviceAdapter.getSubSystem().setState(MSBConstants.ADAPTER_STATE_READY);
+        System.out.println("[PendejoChecker]Adapter " + DaID + " state changed to ready!");
+      }
+      else
+        System.out.println("[PendejoChecker]Adapter " + DaID + " not found in DB!");
     }
     
   }

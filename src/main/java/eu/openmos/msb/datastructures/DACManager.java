@@ -117,7 +117,7 @@ public class DACManager
     return null;
   }
 
-  public DeviceAdapter getDeviceAdapter(String deviceAdapterName)
+  public DeviceAdapter getDeviceAdapterbyName(String deviceAdapterName)
   {
 
     //System.out.println("getDeviceAdapter id from name: "+deviceAdapterName);

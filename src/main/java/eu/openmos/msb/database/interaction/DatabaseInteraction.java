@@ -7,7 +7,6 @@ package eu.openmos.msb.database.interaction;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.model.Recipe;
-import eu.openmos.model.Skill;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import java.io.BufferedReader;
 import java.io.File;
@@ -84,17 +83,17 @@ public class DatabaseInteraction
    *
    * @return
    */
-  private boolean createInMemDatabase() 
+  private boolean createInMemDatabase()
   {
     boolean dbCreated = false;
     try
     {
       // Class.forName("org.sqlite.JDBC");        
       String DATABASE_DRIVER_CLASS = ConfigurationLoader.getMandatoryProperty("openmos.msb.database.driver.class");
-      Class.forName(DATABASE_DRIVER_CLASS);      
+      Class.forName(DATABASE_DRIVER_CLASS);
 
       // openmos.msb.database.connection.string
-      String DBINMEMORY = ConfigurationLoader.getMandatoryProperty("openmos.msb.database.connection.string");                        
+      String DBINMEMORY = ConfigurationLoader.getMandatoryProperty("openmos.msb.database.connection.string");
       conn = DriverManager.getConnection(DBINMEMORY);
 
       StringBuilder sb = new StringBuilder();
@@ -172,7 +171,7 @@ public class DatabaseInteraction
   {
     StopWatch DBqueryTimer = new StopWatch();
     DBqueryTimer.start();
-        
+
     int ok_id = -1;
     try
     {
@@ -190,12 +189,12 @@ public class DatabaseInteraction
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     DBqueryTimer.stop();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
-    
+
     return ok_id;
   }
 
@@ -207,16 +206,22 @@ public class DatabaseInteraction
   {
     StopWatch DBqueryTimer = new StopWatch();
     DBqueryTimer.start();
-    
+
     ArrayList<String> list = new ArrayList<>();
     try
     {
       Statement stmt = conn.createStatement();
       String sql = "SELECT id, name FROM DeviceAdapter;";
       ResultSet rs = stmt.executeQuery(sql);
-      while (rs.next())
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
       {
-        list.add(rs.getString(2));
+        while (rs.next())
+        {
+          list.add(rs.getString(2));
+        }
       }
       stmt.close();
     } catch (SQLException ex)
@@ -224,12 +229,12 @@ public class DatabaseInteraction
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     DBqueryTimer.stop();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
-    
+
     return list;
   }
 
@@ -241,16 +246,22 @@ public class DatabaseInteraction
   {
     StopWatch DBqueryTimer = new StopWatch();
     DBqueryTimer.start();
-    
+
     ArrayList<String> list = new ArrayList<>();
     try
     {
       Statement stmt = conn.createStatement();
       String sql = "SELECT name FROM DeviceAdapter WHERE protocol = '" + protocol + "';";
       ResultSet rs = stmt.executeQuery(sql);
-      while (rs.next())
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
       {
-        list.add(rs.getString(1));
+        while (rs.next())
+        {
+          list.add(rs.getString(1));
+        }
       }
       rs.close();
       stmt.close();
@@ -259,12 +270,12 @@ public class DatabaseInteraction
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     DBqueryTimer.stop();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
-    
+
     return list;
   }
 
@@ -277,21 +288,27 @@ public class DatabaseInteraction
   {
     StopWatch DBqueryTimer = new StopWatch();
     DBqueryTimer.start();
-    
+
     ArrayList<String> list = new ArrayList<>();
     try
     {
       Statement stmt = conn.createStatement();
       String sql = "SELECT id, short_description, long_description, protocol FROM DeviceAdapter WHERE name = '" + deviceName + "'";
       ResultSet rs = stmt.executeQuery(sql);
-      while (rs.next())
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
       {
-        list.add(rs.getString(1));
-        list.add(rs.getString(2));
-        list.add(rs.getString(3));
-        list.add(rs.getString(4));
-        list.add(rs.getString(5));
-        list.add(rs.getString(6));
+        while (rs.next())
+        {
+          list.add(rs.getString(1));
+          list.add(rs.getString(2));
+          list.add(rs.getString(3));
+          list.add(rs.getString(4));
+          list.add(rs.getString(5));
+          list.add(rs.getString(6));
+        }
       }
       rs.close();
       stmt.close();
@@ -300,12 +317,12 @@ public class DatabaseInteraction
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     DBqueryTimer.stop();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
-    
+
     return list;
   }
 
@@ -368,14 +385,19 @@ public class DatabaseInteraction
     try
     {
       Statement stmt = conn.createStatement();
-      ArrayList<String> myresult;
+      ArrayList<String> myresult = new ArrayList<>();;
       try (ResultSet query = stmt.executeQuery("SELECT address, protocol FROM DeviceAdapter WHERE id = '" + deviceId + "'"))
       {
-        myresult = new ArrayList<>();
-        while (query.next())
+        if (!query.isBeforeFirst())
+        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+          System.out.println("No data");
+        } else
         {
-          myresult.add(query.getString(1));
-          myresult.add(query.getString(2));
+          while (query.next())
+          {
+            myresult.add(query.getString(1));
+            myresult.add(query.getString(2));
+          }
         }
       }
       stmt.close();
@@ -395,7 +417,7 @@ public class DatabaseInteraction
     DBqueryTimer.stop();
 
     return null;
-    
+
   }
 
   /**
@@ -410,18 +432,23 @@ public class DatabaseInteraction
     DBqueryTimer.start();
     try
     {
-
+      String name = "";
       Statement stmt = conn.createStatement();
       ResultSet query = stmt.executeQuery("SELECT name FROM DeviceAdapter WHERE address = '" + address + "'");
       query.close();
-      String name = query.getString(1);
-
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
+        name = query.getString(1);
+      }
       stmt.close();
 
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-      
+
       return name;
     } catch (SQLException ex)
     {
@@ -432,7 +459,7 @@ public class DatabaseInteraction
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-      
+
     return null;
   }
 
@@ -444,21 +471,26 @@ public class DatabaseInteraction
     try
     {
       Statement stmt = conn.createStatement();
-      ArrayList<String> myresult;
+      ArrayList<String> myresult = new ArrayList<>();
       try (ResultSet query = stmt.executeQuery("SELECT name FROM DeviceAdapter"))
       {
-        myresult = new ArrayList<>();
-        while (query.next())
+        if (!query.isBeforeFirst())
+        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+          System.out.println("No data");
+        } else
         {
-          myresult.add(query.getString(1));
+          while (query.next())
+          {
+            myresult.add(query.getString(1));
+          }
         }
       }
       stmt.close();
-      
+
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-    
+
       return myresult;
     } catch (SQLException ex)
     {
@@ -469,7 +501,7 @@ public class DatabaseInteraction
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return null;
   }
 
@@ -518,21 +550,25 @@ public class DatabaseInteraction
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     int id = -1;
     String sql = "SELECT id FROM DeviceAdapter WHERE name = '" + deviceName + "'";
 
     try (Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql))
     {
-
-      while (rs.next())
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
       {
-        id = rs.getInt("id");
-        //System.out.println("Found divce with id:  " + id);
-        break;
+        while (rs.next())
+        {
+          id = rs.getInt("id");
+          //System.out.println("Found divce with id:  " + id);
+          break;
+        }
       }
-
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
@@ -541,65 +577,71 @@ public class DatabaseInteraction
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return id;
   }
 
-  public String getDeviceAdapterNameByID(String deviceID)
+  public String getDeviceAdapterNameByDB_ID(String deviceID)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     String name = "";
     String sql = "SELECT name FROM DeviceAdapter WHERE id = '" + deviceID + "'";
 
     try (Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql))
     {
-
-      while (rs.next())
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
       {
-        name = rs.getString("name");
-        //System.out.println("Found device with name:  " + name);
-        break;
+        while (rs.next())
+        {
+          name = rs.getString("name");
+          //System.out.println("Found device with name:  " + name);
+          break;
+        }
       }
-
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return name;
   }
-  
-  
-  
+
   public String getDeviceAdapterNameByAmlID(String deviceAMLID)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     String name = "";
     String sql = "SELECT name FROM DeviceAdapter WHERE aml_id = '" + deviceAMLID + "'";
 
     try (Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql))
     {
-
-      while (rs.next())
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
       {
-        name = rs.getString("name");
-        //System.out.println("Found device with name:  " + name);
-        break;
+        while (rs.next())
+        {
+          name = rs.getString("name");
+          //System.out.println("Found device with name:  " + name);
+          break;
+        }
       }
-
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
@@ -608,9 +650,10 @@ public class DatabaseInteraction
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return name;
   }
+
   /**
    *
    * @param deviceName
@@ -621,31 +664,35 @@ public class DatabaseInteraction
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     int id = -1;
     String sql = "SELECT id FROM Skill WHERE name = '" + skillName + "'";
 
     try (Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql))
     {
-
-      while (rs.next())
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
       {
-        id = rs.getInt("id");
-        System.out.println("Found skill with id:  " + id);
-        break;
+        while (rs.next())
+        {
+          id = rs.getInt("id");
+          System.out.println("Found skill with id:  " + id);
+          break;
+        }
       }
-
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return id;
   }
 
@@ -722,7 +769,7 @@ public class DatabaseInteraction
     return -1;
   }
 
-    public int removeSkillByID(String skill_id)
+  public int removeSkillByID(String skill_id)
   {
     try
     {
@@ -738,7 +785,7 @@ public class DatabaseInteraction
     }
     return -1;
   }
-    
+
   /**
    *
    * @param device_name
@@ -749,7 +796,7 @@ public class DatabaseInteraction
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     try
     {
       ArrayList<String> myresult;
@@ -760,29 +807,35 @@ public class DatabaseInteraction
               + "WHERE DeviceAdapter.id = DAS.da_id AND Skill.id = DAS.sk_id AND DeviceAdapter.name = '" + device_name + "';";
       ResultSet query = stmt.executeQuery(sql);
       myresult = new ArrayList<>();
-      while (query.next())
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
       {
-        myresult.add(query.getString(1));
-        myresult.add(query.getString(2));
-        myresult.add(query.getString(3));
+        while (query.next())
+        {
+          myresult.add(query.getString(1));
+          myresult.add(query.getString(2));
+          myresult.add(query.getString(3));
+        }
       }
       stmt.close();
-      
+
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-    
+
       return myresult;
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return null;
   }
 
@@ -796,22 +849,28 @@ public class DatabaseInteraction
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     try
     {
-
+      String name = "";
       Statement stmt = conn.createStatement();
       String sql = "SELECT Skill.name "
               + "FROM Skill "
               + "WHERE Skill.id = '" + id + "';";
       ResultSet rs = stmt.executeQuery(sql);
-      String name = rs.getString(1);
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
+        name = rs.getString(1);
+      }
       stmt.close();
 
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-    
+
       return name;
     } catch (SQLException ex)
     {
@@ -821,16 +880,16 @@ public class DatabaseInteraction
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return null;
   }
-  
+
   public boolean getRecipeIdIsValid(String r_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     try
     {
       //String temp= "'"+r_id+"'";
@@ -839,18 +898,24 @@ public class DatabaseInteraction
               + "FROM Recipe "
               + "WHERE Recipe.aml_id = '" + r_id + "';";
       ResultSet rs = stmt.executeQuery(sql);
-      
+
       //int numberOfRows = rs.getRow();
       //System.out.println("ResultSet number of rows: "+numberOfRows);
-     
-      String valid = rs.getString("valid");
-      stmt.close();
-      
-      Long time = DBqueryTimer.getTime();
-      perfMeasure.getDatabaseQueryTimers().add(time);
-      DBqueryTimer.stop();
-    
-      return valid.equals("true");
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
+
+        String valid = rs.getString("valid");
+        stmt.close();
+
+        Long time = DBqueryTimer.getTime();
+        perfMeasure.getDatabaseQueryTimers().add(time);
+        DBqueryTimer.stop();
+
+        return valid.equals("true");
+      }
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
@@ -859,7 +924,7 @@ public class DatabaseInteraction
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return false;
   }
 
@@ -956,7 +1021,7 @@ public class DatabaseInteraction
     }
     return -1;
   }
-  
+
   public int removeSkillByDaId(int da_id)
   {
     try
@@ -973,7 +1038,7 @@ public class DatabaseInteraction
     }
     return -1;
   }
-  
+
   /**
    *
    * @param recipe_name
@@ -984,28 +1049,34 @@ public class DatabaseInteraction
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     try
     {
       Statement stmt = conn.createStatement();
       ResultSet query = stmt.executeQuery("Select Recipe.id FROM Recipe WHERE name = '" + recipe_name + "'");
       stmt.close();
-      
+
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-    
-      return Integer.parseInt(query.getString(1));
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
+        return Integer.parseInt(query.getString(1));
+      }
+
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return -1;
   }
 
@@ -1019,97 +1090,123 @@ public class DatabaseInteraction
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     String result = "";
     try
     {
       Statement stmt = conn.createStatement();
       String sql = "Select Recipe.name FROM Recipe WHERE aml_id = '" + aml_id + "';";
       ResultSet query = stmt.executeQuery(sql);
-      result = query.getString(1);
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
+        result = query.getString(1);
+      }
       stmt.close();
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return result;
   }
 
-    /**
-     *
-     * @param deviceAdapterName
-     * @return
-     */
-    public ArrayList<Recipe> getRecipesByDAName(String deviceAdapterName) {
-        StopWatch DBqueryTimer = new StopWatch();
-        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-        DBqueryTimer.start();
-    
-        ArrayList<Recipe> result = new ArrayList<>();
-        try {
-            try (Statement stmt = conn.createStatement()) {
-                String sql = "SELECT Recipe.aml_id, Recipe.sk_id, Recipe.da_id, Recipe.valid, Recipe.name, DeviceAdapter.id, DeviceAdapter.name\n"
-                        + "FROM Recipe, DeviceAdapter\n"
-                        + "WHERE Recipe.da_id = DeviceAdapter.id AND DeviceAdapter.name = '" + deviceAdapterName + "';";
-                ResultSet rs = stmt.executeQuery(sql);
-                while (rs.next()) {
-                    Recipe recipe = new Recipe();
-                    recipe.setUniqueId(rs.getString(1));
-                    recipe.setName(rs.getString(5));
-                    recipe.setValid(trueSet.contains(rs.getString(4)));
-                    result.add(recipe);
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println("[ERROR] getRecipesByDAName " + ex.getMessage());
-            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+  /**
+   *
+   * @param deviceAdapterName
+   * @return
+   */
+  public ArrayList<Recipe> getRecipesByDAName(String deviceAdapterName)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+
+    ArrayList<Recipe> result = new ArrayList<>();
+    try
+    {
+      try (Statement stmt = conn.createStatement())
+      {
+        String sql = "SELECT Recipe.aml_id, Recipe.sk_id, Recipe.da_id, Recipe.valid, Recipe.name, DeviceAdapter.id, DeviceAdapter.name\n"
+                + "FROM Recipe, DeviceAdapter\n"
+                + "WHERE Recipe.da_id = DeviceAdapter.id AND DeviceAdapter.name = '" + deviceAdapterName + "';";
+        ResultSet rs = stmt.executeQuery(sql);
+        if (!rs.isBeforeFirst())
+        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+          System.out.println("No data");
+        } else
+        {
+          while (rs.next())
+          {
+            Recipe recipe = new Recipe();
+            recipe.setUniqueId(rs.getString(1));
+            recipe.setName(rs.getString(5));
+            recipe.setValid(trueSet.contains(rs.getString(4)));
+            result.add(recipe);
+          }
         }
+      }
+    } catch (SQLException ex)
+    {
+      System.out.println("[ERROR] getRecipesByDAName " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return result;
+  }
+
+  public ArrayList<String> getRecipesIDbySkillReqID(String sr_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+
+    ArrayList<String> result = new ArrayList<>();
+    try
+    {
+      Statement stmt = conn.createStatement();
+      ResultSet query = stmt.executeQuery("SELECT SR.r_id FROM SR WHERE sr_id = '" + sr_id + "'");
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
+        while (query.next())
+        {
+          result.add(query.getString(1));
+        }
+      }
+      stmt.close();
 
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-    
-        return result;
+
+      return result;
+
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-    public ArrayList<String> getRecipesIDbySkillReqID(String sr_id) {
-      StopWatch DBqueryTimer = new StopWatch();
-      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-      DBqueryTimer.start();
-      
-        ArrayList<String> result = new ArrayList<>();
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet query = stmt.executeQuery("SELECT SR.r_id FROM SR WHERE sr_id = '" + sr_id + "'");
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
 
-            while (query.next()) {
-                result.add(query.getString(1));
-            }
-            stmt.close();
-            
-          Long time = DBqueryTimer.getTime();
-          perfMeasure.getDatabaseQueryTimers().add(time);
-          DBqueryTimer.stop();
-
-            return result;
-
-        } catch (SQLException ex) {
-            System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
-            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-       Long time = DBqueryTimer.getTime();
-      perfMeasure.getDatabaseQueryTimers().add(time);
-      DBqueryTimer.stop();
-    
-        return null;
-    }
+    return null;
+  }
 
   /**
    *
@@ -1121,97 +1218,62 @@ public class DatabaseInteraction
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     try
     {
       Statement stmt = conn.createStatement();
       ResultSet query = stmt.executeQuery("SELECT Recipe.endpoint FROM Recipe WHERE name = '" + recipe_name + "'");
       stmt.close();
-      
+
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-    
-      return query.getString(1);
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
+        return query.getString(1);
+      }
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return null;
   }
-  
+
   public String getRecipeMethodByID(String recipe_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     try
     {
       //System.out.println("*DB query* trying to get method for recipe:" + recipe_id);
-      
+
       ArrayList<String> result = new ArrayList<>();
-      
+
       Statement stmt = conn.createStatement();
-      ResultSet query = stmt.executeQuery("SELECT Recipe.method_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");  
-      
-       while (query.next())
+      ResultSet query = stmt.executeQuery("SELECT Recipe.method_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
       {
-        result.add(query.getString(1));
+        while (query.next())
+        {
+          result.add(query.getString(1));
+        }
       }
       stmt.close();
-            
-      //stmt.close();
-      //String res= query.getString("da_id");
-      if (result.size() > 0)
-      {
-        Long time = DBqueryTimer.getTime();
-        perfMeasure.getDatabaseQueryTimers().add(time);
-        DBqueryTimer.stop();
-        
-        return result.get(0);
-      }
-      
-      
-    } catch (SQLException ex)
-    {
-      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
-      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    Long time = DBqueryTimer.getTime();
-    perfMeasure.getDatabaseQueryTimers().add(time);
-    DBqueryTimer.stop();
-    
-    return null;
-  }
-  
-  public String getRecipeObjectByID(String recipe_id)
-  {
-    StopWatch DBqueryTimer = new StopWatch();
-    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-    DBqueryTimer.start();
-    
-    try
-    {
-      //System.out.println("*DB query* trying to get object for recipe:" + recipe_id);
-      
-      ArrayList<String> result = new ArrayList<>();
-      
-      Statement stmt = conn.createStatement();
-      ResultSet query = stmt.executeQuery("SELECT Recipe.obj_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
-      
-       while (query.next())
-      {
-        result.add(query.getString(1));
-      }
-      stmt.close();
-            
+
       //stmt.close();
       //String res= query.getString("da_id");
       if (result.size() > 0)
@@ -1222,7 +1284,56 @@ public class DatabaseInteraction
 
         return result.get(0);
       }
-      
+
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return null;
+  }
+
+  public String getRecipeObjectByID(String recipe_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+
+    try
+    {
+      //System.out.println("*DB query* trying to get object for recipe:" + recipe_id);
+
+      ArrayList<String> result = new ArrayList<>();
+
+      Statement stmt = conn.createStatement();
+      ResultSet query = stmt.executeQuery("SELECT Recipe.obj_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
+        while (query.next())
+        {
+          result.add(query.getString(1));
+        }
+      }
+      stmt.close();
+
+      //stmt.close();
+      //String res= query.getString("da_id");
+      if (result.size() > 0)
+      {
+        Long time = DBqueryTimer.getTime();
+        perfMeasure.getDatabaseQueryTimers().add(time);
+        DBqueryTimer.stop();
+
+        return result.get(0);
+      }
+
       //stmt.close();
       //return query.getString(1);
     } catch (SQLException ex)
@@ -1230,15 +1341,15 @@ public class DatabaseInteraction
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return null;
   }
-  
-   public String getDAIDbyRecipeID(String recipe_id)
+
+  public String getDAIDbyRecipeID(String recipe_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
@@ -1247,73 +1358,87 @@ public class DatabaseInteraction
     {
       //System.out.println("*DB query* gtting DAID from RecipeID: " + recipe_id);
       ArrayList<String> result = new ArrayList<>();
-      
+
       Statement stmt = conn.createStatement();
       ResultSet query = stmt.executeQuery("SELECT Recipe.da_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
-      
-       while (query.next()) {
-                result.add(query.getString(1));
-            }
-            stmt.close();
-            
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
+        while (query.next())
+        {
+          result.add(query.getString(1));
+        }
+      }
+      stmt.close();
+
       //stmt.close();
       //String res= query.getString("da_id");
-      if(result.size()>0){
-        
+      if (result.size() > 0)
+      {
+
         Long time = DBqueryTimer.getTime();
-    perfMeasure.getDatabaseQueryTimers().add(time);
-    DBqueryTimer.stop();
-    
-      return result.get(0);
+        perfMeasure.getDatabaseQueryTimers().add(time);
+        DBqueryTimer.stop();
+
+        return result.get(0);
       }
-      
+
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return null;
   }
 
-  public String getSkillReqIDbyRecipeID(String recipe_id){
-      StopWatch DBqueryTimer = new StopWatch();
-      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-      DBqueryTimer.start();
-      
-      try {
-          Statement stmt = conn.createStatement();
-          ResultSet query = stmt.executeQuery("SELECT SR.sr_id FROM SR WHERE r_id = '" + recipe_id + "'");
-          stmt.close();
-          
-        Long time = DBqueryTimer.getTime();
-        perfMeasure.getDatabaseQueryTimers().add(time);
-        DBqueryTimer.stop();
+  public String getSkillReqIDbyRecipeID(String recipe_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
 
+    try
+    {
+      Statement stmt = conn.createStatement();
+      ResultSet query = stmt.executeQuery("SELECT SR.sr_id FROM SR WHERE r_id = '" + recipe_id + "'");
+      stmt.close();
+
+      Long time = DBqueryTimer.getTime();
+      perfMeasure.getDatabaseQueryTimers().add(time);
+      DBqueryTimer.stop();
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        System.out.println("No data");
+      } else
+      {
         return query.getString(1);
-
-      } catch (SQLException ex) {
-          System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
-          Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
       }
-      
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
-      return null;
+
+    return null;
   }
-  
+
   public ArrayList<String> getAvailableSkillIDList()
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     try
     {
       Statement stmt = conn.createStatement();
@@ -1321,13 +1446,19 @@ public class DatabaseInteraction
       try (ResultSet query = stmt.executeQuery("SELECT Skill.id  FROM Skill"))
       {
         myresult = new ArrayList<>();
-        while (query.next())
+        if (!query.isBeforeFirst())
+        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+          System.out.println("No data");
+        } else
         {
-          myresult.add(query.getString(1));
+          while (query.next())
+          {
+            myresult.add(query.getString(1));
+          }
         }
       }
       stmt.close();
-      
+
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
@@ -1338,20 +1469,20 @@ public class DatabaseInteraction
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return null;
   }
-  
-   public ArrayList<String> getDAassociatedSkillIDList()
+
+  public ArrayList<String> getDAassociatedSkillIDList()
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     try
     {
       Statement stmt = conn.createStatement();
@@ -1359,37 +1490,43 @@ public class DatabaseInteraction
       try (ResultSet query = stmt.executeQuery("SELECT DAS.sk_id  FROM DAS"))
       {
         myresult = new ArrayList<>();
-        while (query.next())
+        if (!query.isBeforeFirst())
+        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+          System.out.println("No data");
+        } else
         {
-          myresult.add(query.getString(1));
+          while (query.next())
+          {
+            myresult.add(query.getString(1));
+          }
         }
       }
       stmt.close();
-      
+
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-    
+
       return myresult;
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return null;
   }
-  
+
   public boolean registerModule(String device_name, String module_name, String status, String address)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    
+
     int device_id;
     device_id = getDeviceAdapterIdByName(device_name);
     if (device_id == -1)
@@ -1410,25 +1547,25 @@ public class DatabaseInteraction
       }
       stmt.close();
       System.out.println("REGISTER MODULE  " + module_name + " " + status + " " + device_name);
-      
+
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-    
+
       return true;
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     Long time = DBqueryTimer.getTime();
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
-    
+
     return false;
   }
-  
+
   public int removeModuleByDAId(int da_id)
   {
     try
@@ -1445,7 +1582,7 @@ public class DatabaseInteraction
     }
     return -1;
   }
-  
+
   public int removeDeviceByDAId(int da_id)
   {
     try
@@ -1462,47 +1599,50 @@ public class DatabaseInteraction
     }
     return -1;
   }
-  
-    public boolean associateRecipeToSR(String sr_id, List<String> recipes_id) {
-      StopWatch DBqueryTimer = new StopWatch();
-      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-      DBqueryTimer.start();
-    
-        try {
-            for (int i = 0; i < recipes_id.size(); i++) {
-                String auxRecipe_id = recipes_id.get(i);
-                Statement stmt = conn.createStatement();
-                {
-                    String sql = "INSERT INTO SR"
-                            + "(r_id, sr_id)"
-                            + " VALUES ("
-                            + "'" + auxRecipe_id + "','" + sr_id + "')";
-                    stmt.execute(sql);
-                    ResultSet r = stmt.getGeneratedKeys();
-                }
-                stmt.close();
-                System.out.println("REGISTER SR  " + auxRecipe_id + " " + sr_id);
-            }
-            
-          Long time = DBqueryTimer.getTime();
-          perfMeasure.getDatabaseQueryTimers().add(time);
-          DBqueryTimer.stop();
-    
-            return true;
-        } catch (SQLException ex) {
-            System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
-            Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+
+  public boolean associateRecipeToSR(String sr_id, List<String> recipes_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+
+    try
+    {
+      for (int i = 0; i < recipes_id.size(); i++)
+      {
+        String auxRecipe_id = recipes_id.get(i);
+        Statement stmt = conn.createStatement();
+        {
+          String sql = "INSERT INTO SR"
+                  + "(r_id, sr_id)"
+                  + " VALUES ("
+                  + "'" + auxRecipe_id + "','" + sr_id + "')";
+          stmt.execute(sql);
+          ResultSet r = stmt.getGeneratedKeys();
         }
-        
+        stmt.close();
+        System.out.println("REGISTER SR  " + auxRecipe_id + " " + sr_id);
+      }
+
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
 
-        return false;
+      return true;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
-    
-   public boolean UpdateDAamlID(String aml_id, int da_id)
+
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return false;
+  }
+
+  public boolean UpdateDAamlID(String aml_id, int da_id)
   {
     try
     {
@@ -1519,5 +1659,5 @@ public class DatabaseInteraction
     }
     return false;
   }
-    // **************************************************************************************************************** //
+  // **************************************************************************************************************** //
 }

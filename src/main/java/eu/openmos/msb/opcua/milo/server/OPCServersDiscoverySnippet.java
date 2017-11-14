@@ -169,7 +169,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
             String daName = serverApp.getApplicationName().getText();
             // Creates a new Device Adapter
-            DeviceAdapter da = dacManager.getDeviceAdapter(daName);
+            DeviceAdapter da = dacManager.getDeviceAdapterbyName(daName);
 
             if (da == null)
             {
@@ -203,7 +203,7 @@ public class OPCServersDiscoverySnippet extends Thread
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
               {
 
-                DeviceAdapterOPC opc = (DeviceAdapterOPC) dacManager.getDeviceAdapter(daName);
+                DeviceAdapterOPC opc = (DeviceAdapterOPC) dacManager.getDeviceAdapterbyName(daName);
                 MSBClientSubscription instance = opc.getClient();
                 instance.startConnection(da_url);
                 OpcUaClient client = instance.getClientObject();
@@ -300,7 +300,7 @@ public class OPCServersDiscoverySnippet extends Thread
           if (e.getCause().getMessage().contains("Connection refused"))
           {
             String daName = serverApp.getApplicationName().getText();
-            if (dacManager.getDeviceAdapter(daName) != null)
+            if (dacManager.getDeviceAdapterbyName(daName) != null)
             {
               dacManager.deleteDAStuffByName(daName); //remove from DB?
               removeDownServer(daName);
@@ -326,7 +326,7 @@ public class OPCServersDiscoverySnippet extends Thread
   private int removeDownServer(String serverName)
   {
     DeviceAdapter da = null;
-    da = DACManager.getInstance().getDeviceAdapter(serverName);
+    da = DACManager.getInstance().getDeviceAdapterbyName(serverName);
 
     if (da != null) //check if the da exists on the system
     {

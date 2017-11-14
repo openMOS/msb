@@ -275,15 +275,15 @@ public class MSBClientSubscription implements IClient
       
       if(res.isGood()){
         perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
-        recipeExecutionWatch.stop();
+        //recipeExecutionWatch.stop();
         return true;
       }else if(res.isBad()){
         perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
-        recipeExecutionWatch.stop();
+        //recipeExecutionWatch.stop();
         return false;
       }else{
         perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
-        recipeExecutionWatch.stop();
+        //recipeExecutionWatch.stop();
         return false;
       }
       

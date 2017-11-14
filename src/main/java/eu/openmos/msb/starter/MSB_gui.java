@@ -38,7 +38,6 @@ import MSB2ADAPTER.StringMessageDataWriter;
 import MSB2ADAPTER.StringMessageDataWriterHelper;
 import _masmec.aml5;
 import com.sun.net.httpserver.HttpServer;
-import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.model.Equipment;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Module;
@@ -50,10 +49,7 @@ import eu.openmos.model.PartInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
-import eu.openmos.model.SkillReqPrecedent;
 import eu.openmos.model.SkillRequirement;
-import eu.openmos.model.SubSystem;
-import eu.openmos.model.testdata.OrderTest;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
@@ -62,8 +58,6 @@ import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.datastructures.ProductExecution;
 import eu.openmos.msb.dds.DDSErrorHandler;
 import eu.openmos.msb.services.rest.CORSFilter;
-//import eu.openmos.msb.services.rest.CPADController;
-//import eu.openmos.msb.services.rest.EquipmentController;
 import eu.openmos.msb.services.rest.ExecutionTableController;
 import eu.openmos.msb.services.rest.OrderController;
 import eu.openmos.msb.services.rest.ProductController;
@@ -80,34 +74,21 @@ import org.glassfish.jersey.server.ResourceConfig;
 import java.net.URISyntaxException;
 import org.slf4j.LoggerFactory;
 import eu.openmos.msb.opcua.milo.server.IOPCNotifyGUI;
-import eu.openmos.msb.opcua.milo.server.methods.ChangeState;
 import eu.openmos.msb.services.rest.FileUploadController;
-//import eu.openmos.msb.services.rest.FileUploadController;
 import eu.openmos.msb.services.rest.ModuleController;
 import eu.openmos.msb.services.rest.SubSystemController;
-import io.vertx.core.eventbus.DeliveryOptions;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.net.BindException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.UUID;
-import javax.swing.ComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.UriBuilder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.apache.commons.lang3.time.StopWatch;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-//import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 /**
  * *********************************************************************************************************************
@@ -124,6 +105,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private static DefaultTableModel recipesTableModel;
   private static DefaultTableModel devicesTableModel;
   private static DefaultTableModel ordersTableSubmittedModel;
+  private static DefaultTableModel ordersTableExecutedModel;
+  private static DefaultTableModel ordersTableCurrentModel;
   private static ImageIcon redLight;
   private static ImageIcon greenLight;
   private static ImageIcon greyLight;
@@ -136,7 +119,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private final ClassLoader classLoader = getClass().getClassLoader();
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
   private StopWatch guiWatch;
-  
 
   /**
    *
@@ -145,16 +127,18 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   public MSB_gui() throws Exception
   {
     this.guiWatch = new StopWatch();
-    
+
     guiWatch.start();
     initComponents();
 
-    this.isDDSRunning = false;    
+    this.isDDSRunning = false;
     adaptersTableModel = (DefaultTableModel) TableServers.getModel();
     recipesTableModel = (DefaultTableModel) recipesTable.getModel();
     devicesTableModel = (DefaultTableModel) devicesTable.getModel();
     ordersTableSubmittedModel = (DefaultTableModel) tableSubmittedOrders.getModel();
-    
+    ordersTableExecutedModel = (DefaultTableModel) tableExecutedOrders.getModel();
+    ordersTableCurrentModel = (DefaultTableModel) tableCurrentOrder.getModel();
+
     recipesTable.getModel().addTableModelListener(new CheckBoxModelListener());
 
     OnOffServerPanel.setLayout(new FlowLayout());
@@ -184,21 +168,23 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     labelREST = new JLabel(redLight);
     OnOffREST.add(labelREST);
     OnOffREST.setMaximumSize(new Dimension(32, 32));
-    
-      //get dns name of the PC
-      try {
-          InetAddress addr;
-          addr = InetAddress.getLocalHost();
-          String HostName = addr.getHostName();
-          msbServerAddress.setText("opc.tcp://" + HostName + ":12637/MSB-OPCUA-SERVER");
-          ldsSserverAddress.setText("opc.tcp://" + HostName + ":4840");
-      } catch (UnknownHostException ex) {
-          System.out.println("hostname can not be resolved! " + ex);
-      }
-      
-     guiWatch.split();
-     System.out.println("GUI took: " + guiWatch.toSplitString() + " to initialize.");
-     guiWatch.stop();
+
+    //get dns name of the PC
+    try
+    {
+      InetAddress addr;
+      addr = InetAddress.getLocalHost();
+      String HostName = addr.getHostName();
+      msbServerAddress.setText("opc.tcp://" + HostName + ":12637/MSB-OPCUA-SERVER");
+      ldsSserverAddress.setText("opc.tcp://" + HostName + ":4840");
+    } catch (UnknownHostException ex)
+    {
+      System.out.println("hostname can not be resolved! " + ex);
+    }
+
+    guiWatch.split();
+    System.out.println("GUI took: " + guiWatch.toSplitString() + " to initialize.");
+    guiWatch.stop();
 
   }
 
@@ -271,9 +257,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     jScrollPane7 = new javax.swing.JScrollPane();
     tableSubmittedOrders = new javax.swing.JTable();
     jScrollPane8 = new javax.swing.JScrollPane();
-    jTable2 = new javax.swing.JTable();
+    tableExecutedOrders = new javax.swing.JTable();
     jScrollPane9 = new javax.swing.JScrollPane();
-    jTable3 = new javax.swing.JTable();
+    tableCurrentOrder = new javax.swing.JTable();
     jLabel9 = new javax.swing.JLabel();
     jLabel12 = new javax.swing.JLabel();
     jLabel13 = new javax.swing.JLabel();
@@ -852,24 +838,24 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       },
       new String []
       {
-        "OrderID", "ProductID", "OrderLineID", "Quantity"
+        "Order_ID", "Product_ID", "ProdInst_ID", "Priority"
       }
     ));
     jScrollPane7.setViewportView(tableSubmittedOrders);
 
-    jTable2.setModel(new javax.swing.table.DefaultTableModel(
+    tableExecutedOrders.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][]
       {
 
       },
       new String []
       {
-        "OrderID", "ProductID", "OrderLineID", "Quantity"
+        "Order_ID", "Product_ID", "ProdInst_ID"
       }
     ));
-    jScrollPane8.setViewportView(jTable2);
+    jScrollPane8.setViewportView(tableExecutedOrders);
 
-    jTable3.setModel(new javax.swing.table.DefaultTableModel(
+    tableCurrentOrder.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][]
       {
 
@@ -879,7 +865,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         "OrderID", "ProductID", "Waiting PiID", "In Production PiID"
       }
     ));
-    jScrollPane9.setViewportView(jTable3);
+    jScrollPane9.setViewportView(tableCurrentOrder);
 
     jLabel9.setText("Submitted Orders");
 
@@ -1301,7 +1287,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   }
 
 
-          
   private void b_DDSCallRecipeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_b_DDSCallRecipeActionPerformed
   {//GEN-HEADEREND:event_b_DDSCallRecipeActionPerformed
     DDSDeviceManager dm = DDSDeviceManager.getInstance();
@@ -1354,7 +1339,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
 
     //ret = DeviceITF.allCases("statusupdate", textToSend.getText()); //simulate a device registration
-
     opc_comms_log.append("statusupdate method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_updatestatusActionPerformed
 
@@ -1368,7 +1352,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     //OPCDeviceItf DeviceITF = new OPCDeviceItf();
 
     //ret = DeviceITF.allCases("sendRecipe", textToSend.getText()); //simulate a sendRecipe
-
     opc_comms_log.append("sendRecipe method called. Returned: " + ret + "\n");
   }//GEN-LAST:event_btn_sendrecipe2ActionPerformed
 
@@ -1379,20 +1362,22 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private void btn_ChangedStateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_ChangedStateActionPerformed
   {//GEN-HEADEREND:event_btn_ChangedStateActionPerformed
     String MSBName = ComboMSB.getSelectedItem().toString();
-    DeviceAdapterOPC msb= (DeviceAdapterOPC) DACManager.getInstance().getDeviceAdapter(MSBName);
+    DeviceAdapterOPC msb = (DeviceAdapterOPC) DACManager.getInstance().getDeviceAdapterbyName(MSBName);
     NodeId obj = new NodeId(2, "MSB");
-    NodeId meth  = new NodeId(2, "MSB/ChangeState");
+    NodeId meth = new NodeId(2, "MSB/ChangeState");
     String result = "";
     try
     {
-      DeviceAdapterOPC da= (DeviceAdapterOPC) DACManager.getInstance().getDeviceAdapter(comboServers.getSelectedItem().toString());
+      DeviceAdapterOPC da = (DeviceAdapterOPC) DACManager.getInstance().getDeviceAdapterbyName(comboServers.getSelectedItem().toString());
       if (da != null)
-        result = msb.getClient().InvokeDeviceMARTELO(msb.getClient().getClientObject(), obj, meth , "prodID", da.getSubSystem().getUniqueId(), "dryedrydry").get();
+      {
+        result = msb.getClient().InvokeDeviceMARTELO(msb.getClient().getClientObject(), obj, meth, "prodID", da.getSubSystem().getUniqueId(), "dryedrydry").get();
+      }
     } catch (InterruptedException | ExecutionException ex)
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     //ret = DeviceITF.allCases("changedstate", textToSend.getText()); //simulate a device registration
     opc_comms_log.append("Changed State method called. Returned: " + result + "\n");
   }//GEN-LAST:event_btn_ChangedStateActionPerformed
@@ -1580,8 +1565,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         {
           //fillTableRecipes(recipeList, daName);
         }
-        
-        
 
       };
 
@@ -1704,7 +1687,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {//GEN-HEADEREND:event_startRESTWebServiceActionPerformed
     // handle stop
     opc_comms_log.append("StartRS - starting...");
-    URI uri;   
+    URI uri;
     try
     {
       uri = new URI(this.restServiceAddress.getText()); // may throw URISyntaxException
@@ -1722,151 +1705,126 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               .register(SkillController.class)
               .register(SubSystemController.class)
               .register(MultiPartFeature.class);
-              
-      // resourceConfig = resourceConfig.register(new CORSFilter());
 
+      // resourceConfig = resourceConfig.register(new CORSFilter());
       try
       {
         HttpServer server = JdkHttpServerFactory.createHttpServer(uri, resourceConfig);
-      }
-      catch (ProcessingException pe)
+      } catch (ProcessingException pe)
       {
-          // IOException thrown when creating the JDK HttpServer.
-          // Caused by: java.net.BindException: Address already in use: bind
-          logger.error("Rest services cannot start... are they already running? " + pe + " -  " + pe.getCause());          
-      }      
+        // IOException thrown when creating the JDK HttpServer.
+        // Caused by: java.net.BindException: Address already in use: bind
+        logger.error("Rest services cannot start... are they already running? " + pe + " -  " + pe.getCause());
+      }
 
       setConnectionColor(true, false, OnOffREST, labelREST);
       logger.info("Start Rest services at " + uri.toString());
-      opc_comms_log.append("Start Rest services at " + uri.toString());   
+      opc_comms_log.append("Start Rest services at " + uri.toString());
     } catch (URISyntaxException ex)
     {
       setConnectionColor(false, false, OnOffREST, labelREST);
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    }  
+    }
   }//GEN-LAST:event_startRESTWebServiceActionPerformed
 
     private void btnProductSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductSubmitActionPerformed
-      try {
-          // TODO add your handling code here:
-          //call new product aml file and populate the available products class
-          List<Product> newProducts=readProductAML();
+      try
+      {
+        // TODO add your handling code here:
+        //call new product aml file and populate the available products class
+        List<Product> newProducts = readProductAML();
+        if (newProducts != null)
+        {
           addToProductcb(newProducts); //add to combo products
-          
-      } catch (FileNotFoundException ex) {
-          Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-      }  
+        }
+      } catch (FileNotFoundException ex)
+      {
+        Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }//GEN-LAST:event_btnProductSubmitActionPerformed
 
     private void btnProductExecuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductExecuteActionPerformed
 
-        String ProductID = cb_productSelection.getSelectedItem().toString().split("/")[1];
-        //call new order with quantity of 1 of the selected product
-        Product prodToExecute = null;
+      String ProductID = cb_productSelection.getSelectedItem().toString().split("/")[1];
+      //call new order with quantity of 1 of the selected product
+      Product prodToExecute = null;
 
-        //search for the selected product on the PECmanager and get it
-        PECManager pec = PECManager.getInstance();
-        List<Product> productList = pec.getProductList();
-        for (int z = 0; z < productList.size(); z++) {
-            if (productList.get(z).getUniqueId() == null ? ProductID == null : productList.get(z).getUniqueId().equals(ProductID)) {
-                prodToExecute = productList.get(z);
-                System.out.println("Found product to execute in the Available products "+ ProductID);
-            }
+      //search for the selected product on the PECmanager and get it
+      PECManager pec = PECManager.getInstance();
+      List<Product> productList = pec.getProductList();
+      for (int z = 0; z < productList.size(); z++)
+      {
+        if (productList.get(z).getUniqueId() == null ? ProductID == null : productList.get(z).getUniqueId().equals(ProductID))
+        {
+          prodToExecute = productList.get(z);
+          System.out.println("Found product to execute in the Available products " + ProductID);
         }
+      }
 
-        //create an order for the requestedproduct
-        Order newOrder = fillOrder(prodToExecute);
-        
-        //CREATE ORDERINSTANCE AND PRODUCTINSTANCE
-        OrderInstance oi= new OrderInstance();
-        List<ProductInstance> piList =  new ArrayList<>();
-        
-        for (int z = 0; z < newOrder.getOrderLines().size(); z++) { //iterate between all orderlines
-            int quantity = newOrder.getOrderLines().get(z).getQuantity();
-            
-            if(!newOrder.getUniqueId().isEmpty()&&newOrder.getUniqueId()!=null&&!newOrder.getOrderLines().isEmpty()&&newOrder.getOrderLines()!=null)
-            MSB_gui.addToTableSubmittedOrder(newOrder.getUniqueId(), newOrder.getOrderLines().get(z).getProductId(), newOrder.getOrderLines().get(z).getUniqueId(), quantity); //add to GUI table of submitted orders
+      //create an order for the requestedproduct
+      Order newOrder = fillOrder(prodToExecute);
 
-            for (int prodIDX = 0; prodIDX < quantity; prodIDX++) { //create product instances for each quantity of the orderline
-                ProductInstance pi = new ProductInstance();
-                pi.setDescription("my Pinstance description");
-                pi.setName(prodToExecute.getName());
-                pi.setOrderId(newOrder.getUniqueId());
+      //CREATE ORDERINSTANCE AND PRODUCTINSTANCE
+      OrderInstance oi = new OrderInstance();
+      List<ProductInstance> piList = new ArrayList<>();
 
-                List<PartInstance> comps = new LinkedList();
-                Part p1 = new Part("uniqueCpID", "CpName", "CpDescription", new Date());
-                PartInstance c1 = new PartInstance("uniqueCpinstanceID", "CpinstanceName", "CpinstanceDescription", p1, new Date());
-                comps.add(c1);
+      for (int z = 0; z < newOrder.getOrderLines().size(); z++)
+      { //iterate between all orderlines
+        int quantity = newOrder.getOrderLines().get(z).getQuantity();
 
-                pi.setParts(comps);
-                pi.setProductId(ProductID);
-                pi.setUniqueId(UUID.randomUUID().toString());
-                pi.setRegistered(new Date());
-                
-                piList.add(pi);
-            } 
+        for (int prodIDX = 0; prodIDX < quantity; prodIDX++)
+        { //create product instances for each quantity of the orderline
+          ProductInstance pi = new ProductInstance();
+          pi.setDescription("my Pinstance description");
+          pi.setName(prodToExecute.getName());
+          pi.setOrderId(newOrder.getUniqueId());
+
+          List<PartInstance> comps = new LinkedList();
+          Part p1 = new Part("uniqueCpID", "CpName", "CpDescription", new Date());
+          PartInstance c1 = new PartInstance("uniqueCpinstanceID", "CpinstanceName", "CpinstanceDescription", p1, new Date());
+          comps.add(c1);
+
+          pi.setParts(comps);
+          pi.setProductId(ProductID);
+          pi.setUniqueId(UUID.randomUUID().toString());
+          pi.setRegistered(new Date());
+
+          piList.add(pi);
         }
-        
-        oi.setDescription(newOrder.getDescription());
-        oi.setName(newOrder.getName());
-        oi.setPriority(newOrder.getPriority());
-        oi.setProductInstances(piList);
-        oi.setRegistered(new Date());
-        oi.setUniqueId(newOrder.getUniqueId());
+      }
 
-        logger.debug("orders newOrder - order to insert = " + newOrder.toString());
+      oi.setDescription(newOrder.getDescription());
+      oi.setName(newOrder.getName());
+      oi.setPriority(newOrder.getPriority());
+      oi.setProductInstances(piList);
+      oi.setRegistered(new Date());
+      oi.setUniqueId(newOrder.getUniqueId());
 
-        PECManager pecManager = PECManager.getInstance();
+      logger.debug("orders newOrder - order to insert = " + newOrder.toString());
 
-        //set order on the pecManager?
-        //set executedOrders
-        //set executedRecipesFromProduct
-        //setOrdersToExecute
-        //setRecipesFromProducttoExecute
-        
-        pecManager.getOrderList().add(newOrder);
-        pecManager.getOrderInstanceList().add(oi);
-        
-   /*     
-        List<OrderLine> orderLines = newOrder.getOrderLines();
+      PECManager pecManager = PECManager.getInstance();
 
-        //List<ProductInstance> prods;
-        Queue<HashMap> orderLinesQueue = new LinkedList<>();
-
-        for (int i = 0; i < orderLines.size(); i++) {
-
-            HashMap<String, ProductInstance> prods = new HashMap();
-            String productToDO = orderLines.get(i).getProductId();
-            int quantity = orderLines.get(i).getQuantity();
-
-            for (int j = 0; j < quantity; j++) {
-
-                String instanceID = UUID.randomUUID().toString();
-                ProductInstance instance = new ProductInstance(instanceID, productToDO, "ProdDummy", "ProdDescDummy",
-                        newOrder.getUniqueId(), orderLines.get(i).getUniqueId(), null, new Date());
-
-                prods.put(instanceID, instance); //create an hashmap
-            }
-
-            orderLinesQueue.add(prods); //add queue of all productinstances for each orderline 
-
-        }
-
-        pecManager.getOrderMap().put(newOrder.getUniqueId(), orderLinesQueue); //add a queue for each order on pecmanager singleton
-*/
-        //get first product instance and start doing stuff
-        new Thread(new ProductExecution()).start();
-
-
-       
+      //set order on the pecManager?
+      //set executedOrders
+      //set executedRecipesFromProduct
+      //setOrdersToExecute
+      //setRecipesFromProducttoExecute
+      pecManager.getOrderList().add(newOrder);
+      pecManager.getOrderInstanceList().add(oi);
+      
+      for (ProductInstance prodInst : oi.getProductInstances())
+        MSB_gui.addToTableSubmittedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority()); 
+      
+      //get first product instance and start doing stuff
+      new Thread(new ProductExecution()).start();
     }//GEN-LAST:event_btnProductExecuteActionPerformed
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
   {//GEN-HEADEREND:event_jButton1ActionPerformed
     String recipe_id = recipeidtxt.getText();
     String da_id = daidtxt.getText();
-    
-    DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id));
+
+    DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id));
     List<Recipe> auxRepList = CurrentDA.getListOfRecipes();
 
     for (Recipe recipe : auxRepList)
@@ -1875,8 +1833,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         for (KPISetting kpi : recipe.getKpiSettings())
         {
-            String kpiValue = "dummyKPI";
-            kpi.setValue(kpiValue);  
+          String kpiValue = "dummyKPI";
+          kpi.setValue(kpiValue);
         }
         break;
       }
@@ -1907,72 +1865,45 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
   }//GEN-LAST:event_exportTimersActionPerformed
 
-    
-    public static Order fillOrder(Product prod) {
+  public static Order fillOrder(Product prod)
+  {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String now = sdf.format(new Date());
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+    String now = sdf.format(new Date());
 
-        String orderUID="order_unique_id_" + now;
-        
-        //populate Order
-        Order o = new Order();
-        o.setUniqueId(orderUID);
-        o.setDescription("my description_" + now);
-        o.setName("order_name_" + now);
-        o.setPriority(1);
-        List<OrderLine> line = new ArrayList();
-        List<ProductInstance> lpd = new LinkedList();
-        
-        //populate OrderLines on Order
-        for(int i=0;i<2;i++){
-            OrderLine ol=new OrderLine();
-            ol.setOrderId(orderUID);
-            ol.setProductId(prod.getUniqueId());
-            ol.setQuantity(5);
-            ol.setUniqueId(now);
-            line.add(ol);
-        }
-        
-        
-        
-        
-       /* for (int y = 1000; y < 1500; y += 100) {
-            ProductInstance pd1 = new ProductInstance();
-            
-            List<PartInstance> comps = new LinkedList();
-            Part p1 = new Part("uniqueCpID", "CpName", "CpDescription", new Date());
-            PartInstance c1 = new PartInstance("uniqueCpinstanceID", "CpinstanceName", "CpinstanceDescription", p1, new Date());
-            comps.add(c1);
-            pd1.setParts(comps);
-            pd1.setDescription("product description");
-            pd1.setProductId(prod.getUniqueId());
-            pd1.setName(prod.getName());
-            pd1.setOrderId(o.getUniqueId());
-            pd1.setRegistered(new Date());
-//            pd1.setSkillRequirements(lsr);
+    String orderUID = UUID.randomUUID().toString();
 
-            pd1.setUniqueId("pd" + y + "uniqueid_" + now.toString());
+    //populate Order
+    Order o = new Order();
+    o.setUniqueId(orderUID);
+    o.setDescription("my description_" + now);
+    o.setName("order_name_" + now);
+    o.setPriority(1);
+    List<OrderLine> line = new ArrayList();
+    List<ProductInstance> lpd = new LinkedList();
 
-            // o.getProductDescriptions().add(pd1);
-            lpd.add(pd1);
-            line.setModelId(prod.getUniqueId());
-            line.setOrderId(orderUID);
-            line.
-        }*/
-       
-       
-        o.setOrderLines(line);
-        //o.setProductInstances(lpd);
-        o.setRegistered(new Date());
-      
-        return o;
-        
-        
+    //populate OrderLines on Order
+    for (int i = 0; i < 2; i++)
+    {
+      OrderLine ol = new OrderLine();
+      ol.setOrderId(orderUID);
+      ol.setProductId(prod.getUniqueId());
+      ol.setQuantity(5);
+      ol.setUniqueId(UUID.randomUUID().toString());
+      line.add(ol);
     }
+
+    o.setOrderLines(line);
+    //o.setProductInstances(lpd);
+    o.setRegistered(new Date());
+
+    return o;
+
+  }
+
   /**
    *
    */
@@ -1990,36 +1921,39 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       }
     }
   }
-  
-  public static List<Product> readProductAML() throws FileNotFoundException{
+
+  public static List<Product> readProductAML() throws FileNotFoundException
+  {
     final JFileChooser fc = new JFileChooser();
-    File selectedFile=null;
+    File selectedFile = null;
     fc.setCurrentDirectory(new File(System.getProperty("user.home")));
     int returnVal = fc.showOpenDialog(null);
-    if (returnVal == JFileChooser.APPROVE_OPTION) {
-    // user selects a file
-    selectedFile = fc.getSelectedFile();
-}
-    
-    List<Product> newProducts = aml5.getMasmecProductsFromFile(selectedFile.getAbsolutePath());
-    
-    PECManager aux = PECManager.getInstance();
-
-    aux.getProductList().addAll(newProducts);
-    
-    //******************************************* SR links into the DB
-    for (int i = 0; i < newProducts.size(); i++)
+    if (returnVal == JFileChooser.APPROVE_OPTION)
     {
+      // user selects a file
+      selectedFile = fc.getSelectedFile();
+
+      List<Product> newProducts = aml5.getMasmecProductsFromFile(selectedFile.getAbsolutePath());
+
+      PECManager aux = PECManager.getInstance();
+
+      aux.getProductList().addAll(newProducts);
+
+      //******************************************* SR links into the DB
+      for (int i = 0; i < newProducts.size(); i++)
+      {
         Product auxProduct = newProducts.get(i);
         for (int j = 0; j < auxProduct.getSkillRequirements().size(); j++)
         {
-            SkillRequirement auxSR = auxProduct.getSkillRequirements().get(j);
-            DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
+          SkillRequirement auxSR = auxProduct.getSkillRequirements().get(j);
+          DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
         }
+      }
+      //***********************************************************************************************************
+
+      return newProducts;
     }
-    //***********************************************************************************************************
-    
-    return newProducts;
+    return null;
   }
 
   /**
@@ -2061,10 +1995,12 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       List<Module> devices = instance.getDevicesFromDeviceAdapter(adapter);
       // VaG - 29/09/2017
       if (devices != null)
+      {
         for (Equipment device : devices)
-        {        
+        {
           addToTableDevice(device.getName(), (device.getStatus().equals("1")), device.getAddress(), adapter);
         }
+      }
     }
   }
 
@@ -2102,7 +2038,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       recipeName, status, deviceAdapterName
     });
   }
-  
+
   /**
    * add a row to DeviceTable
    *
@@ -2125,7 +2061,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
-    */
+     */
     Object[] rowData = new Object[devicesTableModel.getColumnCount()];
     for (int i = 0; i < devicesTableModel.getColumnCount(); i++)
     {
@@ -2134,25 +2070,51 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     }
     opc_comms_log.append("Devices successfully added to table. Name: " + DeviceName + "\n");
   }
-  
-   public static void addToTableSubmittedOrder(String OrderID, String ProductID, String OrderLineID, int Quantity)
-  {           
+
+  public static void addToTableSubmittedOrder(String OrderID, String ProductID, String prodInst_ID, int Priority)
+  {
     ordersTableSubmittedModel.addRow(new Object[]
     {
-      OrderID, ProductID, OrderLineID, Quantity
+      OrderID, ProductID, prodInst_ID, Priority
     });
 
     Object[] rowData = new Object[ordersTableSubmittedModel.getColumnCount()];
     for (int i = 0; i < ordersTableSubmittedModel.getColumnCount(); i++)
     {
       rowData[i] = ordersTableSubmittedModel.getValueAt(0, i);
-      System.out.println("Devices NA TABELA: " + rowData[i].toString());
+      System.out.println("Order NA TABELA Submitted: " + rowData[i].toString());
+    }
+    opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
+  }
+
+  public static void removeFromTableSubmitedOrder(String prodInst_ID)
+  {
+    for (int i = 0; i < ordersTableSubmittedModel.getRowCount(); i++)
+    {
+      if (ordersTableSubmittedModel.getValueAt(i, 2).equals(prodInst_ID))
+      {
+        ordersTableSubmittedModel.removeRow(i);
+        break;
+      }
+    }
+  }
+  
+  public static void addToTableExecutedOrders(String OrderID, String ProductID, String prodInst_ID)
+  {
+    ordersTableExecutedModel.addRow(new Object[]
+    {
+      OrderID, ProductID, prodInst_ID
+    });
+
+    Object[] rowData = new Object[ordersTableExecutedModel.getColumnCount()];
+    for (int i = 0; i < ordersTableExecutedModel.getColumnCount(); i++)
+    {
+      rowData[i] = ordersTableExecutedModel.getValueAt(0, i);
+      System.out.println("Orders NA TABELA Executed: " + rowData[i].toString());
     }
     opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
   }
   
-  
-
   /**
    * @todo this is to use??????
    * @param serverName
@@ -2230,7 +2192,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {
     //delete from DeviceName? status? or endpoint? or all?
     //TODO
-
     int indexToRemove = -1;
     String device = "";
     for (int i = 0; i < devicesTableModel.getRowCount(); i++)
@@ -2283,7 +2244,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       greenLight = new ImageIcon(dimg);
       redLight = new ImageIcon(dimg2);
       greyLight = new ImageIcon(dimg3);
-      
+
     } catch (IOException e)
     {
       logger.info("Start Rest services at " + e.toString());
@@ -2534,8 +2495,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private javax.swing.JSeparator jSeparator3;
   private javax.swing.JSeparator jSeparator4;
   private javax.swing.JTabbedPane jTabbedPane1;
-  private javax.swing.JTable jTable2;
-  private javax.swing.JTable jTable3;
   private javax.swing.JLabel l_DDSDevice;
   private javax.swing.JLabel l_DDSRecipe;
   private javax.swing.JLabel l_ddsDomain;
@@ -2552,6 +2511,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private javax.swing.JTextField soapServiceAddress;
   private javax.swing.JButton startRESTWebService;
   private javax.swing.JButton startWebService;
+  private javax.swing.JTable tableCurrentOrder;
+  private javax.swing.JTable tableExecutedOrders;
   private javax.swing.JTable tableSubmittedOrders;
   private javax.swing.JTextField textToSend;
   // End of variables declaration//GEN-END:variables

@@ -71,7 +71,7 @@ public class SubSystemController extends Base {
             if (adapterName.contains("MSB") || adapterName.contains("fortiss"))
                 continue;
           logger.debug("subsystems getList 3: " + adapterName);
-          DeviceAdapter adapter = aux.getDeviceAdapter(adapterName);
+          DeviceAdapter adapter = aux.getDeviceAdapterbyName(adapterName);
             logger.debug("subsystems getList 4 ");
           // VaG - 28/09/2017
           // begin

@@ -34,7 +34,7 @@ public class EventConfirmationImpl implements EventConfirmation
     public boolean agentCreated(String agentId) 
     {
       DeviceAdapter deviceAdapter = null;
-      deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(agentId));
+      deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(agentId));
       if (deviceAdapter != null)
       {
         deviceAdapter.setHasAgent(true);
@@ -70,12 +70,12 @@ public class EventConfirmationImpl implements EventConfirmation
                 }        
         
         logger.debug(getClass().getName() + " - agentCreated - end - websocket started for agentId [" + agentId + "]");
-
+/*
       PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
       Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
       Long diffTime= new Date().getTime()-getStartTime;
       perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
-         
+         */
         return true;
     }
 
@@ -86,7 +86,7 @@ public class EventConfirmationImpl implements EventConfirmation
 
     // some stuff...
     DeviceAdapter deviceAdapter = null;
-    deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(agentId));
+    deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(agentId));
     if (deviceAdapter != null)
     {
       deviceAdapter.setHasAgent(false);
@@ -96,12 +96,12 @@ public class EventConfirmationImpl implements EventConfirmation
     }
 
     logger.debug(getClass().getName() + " - agentNotCreated - end for agentId [" + agentId + "]");
-
+/*
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
     Long diffTime = new Date().getTime() - getStartTime;
     perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
-      
+      */
     return true;
   }
     
@@ -116,7 +116,7 @@ public class EventConfirmationImpl implements EventConfirmation
         }
         
       DeviceAdapter deviceAdapter = null;
-      deviceAdapter = DACManager.getInstance().getDeviceAdapter(DatabaseInteraction.getInstance().getDeviceAdapterNameByID(agentId));
+      deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(agentId));
       if (deviceAdapter != null)
       {
         deviceAdapter.setHasAgent(false);
@@ -151,12 +151,12 @@ public class EventConfirmationImpl implements EventConfirmation
 //                }
         
         logger.debug(getClass().getName() + " - agentRemoved - end for agentId [" + agentId + "]");
-
+/*
         PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
         Long getStartTime = perfMeasure.getAgentRemovalTimers().get(agentId);
         Long diffTime = new Date().getTime() - getStartTime;
         perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
-        
+        */
         return true;
     }
 
@@ -167,12 +167,12 @@ public class EventConfirmationImpl implements EventConfirmation
         // some stuff...
         
         logger.debug(getClass().getName() + " - agentNotRemoved - end for agentId [" + agentId + "]");
-
+/*
       PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
       Long getStartTime = perfMeasure.getAgentRemovalTimers().get(agentId);
       Long diffTime = new Date().getTime() - getStartTime;
       perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
-
+*/
         return true;
     }
 

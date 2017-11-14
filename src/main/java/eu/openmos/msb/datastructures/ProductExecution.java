@@ -35,7 +35,8 @@ public class ProductExecution implements Runnable
   List<String> recipesExecuted = new ArrayList<>();
   int HighOrderIndex = -1;
   StopWatch firstRecipeCallTime = new StopWatch();
-
+  boolean notAgain = false;
+  
   @Override
   public void run()
   {
@@ -58,13 +59,14 @@ public class ProductExecution implements Runnable
 
   public void ExecuteOrder()
   {
+    firstRecipeCallTime.reset();
     firstRecipeCallTime.start();
     
     PECManager ProdManager = PECManager.getInstance();
 
     //Get priority and execute the higher value order
     int HighPriority = -1;
-
+    HighOrderIndex = -1;
     List<OrderInstance> orderInstanceList = ProdManager.getOrderInstanceList();
     for (int i = 0; i < orderInstanceList.size(); i++)
     {
@@ -96,13 +98,6 @@ public class ProductExecution implements Runnable
     
     while (ProdManager.getProductsToDo().size() > 0)
     {
-      /*try
-      {
-        Thread.sleep(5000);
-      } catch (InterruptedException ex)
-      {
-        Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
-      }*/
       ProductInstance auxProdInstance = ProdManager.getProductsToDo().peek();
       System.out.println(auxProdInstance.getUniqueId()); //da instancia
       String productId = auxProdInstance.getProductId(); //prod type
@@ -128,7 +123,7 @@ public class ProductExecution implements Runnable
                   //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
                   if (checkRecipeAvailable(recipeID))
                   {
-                    if (executeRecipe(recipeID,auxProdInstance.getUniqueId()))
+                    if (executeRecipe(recipeID, auxProdInstance.getUniqueId()))
                     {
                       System.out.println("The execution of Recipe: " + recipeID + " Returned true");
                       ProdManager.getProductsDoing().put(auxProdInstance.getProductId(), ProdManager.getProductsToDo().poll()); //the first recipe of the product is done, put it into "doing"
@@ -153,6 +148,13 @@ public class ProductExecution implements Runnable
     }
     //acabou a order, começar a proxima
     ProdManager.getOrderInstanceList().remove(HighOrderIndex); //remove the orderInstance that finished
+    try
+    {
+      Thread.sleep(1000);
+    } catch (InterruptedException ex)
+    {
+      Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+    }
     ProdManager.setState(false); //true=running false=ready
     CheckState(); //do the next orderistance
   }
@@ -166,8 +168,8 @@ public class ProductExecution implements Runnable
       String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID);
       if (Daid != null)
       {
-        String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
-        DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
+        String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
         if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
         {
           return true;
@@ -182,8 +184,8 @@ public class ProductExecution implements Runnable
     String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID);
     if (Daid != null)
     {
-      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
+      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
       for (Recipe auxRep : da.getListOfRecipes())
       {
         if (auxRep.getUniqueId() == null ? recipeID == null : auxRep.getUniqueId().equals(recipeID))
@@ -195,16 +197,21 @@ public class ProductExecution implements Runnable
           /*String result = invokeMethod(daOPC.getClient().getClientObject(),
           convertStringToNodeId(invokeObjectID),
           convertStringToNodeId(invokeMethodID)).get();*/
-          System.out.println("\nTrying to execute recipe: " + recipeID + " from prodInstance: " + prodInstID);
+          //System.out.println("\n[1FIRST RECIPE]Trying to execute recipe: " + recipeID + " from prodInstance: " + prodInstID);
           
-          PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
-          perfMeasurement.getOrderTillRecipeCallTimers().add(firstRecipeCallTime.getTime());
-          firstRecipeCallTime.stop();
-          
-          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInstID);
-          System.out.println("Execute invokeSkill Successfull");
+          if (!notAgain)
+          {
+            PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+            perfMeasurement.getOrderTillRecipeCallTimers().add(firstRecipeCallTime.getTime());
+            firstRecipeCallTime.stop();
+            notAgain = true;
+          }
           da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
-          System.out.println("Executing Recipe: " + recipeID + " of product instance: "+ prodInstID + " from the adapter:"+DA_name+" returned: " + result);
+          System.out.println("[2FIRST RECIPE]Executing Recipe: " + recipeID + " of product instance: "+ prodInstID + " from the adapter:"+DA_name+" returned: " + result + "\n");
+          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInstID);
+          //System.out.println("[FIRST RECIPE]Execute invokeSkill Successfull\n");
+          
+          
           return result;
         }
       }

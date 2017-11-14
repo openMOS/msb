@@ -526,8 +526,8 @@ public class main_jax
      private Boolean checkNextValidation(String nextRecipeID) {
         String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
         if (Daid != null) {
-            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
-            DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
+            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+            DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
             for (int i = 0; i < da.getExecutionTable().getRows().size(); i++) {
                 if (da.getExecutionTable().getRows().get(i).getRecipeId() == nextRecipeID) {
                     String auxNextLKT1 = da.getExecutionTable().getRows().get(i).getNextRecipeId();
@@ -545,8 +545,8 @@ public class main_jax
         String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID);
 
         if (Daid != null) {
-            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid);
-            DeviceAdapter da = DACManager.getInstance().getDeviceAdapter(DA_name);
+            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+            DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
             for (int i = 0; i < da.getExecutionTable().getRows().size(); i++) {
                 if (da.getExecutionTable().getRows().get(i).getRecipeId() == recipeID) {
                     String NextRecipe = da.getExecutionTable().getRows().get(i).getNextRecipeId();
@@ -563,8 +563,8 @@ public class main_jax
                                 String choice = PossibleRecipeChoices.get(j);
                                 String Daid1 = DatabaseInteraction.getInstance().getDAIDbyRecipeID(choice);
                                 if (Daid1 != null) {
-                                    String DA_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByID(Daid1);
-                                    DeviceAdapter da1 = DACManager.getInstance().getDeviceAdapter(DA_name1);
+                                    String DA_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid1);
+                                    DeviceAdapter da1 = DACManager.getInstance().getDeviceAdapterbyName(DA_name1);
                                     for (int l = 0; l < da1.getExecutionTable().getRows().size(); l++) {
                                         if (da1.getExecutionTable().getRows().get(l).getRecipeId() == choice) {
                                             String NextRecipe1 = da1.getExecutionTable().getRows().get(l).getNextRecipeId();
