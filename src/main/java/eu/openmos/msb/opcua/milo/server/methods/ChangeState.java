@@ -1,9 +1,13 @@
 package eu.openmos.msb.opcua.milo.server.methods;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
+import eu.openmos.model.FinishedProductInfo;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
+import eu.openmos.model.RecipeExecutionData;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.MSBConstants;
@@ -16,10 +20,13 @@ import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
@@ -68,7 +75,7 @@ public class ChangeState
     {
       public synchronized void run()
       {
-        readKPIs(da_id, recipe_id); //MASMEC comment
+        readKPIs(da_id, recipe_id, product_id); //MASMEC comment
       }
     };
     threadKPI.start();
@@ -336,6 +343,24 @@ public class ChangeState
         MSB_gui.addToTableExecutedOrders(prodInst.getOrderId(), prodInst.getProductId(), prodInst.getUniqueId());
         MSB_gui.removeFromTableSubmitedOrder(prodInst.getUniqueId());
         System.out.println("[ChangeState] This Recipe is the last one for product instance ID: " + product_id);
+
+        String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+        boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+        if (withAGENTCloud)
+        {
+          // THIS CODE IS WORKING!! 
+          SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+          SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+          String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+          BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+          FinishedProductInfo fpi = new FinishedProductInfo();
+          fpi.setProductInstanceId(product_id);
+          fpi.setFinishedTime(new Date());
+          fpi.setRegistered(prodInst.getStartedProductionTime());
+
+          systemConfigurator.finishedProduct(fpi);
+        }
       }
     } else if (nextRecipeID.isEmpty())
     {
@@ -365,7 +390,7 @@ public class ChangeState
    * @param da_id
    * @param recipe_id
    */
-  private void readKPIs(String da_id, String recipe_id)
+  private void readKPIs(String da_id, String recipe_id, String productInst_ID)
   {
     DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id));
     if (CurrentDA != null)
@@ -390,21 +415,28 @@ public class ChangeState
               java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
             }
           }
+
+          //IF THE AC is activated, send the KPIs upwards
+          String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+          boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+          if (withAGENTCloud)
+          {
+            RecipeExecutionData red = new RecipeExecutionData();
+            red.setKpiSettings(recipe.getKpiSettings());
+            red.setProductInstanceId(productInst_ID);
+            red.setRecipeId(recipe_id);
+            red.setRegistered(new Date());
+            //add header to vertX message?
+            System.out.println("...sending KPI's over websockets...");
+            DeliveryOptions options = new DeliveryOptions();
+            options.addHeader(eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA, "MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA"); //use this??
+            JsonObject objectToSend=JsonObject.mapFrom(red);
+            CurrentDA.getVertx().eventBus().send(productInst_ID, objectToSend, options); //serialize the entire class??
+          } else
+          {
+
+          }
           break;
-        }
-        //IF THE AC is activated, send the KPIs upwards
-        String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-        boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
-
-        if (withAGENTCloud)
-        {
-          //add header to vertX message?
-          DeliveryOptions options = new DeliveryOptions();
-          options.addHeader(eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA, "some-value"); //use this??
-          CurrentDA.getVertx().eventBus().publish(da_id, recipe.toString(), options); //serialize the entire class??
-        } else
-        {
-
         }
       }
     }

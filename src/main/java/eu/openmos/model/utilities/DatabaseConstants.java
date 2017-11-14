@@ -44,6 +44,7 @@ public class DatabaseConstants {
     public final static String RECIPE_ID = "recipeId";
     public final static String PARAMETER_ID = "parameterId";
     public final static String PRODUCT_ID = "productId";
+    public final static String PRODUCT_INSTANCE_ID = "productInstanceId";
     public final static String PART_ID = "partId";
     public final static String REQUIRES_PART_ID = "requiresPartId";
     // public final static String EQUIPMENT_ID = "equipmentId";

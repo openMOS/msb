@@ -5,6 +5,9 @@
  */
 package eu.openmos.msb.datastructures;
 
+import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.model.OrderInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
@@ -12,12 +15,14 @@ import eu.openmos.model.Recipe;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -123,7 +128,7 @@ public class ProductExecution implements Runnable
                   //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
                   if (checkRecipeAvailable(recipeID))
                   {
-                    if (executeRecipe(recipeID, auxProdInstance.getUniqueId()))
+                    if (executeRecipe(recipeID, auxProdInstance))
                     {
                       System.out.println("The execution of Recipe: " + recipeID + " Returned true");
                       ProdManager.getProductsDoing().put(auxProdInstance.getProductId(), ProdManager.getProductsToDo().poll()); //the first recipe of the product is done, put it into "doing"
@@ -179,7 +184,7 @@ public class ProductExecution implements Runnable
     return false;
   }
 
-  private boolean executeRecipe(String recipeID, String prodInstID)
+  private boolean executeRecipe(String recipeID, ProductInstance prodInst)
   {
     String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID);
     if (Daid != null)
@@ -207,10 +212,24 @@ public class ProductExecution implements Runnable
             notAgain = true;
           }
           da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
-          System.out.println("[2FIRST RECIPE]Executing Recipe: " + recipeID + " of product instance: "+ prodInstID + " from the adapter:"+DA_name+" returned: " + result + "\n");
-          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInstID);
-          //System.out.println("[FIRST RECIPE]Execute invokeSkill Successfull\n");
+          System.out.println("[2FIRST RECIPE]Executing Recipe: " + recipeID + " of product instance: "+ prodInst.getUniqueId() + " from the adapter:"+DA_name+" returned: " + result + "\n");
+          prodInst.setStartedProductionTime(new Date());
+          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInst.getUniqueId());
+          //System.out.println("[FIRST RECIPE]Execute invokeSkill Successfull\n");        
           
+          String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+          boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+          if (withAGENTCloud)
+          {
+            // THIS CODE IS WORKING!! 
+            SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+            SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+            String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+            BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+            bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+            systemConfigurator.startedProduct(prodInst);
+          }
+            
           
           return result;
         }
