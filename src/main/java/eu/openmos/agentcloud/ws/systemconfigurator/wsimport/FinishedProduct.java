@@ -4,6 +4,7 @@ package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
+import eu.openmos.model.FinishedProductInfo;
 
 
 /**
@@ -16,9 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="equipmentId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="productId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="operationTimestamp" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="finishedProductInfo" type="{http://cloudinterface.agentcloud.openmos.eu/}finishedProductInfo" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,86 +28,34 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "finishedProduct", propOrder = {
-    "equipmentId",
-    "productId",
-    "operationTimestamp"
+    "finishedProductInfo"
 })
 public class FinishedProduct {
 
-    protected String equipmentId;
-    protected String productId;
-    protected String operationTimestamp;
+    protected FinishedProductInfo finishedProductInfo;
 
     /**
-     * Gets the value of the equipmentId property.
+     * Gets the value of the finishedProductInfo property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link FinishedProductInfo }
      *     
      */
-    public String getEquipmentId() {
-        return equipmentId;
+    public FinishedProductInfo getFinishedProductInfo() {
+        return finishedProductInfo;
     }
 
     /**
-     * Sets the value of the equipmentId property.
+     * Sets the value of the finishedProductInfo property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link FinishedProductInfo }
      *     
      */
-    public void setEquipmentId(String value) {
-        this.equipmentId = value;
-    }
-
-    /**
-     * Gets the value of the productId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getProductId() {
-        return productId;
-    }
-
-    /**
-     * Sets the value of the productId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setProductId(String value) {
-        this.productId = value;
-    }
-
-    /**
-     * Gets the value of the operationTimestamp property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getOperationTimestamp() {
-        return operationTimestamp;
-    }
-
-    /**
-     * Sets the value of the operationTimestamp property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setOperationTimestamp(String value) {
-        this.operationTimestamp = value;
+    public void setFinishedProductInfo(FinishedProductInfo value) {
+        this.finishedProductInfo = value;
     }
 
 }

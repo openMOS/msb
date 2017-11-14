@@ -141,14 +141,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SkillReqPrecedent }
-     * 
-     */
-    public SkillReqPrecedent createSkillReqPrecedent() {
-        return new SkillReqPrecedent();
-    }
-
-    /**
      * Create an instance of {@link ProductionOptimizerResponseBean }
      * 
      */
