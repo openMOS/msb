@@ -16,6 +16,7 @@ import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
@@ -104,7 +105,7 @@ public class ProductExecution implements Runnable
     while (ProdManager.getProductsToDo().size() > 0)
     {
       ProductInstance auxProdInstance = ProdManager.getProductsToDo().peek();
-      System.out.println(auxProdInstance.getUniqueId()); //da instancia
+      System.out.println("ProdInst to start: " + auxProdInstance.getUniqueId()); //da instancia
       String productId = auxProdInstance.getProductId(); //prod type
       //ir as tabelas de execução
 
@@ -126,12 +127,13 @@ public class ProductExecution implements Runnable
                 for (String recipeID : auxSR.getRecipeIDs())
                 {
                   //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
-                  if (checkRecipeAvailable(recipeID)&&checkProductAgentComms(productId))
+                  if (checkRecipeAvailable(recipeID)&&checkProductAgentComms(auxProdInstance.getUniqueId()))
                   {
                     if (executeRecipe(recipeID, auxProdInstance))
                     {
                       System.out.println("The execution of Recipe: " + recipeID + " Returned true");
-                      ProdManager.getProductsDoing().put(auxProdInstance.getProductId(), ProdManager.getProductsToDo().poll()); //the first recipe of the product is done, put it into "doing"
+                      
+                      ProdManager.getProductsDoing().put(auxProdInstance.getUniqueId(), ProdManager.getProductsToDo().poll()); //the first recipe of the product is done, put it into "doing"
                       getOut = true;
                       break;
                     }else{
@@ -170,7 +172,7 @@ public class ProductExecution implements Runnable
     boolean recipeIdIsValid = DatabaseInteraction.getInstance().getRecipeIdIsValid(recipeID);
     if (recipeIdIsValid)
     {
-      String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID);
+      String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
       if (Daid != null)
       {
         String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
@@ -224,7 +226,7 @@ public class ProductExecution implements Runnable
 
   private boolean executeRecipe(String recipeID, ProductInstance prodInst)
   {
-    String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID);
+    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
     if (Daid != null)
     {
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
@@ -250,7 +252,15 @@ public class ProductExecution implements Runnable
             notAgain = true;
           }
           da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
-          System.out.println("[2FIRST RECIPE]Executing Recipe: " + recipeID + " of product instance: "+ prodInst.getUniqueId() + " from the adapter:"+DA_name+" returned: " + result + "\n");
+          try
+          {
+            PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).acquire();
+            System.out.println("[SEMAPHORE] ACQUIRED for " + da.getSubSystem().getName());
+          } catch (InterruptedException ex)
+          {
+            Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          System.out.println("Executing Recipe: " + recipeID + " of product instance: "+ prodInst.getUniqueId() + " from the adapter:"+DA_name+" returned: " + result + "\n");
           prodInst.setStartedProductionTime(new Date());
           
           String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
@@ -265,13 +275,10 @@ public class ProductExecution implements Runnable
             bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
             systemConfigurator.startedProduct(prodInst);
           }
-
+          System.out.println("[EXECUTE] recipeID: " + recipeID);
           result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInst.getUniqueId());
           //System.out.println("[FIRST RECIPE]Execute invokeSkill Successfull\n");        
-          
 
-            
-          
           return result;
         }
       }

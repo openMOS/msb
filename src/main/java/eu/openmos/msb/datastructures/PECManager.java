@@ -9,17 +9,14 @@ import eu.openmos.model.Order;
 import eu.openmos.model.OrderInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
-import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.Semaphore;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
@@ -37,8 +34,9 @@ public class PECManager
   private final List<OrderInstance> orderInstances;
   private final HashMap<String, Queue> orderMap;
   private final Queue<ProductInstance> productsToDo;
-  private final HashMap<String,ProductInstance> productsDoing;
+  private final HashMap<String, ProductInstance> productsDoing;
   private final HashMap<String, List<PendingProdInstance>> pendejos;
+  private final HashMap<String, Semaphore> executionMap;
 
   private boolean state;
   //private final HashMap<>
@@ -53,7 +51,7 @@ public class PECManager
     productsToDo = new LinkedList<>();
     productsDoing = new HashMap<>();
     pendejos = new HashMap<>();
-
+    executionMap = new HashMap<>();
   }
 
   public HashMap<String, ProductInstance> getProductsDoing()
@@ -145,6 +143,12 @@ public class PECManager
     return aux.orderMap;
   }
   
+  public HashMap<String, Semaphore> getExecutionMap()
+  {
+    PECManager aux = PECManager.getInstance();
+    return aux.executionMap;
+  }
+  
   public String getProductNameByID(String productUUID)
   {
 
@@ -193,18 +197,20 @@ public class PECManager
     List<PendingProdInstance> prodInst = this.pendejos.get(DaID);
     if (prodInst != null && prodInst.size() > 0)
     {
-      System.out.println("[PendejoChecker] Adapter: "+ DaID +" is ready and with pending product instances todo");
+      System.out.println("[PendejoChecker] Adapter: " + DaID + " is ready and with pending product instances todo");
       //EXECUTOR AGAIN
       PendingProdInstance prodInstToDo = prodInst.remove(0);
       DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(DaID));
-      DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter.getClient();
+      DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter;
+      
       String method = DatabaseInteraction.getInstance().getRecipeMethodByID(prodInstToDo.getNextRecipeID());
-      NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":")));
+      NodeId methodNode = convertStringToNodeId(method);
       String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(prodInstToDo.getNextRecipeID());
-      NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":")));
+      NodeId objNode = convertStringToNodeId(obj);
+              
       boolean res = client.getClient().InvokeDeviceSkill(client.getClient().getClientObject(), objNode, methodNode, prodInstToDo.getProductInstanceID());
 
-      System.out.println("[[PendejoChecker]] result from the invokeDeviceSkill: "+res);
+      System.out.println("[EXECUTE] pendejo recipeID: " + prodInstToDo.getNextRecipeID() + "\n Remain: " + prodInst.size());
     } else
     {
       System.out.println("[PendejoChecker]Adapter " + DaID + " is ready! no pendejos found");
@@ -212,6 +218,8 @@ public class PECManager
       if (deviceAdapter != null)
       {
         deviceAdapter.getSubSystem().setState(MSBConstants.ADAPTER_STATE_READY);
+        PECManager.getInstance().getExecutionMap().get(DaID).release();
+        System.out.println("[SEMAPHORE] RELEASED for " + deviceAdapter.getSubSystem().getName());
         System.out.println("[PendejoChecker]Adapter " + DaID + " state changed to ready!");
       }
       else
@@ -219,4 +227,12 @@ public class PECManager
     }
     
   }
+  
+  private static NodeId convertStringToNodeId(String toConvert)
+  {
+    int ns = Integer.parseInt(toConvert.split(":")[0]);
+    String aux = toConvert.substring(toConvert.indexOf(":") + 1);
+    return new NodeId(ns, aux);
+  }
+  
 }

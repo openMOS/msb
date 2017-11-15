@@ -215,7 +215,7 @@ public class DatabaseInteraction
       ResultSet rs = stmt.executeQuery(sql);
       if (!rs.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (rs.next())
@@ -255,7 +255,7 @@ public class DatabaseInteraction
       ResultSet rs = stmt.executeQuery(sql);
       if (!rs.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (rs.next())
@@ -297,7 +297,7 @@ public class DatabaseInteraction
       ResultSet rs = stmt.executeQuery(sql);
       if (!rs.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (rs.next())
@@ -390,7 +390,7 @@ public class DatabaseInteraction
       {
         if (!query.isBeforeFirst())
         {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-          System.out.println("No data");
+          //System.out.println("No data");
         } else
         {
           while (query.next())
@@ -438,7 +438,7 @@ public class DatabaseInteraction
       query.close();
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         name = query.getString(1);
@@ -476,7 +476,7 @@ public class DatabaseInteraction
       {
         if (!query.isBeforeFirst())
         {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-          System.out.println("No data");
+          //System.out.println("No data");
         } else
         {
           while (query.next())
@@ -559,7 +559,7 @@ public class DatabaseInteraction
     {
       if (!rs.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (rs.next())
@@ -595,7 +595,7 @@ public class DatabaseInteraction
     {
       if (!rs.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (rs.next())
@@ -632,7 +632,7 @@ public class DatabaseInteraction
     {
       if (!rs.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (rs.next())
@@ -673,7 +673,7 @@ public class DatabaseInteraction
     {
       if (!rs.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (rs.next())
@@ -809,7 +809,7 @@ public class DatabaseInteraction
       myresult = new ArrayList<>();
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (query.next())
@@ -860,7 +860,7 @@ public class DatabaseInteraction
       ResultSet rs = stmt.executeQuery(sql);
       if (!rs.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         name = rs.getString(1);
@@ -903,7 +903,7 @@ public class DatabaseInteraction
       //System.out.println("ResultSet number of rows: "+numberOfRows);
       if (!rs.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
 
@@ -1061,7 +1061,7 @@ public class DatabaseInteraction
       DBqueryTimer.stop();
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         return Integer.parseInt(query.getString(1));
@@ -1099,7 +1099,7 @@ public class DatabaseInteraction
       ResultSet query = stmt.executeQuery(sql);
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         result = query.getString(1);
@@ -1140,7 +1140,7 @@ public class DatabaseInteraction
         ResultSet rs = stmt.executeQuery(sql);
         if (!rs.isBeforeFirst())
         {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-          System.out.println("No data");
+          //System.out.println("No data");
         } else
         {
           while (rs.next())
@@ -1179,7 +1179,7 @@ public class DatabaseInteraction
       ResultSet query = stmt.executeQuery("SELECT SR.r_id FROM SR WHERE sr_id = '" + sr_id + "'");
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (query.next())
@@ -1230,7 +1230,7 @@ public class DatabaseInteraction
       DBqueryTimer.stop();
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         return query.getString(1);
@@ -1264,7 +1264,7 @@ public class DatabaseInteraction
       ResultSet query = stmt.executeQuery("SELECT Recipe.method_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (query.next())
@@ -1313,7 +1313,7 @@ public class DatabaseInteraction
       ResultSet query = stmt.executeQuery("SELECT Recipe.obj_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (query.next())
@@ -1349,7 +1349,7 @@ public class DatabaseInteraction
     return null;
   }
 
-  public String getDAIDbyRecipeID(String recipe_id)
+  public String getDA_DB_IDbyRecipeID(String recipe_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
@@ -1363,7 +1363,7 @@ public class DatabaseInteraction
       ResultSet query = stmt.executeQuery("SELECT Recipe.da_id FROM Recipe WHERE aml_id = '" + recipe_id + "'");
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         while (query.next())
@@ -1415,7 +1415,7 @@ public class DatabaseInteraction
       DBqueryTimer.stop();
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-        System.out.println("No data");
+        //System.out.println("No data");
       } else
       {
         return query.getString(1);
@@ -1448,7 +1448,7 @@ public class DatabaseInteraction
         myresult = new ArrayList<>();
         if (!query.isBeforeFirst())
         {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-          System.out.println("No data");
+          //System.out.println("No data");
         } else
         {
           while (query.next())
@@ -1492,7 +1492,7 @@ public class DatabaseInteraction
         myresult = new ArrayList<>();
         if (!query.isBeforeFirst())
         {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-          System.out.println("No data");
+          //System.out.println("No data");
         } else
         {
           while (query.next())

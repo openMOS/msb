@@ -524,7 +524,7 @@ public class main_jax
     }
     
      private Boolean checkNextValidation(String nextRecipeID) {
-        String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
+        String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
         if (Daid != null) {
             String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
             DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
@@ -542,7 +542,7 @@ public class main_jax
     private String doStuff2(String recipeID) {
 
         //get execTable
-        String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID);
+        String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
 
         if (Daid != null) {
             String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
@@ -561,7 +561,7 @@ public class main_jax
                         } else {
                             for (int j = 0; j < PossibleRecipeChoices.size(); j++) {
                                 String choice = PossibleRecipeChoices.get(j);
-                                String Daid1 = DatabaseInteraction.getInstance().getDAIDbyRecipeID(choice);
+                                String Daid1 = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(choice);
                                 if (Daid1 != null) {
                                     String DA_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid1);
                                     DeviceAdapter da1 = DACManager.getInstance().getDeviceAdapterbyName(DA_name1);

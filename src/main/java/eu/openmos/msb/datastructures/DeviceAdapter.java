@@ -19,6 +19,7 @@ import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.xpath.XPath;
@@ -249,6 +250,8 @@ public abstract class DeviceAdapter {
             subSystem.setType(ReadDeviceAdapterType(deviceDescriptionDoc));
                         
             subSystem.setState(MSBConstants.ADAPTER_STATE_READY);
+            PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
+            System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
             //verifyRecipeSkill(subSystem.getRecipes(), subSystem.getSkills());
 
             //Logger.getLogger(SubSystem.class.getName()).log(Level.SEVERE, null, "testing");
@@ -406,8 +409,8 @@ public abstract class DeviceAdapter {
                                     execRow.setNextRecipeId(IDchildNodes.item(id).getTextContent());
                                   } else if (IDchildNodes.item(id).getNodeName().equals("Path"))
                                   {
-                                    String ns = NextRecipeChildNodes.item(id).getAttributes().getNamedItem("ns").getNodeValue();
-                                    execRow.setNextRecipeIdPath(ns + ":" + NextRecipeChildNodes.item(id).getTextContent()); //CHECK THIS
+                                    String ns = IDchildNodes.item(id).getAttributes().getNamedItem("ns").getNodeValue();
+                                    execRow.setNextRecipeIdPath(ns + ":" + IDchildNodes.item(id).getTextContent()); //CHECK THIS
                                   }
                                 }
                               }

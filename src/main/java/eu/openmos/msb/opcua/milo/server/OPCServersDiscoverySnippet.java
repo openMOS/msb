@@ -119,7 +119,6 @@ public class OPCServersDiscoverySnippet extends Thread
 
         //System.out.println("getApplicationUri output " + server.getApplicationUri());
         //System.out.println("getDiscoveryUrls output " + server.getDiscoveryUrls()[0]);
-
         try
         {
           //discover endpoints only from servers. not from discovery
@@ -157,9 +156,9 @@ public class OPCServersDiscoverySnippet extends Thread
       List<EndpointDescription> edList = new ArrayList<>();
       for (String url : discoveryUrls)
       {
-          //logger.debug("url = " + url);
+        //logger.debug("url = " + url);
         String da_url = "";
-        
+
         try
         {
           for (EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get())
@@ -174,7 +173,7 @@ public class OPCServersDiscoverySnippet extends Thread
             if (da == null)
             {
               System.out.println("\n\n Registered the " + daName + "\n\n");
-              
+
               da = dacManager.addDeviceAdapter(daName, EProtocol.OPC, "", ""); //add to DB
               if (da == null)
               {
@@ -190,15 +189,17 @@ public class OPCServersDiscoverySnippet extends Thread
               da.getSubSystem().setDescription(daName);
               da.getSubSystem().setRegistered(new Date());
               da_url = ed.getEndpointUrl();
- 
+
               // VaG FABIO PATCH 20170927
-              
-              if(da_url.contains("4840"))
-                  continue;
-              if(da_url.contains("9995"))
-                  continue;
-              
-              
+              if (da_url.contains("4840"))
+              {
+                continue;
+              }
+              if (da_url.contains("9995"))
+              {
+                continue;
+              }
+
               ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get();
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
               {
@@ -207,79 +208,64 @@ public class OPCServersDiscoverySnippet extends Thread
                 MSBClientSubscription instance = opc.getClient();
                 instance.startConnection(da_url);
                 OpcUaClient client = instance.getClientObject();
-                
+
                 da.getClient();
-                
+
                 // add subscribet for the ServerStatus of the device adatper
-                
                 // Iterate over all values, using the keySet method.
                 // call SendServerURL() method from device
                 if (daName != null && !daName.contains("MSB") && !daName.contains("discovery"))
                 {
                   namespaceParsingTimer.reset();
                   namespaceParsingTimer.start();
-                  
+
                   System.out.println("\n");
                   System.out.println("***** Starting namespace browsing ***** \n");
-                  
+
                   Element node = new Element("DeviceAdapter");
                   Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
                   ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
-                  
+
                   node.addContent(instance.browseNode(client,
                           new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.dainstance")),
                           Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
                           ignore));
-                  
+
                   Element nSkills = new Element("Skills");
                   nSkills.addContent(instance.browseNode(client,
                           new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
                           Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level.skills")),
                           ignore));
-                   
+
                   // print to file the XML structure extracted from the browsing process             
                   XMLOutputter xmlOutput = new XMLOutputter();
                   xmlOutput.setFormat(Format.getPrettyFormat());
-                  
-                  String XML_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");                  
-                  xmlOutput.output(node, new FileWriter(XML_PATH + "\\file.xml", false));
-                  xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\file2.xml", false));
-                  
+
+                  String XML_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");
+                  xmlOutput.output(node, new FileWriter(XML_PATH + "\\file_" + daName + ".xml", false));
+                  xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\file2_" + daName + ".xml", false));
+
                   System.out.println("Starting DA Parser **********************");
-                              
+
                   boolean ok = da.parseDNToObjects(node, nSkills);
-                                    
-                  System.out.println("***** End namespace browsing ***** \n\n");                  
-                  
+
+                  System.out.println("***** End namespace browsing ***** \n\n");
+
                   //FILL TABLES
                   if (ok)
                   {
                     //notify_channel.on_namespace_read(da.getListOfRecipes(), daName);
                     workStationRegistration(da);
-                  }else{
-                    System.out.println("parseDNToObjects FAILED!");       
+                  } else
+                  {
+                    System.out.println("parseDNToObjects FAILED!");
                   }
-                  
-                  PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();  
+
+                  PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
                   Long time = namespaceParsingTimer.getTime();
                   perfMeasure.getNameSpaceParsingTimers().add(time);
                   logger.info("Namespace Parsing took " + time.toString() + "ms to be executed");
                   namespaceParsingTimer.stop();
-                  
-                  // TODO next step validate this
-                  // TODO fabio check if this will be valid after changes from fortiss
-                  
-                  //deprecated
-                  /*instance.SendServerURL(client, MSB_OPCUA_SERVER_ADDRESS).exceptionally(ex ->
-                  {
-                    System.out.println("error invoking SendServerURL() for server: " + daName + "\n" + ex);
-                    //logger.error("error invoking SendServerURL()", ex);
-                    return "-1.0";
-                  }).thenAccept(v ->
-                  {
-                    System.out.println("SendServerURL(uri)={}\n" + v);
-                  });*/
-
                 }
                 if (client == null)
                 {
@@ -355,18 +341,18 @@ public class OPCServersDiscoverySnippet extends Thread
         {
           ss.setDescription(ss.getName());
         }
-        
+
         PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
         perfMeasure.getAgentRemovalTimers().put(ss.getUniqueId(), new Date().getTime());
-         
+
         //ss.setRegistered(new Date());
         ServiceCallStatus agentStatus = systemConfigurator.removeAgent(ss.getUniqueId());
         // end
 
         System.out.println("\n\n Removing Resource or Transport Agent: " + agentStatus + "\n\n");
         String resCode = agentStatus.getCode();
-        
-        System.out.println("Successfully removed Agent with UID: "+ss.getUniqueId()+"with status: "+resCode);
+
+        System.out.println("Successfully removed Agent with UID: " + ss.getUniqueId() + "with status: " + resCode);
         //String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
         //Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName())); // TODO - DELETE THIS
         //da.getVertx().deployVerticle(new WebSocketsSender(da.getSubSystem().getUniqueName()));
@@ -397,14 +383,14 @@ public class OPCServersDiscoverySnippet extends Thread
     }
 
   }
-  
+
   private String workStationRegistration(DeviceAdapter da)
   {
     try
     {
       DACManager dacManager = DACManager.getInstance();
       DatabaseInteraction.getInstance().UpdateDAamlID(da.getSubSystem().getUniqueId(), da.getId()); //insert aml ID into the 
-      
+
       if (da.getListOfEquipments() != null && da.getListOfEquipments().size() > 0)
       {
         for (Module auxModule : da.getListOfEquipments())
@@ -427,13 +413,15 @@ public class OPCServersDiscoverySnippet extends Thread
       {
         for (Recipe auxRecipe : da.getListOfRecipes())
         {
-          if(da.getSubSystem().getName()!=null && auxRecipe.getSkill()!=null && auxRecipe.getSkill().getName()!=null){
-            
-          dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(), 
-                  "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
-          
-          }else{
-            System.out.println("\nCouldn't register recipe: "+auxRecipe.getName()+"\n");
+          if (da.getSubSystem().getName() != null && auxRecipe.getSkill() != null && auxRecipe.getSkill().getName() != null)
+          {
+
+            dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
+                    "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
+
+          } else
+          {
+            System.out.println("\nCouldn't register recipe: " + auxRecipe.getName() + "\n");
           }
         }
         MSB_gui.fillRecipesTable();
@@ -456,41 +444,43 @@ public class OPCServersDiscoverySnippet extends Thread
         // SubSystem cpad = dummySubSystemGeneration(parsedClass);
         //SubSystem cpad = SubSystemTest.getTestObject();
 
-          // VaG - 28/09/2017
-          // begin
-          SubSystem ss = da.getSubSystem();
-          // assume the name is populated
-          if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
-            ss.setUniqueId(ss.getName());
-          if (ss.getDescription() == null || ss.getDescription().length() == 0)
-            ss.setDescription(ss.getName());  
-          
-          ss.setRegistered(new Date());
-          
-         PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-         perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
+        // VaG - 28/09/2017
+        // begin
+        SubSystem ss = da.getSubSystem();
+        // assume the name is populated
+        if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
+        {
+          ss.setUniqueId(ss.getName());
+        }
+        if (ss.getDescription() == null || ss.getDescription().length() == 0)
+        {
+          ss.setDescription(ss.getName());
+        }
+
+        ss.setRegistered(new Date());
+
+        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+        perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
         //perfMeasure.getNameSpaceParsingTimers().add(time);
-                  
-          ServiceCallStatus agentStatus;
-          if(ss.getType().equals("TransportSystem")){
-             
-             agentStatus = systemConfigurator.createNewTransportAgent(ss);
-          }else{
-             agentStatus = systemConfigurator.createNewResourceAgent(ss);
-          }
-          
-          // end
-        
-        
+
+        ServiceCallStatus agentStatus;
+        if (ss.getType().equals("TransportSystem"))
+        {
+          agentStatus = systemConfigurator.createNewTransportAgent(ss);
+        } else
+        {
+          agentStatus = systemConfigurator.createNewResourceAgent(ss);
+        }
+
         System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
         String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
         //Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName())); // TODO - DELETE THIS
-        //da.getVertx().deployVerticle(new WebSocketsSender(da.getSubSystem().getUniqueName()));
+        da.getVertx().deployVerticle(new WebSocketsSender(da.getSubSystem().getUniqueId()));
 
         //add the sender client object to the respective agentID
         //da.setSubSystem(cpad);
         MSB_gui.fillRecipesTable();
-        
+
         if (agentStatus != null)
         {
           return agentStatus.getCode(); //OK? ou KO?
@@ -498,29 +488,24 @@ public class OPCServersDiscoverySnippet extends Thread
         {
           return "KO";
         }
-        
-        
+
       } else //without AC
       {
         //call mainwindow filltables
         MSB_gui.fillRecipesTable();
+        /*
         da.getVertx().deployVerticle(new WebSocketsReceiver("R1"));
         da.getVertx().deployVerticle(new WebSocketsReceiver("R2"));
-
         Thread.sleep(3000);
-
         da.getVertx().deployVerticle(new WebSocketsSender("R3"));
-
+         */
         return "OK - No AgentPlatform";
-
       }
-    }catch (InterruptedException ex)
+    } catch (Exception ex)
     {
-      //Logger.getLogger(OPCDeviceHelper.class.getName()).log(Level.SEVERE, null, ex);
-      System.out.println("Problems parsing the RegFile - " + ex.getMessage());
+      System.out.println("Errors in workStationRegistration - " + ex.getMessage());
     }
-    //Logger.getLogger(OPCDeviceHelper.class.getName()).log(Level.SEVERE, null, ex);
-     finally
+    finally
     {
       long endTime = System.nanoTime();
       //long elapsedTime = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);

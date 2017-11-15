@@ -23,6 +23,7 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -70,6 +71,18 @@ public class ChangeState
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
     System.out.println("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id + " productID: " + product_id + " recipeID:" + recipe_id);
 
+    
+    for (String da_name : DACManager.getInstance().getDeviceAdapters())
+    {
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+      if (PECManager.getInstance().getPendejos().get(da.getSubSystem().getUniqueId()) != null)
+        System.out.println("*****\n Name: " + da.getSubSystem().getName() +
+                          "\n Pendejos: " + PECManager.getInstance().getPendejos().get(da.getSubSystem().getUniqueId()).size() + "\n*****");
+      else
+        System.out.println("*****\n Name: " + da.getSubSystem().getName() +
+                          "\n Pendejos: " + PECManager.getInstance().getPendejos().get(da.getSubSystem().getUniqueId()) + "\n*****");
+    }
+    
     //read recipe KPIs
     Thread threadKPI = new Thread()
     {
@@ -95,7 +108,7 @@ public class ChangeState
 
   private Boolean checkNextValidation(String nextRecipeID)
   {
-    String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
+    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
     if (Daid != null)
     {
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
@@ -116,14 +129,14 @@ public class ChangeState
   private String checkNextRecipe(String recipeID)
   {
     //get deviceAdapter that does the required recipe
-    String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(recipeID); //there can be only one?
+    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID); //there can be only one?
     System.out.println("DA id from checkNExtRecipe: " + Daid);
 
     if (Daid != null)
     {
       //get DA name
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
-      System.out.println("DA name from checkNExtRecipe: " + DA_name);
+      System.out.println("[checkNextRecipe]DA name of finished recipe : " + DA_name);
       //get DA object from it's name
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
       if (da == null)
@@ -136,15 +149,7 @@ public class ChangeState
           if (da.getExecutionTable().getRows().get(i).getRecipeId() == null ? recipeID == null : da.getExecutionTable().getRows().get(i).getRecipeId().equals(recipeID))
           {
             //get the nextRecipe on its executionTables
-            //String NextRecipe = da.getExecutionTable().getRows().get(i).getNextRecipeId(); //NO PUEDE
-
-            int nsindex = Integer.parseInt(da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[0]);
-            String identifier = da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[1] + ":" + da.getExecutionTable().getRows().get(i).getNextRecipeIdPath().split(":")[2];
-
-            NodeId nextRecipeNode = new NodeId(nsindex, identifier + "ID"); //CHECK THIS
-
-            //NodeId nextRecipeNode = convertStringToNodeId(da.getExecutionTable().getRows().get(i).getNextRecipeIdPath());
-            //DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+            NodeId nextRecipeNode = convertStringToNodeId(da.getExecutionTable().getRows().get(i).getNextRecipeIdPath());
             MSBClientSubscription client = (MSBClientSubscription) da.getClient();
 
             String nextRecipeID = "";
@@ -155,13 +160,17 @@ public class ChangeState
             {
               java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (nextRecipeID == null || nextRecipeID.equals("done"))//CHECK THIS WiTH KIRILL
+            if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))//CHECK THIS WiTH KIRILL
             { //ATENÇÃO: DONE??
               return "last";
             }
 
             List<String> PossibleRecipeChoices = da.getExecutionTable().getRows().get(i).getPossibleRecipeChoices();
             //check if there are more possible choices
+            if (da.getSubSystem().getName().startsWith("Manual"))
+            {
+              int fghjklç = 0;
+            }
             if (!PossibleRecipeChoices.isEmpty())
             {
               boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
@@ -177,7 +186,7 @@ public class ChangeState
                 for (int j = 0; j < PossibleRecipeChoices.size(); j++)
                 {
                   String choice = PossibleRecipeChoices.get(j);
-                  String Daid1 = DatabaseInteraction.getInstance().getDAIDbyRecipeID(choice);
+                  String Daid1 = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(choice);
                   if (Daid1 != null)
                   {
                     String DA_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid1);
@@ -252,14 +261,16 @@ public class ChangeState
    */
   private boolean checkAdapterState(String nextRecipeID)
   {
-    String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
+    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
     if (Daid != null)
     {
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
       //add adapter states strings to properties
-      if (da.getSubSystem().getState() == null ? MSBConstants.ADAPTER_STATE_READY == null : da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+      //if (da.getSubSystem().getState() == null ? MSBConstants.ADAPTER_STATE_READY == null : da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+      if(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
       {
+        System.out.println("[SEMAPHORE] ACQUIRED for " + DA_name);
         System.out.println("the next recipe Adapter (" + DA_name + ") is ready for execution!");
         return true;
       } else
@@ -288,7 +299,7 @@ public class ChangeState
         //System.out.println("objectID returned from DB: " + obj);
 
         NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":") + 1));
-        String Daid = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
+        String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
         //System.out.println("Daid from DB: " + Daid);
 
         String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
@@ -303,7 +314,7 @@ public class ChangeState
         //changeStateAndNextRecipeTimer.stop();
 
         boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, product_id);
-        System.out.println("[ChangeStateChecker] Invoke output: " + res);
+        System.out.println("[EXECUTE] recipeID: " + nextRecipeID);
         if (res)
         {
           //do happy flow stuff
@@ -315,21 +326,24 @@ public class ChangeState
       {
         PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
         perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
-        changeStateAndNextRecipeTimer.stop();
+        //changeStateAndNextRecipeTimer.stop();
 
         //save daIDnext, nextRecipe and prodID to execute later
-        String Daid_Next = DatabaseInteraction.getInstance().getDAIDbyRecipeID(nextRecipeID);
-        List<PendingProdInstance> auxProdId = PECManager.getInstance().getPendejos().get(Daid_Next);
+        String Daid_Next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+        String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_Next);
+        
+        DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+        List<PendingProdInstance> auxProdId = PECManager.getInstance().getPendejos().get(da_next.getSubSystem().getUniqueId());
         if (auxProdId == null)
         {
           List<PendingProdInstance> ppi = new ArrayList<>();
-          PendingProdInstance ppinst = new PendingProdInstance(nextRecipeID, product_id, Daid_Next);
+          PendingProdInstance ppinst = new PendingProdInstance(nextRecipeID, product_id, da_next.getSubSystem().getUniqueId());
           ppi.add(ppinst);
-          PECManager.getInstance().getPendejos().put(Daid_Next, ppi);
+          PECManager.getInstance().getPendejos().put(da_next.getSubSystem().getUniqueId(), ppi);
         } else
         {
-          auxProdId.add(new PendingProdInstance(nextRecipeID, product_id, Daid_Next));
-          PECManager.getInstance().getPendejos().put(Daid_Next, auxProdId);
+          auxProdId.add(new PendingProdInstance(nextRecipeID, product_id, da_next.getSubSystem().getUniqueId()));
+          PECManager.getInstance().getPendejos().put(da_next.getSubSystem().getUniqueId(), auxProdId);
         }
 
         System.out.println("[ChangeStateChecker] The adapter state is not ready! The recipe: " + nextRecipeID + "could not be called.\nIt was added to the pendent product list for DA ID: " + Daid_Next);
@@ -377,11 +391,16 @@ public class ChangeState
 
   }
 
+  /**
+   * 
+   * @param toConvert
+   * @return NodeId class
+   */
   private static NodeId convertStringToNodeId(String toConvert)
   {
     int ns = Integer.parseInt(toConvert.split(":")[0]);
-    String aux = toConvert.substring(toConvert.indexOf(":") + 1);
-    return new NodeId(ns, aux);
+    String identifier = toConvert.substring(toConvert.indexOf(":") + 1);
+    return new NodeId(ns, identifier);
   }
 
   /**
@@ -431,6 +450,7 @@ public class ChangeState
             DeliveryOptions options = new DeliveryOptions();
             options.addHeader(eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA, "MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA"); //use this??
             JsonObject objectToSend=JsonObject.mapFrom(red);
+            
             CurrentDA.getVertx().eventBus().send(productInst_ID, objectToSend, options); //serialize the entire class??
           } else
           {
@@ -441,4 +461,5 @@ public class ChangeState
       }
     }
   }
+  
 }
