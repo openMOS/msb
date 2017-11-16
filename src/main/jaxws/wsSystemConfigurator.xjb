@@ -89,6 +89,9 @@
 <jxb:bindings node="//xs:complexType[@name='recipe']">
     <jxb:class ref="eu.openmos.model.Recipe" />
 </jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='recipeExecutionData']">
+    <jxb:class ref="eu.openmos.model.RecipeExecutionData" />
+</jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='skill']">
     <jxb:class ref="eu.openmos.model.Skill" />
 </jxb:bindings>
