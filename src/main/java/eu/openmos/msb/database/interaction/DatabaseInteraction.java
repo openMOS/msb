@@ -928,6 +928,47 @@ public class DatabaseInteraction
     return false;
   }
 
+  public boolean skillExists(String aml_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+
+    try
+    {
+      Statement stmt = conn.createStatement();
+      String sql = "SELECT Skill.aml_id "
+              + "FROM Skill "
+              + "WHERE Skill.aml_id = '" + aml_id + "';";
+      ResultSet rs = stmt.executeQuery(sql);
+
+      if (!rs.isBeforeFirst())
+      {
+        stmt.close();
+        Long time = DBqueryTimer.getTime();
+        perfMeasure.getDatabaseQueryTimers().add(time);
+        DBqueryTimer.stop();
+        return false;
+      } else
+      {
+        stmt.close();
+        Long time = DBqueryTimer.getTime();
+        perfMeasure.getDatabaseQueryTimers().add(time);
+        DBqueryTimer.stop();
+        return true;
+      }
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return false;
+  }
+
   // **************************************************************************************************************** //
   // **************************************************************************************************************** //
   /**
@@ -1659,5 +1700,5 @@ public class DatabaseInteraction
     }
     return false;
   }
-  // **************************************************************************************************************** //
+
 }

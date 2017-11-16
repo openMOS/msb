@@ -10,6 +10,7 @@ import eu.openmos.model.OrderInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
+import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -204,9 +205,9 @@ public class PECManager
       DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter;
       
       String method = DatabaseInteraction.getInstance().getRecipeMethodByID(prodInstToDo.getNextRecipeID());
-      NodeId methodNode = convertStringToNodeId(method);
+      NodeId methodNode = Functions.convertStringToNodeId(method);
       String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(prodInstToDo.getNextRecipeID());
-      NodeId objNode = convertStringToNodeId(obj);
+      NodeId objNode = Functions.convertStringToNodeId(obj);
               
       boolean res = client.getClient().InvokeDeviceSkill(client.getClient().getClientObject(), objNode, methodNode, prodInstToDo.getProductInstanceID());
 
@@ -227,12 +228,4 @@ public class PECManager
     }
     
   }
-  
-  private static NodeId convertStringToNodeId(String toConvert)
-  {
-    int ns = Integer.parseInt(toConvert.split(":")[0]);
-    String aux = toConvert.substring(toConvert.indexOf(":") + 1);
-    return new NodeId(ns, aux);
-  }
-  
 }

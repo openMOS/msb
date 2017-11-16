@@ -1910,11 +1910,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   public static void fillRecipesTable()
   {
     recipesTableModel.getDataVector().removeAllElements();
-    DACManager instance = DACManager.getInstance(); //singleton to access hashmaps in other classes
-    List<String> devices = instance.getDeviceAdapters();
-    for (String daName : devices)
+    DACManager dac = DACManager.getInstance(); //singleton to access hashmaps in other classes
+    List<String> da_names = dac.getDeviceAdapters();
+    for (String daName : da_names)
     {
-      ArrayList<Recipe> list = instance.getRecipesFromDevice(daName);
+      ArrayList<Recipe> list = dac.getRecipesFromDevice(daName);
       for (Recipe r : list)
       {
         addToTableRecipes(r.getName(), r.isValid(), daName); //add each product from the list for each workstation

@@ -10,7 +10,6 @@ import eu.openmos.model.Recipe;
 import eu.openmos.model.RecipeExecutionData;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
-import eu.openmos.msb.datastructures.MSBConstants;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.PECManager;
@@ -18,12 +17,11 @@ import eu.openmos.msb.datastructures.PendingProdInstance;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
+import eu.openmos.msb.utilities.Functions;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -33,7 +31,6 @@ import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaOutputArgument;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
@@ -78,9 +75,6 @@ public class ChangeState
       if (PECManager.getInstance().getPendejos().get(da.getSubSystem().getUniqueId()) != null)
         System.out.println("*****\n Name: " + da.getSubSystem().getName() +
                           "\n Pendejos: " + PECManager.getInstance().getPendejos().get(da.getSubSystem().getUniqueId()).size() + "\n*****");
-      else
-        System.out.println("*****\n Name: " + da.getSubSystem().getName() +
-                          "\n Pendejos: " + PECManager.getInstance().getPendejos().get(da.getSubSystem().getUniqueId()) + "\n*****");
     }
     
     //read recipe KPIs
@@ -149,7 +143,15 @@ public class ChangeState
           if (da.getExecutionTable().getRows().get(i).getRecipeId() == null ? recipeID == null : da.getExecutionTable().getRows().get(i).getRecipeId().equals(recipeID))
           {
             //get the nextRecipe on its executionTables
-            NodeId nextRecipeNode = convertStringToNodeId(da.getExecutionTable().getRows().get(i).getNextRecipeIdPath());
+            String auxNextRecipeNode = da.getExecutionTable().getRows().get(i).getNextRecipeIdPath();
+            
+            if (auxNextRecipeNode == null)
+            {
+              //is last recipe
+              return "last";
+            }
+            
+            NodeId nextRecipeNode = Functions.convertStringToNodeId(auxNextRecipeNode);
             MSBClientSubscription client = (MSBClientSubscription) da.getClient();
 
             String nextRecipeID = "";
@@ -160,17 +162,13 @@ public class ChangeState
             {
               java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))//CHECK THIS WiTH KIRILL
+            if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))
             { //ATENÇÃO: DONE??
               return "last";
             }
 
             List<String> PossibleRecipeChoices = da.getExecutionTable().getRows().get(i).getPossibleRecipeChoices();
             //check if there are more possible choices
-            if (da.getSubSystem().getName().startsWith("Manual"))
-            {
-              int fghjklç = 0;
-            }
             if (!PossibleRecipeChoices.isEmpty())
             {
               boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
@@ -392,18 +390,6 @@ public class ChangeState
   }
 
   /**
-   * 
-   * @param toConvert
-   * @return NodeId class
-   */
-  private static NodeId convertStringToNodeId(String toConvert)
-  {
-    int ns = Integer.parseInt(toConvert.split(":")[0]);
-    String identifier = toConvert.substring(toConvert.indexOf(":") + 1);
-    return new NodeId(ns, identifier);
-  }
-
-  /**
    * Read KPIs of recipe_id from OPCServer
    *
    * @param da_id
@@ -424,7 +410,7 @@ public class ChangeState
           {
             try
             {
-              NodeId kpiPath = convertStringToNodeId(kpi.getPath());
+              NodeId kpiPath = Functions.convertStringToNodeId(kpi.getPath());
               DeviceAdapterOPC client = (DeviceAdapterOPC) CurrentDA;
               String kpiValue = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, kpiPath).get().toString();
               kpi.setValue(kpiValue);

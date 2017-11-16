@@ -14,6 +14,7 @@ import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
+import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,11 +39,12 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
  */
 public class ProductExecution implements Runnable
 {
+
   List<String> recipesExecuted = new ArrayList<>();
   int HighOrderIndex = -1;
   StopWatch firstRecipeCallTime = new StopWatch();
   boolean notAgain = false;
-  
+
   @Override
   public void run()
   {
@@ -67,7 +69,7 @@ public class ProductExecution implements Runnable
   {
     firstRecipeCallTime.reset();
     firstRecipeCallTime.start();
-    
+
     PECManager ProdManager = PECManager.getInstance();
 
     //Get priority and execute the higher value order
@@ -99,9 +101,9 @@ public class ProductExecution implements Runnable
   public void ExecuteProdsInstance()
   {
     PECManager ProdManager = PECManager.getInstance();
-    
-    System.out.println("number of product instances to be done: "+ProdManager.getProductsToDo().size());
-    
+
+    System.out.println("number of product instances to be done: " + ProdManager.getProductsToDo().size());
+
     while (ProdManager.getProductsToDo().size() > 0)
     {
       ProductInstance auxProdInstance = ProdManager.getProductsToDo().peek();
@@ -109,7 +111,7 @@ public class ProductExecution implements Runnable
       String productId = auxProdInstance.getProductId(); //prod type
       //ir as tabelas de execução
 
-      List<Product> availableProducts = ProdManager.getAvailableProducts(); 
+      List<Product> availableProducts = ProdManager.getAvailableProducts();
       for (Product auxProduct : availableProducts)
       {
         if (auxProduct.getUniqueId() == null ? productId == null : auxProduct.getUniqueId().equals(productId)) //check if the resquested product is available
@@ -127,16 +129,17 @@ public class ProductExecution implements Runnable
                 for (String recipeID : auxSR.getRecipeIDs())
                 {
                   //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
-                  if (checkRecipeAvailable(recipeID)&&checkProductAgentComms(auxProdInstance.getUniqueId()))
+                  if (checkRecipeAvailable(recipeID) && checkProductAgentComms(auxProdInstance.getUniqueId()))
                   {
                     if (executeRecipe(recipeID, auxProdInstance))
                     {
                       System.out.println("The execution of Recipe: " + recipeID + " Returned true");
-                      
+
                       ProdManager.getProductsDoing().put(auxProdInstance.getUniqueId(), ProdManager.getProductsToDo().poll()); //the first recipe of the product is done, put it into "doing"
                       getOut = true;
                       break;
-                    }else{
+                    } else
+                    {
                       System.out.println("[ERROR] The execution of Recipe: " + recipeID + " Returned false!");
                     }
                   }
@@ -185,9 +188,10 @@ public class ProductExecution implements Runnable
     }
     return false;
   }
-  
-  private boolean checkProductAgentComms(String productInstID){
-    
+
+  private boolean checkProductAgentComms(String productInstID)
+  {
+
     for (ProductInstance prodInst : PECManager.getInstance().getProductsToDo())
     {
       if (productInstID.equals(prodInst.getUniqueId()))
@@ -216,12 +220,12 @@ public class ProductExecution implements Runnable
         {
           return false;
         }
-        
+
       }
     }
-    
+
     return false;
-    
+
   }
 
   private boolean executeRecipe(String recipeID, ProductInstance prodInst)
@@ -238,12 +242,9 @@ public class ProductExecution implements Runnable
           String invokeObjectID = auxRep.getInvokeObjectID();
           String invokeMethodID = auxRep.getInvokeMethodID();
           DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-          boolean result=false;
-          /*String result = invokeMethod(daOPC.getClient().getClientObject(),
-          convertStringToNodeId(invokeObjectID),
-          convertStringToNodeId(invokeMethodID)).get();*/
+          boolean result = false;
           //System.out.println("\n[1FIRST RECIPE]Trying to execute recipe: " + recipeID + " from prodInstance: " + prodInstID);
-          
+
           if (!notAgain)
           {
             PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
@@ -260,9 +261,9 @@ public class ProductExecution implements Runnable
           {
             Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
           }
-          System.out.println("Executing Recipe: " + recipeID + " of product instance: "+ prodInst.getUniqueId() + " from the adapter:"+DA_name+" returned: " + result + "\n");
+          System.out.println("Executing Recipe: " + recipeID + " of product instance: " + prodInst.getUniqueId() + " from the adapter:" + DA_name + " returned: " + result + "\n");
           prodInst.setStartedProductionTime(new Date());
-          
+
           String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
           boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
           if (withAGENTCloud)
@@ -276,7 +277,9 @@ public class ProductExecution implements Runnable
             systemConfigurator.startedProduct(prodInst);
           }
           System.out.println("[EXECUTE] recipeID: " + recipeID);
-          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), convertStringToNodeId(invokeObjectID), convertStringToNodeId(invokeMethodID), prodInst.getUniqueId());
+          NodeId objID = Functions.convertStringToNodeId(invokeObjectID);
+          NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
+          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objID, methodID, prodInst.getUniqueId());
           //System.out.println("[FIRST RECIPE]Execute invokeSkill Successfull\n");        
 
           return result;
@@ -310,12 +313,4 @@ public class ProductExecution implements Runnable
     });
   }
 
-  private static NodeId convertStringToNodeId(String toConvert)
-  {
-
-    int ns = Integer.parseInt(toConvert.split(":")[0]);
-    //int ns = Integer.parseInt(toConvert);
-    String aux = toConvert.substring(toConvert.indexOf(":")+1);
-    return new NodeId(ns, aux);
-  }
 }
