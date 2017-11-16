@@ -343,9 +343,7 @@ public class ChangeState
           auxProdId.add(new PendingProdInstance(nextRecipeID, product_id, da_next.getSubSystem().getUniqueId()));
           PECManager.getInstance().getPendejos().put(da_next.getSubSystem().getUniqueId(), auxProdId);
         }
-
         System.out.println("[ChangeStateChecker] The adapter state is not ready! The recipe: " + nextRecipeID + "could not be called.\nIt was added to the pendent product list for DA ID: " + Daid_Next);
-
       }
     } else if (nextRecipeID.equals("last"))
     {

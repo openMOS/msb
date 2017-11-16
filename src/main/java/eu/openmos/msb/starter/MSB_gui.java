@@ -896,14 +896,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(18, 18, 18)
-        .addComponent(jLabel12)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(36, 36, 36)
         .addComponent(jLabel13)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(216, Short.MAX_VALUE))
+        .addGap(18, 18, 18)
+        .addComponent(jLabel12)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(234, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Orders", jPanel4);
@@ -2098,6 +2098,34 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       }
     }
   }
+
+  public static void addToTableCurrentOrders(String OrderID, String ProductID, String prodInst_ID)
+  {
+    ordersTableCurrentModel.addRow(new Object[]
+    {
+      OrderID, ProductID, prodInst_ID
+    });
+
+    Object[] rowData = new Object[ordersTableCurrentModel.getColumnCount()];
+    for (int i = 0; i < ordersTableCurrentModel.getColumnCount(); i++)
+    {
+      rowData[i] = ordersTableCurrentModel.getValueAt(0, i);
+      System.out.println("Orders NA TABELA Current: " + rowData[i].toString());
+    }
+    //opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
+  }
+  
+  public static void removeFromTableCurrentOrder(String prodInst_ID)
+  {
+    for (int i = 0; i < ordersTableCurrentModel.getRowCount(); i++)
+    {
+      if (ordersTableCurrentModel.getValueAt(i, 2).equals(prodInst_ID))
+      {
+        ordersTableCurrentModel.removeRow(i);
+        break;
+      }
+    }
+  }
   
   public static void addToTableExecutedOrders(String OrderID, String ProductID, String prodInst_ID)
   {
@@ -2112,7 +2140,19 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       rowData[i] = ordersTableExecutedModel.getValueAt(0, i);
       System.out.println("Orders NA TABELA Executed: " + rowData[i].toString());
     }
-    opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
+    //opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
+  }
+  
+  public static void removeFromTableExecutedOrder(String prodInst_ID)
+  {
+    for (int i = 0; i < ordersTableExecutedModel.getRowCount(); i++)
+    {
+      if (ordersTableExecutedModel.getValueAt(i, 2).equals(prodInst_ID))
+      {
+        ordersTableExecutedModel.removeRow(i);
+        break;
+      }
+    }
   }
   
   /**

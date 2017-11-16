@@ -22,6 +22,7 @@ public class DatabaseConstants {
     public final static String DESCRIPTION = "description";
     public final static String OPTIMIZED = "optimized";
     public final static String TYPE = "type";
+    public final static String SUBTYPE = "subtype";
     public final static String DIRECTION = "direction";
     public final static String UNIT = "unit";
     public final static String VALUE = "value";
@@ -48,6 +49,10 @@ public class DatabaseConstants {
     public final static String PART_ID = "partId";
     public final static String REQUIRES_PART_ID = "requiresPartId";
     // public final static String EQUIPMENT_ID = "equipmentId";
+    
+    public final static String EQUIPMENT_TYPE = "equipmentType";
+    public final static String USER_TEXT = "userText";
+
     
     public final static String REMOVED = "removed";
     public final static String FINISHED = "finished";
@@ -76,6 +81,8 @@ public class DatabaseConstants {
     public final static String PART_INSTANCE_IDS = "partInstanceIds";
 
     public final static String EQUIPMENT_IDS = "equipmentIds";
+    public final static String EQUIPMENT_OBSERVATION_REL2_ROW_IDS = "equipmentObservationRel2RowIds";;
+    public final static String EQUIPMENT_OBSERVATION_REL2_ID = "equipmentObservationRel2Id";
     
     public final static String PRIORITY = "priority";
     public final static String ORDER_LINE_IDS = "orderLineIds";
@@ -83,5 +90,8 @@ public class DatabaseConstants {
     public final static String LOGICAL_LOCATION = "logicalLocation";
     public final static String SUB_ASSEMBLY_ID = "subAssemblyId";
     public final static String PHYSICAL_LOCATION = "physicalLocation";
+    
+    public final static String VERSION = "version";
+
     
 }

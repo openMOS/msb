@@ -200,7 +200,7 @@ public class PECManager
     {
       System.out.println("[PendejoChecker] Adapter: " + DaID + " is ready and with pending product instances todo");
       //EXECUTOR AGAIN
-      PendingProdInstance prodInstToDo = prodInst.remove(0);
+      PendingProdInstance prodInstToDo = prodInst.get(0);
       DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(DaID));
       DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter;
       
@@ -210,8 +210,13 @@ public class PECManager
       NodeId objNode = Functions.convertStringToNodeId(obj);
               
       boolean res = client.getClient().InvokeDeviceSkill(client.getClient().getClientObject(), objNode, methodNode, prodInstToDo.getProductInstanceID());
-
-      System.out.println("[EXECUTE] pendejo recipeID: " + prodInstToDo.getNextRecipeID() + "\n Remain: " + prodInst.size());
+      if (res)
+      {
+        prodInst.remove(0);
+        System.out.println("[EXECUTE] pendejo recipeID: " + prodInstToDo.getNextRecipeID() + "\n Remain: " + prodInst.size());
+      }
+      else
+        System.out.println("[EXECUTE] Error on pendejo recipeID: " + prodInstToDo.getNextRecipeID() + "\n Remain: " + prodInst.size());
     } else
     {
       System.out.println("[PendejoChecker]Adapter " + DaID + " is ready! no pendejos found");
