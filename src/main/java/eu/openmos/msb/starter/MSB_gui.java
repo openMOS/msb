@@ -2110,7 +2110,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     for (int i = 0; i < ordersTableCurrentModel.getColumnCount(); i++)
     {
       rowData[i] = ordersTableCurrentModel.getValueAt(0, i);
-      System.out.println("Orders NA TABELA Current: " + rowData[i].toString());
+      //System.out.println("Orders NA TABELA Current: " + rowData[i].toString());
     }
     //opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
   }

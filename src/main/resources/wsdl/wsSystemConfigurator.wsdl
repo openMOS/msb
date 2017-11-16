@@ -86,6 +86,7 @@
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element name="finished" type="xs:boolean" />
 <xs:element minOccurs="0" name="finishedTime" type="xs:dateTime" />
+<xs:element minOccurs="0" name="hasAgent" type="xs:boolean" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="orderId" type="xs:string" />
 <xs:element minOccurs="0" name="productId" type="xs:string" />
@@ -106,7 +107,7 @@
 <xs:sequence>
 <xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="parameterSettings" nillable="true" type="tns:parameterSetting" />
-<xs:element minOccurs="0" name="productId" type="xs:string" />
+<xs:element minOccurs="0" name="productInstanceId" type="xs:string" />
 <xs:element minOccurs="0" name="recipeId" type="xs:string" />
 </xs:sequence>
 </xs:extension>

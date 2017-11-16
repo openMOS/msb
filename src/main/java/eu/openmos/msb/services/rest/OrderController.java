@@ -148,8 +148,7 @@ public class OrderController
       logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");
 
       BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-      bindingProvider.getRequestContext().put(
-              BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+      bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
 //////////////////////////////              
       ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrderInstance(oi);
       logger.info("Order Instance sent to the Agent Cloud with code: " + orderStatus.getCode());

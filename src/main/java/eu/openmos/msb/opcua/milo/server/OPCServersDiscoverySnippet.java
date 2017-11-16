@@ -479,7 +479,7 @@ public class OPCServersDiscoverySnippet extends Thread
         System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
         String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
         //Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName())); // TODO - DELETE THIS
-        da.getVertx().deployVerticle(new WebSocketsSender(da.getSubSystem().getUniqueId()));
+        //da.getVertx().deployVerticle(new WebSocketsSender(da.getSubSystem().getUniqueId()));
 
         //add the sender client object to the respective agentID
         //da.setSubSystem(cpad);

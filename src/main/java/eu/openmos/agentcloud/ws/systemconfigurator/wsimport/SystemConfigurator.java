@@ -16,6 +16,7 @@ import eu.openmos.model.OrderInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
+import eu.openmos.model.RecipeExecutionData;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SubSystem;
 
@@ -35,48 +36,31 @@ public interface SystemConfigurator {
 
     /**
      * 
-     * @param recipe
+     * @param recipeExecutionData
      * @return
      *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
      */
     @WebMethod
     @WebResult(name = "serviceCallStatus", targetNamespace = "")
-    @RequestWrapper(localName = "createNewRecipe", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.CreateNewRecipe")
-    @ResponseWrapper(localName = "createNewRecipeResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.CreateNewRecipeResponse")
-    public ServiceCallStatus createNewRecipe(
-        @WebParam(name = "recipe", targetNamespace = "")
-        Recipe recipe);
+    @RequestWrapper(localName = "newRecipeExecutionData", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.NewRecipeExecutionData")
+    @ResponseWrapper(localName = "newRecipeExecutionDataResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.NewRecipeExecutionDataResponse")
+    public ServiceCallStatus newRecipeExecutionData(
+        @WebParam(name = "recipeExecutionData", targetNamespace = "")
+        RecipeExecutionData recipeExecutionData);
 
     /**
      * 
-     * @param operationTimestamp
-     * @param orderId
+     * @param orderInstanceId
      * @return
-     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     *     returns eu.openmos.model.OrderInstance
      */
     @WebMethod
-    @WebResult(name = "serviceCallStatus", targetNamespace = "")
-    @RequestWrapper(localName = "orderInstanceRemoval", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.OrderInstanceRemoval")
-    @ResponseWrapper(localName = "orderInstanceRemovalResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.OrderInstanceRemovalResponse")
-    public ServiceCallStatus orderInstanceRemoval(
-        @WebParam(name = "orderId", targetNamespace = "")
-        String orderId,
-        @WebParam(name = "operationTimestamp", targetNamespace = "")
-        String operationTimestamp);
-
-    /**
-     * 
-     * @param subSystemId
-     * @return
-     *     returns eu.openmos.model.ExecutionTable
-     */
-    @WebMethod
-    @WebResult(name = "executionTable", targetNamespace = "")
-    @RequestWrapper(localName = "getExecutionTableBySubSystemId", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetExecutionTableBySubSystemId")
-    @ResponseWrapper(localName = "getExecutionTableBySubSystemIdResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetExecutionTableBySubSystemIdResponse")
-    public ExecutionTable getExecutionTableBySubSystemId(
-        @WebParam(name = "subSystemId", targetNamespace = "")
-        String subSystemId);
+    @WebResult(name = "orderInstance", targetNamespace = "")
+    @RequestWrapper(localName = "getOrderInstance", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetOrderInstance")
+    @ResponseWrapper(localName = "getOrderInstanceResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetOrderInstanceResponse")
+    public OrderInstance getOrderInstance(
+        @WebParam(name = "orderInstanceId", targetNamespace = "")
+        String orderInstanceId);
 
     /**
      * 
@@ -91,37 +75,6 @@ public interface SystemConfigurator {
     public ServiceCallStatus finishedProduct(
         @WebParam(name = "finishedProductInfo", targetNamespace = "")
         FinishedProductInfo finishedProductInfo);
-
-    /**
-     * 
-     * @param newOrder
-     * @return
-     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
-     */
-    @WebMethod
-    @WebResult(name = "serviceCallStatus", targetNamespace = "")
-    @RequestWrapper(localName = "acceptNewOrderInstance", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.AcceptNewOrderInstance")
-    @ResponseWrapper(localName = "acceptNewOrderInstanceResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.AcceptNewOrderInstanceResponse")
-    public ServiceCallStatus acceptNewOrderInstance(
-        @WebParam(name = "newOrder", targetNamespace = "")
-        OrderInstance newOrder);
-
-    /**
-     * 
-     * @param orders
-     * @param cyberPhysicalAgentDescriptions
-     * @return
-     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
-     */
-    @WebMethod
-    @WebResult(name = "serviceCallStatus", targetNamespace = "")
-    @RequestWrapper(localName = "initializePlatform", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.InitializePlatform")
-    @ResponseWrapper(localName = "initializePlatformResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.InitializePlatformResponse")
-    public ServiceCallStatus initializePlatform(
-        @WebParam(name = "cyberPhysicalAgentDescriptions", targetNamespace = "")
-        List<SubSystem> cyberPhysicalAgentDescriptions,
-        @WebParam(name = "orders", targetNamespace = "")
-        List<OrderInstance> orders);
 
     /**
      * 
@@ -181,6 +134,132 @@ public interface SystemConfigurator {
 
     /**
      * 
+     * @return
+     *     returns java.util.List<eu.openmos.model.SubSystem>
+     */
+    @WebMethod
+    @WebResult(name = "subSystems", targetNamespace = "")
+    @RequestWrapper(localName = "getSubSystems", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetSubSystems")
+    @ResponseWrapper(localName = "getSubSystemsResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetSubSystemsResponse")
+    public List<SubSystem> getSubSystems();
+
+    /**
+     * 
+     * @return
+     *     returns java.util.List<eu.openmos.model.RecipeExecutionData>
+     */
+    @WebMethod
+    @WebResult(name = "recipeExecutionData", targetNamespace = "")
+    @RequestWrapper(localName = "getRecipeExecutionData", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetRecipeExecutionData")
+    @ResponseWrapper(localName = "getRecipeExecutionDataResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetRecipeExecutionDataResponse")
+    public List<RecipeExecutionData> getRecipeExecutionData();
+
+    /**
+     * 
+     * @param productDefinition
+     * @return
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     */
+    @WebMethod
+    @WebResult(name = "serviceCallStatus", targetNamespace = "")
+    @RequestWrapper(localName = "newProductDefinition", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.NewProductDefinition")
+    @ResponseWrapper(localName = "newProductDefinitionResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.NewProductDefinitionResponse")
+    public ServiceCallStatus newProductDefinition(
+        @WebParam(name = "productDefinition", targetNamespace = "")
+        Product productDefinition);
+
+    /**
+     * 
+     * @param recipe
+     * @return
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     */
+    @WebMethod
+    @WebResult(name = "serviceCallStatus", targetNamespace = "")
+    @RequestWrapper(localName = "createNewRecipe", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.CreateNewRecipe")
+    @ResponseWrapper(localName = "createNewRecipeResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.CreateNewRecipeResponse")
+    public ServiceCallStatus createNewRecipe(
+        @WebParam(name = "recipe", targetNamespace = "")
+        Recipe recipe);
+
+    /**
+     * 
+     * @param productId
+     * @return
+     *     returns eu.openmos.model.Product
+     */
+    @WebMethod
+    @WebResult(name = "product", targetNamespace = "")
+    @RequestWrapper(localName = "getProduct", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetProduct")
+    @ResponseWrapper(localName = "getProductResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetProductResponse")
+    public Product getProduct(
+        @WebParam(name = "productId", targetNamespace = "")
+        String productId);
+
+    /**
+     * 
+     * @param operationTimestamp
+     * @param orderId
+     * @return
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     */
+    @WebMethod
+    @WebResult(name = "serviceCallStatus", targetNamespace = "")
+    @RequestWrapper(localName = "orderInstanceRemoval", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.OrderInstanceRemoval")
+    @ResponseWrapper(localName = "orderInstanceRemovalResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.OrderInstanceRemovalResponse")
+    public ServiceCallStatus orderInstanceRemoval(
+        @WebParam(name = "orderId", targetNamespace = "")
+        String orderId,
+        @WebParam(name = "operationTimestamp", targetNamespace = "")
+        String operationTimestamp);
+
+    /**
+     * 
+     * @param subSystemId
+     * @return
+     *     returns eu.openmos.model.ExecutionTable
+     */
+    @WebMethod
+    @WebResult(name = "executionTable", targetNamespace = "")
+    @RequestWrapper(localName = "getExecutionTableBySubSystemId", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetExecutionTableBySubSystemId")
+    @ResponseWrapper(localName = "getExecutionTableBySubSystemIdResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetExecutionTableBySubSystemIdResponse")
+    public ExecutionTable getExecutionTableBySubSystemId(
+        @WebParam(name = "subSystemId", targetNamespace = "")
+        String subSystemId);
+
+    /**
+     * 
+     * @param newOrder
+     * @return
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     */
+    @WebMethod
+    @WebResult(name = "serviceCallStatus", targetNamespace = "")
+    @RequestWrapper(localName = "acceptNewOrderInstance", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.AcceptNewOrderInstance")
+    @ResponseWrapper(localName = "acceptNewOrderInstanceResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.AcceptNewOrderInstanceResponse")
+    public ServiceCallStatus acceptNewOrderInstance(
+        @WebParam(name = "newOrder", targetNamespace = "")
+        OrderInstance newOrder);
+
+    /**
+     * 
+     * @param orders
+     * @param cyberPhysicalAgentDescriptions
+     * @return
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     */
+    @WebMethod
+    @WebResult(name = "serviceCallStatus", targetNamespace = "")
+    @RequestWrapper(localName = "initializePlatform", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.InitializePlatform")
+    @ResponseWrapper(localName = "initializePlatformResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.InitializePlatformResponse")
+    public ServiceCallStatus initializePlatform(
+        @WebParam(name = "cyberPhysicalAgentDescriptions", targetNamespace = "")
+        List<SubSystem> cyberPhysicalAgentDescriptions,
+        @WebParam(name = "orders", targetNamespace = "")
+        List<OrderInstance> orders);
+
+    /**
+     * 
      * @param recipes
      * @return
      *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
@@ -192,17 +271,6 @@ public interface SystemConfigurator {
     public ServiceCallStatus putRecipes(
         @WebParam(name = "recipes", targetNamespace = "")
         List<Recipe> recipes);
-
-    /**
-     * 
-     * @return
-     *     returns java.util.List<eu.openmos.model.SubSystem>
-     */
-    @WebMethod
-    @WebResult(name = "subSystems", targetNamespace = "")
-    @RequestWrapper(localName = "getSubSystems", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetSubSystems")
-    @ResponseWrapper(localName = "getSubSystemsResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetSubSystemsResponse")
-    public List<SubSystem> getSubSystems();
 
     /**
      * 
@@ -256,6 +324,20 @@ public interface SystemConfigurator {
 
     /**
      * 
+     * @param skillId
+     * @return
+     *     returns eu.openmos.model.Skill
+     */
+    @WebMethod
+    @WebResult(name = "skill", targetNamespace = "")
+    @RequestWrapper(localName = "getSkill", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetSkill")
+    @ResponseWrapper(localName = "getSkillResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetSkillResponse")
+    public Skill getSkill(
+        @WebParam(name = "skillId", targetNamespace = "")
+        String skillId);
+
+    /**
+     * 
      * @param executionTable
      * @param agentUniqueName
      * @return
@@ -270,20 +352,6 @@ public interface SystemConfigurator {
         String agentUniqueName,
         @WebParam(name = "executionTable", targetNamespace = "")
         ExecutionTable executionTable);
-
-    /**
-     * 
-     * @param productDefinition
-     * @return
-     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
-     */
-    @WebMethod
-    @WebResult(name = "serviceCallStatus", targetNamespace = "")
-    @RequestWrapper(localName = "newProductDefinition", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.NewProductDefinition")
-    @ResponseWrapper(localName = "newProductDefinitionResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.NewProductDefinitionResponse")
-    public ServiceCallStatus newProductDefinition(
-        @WebParam(name = "productDefinition", targetNamespace = "")
-        Product productDefinition);
 
     /**
      * 

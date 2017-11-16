@@ -14,6 +14,8 @@ import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
+import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
+import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.Date;
@@ -129,13 +131,14 @@ public class ProductExecution implements Runnable
                 for (String recipeID : auxSR.getRecipeIDs())
                 {
                   //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
-                  if (checkRecipeAvailable(recipeID) && checkProductAgentComms(auxProdInstance.getUniqueId()))
+                  if (checkRecipeAvailable(recipeID) /*&& checkProductAgentComms(auxProdInstance.getUniqueId())*/)
                   {
                     if (executeRecipe(recipeID, auxProdInstance))
                     {
                       System.out.println("The execution of Recipe: " + recipeID + " Returned true");
-
                       ProdManager.getProductsDoing().put(auxProdInstance.getUniqueId(), ProdManager.getProductsToDo().poll()); //the first recipe of the product is done, put it into "doing"
+                      MSB_gui.addToTableCurrentOrders(auxProdInstance.getOrderId(), auxProdInstance.getProductId(), auxProdInstance.getUniqueId());
+                      MSB_gui.removeFromTableSubmitedOrder(auxProdInstance.getUniqueId());
                       getOut = true;
                       break;
                     } else

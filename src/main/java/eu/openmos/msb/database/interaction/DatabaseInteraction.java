@@ -1467,10 +1467,6 @@ public class DatabaseInteraction
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-    Long time = DBqueryTimer.getTime();
-    perfMeasure.getDatabaseQueryTimers().add(time);
-    DBqueryTimer.stop();
-
     return null;
   }
 
