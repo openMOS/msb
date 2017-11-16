@@ -322,4 +322,10 @@ public class DACManager
     DatabaseInteraction db = DatabaseInteraction.getInstance();
     return db.registerModule(deviceAdapterName, name, status, address);
   }
+  
+  public boolean skillExists(String aml_id)
+  {
+    DatabaseInteraction db = DatabaseInteraction.getInstance();
+    return db.skillExists(aml_id);
+  }
 }

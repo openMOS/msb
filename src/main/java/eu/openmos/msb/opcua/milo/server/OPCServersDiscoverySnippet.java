@@ -405,7 +405,11 @@ public class OPCServersDiscoverySnippet extends Thread
       {
         for (Skill auxSkill : da.getListOfSkills())
         {
-          dacManager.registerSkill(da.getSubSystem().getName(), auxSkill.getUniqueId(), auxSkill.getName(), auxSkill.getDescription());
+          //if skill does not exist yet
+          if (!dacManager.skillExists(auxSkill.getUniqueId()))
+          {
+            dacManager.registerSkill(da.getSubSystem().getName(), auxSkill.getUniqueId(), auxSkill.getName(), auxSkill.getDescription());
+          }
         }
       }
 
@@ -504,8 +508,7 @@ public class OPCServersDiscoverySnippet extends Thread
     } catch (Exception ex)
     {
       System.out.println("Errors in workStationRegistration - " + ex.getMessage());
-    }
-    finally
+    } finally
     {
       long endTime = System.nanoTime();
       //long elapsedTime = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
