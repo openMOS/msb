@@ -176,8 +176,8 @@ public class ChangeState
 
             List<String> recipeID_for_SR = DatabaseInteraction.getInstance().getRecipesIDbySkillReqID(SR_ID);
 
-            Boolean CHUPA = false;
-            if (CHUPA)
+            Boolean testing = false;
+            if (testing)
             {
               if (recipeID_for_SR.size() > 1)
               {
@@ -205,6 +205,7 @@ public class ChangeState
 
             } else
             {
+              /*
               List<String> PossibleRecipeChoices = da.getExecutionTable().getRows().get(i).getPossibleRecipeChoices();
               //check if there are more possible choices
               if (!PossibleRecipeChoices.isEmpty())
@@ -267,9 +268,8 @@ public class ChangeState
                   }
                 }
                 //*************************************************************************************************************************
-
               } else
-              {
+              {*/
                 boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
                 if (valid)
                 {
@@ -281,7 +281,7 @@ public class ChangeState
                 }
               }
             }
-          }
+          //}
         }
       }
     } else
