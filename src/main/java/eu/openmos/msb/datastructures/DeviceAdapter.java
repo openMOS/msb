@@ -265,7 +265,14 @@ public abstract class DeviceAdapter
 
       subSystem.setType(ReadDeviceAdapterType(deviceDescriptionDoc));
 
-      subSystem.setState(MSBConstants.ADAPTER_STATE_READY);
+            List<String> ReadDeviceAdapterState = ReadDeviceAdapterState(deviceDescriptionDoc);
+      if (ReadDeviceAdapterState.size() == 2)
+      {
+        subSystem.setState(ReadDeviceAdapterState.get(1));
+        subSystem.setStatePath(ReadDeviceAdapterState.get(0));
+      }
+      //subSystem.setState(MSBConstants.ADAPTER_STATE_READY);
+      
       PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
       System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
       //verifyRecipeSkill(subSystem.getRecipes(), subSystem.getSkills());
@@ -946,6 +953,33 @@ public abstract class DeviceAdapter
     }
 
   }
+  
+    private static List<String> ReadDeviceAdapterState(org.w3c.dom.Document xmlDocument) throws XPathExpressionException {
+        //String query1 = "//DeviceAdapter/*/*/*/Path[contains(@ns, 'TransportSystem')]";
+        //String query2 = "//DeviceAdapter/*/*/*/Path[contains(@ns, 'WorkStation')]";
+
+        String query1 = "//DeviceAdapter/*/*/DeviceAdapterState";
+
+        XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+        NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
+
+        System.out.println("State elements num: " + nodeList.getLength());
+        NodeList childNodeList = nodeList.item(0).getChildNodes();
+
+        List<String> results = new ArrayList<>();
+        for (int i = 0; i < childNodeList.getLength(); i++) {
+            if (childNodeList.item(i).getNodeName().equals("Value")) {
+                results.add(childNodeList.item(i).getTextContent());
+            } else if (childNodeList.item(i).getNodeName().equals("Path")) {
+                String auxTest = childNodeList.item(i).getAttributes().getNamedItem("ns").getNodeValue();
+                results.add(auxTest + ":" + childNodeList.item(i).getTextContent());
+            }
+
+        }
+
+        return results;
+
+    }
 // ------------------------------------------------------------------------------------------------------------------ //
 // ------------------------------------------------------------------------------------------------------------------ //
 

@@ -12,10 +12,21 @@ package eu.openmos.msb.datastructures;
 public class MSBConstants {
     
     public static final String ADAPTER_STATE_IDLE = "IDLE";
-    public static final String ADAPTER_STATE_RUNNING = "RUNNING";
-    public static final String ADAPTER_STATE_READY = "READY";
-    public static final String ADAPTER_STATE_SUSPEND = "SUSPEND";
-    public static final String ADAPTER_STATE_ERROR = "ERROR";
+    public static final String ADAPTER_STATE_RUNNING = "Running";
+    public static final String ADAPTER_STATE_READY = "Ready";
+    public static final String ADAPTER_STATE_SUSPEND = "Suspend";
+    public static final String ADAPTER_STATE_ERROR = "Error";
     public static final String ADAPTER_STATE_EMERGENCY_STOP = "EMERGENCY_STOP";
     
 }
+
+/*
+
+public enum SkillState {
+	Ready,
+	Running,
+	Suspend,
+	Error,
+	EmergencyStop
+}
+*/

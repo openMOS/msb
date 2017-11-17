@@ -8,6 +8,7 @@ package eu.openmos.msb.datastructures;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
+import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.OrderInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
@@ -32,6 +33,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -174,19 +176,74 @@ public class ProductExecution implements Runnable
 
   private boolean checkRecipeAvailable(String recipeID)
   {
-
     boolean recipeIdIsValid = DatabaseInteraction.getInstance().getRecipeIdIsValid(recipeID);
     if (recipeIdIsValid)
     {
       String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
       if (Daid != null)
       {
-        String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
-        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+          String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+          DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+          
+          try {
+              NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+              DeviceAdapterOPC client = (DeviceAdapterOPC) da;
+              String state = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, statePath).get().getValue().getValue().toString();
+              da.getSubSystem().setState(state);
+              
+
+          } catch (InterruptedException | ExecutionException ex) {
+              Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+          }
+
+
+        
         if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
         {
-          return true;
+          if (checkNextRecipe(da, recipeID))
+            return true;
         }
+      }
+    }
+    return false;
+  }
+
+  private boolean checkNextRecipe(DeviceAdapter da, String recipeID)
+  {
+    String nextRecipeID = "";
+    for (ExecutionTableRow auxRow : da.getExecutionTable().getRows())
+    {
+      if (auxRow.getRecipeId().equals(recipeID))
+      {
+        nextRecipeID = auxRow.getNextRecipeId();
+        boolean recipeIdIsValid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
+        if (recipeIdIsValid)
+        {
+          String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+          if (Daid_next != null)
+          {
+            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
+            DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+
+            try {
+              NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
+              DeviceAdapterOPC client = (DeviceAdapterOPC) da_next;
+              String state = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, statePath).get().getValue().getValue().toString();
+              da_next.getSubSystem().setState(state);
+              System.out.println("daState for NEXT: " + state);
+
+          } catch (InterruptedException | ExecutionException ex) {
+              Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+          }
+            
+            
+            if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+            {
+              return true;
+            }
+          }
+        }
+        return false;
       }
     }
     return false;
@@ -254,7 +311,7 @@ public class ProductExecution implements Runnable
             firstRecipeCallTime.stop();
             notAgain = true;
           }
-          da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
+          //da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
           try
           {
             PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).acquire();
@@ -263,7 +320,7 @@ public class ProductExecution implements Runnable
           {
             Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
           }
-          System.out.println("Executing Recipe: " + recipeID + " of product instance: " + prodInst.getUniqueId() + " from the adapter:" + DA_name + " returned: " + result + "\n");
+          //System.out.println("Executing Recipe: " + recipeID + " of product instance: " + prodInst.getUniqueId() + " from the adapter:" + DA_name + " returned: " + result + "\n");
           prodInst.setStartedProductionTime(new Date());
 
           String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");

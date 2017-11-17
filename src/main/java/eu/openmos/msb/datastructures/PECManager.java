@@ -223,7 +223,7 @@ public class PECManager
       DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(DaID));
       if (deviceAdapter != null)
       {
-        deviceAdapter.getSubSystem().setState(MSBConstants.ADAPTER_STATE_READY);
+        //deviceAdapter.getSubSystem().setState(MSBConstants.ADAPTER_STATE_READY);
         PECManager.getInstance().getExecutionMap().get(DaID).release();
         System.out.println("[SEMAPHORE] RELEASED for " + deviceAdapter.getSubSystem().getName());
         System.out.println("[PendejoChecker]Adapter " + DaID + " state changed to ready!");

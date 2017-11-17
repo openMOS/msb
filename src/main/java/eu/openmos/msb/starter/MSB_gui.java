@@ -1886,7 +1886,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     List<ProductInstance> lpd = new LinkedList();
 
     //populate OrderLines on Order
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 1; i++)
     {
       OrderLine ol = new OrderLine();
       ol.setOrderId(orderUID);
