@@ -1031,8 +1031,8 @@
                       <Table columnCount="4" rowCount="0">
                         <Column editable="true" title="OrderID" type="java.lang.Object"/>
                         <Column editable="true" title="ProductID" type="java.lang.Object"/>
-                        <Column editable="true" title="Waiting PiID" type="java.lang.Object"/>
-                        <Column editable="true" title="In Production PiID" type="java.lang.Object"/>
+                        <Column editable="true" title="ProdInst_ID" type="java.lang.Object"/>
+                        <Column editable="true" title="Last DA" type="java.lang.Object"/>
                       </Table>
                     </Property>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

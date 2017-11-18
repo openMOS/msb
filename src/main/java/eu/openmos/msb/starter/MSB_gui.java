@@ -862,7 +862,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       },
       new String []
       {
-        "OrderID", "ProductID", "Waiting PiID", "In Production PiID"
+        "OrderID", "ProductID", "ProdInst_ID", "Last DA"
       }
     ));
     jScrollPane9.setViewportView(tableCurrentOrder);
@@ -1886,7 +1886,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     List<ProductInstance> lpd = new LinkedList();
 
     //populate OrderLines on Order
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 2; i++)
     {
       OrderLine ol = new OrderLine();
       ol.setOrderId(orderUID);
@@ -2122,6 +2122,18 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       if (ordersTableCurrentModel.getValueAt(i, 2).equals(prodInst_ID))
       {
         ordersTableCurrentModel.removeRow(i);
+        break;
+      }
+    }
+  }
+  
+  public static void updateDATableCurrentOrder(String prodInst_ID, String da_name)
+  {
+    for (int i = 0; i < ordersTableCurrentModel.getRowCount(); i++)
+    {
+      if (ordersTableCurrentModel.getValueAt(i, 2).equals(prodInst_ID))
+      {
+        ordersTableCurrentModel.setValueAt(da_name, i, 3);
         break;
       }
     }

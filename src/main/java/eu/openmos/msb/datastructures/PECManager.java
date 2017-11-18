@@ -225,7 +225,8 @@ public class PECManager
       {
         //deviceAdapter.getSubSystem().setState(MSBConstants.ADAPTER_STATE_READY);
         PECManager.getInstance().getExecutionMap().get(DaID).release();
-        System.out.println("[SEMAPHORE] RELEASED for " + deviceAdapter.getSubSystem().getName());
+        System.out.println("[SEMAPHORE" + deviceAdapter.getSubSystem().getName() + "] RELEASED2");
+        //System.out.println("[SEMAPHORE] RELEASED for " + deviceAdapter.getSubSystem().getName());
         System.out.println("[PendejoChecker]Adapter " + DaID + " state changed to ready!");
       }
       else

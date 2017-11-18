@@ -5,7 +5,10 @@
  */
 package eu.openmos.msb.utilities;
 
+import java.util.concurrent.ExecutionException;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 /**
  *
@@ -29,6 +32,18 @@ public class Functions
     {
       System.out.println("DEU MERDA!");
       return null;
+    }
+  }
+  
+  public static String readOPCNodeToString(OpcUaClient client, NodeId node)
+  {
+    try
+    {
+      return client.readValue(0, TimestampsToReturn.Neither, node).get().getValue().getValue().toString();
+    } catch (InterruptedException | ExecutionException ex)
+    {
+      System.out.println("ERROR reading node: " + ex);
+      return "";
     }
   }
 }

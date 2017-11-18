@@ -185,19 +185,11 @@ public class ProductExecution implements Runnable
           String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
           DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
           
-          try {
-              NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
-              DeviceAdapterOPC client = (DeviceAdapterOPC) da;
-              String state = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, statePath).get().getValue().getValue().toString();
-              da.getSubSystem().setState(state);
-              
+          NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+          DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+          String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+          da.getSubSystem().setState(state);
 
-          } catch (InterruptedException | ExecutionException ex) {
-              Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
-          }
-
-
-        
         if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
         {
           if (checkNextRecipe(da, recipeID))
@@ -225,17 +217,12 @@ public class ProductExecution implements Runnable
             String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
             DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
 
-            try {
-              NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
-              DeviceAdapterOPC client = (DeviceAdapterOPC) da_next;
-              String state = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, statePath).get().getValue().getValue().toString();
-              da_next.getSubSystem().setState(state);
-              System.out.println("daState for NEXT: " + state);
-
-          } catch (InterruptedException | ExecutionException ex) {
-              Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
-          }
+            NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
+            DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da_next;
             
+            String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+            da_next.getSubSystem().setState(state);
+            System.out.println("daState for NEXT: " + state);  
             
             if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
             {
@@ -249,6 +236,27 @@ public class ProductExecution implements Runnable
     return false;
   }
 
+  public static DeviceAdapter getDAofNextRecipe(DeviceAdapter da, String recipeID)
+  {
+    String nextRecipeID = "";
+    for (ExecutionTableRow auxRow : da.getExecutionTable().getRows())
+    {
+      if (auxRow.getRecipeId().equals(recipeID))
+      {
+        nextRecipeID = auxRow.getNextRecipeId();
+        String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+        if (Daid_next != null)
+        {
+          String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
+          DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+          return da_next;
+        }
+        break;
+      }
+    }
+    return null;
+  }
+  
   private boolean checkProductAgentComms(String productInstID)
   {
 
@@ -314,8 +322,12 @@ public class ProductExecution implements Runnable
           //da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
           try
           {
-            PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).acquire();
+            PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).acquire();  
             System.out.println("[SEMAPHORE] ACQUIRED for " + da.getSubSystem().getName());
+            DeviceAdapter da_next = getDAofNextRecipe(da, recipeID);
+            //ONLY EXECUTE IF NEXT DA IS AVAILABLE
+            PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).acquire();  
+            System.out.println("[SEMAPHORE] ACQUIRED for NEXT " + da_next.getSubSystem().getName());
           } catch (InterruptedException ex)
           {
             Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
@@ -371,5 +383,5 @@ public class ProductExecution implements Runnable
       }
     });
   }
-
+  
 }

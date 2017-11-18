@@ -3,6 +3,7 @@ package eu.openmos.msb.opcua.milo.server.methods;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
+import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.FinishedProductInfo;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.ProductInstance;
@@ -12,6 +13,7 @@ import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
+import eu.openmos.msb.datastructures.MSBConstants;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PendingProdInstance;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
@@ -32,7 +34,6 @@ import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaOutputArgument;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ public class ChangeState
                   description = "ID of the device adapter") String da_id,
           @UaInputArgument(
                   name = "Product_ID",
-                  description = "Product instance ID") String product_id,
+                  description = "Product instance ID") String productInstance_id,
           @UaInputArgument(
                   name = "recipe_id",
                   description = "current Recipe ID") String recipe_id,
@@ -66,8 +67,11 @@ public class ChangeState
     changeStateAndNextRecipeTimer.start();
 
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
-    System.out.println("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id + " productID: " + product_id + " recipeID:" + recipe_id);
+    System.out.println("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id + " productID: " + productInstance_id + " recipeID:" + recipe_id);
 
+    String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
+    MSB_gui.updateDATableCurrentOrder(productInstance_id, da_name1);
+    
     for (String da_name : DACManager.getInstance().getDeviceAdapters())
     {
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
@@ -83,7 +87,7 @@ public class ChangeState
     {
       public synchronized void run()
       {
-        readKPIs(da_id, recipe_id, product_id); //MASMEC comment
+        readKPIs(da_id, recipe_id, productInstance_id); //MASMEC comment
       }
     };
     threadKPI.start();
@@ -92,7 +96,7 @@ public class ChangeState
     {
       public synchronized void run()
       {
-        ChangeStateChecker(recipe_id, product_id, da_id);
+        ChangeStateChecker(recipe_id, productInstance_id, da_id);
       }
     };
     threadCheck.start();
@@ -153,16 +157,10 @@ public class ChangeState
             }
 
             NodeId nextRecipeNode = Functions.convertStringToNodeId(auxNextRecipeNode);
-            MSBClientSubscription client = (MSBClientSubscription) da.getClient();
+            DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
 
-            String nextRecipeID = "";
-            try
-            {
-              nextRecipeID = client.getClientObject().readValue(0, TimestampsToReturn.Neither, nextRecipeNode).get().getValue().getValue().toString();
-            } catch (InterruptedException | ExecutionException ex)
-            {
-              java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            String nextRecipeID = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), nextRecipeNode);
+            
             if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))
             { //ATENÇÃO: DONE??
               return "last";
@@ -306,15 +304,39 @@ public class ChangeState
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
       //add adapter states strings to properties
-      //if (da.getSubSystem().getState() == null ? MSBConstants.ADAPTER_STATE_READY == null : da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
-      if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
+      do
       {
+        NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+        String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+        da.getSubSystem().setState(state);
+      } while (!da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
+      //if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
+      
+      if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+      {
+        DeviceAdapter da_next_next = getDAofNextRecipe(da, nextRecipeID);
+        if (da_next_next != null)
+        {
+          try
+          {
+            PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).acquire();
+          } catch (InterruptedException ex)
+          {
+            java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        } else
+        {
+          System.out.println("Next Recipe is the last ");
+        }
+
         System.out.println("[SEMAPHORE] ACQUIRED for " + DA_name);
         System.out.println("the next recipe Adapter (" + DA_name + ") is ready for execution!");
         return true;
       } else
       {
-        System.out.println("Adapter cannot start another recipe! - " + da.getSubSystem().getState());
+        System.out.println("ERROR in DA " + DA_name);
+        return false;
       }
     }
     return false;
@@ -357,6 +379,10 @@ public class ChangeState
         if (res)
         {
           //do happy flow stuff
+          String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
+          //System.out.println("[SEMAPHORE] RELEASED for " + da_name1);
+          System.out.println("[SEMAPHORE" + da_name1 + "] RELEASED1");
+          PECManager.getInstance().getExecutionMap().get(da_id).release();
         } else
         {
           //something wrong happened :c
@@ -389,13 +415,20 @@ public class ChangeState
     } else if (nextRecipeID.equals("last"))
     {
       ProductInstance prodInst = PECManager.getInstance().getProductsDoing().remove(product_id);
+      
       if (prodInst != null)
       {
+        
         MSB_gui.addToTableExecutedOrders(prodInst.getOrderId(), prodInst.getProductId(), prodInst.getUniqueId());
         MSB_gui.removeFromTableCurrentOrder(prodInst.getUniqueId());
 
         System.out.println("[ChangeState] This Recipe is the last one for product instance ID: " + product_id);
 
+        String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
+          //System.out.println("[SEMAPHORE] RELEASED for " + da_name1);
+          System.out.println("[SEMAPHORE" + da_name1 + "] RELEASED1");
+          PECManager.getInstance().getExecutionMap().get(da_id).release();
+          
         String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
         boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
         if (withAGENTCloud)
@@ -417,7 +450,7 @@ public class ChangeState
     {
       System.out.println("NextRecipeId is empty. What now? just sent the KPIs?");
     }
-
+/*
     try
     {
       PECManager.getInstance().PendejoCheckerThread(da_id); //Run the pendent product instances checker thread. for the current adapter 
@@ -425,9 +458,32 @@ public class ChangeState
     {
       java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
     }
-
+*/
   }
 
+  
+  public static DeviceAdapter getDAofNextRecipe(DeviceAdapter da, String recipeID)
+  {
+    String nextRecipeID = "";
+    for (ExecutionTableRow auxRow : da.getExecutionTable().getRows())
+    {
+      if (auxRow.getRecipeId().equals(recipeID))
+      {
+        nextRecipeID = auxRow.getNextRecipeId();
+        String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+        if (Daid_next != null)
+        {
+          String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
+          DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+          return da_next;
+        }
+        break;
+      }
+    }
+    return null;
+  }
+  
+  
   /**
    * Read KPIs of recipe_id from OPCServer
    *
@@ -447,18 +503,11 @@ public class ChangeState
         {
           for (KPISetting kpi : recipe.getKpiSettings())
           {
-            try
-            {
-              NodeId kpiPath = Functions.convertStringToNodeId(kpi.getPath());
-              DeviceAdapterOPC client = (DeviceAdapterOPC) CurrentDA;
-              String kpiValue = client.getClient().getClientObject().readValue(0, TimestampsToReturn.Neither, kpiPath).get().toString();
-              kpi.setValue(kpiValue);
-              System.out.println("kpiValue: " + kpiValue);
-
-            } catch (InterruptedException | ExecutionException ex)
-            {
-              java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            NodeId kpiPath = Functions.convertStringToNodeId(kpi.getPath());
+            DeviceAdapterOPC client = (DeviceAdapterOPC) CurrentDA;
+            String kpiValue = Functions.readOPCNodeToString(client.getClient().getClientObject(), kpiPath);
+            kpi.setValue(kpiValue);
+            System.out.println("kpiValue: " + kpiValue);
           }
 
           //IF THE AC is activated, send the KPIs upwards
