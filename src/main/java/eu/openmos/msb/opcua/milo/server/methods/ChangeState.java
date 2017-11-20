@@ -317,8 +317,9 @@ public class ChangeState
             {
               if (recipeID_for_SR.size() > 1)
               {
+                Recipe firstRecipe = null;
                 //check if the precedences are the same
-                List<String> recipeIDs = new ArrayList<>();
+                List<Recipe> recipes = new ArrayList<>();
                 for (String auxRecipeID : recipeID_for_SR)
                 {
                   String da_db_ID = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(auxRecipeID);
@@ -328,24 +329,28 @@ public class ChangeState
                   {
                     if (auxRecipe.getUniqueId().equals(auxRecipeID))
                     {
-                      recipeIDs.add(auxRecipeID);
+                      recipes.add(auxRecipe);
+                      if (auxRecipeID.equals(nextRecipeID))
+                          firstRecipe = auxRecipe;
                       break;
                     }
                   }
 
                 }
                 //first validate if the main path, if not available check the others
-                recipeIDs.remove(nextRecipeID);
+                if (firstRecipe != null)
+                    recipes.remove(firstRecipe);
+
                 if (checkNextValidation(nextRecipeID))
                 {
                   return nextRecipeID;
                 } else
                 {
-                  for (String auxRecipeID : recipeIDs)
+                  for (Recipe auxRecipe : recipes)
                   {
-                    if (checkNextValidation(auxRecipeID))
+                    if (checkNextValidation(auxRecipe.getUniqueId()))
                     {
-                      return auxRecipeID;
+                      return auxRecipe.getUniqueId();
                     }
                   }
                   System.out.println("There are no other Recipe choices for the current recipe " + recipeID);
