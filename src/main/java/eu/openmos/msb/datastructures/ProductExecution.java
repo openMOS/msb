@@ -15,16 +15,12 @@ import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
-import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.ws.BindingProvider;
@@ -33,7 +29,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -57,11 +52,11 @@ public class ProductExecution implements Runnable
 
   public void CheckState()
   {
-    PECManager aux = PECManager.getInstance();
-    if (aux.getState())
+    PECManager pecm = PECManager.getInstance();
+    if (pecm.getState())
     {
       System.out.println("Executor already Running!");
-
+      
     } else
     {
       System.out.println("\n\n\n\n**************Starting Executor!********************\n\n\n\n\n");
@@ -165,7 +160,6 @@ public class ProductExecution implements Runnable
           break;
         }
       }
-      //break;//MARTELO -> só fazer uma vez a primeira instancia do produto MASMEC 25-10-17
     }
     //acabou a order, começar a proxima
     ProdManager.getOrderInstanceList().remove(HighOrderIndex); //remove the orderInstance that finished
@@ -301,7 +295,6 @@ public class ProductExecution implements Runnable
 
   }
   
-  
   private boolean executeRecipe(String recipeID, ProductInstance prodInst)
   {
     String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
@@ -402,6 +395,11 @@ public class ProductExecution implements Runnable
         return f;
       }
     });
+  }
+  
+  private void checkPriority()
+  {
+    
   }
   
 }

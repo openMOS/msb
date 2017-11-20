@@ -132,7 +132,7 @@ public class OrderController
 
     for (ProductInstance prodInst : oi.getProductInstances())
     {
-      MSB_gui.addToTableSubmittedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority());
+      MSB_gui.addToTableSubmitedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority());
     }
 
     //Forward the order from HMI to AC

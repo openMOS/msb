@@ -24,6 +24,7 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -68,7 +69,7 @@ public class ChangeState
 
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
     System.out.println("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id + " productID: " + productInstance_id + " recipeID:" + recipe_id);
-/*
+    /*
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(da_id);
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
       //add adapter states strings to properties
@@ -81,19 +82,9 @@ public class ChangeState
       {
           System.out.println("[ChangeState] ADAPTER ERROR");
       }
-    */
+     */
     String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
     MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name1);
-    
-    for (String da_name : DACManager.getInstance().getDeviceAdapters())
-    {
-      DeviceAdapter da_aux = DACManager.getInstance().getDeviceAdapterbyName(da_name);
-      if (PECManager.getInstance().getPendejos().get(da_aux.getSubSystem().getUniqueId()) != null)
-      {
-        System.out.println("*****\n Name: " + da_aux.getSubSystem().getName()
-                + "\n Pendejos: " + PECManager.getInstance().getPendejos().get(da_aux.getSubSystem().getUniqueId()).size() + "\n*****");
-      }
-    }
 
     //read recipe KPIs
     Thread threadKPI = new Thread()
@@ -116,6 +107,141 @@ public class ChangeState
 
     //TODO Check current recipeState (running, idle, ready, etc?)
     result.set(1); //ok or nok
+  }
+
+  private void ChangeStateChecker(String recipe_id, String productInst_id, String da_id)
+  {
+    String nextRecipeID = checkNextRecipe(recipe_id); //returns the next recipe to execute
+    System.out.println("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID + "\n");
+    //String nextRecipeID=recipe_id; //MASMEC
+
+    if (!nextRecipeID.isEmpty() && !nextRecipeID.equals("last"))
+    {
+      if (checkAdapterState(nextRecipeID)) //check if adapter is ready
+      { //if is ready
+        System.out.println("[ChangeStateChecker] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State\n");
+        String method = DatabaseInteraction.getInstance().getRecipeMethodByID(nextRecipeID); //CRASHED HERE MASMEC! CHECK THIS
+        NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":") + 1));
+        String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(nextRecipeID);
+        NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":") + 1));
+        String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+
+        String DA_name_next = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
+        System.out.println("DA_name from DB: " + DA_name_next);
+
+        DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name_next);
+        System.out.println("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + DA_name_next);
+        MSBClientSubscription client = (MSBClientSubscription) da_next.getClient();
+
+        PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+        perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
+        //changeStateAndNextRecipeTimer.stop();
+
+        boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, productInst_id);
+        System.out.println("[EXECUTE] recipeID: " + nextRecipeID);
+        if (res)
+        {
+          //release previous adapter
+          String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
+          System.out.println("[SEMAPHORE] RELEASED1 " + da_name1);
+          PECManager.getInstance().getExecutionMap().get(da_id).release();
+
+          MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, DA_name_next);
+
+        } else
+        {
+          MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, "ERROR");
+        }
+      } else //if adapter is not ready
+      {
+        PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+        perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
+        //changeStateAndNextRecipeTimer.stop();
+        System.out.println("NEXT ADAPTER IS AT ERROR STATE");
+      }
+    } else if (nextRecipeID.equals("last"))
+    {
+      ProductInstance prodInst = PECManager.getInstance().getProductsDoing().remove(productInst_id);
+
+      if (prodInst != null)
+      {
+        MSB_gui.addToTableExecutedOrders(prodInst.getOrderId(), prodInst.getProductId(), prodInst.getUniqueId());
+        MSB_gui.removeFromTableCurrentOrder(prodInst.getUniqueId());
+
+        System.out.println("[ChangeState] This Recipe is the last one for product instance ID: " + productInst_id);
+        String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
+        System.out.println("[SEMAPHORE" + da_name1 + "] RELEASED1");
+        PECManager.getInstance().getExecutionMap().get(da_id).release();
+
+        String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+        boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+        if (withAGENTCloud)
+        {
+          // THIS CODE IS WORKING!! 
+          SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+          SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+          String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+          BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+          FinishedProductInfo fpi = new FinishedProductInfo();
+          fpi.setProductInstanceId(productInst_id);
+          fpi.setFinishedTime(new Date());
+          fpi.setRegistered(prodInst.getStartedProductionTime());
+          systemConfigurator.finishedProduct(fpi);
+        }
+      }
+    } else if (nextRecipeID.isEmpty())
+    {
+      System.out.println("It was not possible to execute the next Recipe. The path is not available!/n"
+              + " Last executed Recipe: " + recipe_id + " ProdInst_ID: " + productInst_id);
+    }
+  }
+
+  private boolean checkAdapterState(String nextRecipeID)
+  {
+    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+    if (Daid != null)
+    {
+      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+      //add adapter states strings to properties
+      do
+      {
+        NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+        String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+        da.getSubSystem().setState(state);
+      } while (!da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
+      //if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
+
+      if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+      {
+        DeviceAdapter da_next_next = getDAofNextRecipe(da, nextRecipeID);
+        if (da_next_next != null)
+        {
+          try
+          {
+            System.out.println("[SEMAPHORE] Trying to acquire for " + da_next_next.getSubSystem().getName());
+            PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).acquire();
+            System.out.println("[SEMAPHORE] ACQUIRED for " + da_next_next.getSubSystem().getName());
+          } catch (InterruptedException ex)
+          {
+            java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        } else
+        {
+          System.out.println("Next Recipe is the last ");
+        }
+
+        System.out.println("the next recipe Adapter (" + DA_name + ") is ready for execution!");
+        return true;
+      } else
+      {
+        System.out.println("ERROR in DA " + DA_name);
+        return false;
+      }
+    }
+    return false;
   }
 
   private Boolean checkNextValidation(String nextRecipeID)
@@ -141,7 +267,7 @@ public class ChangeState
   private String checkNextRecipe(String recipeID)
   {
     //get deviceAdapter that does the required recipe
-    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID); //there can be only one?
+    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
     System.out.println("DA id from checkNExtRecipe: " + Daid);
 
     if (Daid != null)
@@ -173,114 +299,59 @@ public class ChangeState
             DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
 
             String nextRecipeID = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), nextRecipeNode);
-            
+
             if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))
             { //ATENÇÃO: DONE??
               return "last";
-            } else if (nextRecipeID == "")
+            } else if (nextRecipeID.isEmpty())
             {
               return "";
             }
 
-            //********************************* SHIT STARTS HERE ***************************
+            //********************************* TESTING STARTS HERE ***************************
             String SR_ID = DatabaseInteraction.getInstance().getSkillReqIDbyRecipeID(nextRecipeID);
-
             List<String> recipeID_for_SR = DatabaseInteraction.getInstance().getRecipesIDbySkillReqID(SR_ID);
 
-            Boolean testing = false;
+            Boolean testing = true;
             if (testing)
             {
               if (recipeID_for_SR.size() > 1)
               {
                 //check if the precedences are the same
-                List<Recipe> recipeList = new ArrayList<>();
-                for(String auxRecipeID : recipeID_for_SR)
+                List<String> recipeIDs = new ArrayList<>();
+                for (String auxRecipeID : recipeID_for_SR)
                 {
                   String da_db_ID = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(auxRecipeID);
                   String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(da_db_ID);
                   DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyName(da_name);
-                  //auxDA.getListOfRecipes()
-                }
-              } else
-              {
-                boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
-                if (valid)
-                {
-                  //yes
-                  return nextRecipeID;
-                } else
-                {
-                  System.out.println("There are no other Recipe choices for the current recipe " + recipeID);
-                }
-              }
-
-            } else
-            {
-              /*
-              List<String> PossibleRecipeChoices = da.getExecutionTable().getRows().get(i).getPossibleRecipeChoices();
-              //check if there are more possible choices
-              if (!PossibleRecipeChoices.isEmpty())
-              {
-                boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
-                if (valid)
-                {
-                  //yes
-                  if (checkNextValidation(nextRecipeID))
+                  for (Recipe auxRecipe : auxDA.getListOfRecipes())
                   {
-                    return nextRecipeID;
-                  }
-                } else
-                {
-                  for (int j = 0; j < PossibleRecipeChoices.size(); j++)
-                  {
-                    String choice = PossibleRecipeChoices.get(j);
-                    String Daid1 = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(choice);
-                    if (Daid1 != null)
+                    if (auxRecipe.getUniqueId().equals(auxRecipeID))
                     {
-                      String DA_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid1);
-                      System.out.println("DA_name1: " + DA_name1);
-                      DeviceAdapter da1 = DACManager.getInstance().getDeviceAdapterbyName(DA_name1);
-
-                      if (da1 == null)
-                      {
-                        System.out.println("DA class not found!! for daname: " + DA_name1);
-                      }
-
-                      for (int l = 0; l < da1.getExecutionTable().getRows().size(); l++)
-                      {
-                        if (da1.getExecutionTable().getRows().get(l).getRecipeId() == null ? choice == null : da1.getExecutionTable().getRows().get(l).getRecipeId().equals(choice))
-                        {
-                          String NextRecipe1 = da1.getExecutionTable().getRows().get(l).getNextRecipeId();
-                          System.out.println("NextRecipe from execution table: " + NextRecipe1);
-                          boolean valid1 = DatabaseInteraction.getInstance().getRecipeIdIsValid(NextRecipe1);
-                          if (valid1)
-                          {
-                            //yes
-                            System.out.println("Recipe is valid!");
-                            if (checkNextValidation(NextRecipe1))
-                            {
-                              return NextRecipe1;
-                            } else
-                            {
-                              System.out.println("the next of the next of the choice isn't valid");
-                              //return "";
-                            }
-                          } else
-                          {
-                            System.out.println("the next of the choice isn't valid");
-                            //return "";
-                          }
-                        }
-                      }
-                    } else
-                    {
-                      System.out.println("There are no Adapters that can perform the required choice recipe: " + recipeID);
+                      recipeIDs.add(auxRecipeID);
+                      break;
                     }
                   }
+
                 }
-                //*************************************************************************************************************************
+                //first validate if the main path, if not available check the others
+                recipeIDs.remove(nextRecipeID);
+                if (checkNextValidation(nextRecipeID))
+                {
+                  return nextRecipeID;
+                } else
+                {
+                  for (String auxRecipeID : recipeIDs)
+                  {
+                    if (checkNextValidation(auxRecipeID))
+                    {
+                      return auxRecipeID;
+                    }
+                  }
+                  System.out.println("There are no other Recipe choices for the current recipe " + recipeID);
+                }
               } else
-              {*/
+              {
                 boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
                 if (valid)
                 {
@@ -291,8 +362,20 @@ public class ChangeState
                   System.out.println("There are no other Recipe choices for the current recipe " + recipeID);
                 }
               }
+//********************************************************************************************************************
+            } else
+            {
+              boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
+              if (valid)
+              {
+                //yes
+                return nextRecipeID;
+              } else
+              {
+                System.out.println("There are no other Recipe choices for the current recipe " + recipeID);
+              }
             }
-          //}
+          }
         }
       }
     } else
@@ -309,178 +392,6 @@ public class ChangeState
    * @param nextRecipeID
    * @return true if the adapter is at ready state
    */
-  private boolean checkAdapterState(String nextRecipeID)
-  {
-    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-    if (Daid != null)
-    {
-      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
-      //add adapter states strings to properties
-      do
-      {
-        NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
-        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-        String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-        da.getSubSystem().setState(state);
-      } while (!da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
-      //if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
-      
-      if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
-      {
-        DeviceAdapter da_next_next = getDAofNextRecipe(da, nextRecipeID);
-        if (da_next_next != null)
-        {
-          try
-          {
-              System.out.println("[SEMAPHORE] Trying to acquire for " + da_next_next.getSubSystem().getName());
-            PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).acquire();
-            System.out.println("[SEMAPHORE] ACQUIRED for " + da_next_next.getSubSystem().getName());
-          } catch (InterruptedException ex)
-          {
-            java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
-          }
-        } else
-        {
-          System.out.println("Next Recipe is the last ");
-        }
-
-        
-        System.out.println("the next recipe Adapter (" + DA_name + ") is ready for execution!");
-        return true;
-      } else
-      {
-        System.out.println("ERROR in DA " + DA_name);
-        return false;
-      }
-    }
-    return false;
-  }
-
-  private void ChangeStateChecker(String recipe_id, String productInst_id, String da_id)
-  {
-    String nextRecipeID = checkNextRecipe(recipe_id); //returns the next recipe to execute
-    System.out.println("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID + "\n");
-    //String nextRecipeID=recipe_id; //MASMEC
-
-    if (!nextRecipeID.isEmpty() && !nextRecipeID.equals("last"))
-    {
-      if (checkAdapterState(nextRecipeID)) //check if adapter is ready
-      { //if is ready
-        System.out.println("[ChangeStateChecker] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State\n");
-        String method = DatabaseInteraction.getInstance().getRecipeMethodByID(nextRecipeID); //CRASHED HERE MASMEC! CHECK THIS
-        //System.out.println("method returned from DB: " + method);
-        NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":") + 1));
-        String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(nextRecipeID);
-        //System.out.println("objectID returned from DB: " + obj);
-
-        NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":") + 1));
-        String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-        //System.out.println("Daid from DB: " + Daid);
-
-        String DA_name_next = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
-        System.out.println("DA_name from DB: " + DA_name_next);
-
-        DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name_next);
-        System.out.println("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + DA_name_next);
-        MSBClientSubscription client = (MSBClientSubscription) da_next.getClient();
-
-        PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
-        perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
-        //changeStateAndNextRecipeTimer.stop();
-
-        boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, productInst_id);
-        System.out.println("[EXECUTE] recipeID: " + nextRecipeID);
-        if (res)
-        {
-          //release previous adapter
-          String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-          System.out.println("[SEMAPHORE] RELEASED1 " + da_name1 );
-          PECManager.getInstance().getExecutionMap().get(da_id).release();
-          
-          MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, DA_name_next);
-
-        } else
-        {
-          MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, "ERROR");
-        }
-      } else //if adapter is not ready
-      {
-        PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
-        perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
-        //changeStateAndNextRecipeTimer.stop();
-          System.out.println("NEXT ADAPTER IS AT ERROR STATE");
-/*
-        //save daIDnext, nextRecipe and prodID to execute later
-        String Daid_Next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-        String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_Next);
-
-        DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(da_name);
-        List<PendingProdInstance> auxProdId = PECManager.getInstance().getPendejos().get(da_next.getSubSystem().getUniqueId());
-        if (auxProdId == null)
-        {
-          List<PendingProdInstance> ppi = new ArrayList<>();
-          PendingProdInstance ppinst = new PendingProdInstance(nextRecipeID, productInst_id, da_next.getSubSystem().getUniqueId());
-          ppi.add(ppinst);
-          PECManager.getInstance().getPendejos().put(da_next.getSubSystem().getUniqueId(), ppi);
-        } else
-        {
-          auxProdId.add(new PendingProdInstance(nextRecipeID, productInst_id, da_next.getSubSystem().getUniqueId()));
-          PECManager.getInstance().getPendejos().put(da_next.getSubSystem().getUniqueId(), auxProdId);
-        }
-        System.out.println("[ChangeStateChecker] The adapter state is not ready! The recipe: " + nextRecipeID + "could not be called.\nIt was added to the pendent product list for DA ID: " + Daid_Next);
-      */
-      }
-    } else if (nextRecipeID.equals("last"))
-    {
-      ProductInstance prodInst = PECManager.getInstance().getProductsDoing().remove(productInst_id);
-      
-      if (prodInst != null)
-      {
-        
-        MSB_gui.addToTableExecutedOrders(prodInst.getOrderId(), prodInst.getProductId(), prodInst.getUniqueId());
-        MSB_gui.removeFromTableCurrentOrder(prodInst.getUniqueId());
-
-        System.out.println("[ChangeState] This Recipe is the last one for product instance ID: " + productInst_id);
-
-        String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-          //System.out.println("[SEMAPHORE] RELEASED for " + da_name1);
-          System.out.println("[SEMAPHORE" + da_name1 + "] RELEASED1");
-          PECManager.getInstance().getExecutionMap().get(da_id).release();
-          
-        String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-        boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
-        if (withAGENTCloud)
-        {
-          // THIS CODE IS WORKING!! 
-          SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-          SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-          String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-          BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-          FinishedProductInfo fpi = new FinishedProductInfo();
-          fpi.setProductInstanceId(productInst_id);
-          fpi.setFinishedTime(new Date());
-          fpi.setRegistered(prodInst.getStartedProductionTime());
-          systemConfigurator.finishedProduct(fpi);
-        }
-      }
-    } else if (nextRecipeID.isEmpty())
-    {
-      System.out.println("NextRecipeId is empty. What now? just sent the KPIs?");
-    }
-/*
-    try
-    {
-      PECManager.getInstance().PendejoCheckerThread(da_id); //Run the pendent product instances checker thread. for the current adapter 
-    } catch (InterruptedException | ExecutionException ex)
-    {
-      java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
-    }
-*/
-  }
-
-  
   public static DeviceAdapter getDAofNextRecipe(DeviceAdapter da, String recipeID)
   {
     String nextRecipeID = "";
@@ -501,8 +412,7 @@ public class ChangeState
     }
     return null;
   }
-  
-  
+
   /**
    * Read KPIs of recipe_id from OPCServer
    *

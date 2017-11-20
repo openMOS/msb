@@ -9,16 +9,12 @@ import eu.openmos.model.Order;
 import eu.openmos.model.OrderInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
-import eu.openmos.msb.database.interaction.DatabaseInteraction;
-import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  *
@@ -36,10 +32,9 @@ public class PECManager
   private final HashMap<String, Queue> orderMap;
   private final Queue<ProductInstance> productsToDo;
   private final HashMap<String, ProductInstance> productsDoing;
-  private final HashMap<String, List<PendingProdInstance>> pendejos;
   private final HashMap<String, Semaphore> executionMap;
 
-  private boolean state;
+  private static boolean state;
   //private final HashMap<>
 
   public PECManager()
@@ -51,18 +46,12 @@ public class PECManager
     orderInstances = new ArrayList<>();
     productsToDo = new LinkedList<>();
     productsDoing = new HashMap<>();
-    pendejos = new HashMap<>();
     executionMap = new HashMap<>();
   }
 
   public HashMap<String, ProductInstance> getProductsDoing()
   {
     return productsDoing;
-  }
-
-  public HashMap<String, List<PendingProdInstance>> getPendejos()
-  {
-    return pendejos;
   }
 
   /**
@@ -178,60 +167,5 @@ public class PECManager
     PECManager aux = PECManager.getInstance();
     return aux.productsToDo;
   }
-
-  public String PendejoCheckerThread(String daID) throws InterruptedException, ExecutionException
-  {
-
-    Thread th = new Thread()
-    {
-      public synchronized void run()
-      {
-        PendejoChecker(daID);
-      }
-    };
-    th.start();
-    return "OK";
-  }
   
-  public void PendejoChecker(String DaID){
-    
-    List<PendingProdInstance> prodInst = this.pendejos.get(DaID);
-    if (prodInst != null && prodInst.size() > 0)
-    {
-      System.out.println("[PendejoChecker] Adapter: " + DaID + " is ready and with pending product instances todo");
-      //EXECUTOR AGAIN
-      PendingProdInstance prodInstToDo = prodInst.get(0);
-      DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(DaID));
-      DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter;
-      
-      String method = DatabaseInteraction.getInstance().getRecipeMethodByID(prodInstToDo.getNextRecipeID());
-      NodeId methodNode = Functions.convertStringToNodeId(method);
-      String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(prodInstToDo.getNextRecipeID());
-      NodeId objNode = Functions.convertStringToNodeId(obj);
-              
-      boolean res = client.getClient().InvokeDeviceSkill(client.getClient().getClientObject(), objNode, methodNode, prodInstToDo.getProductInstanceID());
-      if (res)
-      {
-        prodInst.remove(0);
-        System.out.println("[EXECUTE] pendejo recipeID: " + prodInstToDo.getNextRecipeID() + "\n Remain: " + prodInst.size());
-      }
-      else
-        System.out.println("[EXECUTE] Error on pendejo recipeID: " + prodInstToDo.getNextRecipeID() + "\n Remain: " + prodInst.size());
-    } else
-    {
-      System.out.println("[PendejoChecker]Adapter " + DaID + " is ready! no pendejos found");
-      DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(DaID));
-      if (deviceAdapter != null)
-      {
-        //deviceAdapter.getSubSystem().setState(MSBConstants.ADAPTER_STATE_READY);
-        PECManager.getInstance().getExecutionMap().get(DaID).release();
-        System.out.println("[SEMAPHORE" + deviceAdapter.getSubSystem().getName() + "] RELEASED2");
-        //System.out.println("[SEMAPHORE] RELEASED for " + deviceAdapter.getSubSystem().getName());
-        System.out.println("[PendejoChecker]Adapter " + DaID + " state changed to ready!");
-      }
-      else
-        System.out.println("[PendejoChecker]Adapter " + DaID + " not found in DB!");
-    }
-    
-  }
 }

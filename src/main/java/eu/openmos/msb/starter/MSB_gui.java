@@ -1726,7 +1726,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       pecManager.getOrderInstanceList().add(oi);
       
       for (ProductInstance prodInst : oi.getProductInstances())
-        MSB_gui.addToTableSubmittedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority()); 
+        MSB_gui.addToTableSubmitedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority()); 
       
       //get first product instance and start doing stuff
       new Thread(new ProductExecution()).start();
@@ -1966,15 +1966,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       DeviceName, Status, Endpoint, WorkStation
     });
-    /*
-    try
-    {
-      Thread.sleep(1000);
-    } catch (InterruptedException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    }
-     */
+
     Object[] rowData = new Object[devicesTableModel.getColumnCount()];
     for (int i = 0; i < devicesTableModel.getColumnCount(); i++)
     {
@@ -1984,20 +1976,16 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     opc_comms_log.append("Devices successfully added to table. Name: " + DeviceName + "\n");
   }
 
-  public static void addToTableSubmittedOrder(String OrderID, String ProductID, String prodInst_ID, int Priority)
+  public static void addToTableSubmitedOrder(String OrderID, String ProductID, String prodInst_ID, int Priority)
   {
     ordersTableSubmittedModel.addRow(new Object[]
     {
       OrderID, ProductID, prodInst_ID, Priority
     });
 
-    Object[] rowData = new Object[ordersTableSubmittedModel.getColumnCount()];
-    for (int i = 0; i < ordersTableSubmittedModel.getColumnCount(); i++)
-    {
-      rowData[i] = ordersTableSubmittedModel.getValueAt(0, i);
-      System.out.println("Order NA TABELA Submitted: " + rowData[i].toString());
-    }
-    opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
+    System.out.println("Order added in table Submitted: " + prodInst_ID);
+    
+    opc_comms_log.append("Order successfully added to table Submited " + prodInst_ID + "\n");
   }
 
   public static void removeFromTableSubmitedOrder(String prodInst_ID)
@@ -2019,13 +2007,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       OrderID, ProductID, prodInst_ID
     });
 
-    Object[] rowData = new Object[ordersTableCurrentModel.getColumnCount()];
-    for (int i = 0; i < ordersTableCurrentModel.getColumnCount(); i++)
-    {
-      rowData[i] = ordersTableCurrentModel.getValueAt(0, i);
-      //System.out.println("Orders NA TABELA Current: " + rowData[i].toString());
-    }
-    //opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
+    System.out.println("Order add to table Current " + prodInst_ID);
+    
+    opc_comms_log.append("Order add to table Current: " + prodInst_ID + "\n");
   }
   
   public static void removeFromTableCurrentOrder(String prodInst_ID)
@@ -2071,12 +2055,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       OrderID, ProductID, prodInst_ID
     });
 
-    Object[] rowData = new Object[ordersTableExecutedModel.getColumnCount()];
-   
+    System.out.println("Order added to Executed table: " + prodInst_ID);
 
-      System.out.println("Order added to Executed table: " + prodInst_ID);
-    
-    //opc_comms_log.append("Orders successfully added to table. OrderID: " + OrderID + "\n");
+    opc_comms_log.append("Order added to Executed table: " + prodInst_ID + "\n");
   }
   
   public static void removeFromTableExecutedOrder(String prodInst_ID)
