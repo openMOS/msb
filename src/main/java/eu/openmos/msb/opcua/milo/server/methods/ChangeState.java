@@ -190,6 +190,9 @@ public class ChangeState
           systemConfigurator.finishedProduct(fpi);
         }
       }
+      else{
+        System.out.println("[ChangeStateChecker] ERROR prodInst not found: " + productInst_id);
+      }
     } else if (nextRecipeID.isEmpty())
     {
       System.out.println("It was not possible to execute the next Recipe. The path is not available!/n"
@@ -317,12 +320,21 @@ public class ChangeState
             {
               if (recipeID_for_SR.size() > 1)
               {
+                try
+                {
+                  Thread.sleep(5000);
+                } catch (InterruptedException ex)
+                {
+                  java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 Recipe firstRecipe = null;
                 //check if the precedences are the same
                 List<Recipe> recipes = new ArrayList<>();
                 for (String auxRecipeID : recipeID_for_SR)
                 {
                   String da_db_ID = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(auxRecipeID);
+                  if (da_db_ID ==null)
+                    continue;
                   String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(da_db_ID);
                   DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyName(da_name);
                   for (Recipe auxRecipe : auxDA.getListOfRecipes())

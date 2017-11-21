@@ -119,7 +119,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private final ClassLoader classLoader = getClass().getClassLoader();
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
   private StopWatch guiWatch;
-
+  private static int priority = 1;
+  
+  
   /**
    *
    * @throws Exception
@@ -1783,7 +1785,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   public static Order fillOrder(Product prod)
   {
-
+    priority++;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     String now = sdf.format(new Date());
 
@@ -1794,7 +1796,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     o.setUniqueId(orderUID);
     o.setDescription("my description_" + now);
     o.setName("order_name_" + now);
-    o.setPriority(1);
+    o.setPriority(priority);
     List<OrderLine> line = new ArrayList();
     List<ProductInstance> lpd = new LinkedList();
 

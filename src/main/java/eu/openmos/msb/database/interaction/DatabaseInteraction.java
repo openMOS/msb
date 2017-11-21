@@ -1444,30 +1444,32 @@ public class DatabaseInteraction
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-
+    String res = null;
     try
     {
       Statement stmt = conn.createStatement();
-      ResultSet query = stmt.executeQuery("SELECT SR.sr_id FROM SR WHERE r_id = '" + recipe_id + "'");
-      stmt.close();
+      ResultSet query = stmt.executeQuery("SELECT SR.sr_id FROM SR WHERE SR.r_id = '" + recipe_id + "'");
 
+      
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
         //System.out.println("No data");
+        stmt.close();
       } else
       {
-        return query.getString(1);
+        res = query.getString(1);
+        stmt.close();
       }
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-
-    return null;
+    
+    return res;
   }
 
   public ArrayList<String> getAvailableSkillIDList()

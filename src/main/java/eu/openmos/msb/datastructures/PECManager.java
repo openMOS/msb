@@ -30,23 +30,25 @@ public class PECManager
   private final List<Order> orders;
   private final List<OrderInstance> orderInstances;
   private final HashMap<String, Queue> orderMap;
-  private final Queue<ProductInstance> productsToDo;
+  private final List<ProductInstance> productsToDo;
   private final HashMap<String, ProductInstance> productsDoing;
   private final HashMap<String, Semaphore> executionMap;
+  private final Semaphore addNewInstance;
 
   private static boolean state;
   //private final HashMap<>
 
   public PECManager()
   {
-    this.state = false;
+    state = false;
     availableProducts = new ArrayList<>();
     orders = new ArrayList<>();
     orderMap = new HashMap<>();
     orderInstances = new ArrayList<>();
-    productsToDo = new LinkedList<>();
+    productsToDo = new ArrayList<>();
     productsDoing = new HashMap<>();
     executionMap = new HashMap<>();
+    addNewInstance = new Semaphore(1);
   }
 
   public HashMap<String, ProductInstance> getProductsDoing()
@@ -162,10 +164,15 @@ public class PECManager
     return aux.availableProducts;
   }
 
-  public Queue<ProductInstance> getProductsToDo()
+  public List<ProductInstance> getProductsToDo()
   {
     PECManager aux = PECManager.getInstance();
     return aux.productsToDo;
+  }
+  
+  public Semaphore getNewInstanceSemaphore()
+  {
+    return addNewInstance;
   }
   
 }

@@ -40,7 +40,7 @@ public class ProductExecution implements Runnable
 {
 
   List<String> recipesExecuted = new ArrayList<>();
-  int HighOrderIndex = -1;
+  static int HighOrderIndex = -1;
   StopWatch firstRecipeCallTime = new StopWatch();
   boolean notAgain = false;
 
@@ -56,10 +56,11 @@ public class ProductExecution implements Runnable
     if (pecm.getState())
     {
       System.out.println("Executor already Running!");
-      
+      checkPriority();
     } else
     {
       System.out.println("\n\n\n\n**************Starting Executor!********************\n\n\n\n\n");
+      pecm.setState(true);
       ExecuteOrder();
     }
   }
@@ -74,7 +75,10 @@ public class ProductExecution implements Runnable
     //Get priority and execute the higher value order
     int HighPriority = -1;
     HighOrderIndex = -1;
+    
     List<OrderInstance> orderInstanceList = ProdManager.getOrderInstanceList();
+    if (orderInstanceList.size() > 0)
+    {
     for (int i = 0; i < orderInstanceList.size(); i++)
     {
       int priority = orderInstanceList.get(i).getPriority();
@@ -95,6 +99,10 @@ public class ProductExecution implements Runnable
       //add to pec manager doing
       ExecuteProdsInstance();
     }
+    }
+    else{
+      PECManager.getInstance().setState(false);
+    }
   }
 
   public void ExecuteProdsInstance()
@@ -105,57 +113,75 @@ public class ProductExecution implements Runnable
 
     while (ProdManager.getProductsToDo().size() > 0)
     {
-      ProductInstance auxProdInstance = ProdManager.getProductsToDo().peek();
-      System.out.println("ProdInst to start: " + auxProdInstance.getUniqueId()); //da instancia
-      String productId = auxProdInstance.getProductId(); //prod type
-      //ir as tabelas de execução
-
-      List<Product> availableProducts = ProdManager.getAvailableProducts();
-      for (Product auxProduct : availableProducts)
+      while (true)
       {
-        if (auxProduct.getUniqueId() == null ? productId == null : auxProduct.getUniqueId().equals(productId)) //check if the resquested product is available
+        if (ProdManager.getNewInstanceSemaphore().tryAcquire())
         {
-          //analisar SkillRequirements
-          List<SkillRequirement> skillRequirements = auxProduct.getSkillRequirements();
-          for (SkillRequirement auxSR : skillRequirements)
+          ProductInstance auxProdInstance = ProdManager.getProductsToDo().get(0);
+          System.out.println("ProdInst to start: " + auxProdInstance.getUniqueId()); //da instancia
+          String productId = auxProdInstance.getProductId(); //prod type
+          //ir as tabelas de execução
+
+          List<Product> availableProducts = ProdManager.getAvailableProducts();
+          for (Product auxProduct : availableProducts)
           {
-            if (auxSR.getPrecedents() == null) //check which recipe has the precedents =null , which means it is the first one 
+            if (auxProduct.getUniqueId() == null ? productId == null : auxProduct.getUniqueId().equals(productId)) //check if the resquested product is available
             {
-              //check for 1 available recipe for the SR
-              while (true)
+              //analisar SkillRequirements
+              List<SkillRequirement> skillRequirements = auxProduct.getSkillRequirements();
+              for (SkillRequirement auxSR : skillRequirements)
               {
-                boolean getOut = false;
-                for (String recipeID : auxSR.getRecipeIDs())
+                if (auxSR.getPrecedents() == null) //check which recipe has the precedents =null , which means it is the first one 
                 {
-                  //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
-                  if (checkRecipeAvailable(recipeID) /*&& checkProductAgentComms(auxProdInstance.getUniqueId())*/)
+                  //check for 1 available recipe for the SR
+                  while (true)
                   {
-                    if (executeRecipe(recipeID, auxProdInstance))
+                    boolean getOut = false;
+                    for (String recipeID : auxSR.getRecipeIDs())
                     {
-                      System.out.println("The execution of Recipe: " + recipeID + " Returned true");
-                      ProdManager.getProductsDoing().put(auxProdInstance.getUniqueId(), ProdManager.getProductsToDo().poll()); //the first recipe of the product is done, put it into "doing"
-                      MSB_gui.addToTableCurrentOrders(auxProdInstance.getOrderId(), auxProdInstance.getProductId(), auxProdInstance.getUniqueId());
-                      
-                      String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
-                        if (Daid != null) {
+                      //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
+                      if (checkRecipeAvailable(recipeID) /*&& checkProductAgentComms(auxProdInstance.getUniqueId())*/)
+                      {
+                        if (executeRecipe(recipeID, auxProdInstance))
+                        {
+                          System.out.println("The execution of Recipe: " + recipeID + " Returned true");
+
+                          ProdManager.getProductsDoing().put(auxProdInstance.getUniqueId(), ProdManager.getProductsToDo().remove(0)); //the first recipe of the product is done, put it into "doing"
+                          MSB_gui.addToTableCurrentOrders(auxProdInstance.getOrderId(), auxProdInstance.getProductId(), auxProdInstance.getUniqueId());
+
+                          String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
+                          if (Daid != null)
+                          {
                             String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
                             MSB_gui.updateDATableCurrentOrderNextDA(auxProdInstance.getUniqueId(), DA_name);
+                          }
+                          MSB_gui.removeFromTableSubmitedOrder(auxProdInstance.getUniqueId());
+                          getOut = true;
+
+                          break;
+                        } else
+                        {
+                          System.out.println("[ERROR] The execution of Recipe: " + recipeID + " Returned false!");
                         }
-                      MSB_gui.removeFromTableSubmitedOrder(auxProdInstance.getUniqueId());
-                      getOut = true;
-                      break;
-                    } else
+                      }
+                    }
+                    if (getOut)
                     {
-                      System.out.println("[ERROR] The execution of Recipe: " + recipeID + " Returned false!");
+                      break;
                     }
                   }
                 }
-                if (getOut)
-                {
-                  break;
-                }
               }
+              break;
             }
+          }
+          ProdManager.getNewInstanceSemaphore().release();
+          try
+          {
+            Thread.sleep(1000);
+          } catch (InterruptedException ex)
+          {
+            Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
           }
           break;
         }
@@ -182,18 +208,20 @@ public class ProductExecution implements Runnable
       String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
       if (Daid != null)
       {
-          String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
-          DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
-          
-          NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
-          DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-          String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-          da.getSubSystem().setState(state);
+        String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+
+        NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+        String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+        da.getSubSystem().setState(state);
 
         if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
         {
           if (checkNextRecipe(da, recipeID))
+          {
             return true;
+          }
         }
       }
     }
@@ -219,11 +247,11 @@ public class ProductExecution implements Runnable
 
             NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
             DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da_next;
-            
+
             String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
             da_next.getSubSystem().setState(state);
-            System.out.println("daState for NEXT: " + state);  
-            
+            System.out.println("daState for NEXT: " + state);
+
             if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
             {
               return true;
@@ -256,7 +284,7 @@ public class ProductExecution implements Runnable
     }
     return null;
   }
-  
+
   private boolean checkProductAgentComms(String productInstID)
   {
 
@@ -294,7 +322,7 @@ public class ProductExecution implements Runnable
     return false;
 
   }
-  
+
   private boolean executeRecipe(String recipeID, ProductInstance prodInst)
   {
     String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
@@ -365,7 +393,7 @@ public class ProductExecution implements Runnable
           NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
           result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objID, methodID, prodInst.getUniqueId());
           //System.out.println("[FIRST RECIPE]Execute invokeSkill Successfull\n");        
-          
+
           return result;
         }
       }
@@ -396,10 +424,45 @@ public class ProductExecution implements Runnable
       }
     });
   }
-  
+
   private void checkPriority()
   {
-    
+    try
+    {
+      PECManager.getInstance().getNewInstanceSemaphore().acquire();
+      Thread.sleep(1000);
+      List<OrderInstance> orderInstanceList = PECManager.getInstance().getOrderInstanceList();
+      
+      int highPriority = -1;
+      int highIndex = -1;
+      for (int i = 0; i < orderInstanceList.size(); i++)
+      {
+        if (highPriority < orderInstanceList.get(i).getPriority())
+        {
+          highPriority = orderInstanceList.get(i).getPriority();
+        }
+        highIndex = i;
+      }
+      if (highIndex != -1 && HighOrderIndex != -1 && highIndex > HighOrderIndex)
+      {
+        OrderInstance oi = PECManager.getInstance().getOrderInstanceList().get(HighOrderIndex);
+        
+        int until = oi.getProductInstances().size() - PECManager.getInstance().getProductsToDo().size();
+        for (int i = 0; i < until; i++)
+        {
+          oi.getProductInstances().remove(0);
+        }
+        
+        OrderInstance orderInstanceToExecute = PECManager.getInstance().getOrderInstanceList().get(highIndex);
+        PECManager.getInstance().getProductsToDo().clear();
+        PECManager.getInstance().getProductsToDo().addAll(orderInstanceToExecute.getProductInstances());
+        HighOrderIndex = highIndex;
+      }
+    } catch (InterruptedException ex)
+    {
+      Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    PECManager.getInstance().getNewInstanceSemaphore().release();
   }
-  
+
 }
