@@ -497,12 +497,7 @@ public class OPCServersDiscoverySnippet extends Thread
       {
         //call mainwindow filltables
         MSB_gui.fillRecipesTable();
-        /*
-        da.getVertx().deployVerticle(new WebSocketsReceiver("R1"));
-        da.getVertx().deployVerticle(new WebSocketsReceiver("R2"));
-        Thread.sleep(3000);
-        da.getVertx().deployVerticle(new WebSocketsSender("R3"));
-         */
+
         return "OK - No AgentPlatform";
       }
     } catch (Exception ex)

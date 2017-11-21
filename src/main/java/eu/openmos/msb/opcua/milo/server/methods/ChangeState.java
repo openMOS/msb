@@ -1,6 +1,7 @@
 package eu.openmos.msb.opcua.milo.server.methods;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.model.ExecutionTableRow;
@@ -453,7 +454,7 @@ public class ChangeState
             DeviceAdapterOPC client = (DeviceAdapterOPC) CurrentDA;
             String kpiValue = Functions.readOPCNodeToString(client.getClient().getClientObject(), kpiPath);
             kpi.setValue(kpiValue);
-            System.out.println("kpiValue: " + kpiValue);
+            System.out.println("[KPI] DA: "+ CurrentDA.getSubSystem().getName() + " | KPI_Name: " + kpi.getName() + " | KPI_Value: " + kpi.getValue());
           }
 
           //IF THE AC is activated, send the KPIs upwards
@@ -468,11 +469,22 @@ public class ChangeState
             red.setRegistered(new Date());
             //add header to vertX message?
             System.out.println("...sending KPI's over websockets...");
-            DeliveryOptions options = new DeliveryOptions();
-            options.addHeader(eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA, "MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA"); //use this??
+            DeliveryOptions options = new DeliveryOptions();            
+            // options.addHeader(eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA, "MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA"); //use this??
+            options.addHeader("messageType", eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA); //use this??
             JsonObject objectToSend = JsonObject.mapFrom(red);
 
             CurrentDA.getVertx().eventBus().send(productInst_ID, objectToSend, options); //serialize the entire class??
+            
+            SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+            SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+            String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+            BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+            bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+            
+            System.out.println("Trying to send RED by WS");
+            ServiceCallStatus scs = systemConfigurator.newRecipeExecutionData(red);
+            System.out.println("WS returned: " + scs.getCode() + " | DESC: " + scs.getDescription());
           } else
           {
 

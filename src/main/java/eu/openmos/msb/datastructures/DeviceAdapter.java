@@ -18,6 +18,7 @@ import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
+import io.vertx.core.VertxOptions;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -51,8 +52,17 @@ public abstract class DeviceAdapter
   public DeviceAdapter()
   {
     subSystem = new SubSystem(); // will be depreceated
-    vert = Vertx.vertx();
     hasAgent = false;
+
+    VertxOptions options = new VertxOptions();
+    options.setClustered(true).setClusterHost("172.18.3.85");
+    Vertx.clusteredVertx(options, res ->
+    {
+      if (res.succeeded())
+      {
+        vert = res.result();
+      }
+    });
   }
 
   /**
@@ -613,6 +623,7 @@ public abstract class DeviceAdapter
               }
             }
             SRs.add(auxSkillReq);
+            //KPIs
           } else if (n2.getNodeName().endsWith("_InformationPort")/*n2.getNodeName().equals("Path_InformationPort")*/)
           { //MASMEC CHANGE 24/10/17
 
