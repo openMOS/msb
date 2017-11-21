@@ -55,13 +55,15 @@ public abstract class DeviceAdapter
     hasAgent = false;
 
     VertxOptions options = new VertxOptions();
-    options.setClustered(true).setClusterHost("172.18.3.85");
+    options.setClustered(true).setClusterHost("192.168.0.37");
     Vertx.clusteredVertx(options, res ->
     {
       if (res.succeeded())
       {
         vert = res.result();
       }
+      else
+        System.out.println("[DEVICE ADAPTER] vertx creation not succedeed");          
     });
   }
 

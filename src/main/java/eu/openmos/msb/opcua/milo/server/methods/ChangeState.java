@@ -321,13 +321,16 @@ public class ChangeState
             {
               if (recipeID_for_SR.size() > 1)
               {
+                  /*
                 try
                 {
+                  //Sleep to wait for MSB DA update
                   Thread.sleep(5000);
                 } catch (InterruptedException ex)
                 {
                   java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                */
                 Recipe firstRecipe = null;
                 //check if the precedences are the same
                 List<Recipe> recipes = new ArrayList<>();
@@ -474,7 +477,10 @@ public class ChangeState
             options.addHeader("messageType", eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA); //use this??
             JsonObject objectToSend = JsonObject.mapFrom(red);
 
-            CurrentDA.getVertx().eventBus().send(productInst_ID, objectToSend, options); //serialize the entire class??
+            if (CurrentDA.getVertx() != null)
+                CurrentDA.getVertx().eventBus().send(productInst_ID, objectToSend, options); //serialize the entire class??
+            else
+                System.out.println("ChangeState -> vertx is null, so let's skip it! -> " + productInst_ID);
             
             SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
             SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
