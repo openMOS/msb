@@ -120,7 +120,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
   private StopWatch guiWatch;
   private static int priority = 1;
-  
+  private final StopWatch OrderWatch = new StopWatch();
   
   /**
    *
@@ -1660,6 +1660,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     private void btnProductExecuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductExecuteActionPerformed
 
+      OrderWatch.start();
       String ProductID = cb_productSelection.getSelectedItem().toString().split("/")[1];
       //call new order with quantity of 1 of the selected product
       Product prodToExecute = null;
@@ -1729,6 +1730,12 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       
       for (ProductInstance prodInst : oi.getProductInstances())
         MSB_gui.addToTableSubmitedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority()); 
+      
+      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    Long time = OrderWatch.getTime();
+    perfMeasure.getOrderTillOrderInstanceCreationTimers().add(time);
+    logger.info("Order Instance took " + time.toString() + "ms to be created from the received order");
+    OrderWatch.stop();
       
       //get first product instance and start doing stuff
       new Thread(new ProductExecution()).start();

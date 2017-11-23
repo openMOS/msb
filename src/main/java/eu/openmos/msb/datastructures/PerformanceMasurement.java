@@ -124,13 +124,6 @@ public class PerformanceMasurement
     try (FileWriter writer = new FileWriter("outputMSBPerformanceTimers.txt"))
     {
       writer.write("\n");
-      writer.write("AdapterReadyTillRecipeCall: ");
-      for (Long time : aux.getAdapterReadyTillRecipeCallTimers())
-      {
-        writer.write(time.toString());
-        writer.write("ms ");
-      }
-      writer.write("\n");
       writer.write("AgentCreationTillAgentConfirmation: ");
       for (Long time : aux.getAgentCreationTillAgentConfirmationTimers())
       {
