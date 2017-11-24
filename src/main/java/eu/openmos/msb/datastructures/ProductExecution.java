@@ -211,18 +211,21 @@ public class ProductExecution implements Runnable
         String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
         DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
 
-        NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
-        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-        String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-        da.getSubSystem().setState(state);
+          NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+          DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+          if (statePath.isNotNull()) {
+              String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+              da.getSubSystem().setState(state);
 
-        if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
-        {
-          if (checkNextRecipe(da, recipeID))
-          {
-            return true;
+              if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY)) {
+                  if (checkNextRecipe(da, recipeID)) {
+                      return true;
+                  }
+              }
+          } else {
+              return false;
           }
-        }
+
       }
     }
     return false;
@@ -247,16 +250,17 @@ public class ProductExecution implements Runnable
 
             NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
             DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da_next;
+                if (statePath.isNotNull()) {
+                    String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+                    da_next.getSubSystem().setState(state);
+                    System.out.println("daState for NEXT: " + state);
 
-            String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-            da_next.getSubSystem().setState(state);
-            System.out.println("daState for NEXT: " + state);
-
-            if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
-            {
-              return true;
-            }
-          }
+                    if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY)) {
+                        return true;
+                    }
+                }
+            } else
+                return false;
         }
         return false;
       }

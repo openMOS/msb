@@ -73,6 +73,7 @@ public class ChangeState
     //add adapter states strings to properties
     NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
     DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+    if (statePath.isNotNull()){
     String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
     da.getSubSystem().setState(state);
 
@@ -80,7 +81,9 @@ public class ChangeState
     {
       System.out.println("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
     }
-
+    }
+    else
+          System.out.println("Error reading ADAPTER STATE!");
     String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
     MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name1);
 
@@ -213,8 +216,14 @@ public class ChangeState
       {
         NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
         DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+        if (statePath.isNotNull()){
         String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-        da.getSubSystem().setState(state);
+        da.getSubSystem().setState(state);}
+        else
+        {
+            System.out.println("[checkAdapterState] Error reading adapter state!");
+            return false;
+        }
       } while (!da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
       //if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
 
