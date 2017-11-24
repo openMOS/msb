@@ -87,12 +87,15 @@ public class EventConfirmationImpl implements EventConfirmation
     }
 
     logger.debug(getClass().getName() + " - agentCreated - end - websocket started for agentId [" + agentId + "]");
-    /*
+    
       PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
       Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
-      Long diffTime= new Date().getTime() - getStartTime;
-      perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
-     */
+      if (getStartTime != null)
+      {
+        Long diffTime= new Date().getTime() - getStartTime;
+        perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
+      }
+     
     return true;
   }
 

@@ -16,7 +16,6 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.MSBConstants;
 import eu.openmos.msb.datastructures.PECManager;
-import eu.openmos.msb.datastructures.PendingProdInstance;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
@@ -25,9 +24,7 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
@@ -70,20 +67,20 @@ public class ChangeState
 
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
     System.out.println("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id + " productID: " + productInstance_id + " recipeID:" + recipe_id);
-    /*
-      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(da_id);
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
-      //add adapter states strings to properties
-      NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
-      DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-      String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-      da.getSubSystem().setState(state);
 
-      if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
-      {
-          System.out.println("[ChangeState] ADAPTER ERROR");
-      }
-     */
+    String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
+    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+    //add adapter states strings to properties
+    NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+    DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+    String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+    da.getSubSystem().setState(state);
+
+    if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
+    {
+      System.out.println("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
+    }
+
     String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
     MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name1);
 
@@ -174,6 +171,9 @@ public class ChangeState
         System.out.println("[SEMAPHORE" + da_name1 + "] RELEASED1");
         PECManager.getInstance().getExecutionMap().get(da_id).release();
 
+        Long prodTime= new Date().getTime() - prodInst.getStartedProductionTime().getTime();
+        PerformanceMasurement.getInstance().getProdInstanceTime().add(prodTime);
+        
         String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
         boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
         if (withAGENTCloud)
@@ -225,7 +225,7 @@ public class ChangeState
         {
           try
           {
-            System.out.println("[SEMAPHORE] Trying to acquire for " + da_next_next.getSubSystem().getName());
+            System.out.println("[SEMAPHORE] Acquiring for " + da_next_next.getSubSystem().getName());
             PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).acquire();
             System.out.println("[SEMAPHORE] ACQUIRED for " + da_next_next.getSubSystem().getName());
           } catch (InterruptedException ex)
@@ -261,7 +261,10 @@ public class ChangeState
         {
           String auxNextLKT1 = da.getExecutionTable().getRows().get(i).getNextRecipeId();
           boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(auxNextLKT1);
-          return valid;
+          if (valid && !da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
+            return true;
+          else
+            return false;
         }
       }
     }
@@ -312,7 +315,6 @@ public class ChangeState
               return "";
             }
 
-            //********************************* TESTING STARTS HERE ***************************
             String SR_ID = DatabaseInteraction.getInstance().getSkillReqIDbyRecipeID(nextRecipeID);
             List<String> recipeID_for_SR = DatabaseInteraction.getInstance().getRecipesIDbySkillReqID(SR_ID);
 
@@ -321,6 +323,7 @@ public class ChangeState
             {
               if (recipeID_for_SR.size() > 1)
               {
+                /*
                 try
                 {
                   Thread.sleep(5000);
@@ -328,6 +331,7 @@ public class ChangeState
                 {
                   java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                */
                 Recipe firstRecipe = null;
                 //check if the precedences are the same
                 List<Recipe> recipes = new ArrayList<>();
@@ -380,7 +384,6 @@ public class ChangeState
                   System.out.println("There are no other Recipe choices for the current recipe " + recipeID);
                 }
               }
-//********************************************************************************************************************
             } else
             {
               boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
@@ -464,6 +467,7 @@ public class ChangeState
           {
             RecipeExecutionData red = new RecipeExecutionData();
             red.setKpiSettings(recipe.getKpiSettings());
+            red.setParameterSettings(recipe.getParameterSettings());
             red.setProductInstanceId(productInst_ID);
             red.setRecipeId(recipe_id);
             red.setRegistered(new Date());

@@ -265,53 +265,40 @@ public class MSBClientSubscription implements IClient
     PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
     recipeExecutionWatch.reset();
     recipeExecutionWatch.start();
-    
+
     CallMethodRequest request = new CallMethodRequest(
-            objectId, methodId, new Variant[]{new Variant(productId)});
+            objectId, methodId, new Variant[]
+            {
+              new Variant(productId)
+            });
 
     try
     {
-      StatusCode res=client.call(request).get().getStatusCode();
-      
-      if(res.isGood()){
-        perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
+      StatusCode res = client.call(request).get().getStatusCode();
+
+      if (res.isGood())
+      {
+        perfMeasurement.getRecipeCallMethodTillResultTimers().add(recipeExecutionWatch.getTime());
         //recipeExecutionWatch.stop();
         return true;
-      }else if(res.isBad()){
-        perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
+      } else if (res.isBad())
+      {
+        perfMeasurement.getRecipeCallMethodTillResultTimers().add(recipeExecutionWatch.getTime());
         //recipeExecutionWatch.stop();
         return false;
-      }else{
-        perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
-        //recipeExecutionWatch.stop();
-        return false;
-      }
-      
-      /*return client.call(request).thenCompose(result
-      ->
-      {
-      StatusCode statusCode = result.getStatusCode();
-
-      if (statusCode.isGood())
-      {
-      String value = (String) l(result.getOutputArguments()).get(0).getValue();
-      return CompletableFuture.completedFuture(value);
       } else
       {
-      CompletableFuture<String> f = new CompletableFuture<>();
-      f.completeExceptionally(new UaException(statusCode));
-      return f;
+        perfMeasurement.getRecipeCallMethodTillResultTimers().add(recipeExecutionWatch.getTime());
+        //recipeExecutionWatch.stop();
+        return false;
       }
-      });*/
     } catch (InterruptedException | ExecutionException ex)
     {
-      perfMeasurement.getOrderTillRecipeCallTimers().add(recipeExecutionWatch.getTime());
+      perfMeasurement.getRecipeCallMethodTillResultTimers().add(recipeExecutionWatch.getTime());
       recipeExecutionWatch.stop();
       java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
-      
-    }
 
-    
+    }
     return false;
   }
 

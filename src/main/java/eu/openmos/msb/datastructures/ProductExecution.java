@@ -401,30 +401,6 @@ public class ProductExecution implements Runnable
     return false;
   }
 
-  public static CompletableFuture<String> invokeMethod(OpcUaClient client, NodeId objectID, NodeId methodID)
-  {
-    System.out.println("\nTrying to call " + methodID + "...");
-    CallMethodRequest request = new CallMethodRequest(objectID, methodID, null);
-
-    return client.call(request).thenCompose(result
-            ->
-    {
-      StatusCode statusCode = result.getStatusCode();
-      if (statusCode.isGood())
-      {
-        String value = (String) l(result.getOutputArguments()).get(0).getValue();
-        System.out.println("\nReturning result...\n");
-        return CompletableFuture.completedFuture(value);
-      } else
-      {
-        CompletableFuture<String> f = new CompletableFuture<>();
-        f.completeExceptionally(new UaException(statusCode));
-        System.out.println("\nMethod error - " + methodID + "\n");
-        return f;
-      }
-    });
-  }
-
   private void checkPriority()
   {
     try

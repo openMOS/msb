@@ -242,8 +242,8 @@ public class OPCServersDiscoverySnippet extends Thread
                   xmlOutput.setFormat(Format.getPrettyFormat());
 
                   String XML_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");
-                  xmlOutput.output(node, new FileWriter(XML_PATH + "\\file_" + daName + ".xml", false));
-                  xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\file2_" + daName + ".xml", false));
+                  xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + daName + ".xml", false));
+                  xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + daName + ".xml", false));
 
                   System.out.println("Starting DA Parser **********************");
 
@@ -389,7 +389,7 @@ public class OPCServersDiscoverySnippet extends Thread
     try
     {
       DACManager dacManager = DACManager.getInstance();
-      DatabaseInteraction.getInstance().UpdateDAamlID(da.getSubSystem().getUniqueId(), da.getId()); //insert aml ID into the 
+      DatabaseInteraction.getInstance().UpdateDAamlID(da.getSubSystem().getUniqueId(), da.getId()); //insert aml ID into the DB
 
       if (da.getListOfEquipments() != null && da.getListOfEquipments().size() > 0)
       {

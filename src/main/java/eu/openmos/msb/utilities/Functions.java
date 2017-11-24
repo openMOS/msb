@@ -7,7 +7,9 @@ package eu.openmos.msb.utilities;
 
 import java.util.concurrent.ExecutionException;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 /**
@@ -46,4 +48,11 @@ public class Functions
       return "";
     }
   }
+  
+  public static void writeNode(OpcUaClient client, NodeId node, String value)
+    {
+        Variant v = new Variant(value);
+        DataValue dv = new DataValue(v, null, null);
+        client.writeValue(node, dv);
+    }
 }
