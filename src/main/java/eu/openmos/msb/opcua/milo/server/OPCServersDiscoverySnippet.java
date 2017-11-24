@@ -242,8 +242,8 @@ public class OPCServersDiscoverySnippet extends Thread
                   xmlOutput.setFormat(Format.getPrettyFormat());
 
                   String XML_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");
-                  xmlOutput.output(node, new FileWriter(XML_PATH + "\\file_" + daName + ".xml", false));
-                  xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\file2_" + daName + ".xml", false));
+                  xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + daName + ".xml", false));
+                  xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + daName + ".xml", false));
 
                   System.out.println("Starting DA Parser **********************");
 
@@ -389,13 +389,12 @@ public class OPCServersDiscoverySnippet extends Thread
     try
     {
       DACManager dacManager = DACManager.getInstance();
-      DatabaseInteraction.getInstance().UpdateDAamlID(da.getSubSystem().getUniqueId(), da.getId()); //insert aml ID into the 
+      DatabaseInteraction.getInstance().UpdateDAamlID(da.getSubSystem().getUniqueId(), da.getId()); //insert aml ID into the DB
 
       if (da.getListOfEquipments() != null && da.getListOfEquipments().size() > 0)
       {
         for (Module auxModule : da.getListOfEquipments())
         {
-          auxModule.setAddress(UUID.randomUUID().toString()); //FOR TESTING, DELETE AFTER!******************************************************************
           dacManager.registerModule(da.getSubSystem().getName(), auxModule.getName(), auxModule.getStatus(), auxModule.getAddress());
         }
         MSB_gui.fillDevicesTable();
@@ -445,8 +444,6 @@ public class OPCServersDiscoverySnippet extends Thread
         String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
         BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
         bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-        // SubSystem cpad = dummySubSystemGeneration(parsedClass);
-        //SubSystem cpad = SubSystemTest.getTestObject();
 
         // VaG - 28/09/2017
         // begin
@@ -463,26 +460,24 @@ public class OPCServersDiscoverySnippet extends Thread
 
         ss.setRegistered(new Date());
 
-        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-        perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
+        
         //perfMeasure.getNameSpaceParsingTimers().add(time);
 
         ServiceCallStatus agentStatus;
         if (ss.getType().equals("TransportSystem"))
         {
           agentStatus = systemConfigurator.createNewTransportAgent(ss);
+          PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+          perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
         } else
         {
           agentStatus = systemConfigurator.createNewResourceAgent(ss);
+          PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+          perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
         }
 
         System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
-        String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
-        //Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName())); // TODO - DELETE THIS
-        //da.getVertx().deployVerticle(new WebSocketsSender(da.getSubSystem().getUniqueId()));
 
-        //add the sender client object to the respective agentID
-        //da.setSubSystem(cpad);
         MSB_gui.fillRecipesTable();
 
         if (agentStatus != null)
@@ -503,12 +498,6 @@ public class OPCServersDiscoverySnippet extends Thread
     } catch (Exception ex)
     {
       System.out.println("Errors in workStationRegistration - " + ex.getMessage());
-    } finally
-    {
-      long endTime = System.nanoTime();
-      //long elapsedTime = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
-      //Logger.getLogger(OPCDeviceHelper.class.getName()).log(Level.INFO, null, "ELAPSED TIME: " + elapsedTime + "ms");
-      //System.out.println("\n\n ELAPSED TIME: " + elapsedTime + "ms");
     }
     return null;
   }

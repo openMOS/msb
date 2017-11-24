@@ -6,6 +6,7 @@
 package eu.openmos.msb.database.interaction;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import java.io.BufferedReader;
@@ -1206,7 +1207,50 @@ public class DatabaseInteraction
 
     return result;
   }
+/*
+  public ArrayList<Recipe> getModulesByDAName(String deviceAdapterName)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
 
+    ArrayList<Module> result = new ArrayList<>();
+    try
+    {
+      try (Statement stmt = conn.createStatement())
+      {
+        String sql = "SELECT Modules.address, Modules.da_id, DeviceAdapter.id, DeviceAdapter.name\n"
+                + "FROM Recipe, DeviceAdapter\n"
+                + "WHERE Modules.da_id = DeviceAdapter.id AND DeviceAdapter.name = '" + deviceAdapterName + "';";
+        ResultSet rs = stmt.executeQuery(sql);
+        if (!rs.isBeforeFirst())
+        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+          //System.out.println("No data");
+        } else
+        {
+          while (rs.next())
+          {
+            Recipe recipe = new Recipe();
+            recipe.setUniqueId(rs.getString(1));
+            recipe.setName(rs.getString(5));
+            recipe.setValid(trueSet.contains(rs.getString(4)));
+            result.add(recipe);
+          }
+        }
+      }
+    } catch (SQLException ex)
+    {
+      System.out.println("[ERROR] getRecipesByDAName " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return result;
+  }
+  */
   public ArrayList<String> getRecipesIDbySkillReqID(String sr_id)
   {
     StopWatch DBqueryTimer = new StopWatch();

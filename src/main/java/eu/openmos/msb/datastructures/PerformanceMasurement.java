@@ -31,6 +31,7 @@ public class PerformanceMasurement
   private final List<Long> HMISubsystemUpdateTimers;
   private final List<Long> DatabaseQueryTimers;
   private final List<Long> NamespaceParsing;
+  private final List<Long> ProdInstanceTime;
   
   private final Map<String, Long> agentCreationTimers;
   private final Map<String, Long> agentRemovalTimers;
@@ -46,6 +47,7 @@ public class PerformanceMasurement
     HMISubsystemUpdateTimers = new ArrayList<>();
     DatabaseQueryTimers = new ArrayList<>();
     NamespaceParsing = new ArrayList<>();
+    ProdInstanceTime = new ArrayList<>();
     agentCreationTimers = new HashMap<>();
     agentRemovalTimers = new HashMap<>();
     
@@ -116,6 +118,11 @@ public class PerformanceMasurement
     PerformanceMasurement aux = PerformanceMasurement.getInstance();
     return aux.DatabaseQueryTimers;
   }
+
+  public List<Long> getProdInstanceTime()
+  {
+    return ProdInstanceTime;
+  }
   
   public void exportTimers() throws IOException
   {
@@ -123,13 +130,6 @@ public class PerformanceMasurement
 
     try (FileWriter writer = new FileWriter("outputMSBPerformanceTimers.txt"))
     {
-      writer.write("\n");
-      writer.write("AdapterReadyTillRecipeCall: ");
-      for (Long time : aux.getAdapterReadyTillRecipeCallTimers())
-      {
-        writer.write(time.toString());
-        writer.write("ms ");
-      }
       writer.write("\n");
       writer.write("AgentCreationTillAgentConfirmation: ");
       for (Long time : aux.getAgentCreationTillAgentConfirmationTimers())
@@ -182,6 +182,13 @@ public class PerformanceMasurement
       writer.write("\n");
       writer.write("RecipeCallMethodTillResult: ");
       for (Long time : aux.getRecipeCallMethodTillResultTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("ProdInstanceTime: ");
+       for (Long time : aux.getProdInstanceTime())
       {
         writer.write(time.toString());
         writer.write("ms ");

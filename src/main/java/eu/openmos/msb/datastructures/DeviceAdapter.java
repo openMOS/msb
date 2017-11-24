@@ -5,6 +5,7 @@
  */
 package eu.openmos.msb.datastructures;
 
+import eu.openmos.agentcloud.config.ConfigurationLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Module;
+import eu.openmos.model.ParameterSetting;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
@@ -54,8 +56,9 @@ public abstract class DeviceAdapter
     subSystem = new SubSystem(); // will be depreceated
     hasAgent = false;
 
+    String myIP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
     VertxOptions options = new VertxOptions();
-    options.setClustered(true).setClusterHost("192.168.0.37");
+    options.setClustered(true).setClusterHost(myIP);
     Vertx.clusteredVertx(options, res ->
     {
       if (res.succeeded())
@@ -264,12 +267,9 @@ public abstract class DeviceAdapter
       org.w3c.dom.Document deviceDescriptionDoc = new DOMOutputter().output(new org.jdom2.Document(deviceDescriptionNode));
       org.w3c.dom.Document skillDescriptionDoc = new DOMOutputter().output(new org.jdom2.Document(skillsDescriptionNode));
 
-      //TEST
       subSystem.setUniqueId(ReadDeviceAdapterID(deviceDescriptionDoc)); //aml_id
       subSystem.setConnected(true);
-      //
       subSystem.setSkills(ReadSkill(skillDescriptionDoc));
-
       subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc));
       subSystem.setExecutionTable(ReadExecutionTable(deviceDescriptionDoc));
       subSystem.setInternaleModules(ReadModules(deviceDescriptionDoc));
@@ -277,19 +277,16 @@ public abstract class DeviceAdapter
 
       subSystem.setType(ReadDeviceAdapterType(deviceDescriptionDoc));
 
-            List<String> ReadDeviceAdapterState = ReadDeviceAdapterState(deviceDescriptionDoc);
+      List<String> ReadDeviceAdapterState = ReadDeviceAdapterState(deviceDescriptionDoc);
       if (ReadDeviceAdapterState.size() == 2)
       {
         subSystem.setState(ReadDeviceAdapterState.get(1));
         subSystem.setStatePath(ReadDeviceAdapterState.get(0));
       }
-      //subSystem.setState(MSBConstants.ADAPTER_STATE_READY);
-      
+
       PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
       System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
-      //verifyRecipeSkill(subSystem.getRecipes(), subSystem.getSkills());
 
-      //Logger.getLogger(SubSystem.class.getName()).log(Level.SEVERE, null, "testing");
       return true;
     } catch (XPathExpressionException ex)
     {
@@ -301,27 +298,10 @@ public abstract class DeviceAdapter
     return false;
   }
 
-  private static void verifyRecipeSkill(List<Recipe> auxRecipes, List<Skill> auxSkills)
-  {
-    for (Recipe auxRecipe : auxRecipes)
-    {
-      for (Skill auxSkill : auxSkills)
-      {
-        if (auxRecipe.getSkill().getName().equals(auxSkill.getName()))
-        {
-          auxRecipe.setSkill(auxSkill);
-          break;
-        }
-      }
-    }
-  }
-
   private static ExecutionTable ReadExecutionTable(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    //String query = "//DeviceAdapter/*/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)]"; //isto é o IDdo subsystem -> ExecutionTable ExecutionTable row 
     String query = "//DeviceAdapter/*/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)][not(self::ExecutionTable)]"; //isto é o IDdo subsystem -> ExecutionTable ExecutionTable row 
 
-    //acrescentar [not(self::ExecutionTable)]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -334,8 +314,6 @@ public abstract class DeviceAdapter
     {
       Node n = nodeList.item(i);
 
-      String nodeName1 = n.getNodeName();
-
       if ("Path".equals(n.getNodeName()))
       {
         execTable.setName(n.getTextContent());
@@ -344,9 +322,6 @@ public abstract class DeviceAdapter
         for (int j = 0; j < n.getChildNodes().getLength(); j++)
         {
           Node IdChildNodes = n.getChildNodes().item(j);
-
-          String nodeName2 = IdChildNodes.getNodeName();
-
           if (IdChildNodes.getNodeName().equals("Value"))
           {
             execTable.setUniqueId(IdChildNodes.getTextContent());
@@ -354,22 +329,17 @@ public abstract class DeviceAdapter
         }
       } else
       {
-        String name1 = n.getNodeName();
         NodeList execTableAux = n.getChildNodes();
         ExecutionTableRow execRow = new ExecutionTableRow();
 
         for (int j = 0; j < execTableAux.getLength(); j++)
         {
           Node n2 = execTableAux.item(j);
-          String name = n2.getNodeName();
           if (n2.getNodeName().equals("ID"))
           {
             for (int k = 0; k < n2.getChildNodes().getLength(); k++)
             {
               Node IdChildNodes = n2.getChildNodes().item(k);
-
-              String nodeName3 = IdChildNodes.getNodeName();
-
               if (IdChildNodes.getNodeName().equals("Value"))
               {
                 if (execRow.getUniqueId() == null)
@@ -384,10 +354,6 @@ public abstract class DeviceAdapter
             NodeList recipes = n2.getChildNodes();
             for (int k = 0; k < recipes.getLength(); k++)
             {
-              /*if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE && !recipes.item(k).getNodeName().contains("Column")
-                                    && !recipes.item(k).getNodeName().equals("Path") && !recipes.item(k).getNodeName().equals("Type")
-                                    && !recipes.item(k).getNodeName().equals("ID")) {*/
-              //if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE && recipes.item(k).getNodeName().equals("ID")) //MASMEC SHIT 
               if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE && recipes.item(k).getNodeName().endsWith("_Recipe"))
               {
                 Node nID = recipes.item(k);
@@ -405,7 +371,6 @@ public abstract class DeviceAdapter
                         execRow.setRecipeId(realIDchildNodes.item(wot).getTextContent());
                       }
                     }
-
                   }
                 }
               }
@@ -438,17 +403,13 @@ public abstract class DeviceAdapter
               if (nRtE.item(k).getNodeType() == Node.ELEMENT_NODE /*&& nRtE.item(k).getNodeName().equals("ID")*/ /*&& !nRtE.item(k).getNodeName().contains("Column")
                                     && !nRtE.item(k).getNodeName().equals("Path") && !nRtE.item(k).getNodeName().equals("Type")*/)
               {
-
                 Node nID = nRtE.item(k);
-                String nodeName4 = nID.getNodeName();
-
                 if (nID.getNodeName().endsWith("Recipe"))
                 { //MASMEC
                   NodeList NextRecipeChildNodes = nID.getChildNodes();
                   for (int z = 0; z < NextRecipeChildNodes.getLength(); z++)
                   {
                     String NExtRecipenode = NextRecipeChildNodes.item(z).getNodeName();
-                    //System.out.println("next recipe node names: " + NExtRecipenode);
 
                     if (NExtRecipenode.equals("ID"))
                     {
@@ -470,7 +431,6 @@ public abstract class DeviceAdapter
 
                   }
                 }
-
               }
             }
           } else if (n2.getNodeName().equals("ListOfPossibleRecipeChoices"))
@@ -483,7 +443,6 @@ public abstract class DeviceAdapter
                       && !ListOfpossRchoices.item(k).getNodeName().equals("Path") && !ListOfpossRchoices.item(k).getNodeName().equals("Type")
                       && !ListOfpossRchoices.item(k).getNodeName().equals("ID"))
               {
-
                 Node nID = ListOfpossRchoices.item(k);
                 NodeList nIDChild = nID.getChildNodes();
                 for (int x = 0; x < nIDChild.getLength(); x++)
@@ -527,19 +486,15 @@ public abstract class DeviceAdapter
       boolean gogogo = true;
       List<SkillRequirement> SRs = new ArrayList<>();
       List<KPISetting> KPIs = new ArrayList<>();
+      List<ParameterSetting> PARAMETERS = new ArrayList<>();
       Node n = nodeList.item(i);
-      String nodename = nodeList.item(i).getNodeName();
       NodeList recipeChilds = n.getChildNodes();
 
       for (int j = 0; j < recipeChilds.getLength(); j++)
       {
         Node n2 = recipeChilds.item(j);
-
-        String nodeName2 = n2.getNodeName();
-
         if ("Path".equals(n2.getNodeName()))
         {
-
           String auxTest = n2.getAttributes().getNamedItem("ns").getNodeValue();
           recipe.setInvokeObjectID(auxTest + ":" + n2.getTextContent());
 
@@ -559,8 +514,6 @@ public abstract class DeviceAdapter
           }
         } else
         {
-
-          //System.out.println("\n***** NAMES: " + n2.getNodeName() + " *****\n");
           //description
           if ("description".equals(n2.getNodeName()))
           {
@@ -626,9 +579,8 @@ public abstract class DeviceAdapter
             }
             SRs.add(auxSkillReq);
             //KPIs
-          } else if (n2.getNodeName().endsWith("_InformationPort")/*n2.getNodeName().equals("Path_InformationPort")*/)
-          { //MASMEC CHANGE 24/10/17
-
+          } else if (n2.getNodeName().endsWith("_InformationPort"))
+          {
             NodeList auxNodeList = n2.getChildNodes();
             for (int z = 0; z < auxNodeList.getLength(); z++)
             {
@@ -665,14 +617,72 @@ public abstract class DeviceAdapter
                       if (auxNode1.getNodeName().equals("Path"))
                       {
                         int ns = Integer.parseInt(auxNode1.getAttributes().getNamedItem("ns").getNodeValue());
-                        //auxKPISetting.setPath(new NodeId(ns,auxNode1.getTextContent())); //CHANGE IT TO STRING NODE ID KPI SETTINGS
                         auxKPISetting.setPath(ns + ":" + auxNode1.getTextContent()); //CHECK THIS!
                         System.out.println("KPI path: " + auxKPISetting.getPath());
+                      }
+                    }
+                  } else if (auxNode.getNodeName().equals("Unit"))
+                  {
+                    NodeList auxNodeList1 = auxNode.getChildNodes();
+                    for (int index = 0; index < auxNodeList1.getLength(); index++)
+                    {
+                      Node auxNode1 = auxNodeList1.item(index);
+                      if (auxNode1.getNodeName().equals("Value"))
+                      {
+                        auxKPISetting.setUnit(auxNode1.getTextContent());
+                        System.out.println("KPI Unit: " + auxKPISetting.getUnit());
                       }
                     }
                   }
                 }
                 KPIs.add(auxKPISetting);
+              }
+            }
+          } else if (n2.getNodeName().endsWith("_ParameterPort"))
+          {
+            NodeList auxNodeList = n2.getChildNodes();
+            for (int z = 0; z < auxNodeList.getLength(); z++)
+            {
+              Node parameterNode = auxNodeList.item(z);
+              if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+              {
+                System.out.println("PARAMETER NAME: " + parameterNode.getNodeName());
+                ParameterSetting auxParameterSetting = new ParameterSetting();
+
+                NodeList auxNodeList12 = parameterNode.getChildNodes();
+                for (int h = 0; h < auxNodeList12.getLength(); h++)
+                {
+                  Node auxNode = auxNodeList12.item(h);
+
+                  if (auxNode.getNodeName().equals("ID"))
+                  {
+                    NodeList auxNodeList1 = auxNode.getChildNodes();
+                    for (int index = 0; index < auxNodeList1.getLength(); index++)
+                    {
+                      Node auxNode1 = auxNodeList1.item(index);
+                      if (auxNode1.getNodeName().equals("Value"))
+                      {
+                        auxParameterSetting.setUniqueId(auxNode1.getTextContent());
+                        System.out.println("PARAMETER ID: " + auxParameterSetting.getUniqueId());
+                      }
+                    }
+                  } else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
+                          && !auxNode.getNodeName().toLowerCase().endsWith("parameter"))
+                  {
+                    auxParameterSetting.setName(auxNode.getNodeName());
+                    NodeList auxNodeList1 = auxNode.getChildNodes();
+                    for (int index = 0; index < auxNodeList1.getLength(); index++)
+                    {
+                      Node auxNode1 = auxNodeList1.item(index);
+                      if (auxNode1.getNodeName().equals("Value"))
+                      {
+                        auxParameterSetting.setValue(auxNode1.getTextContent());
+                        System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
+                      }
+                    }
+                  }
+                }
+                PARAMETERS.add(auxParameterSetting);
               }
             }
           } else if (n2.getNodeName().equals("InvokeSkill"))
@@ -696,7 +706,7 @@ public abstract class DeviceAdapter
               if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
               {
                 int ns = Integer.parseInt(auxNode.getAttributes().getNamedItem("ns").getNodeValue());
-                recipe.setStatePath(auxNode.getAttributes().getNamedItem("ns").getNodeValue().toString() + ":" + auxNode.getTextContent()); //CHECK THIS!
+                recipe.setStatePath(ns + ":" + auxNode.getTextContent()); //CHECK THIS!
               } else if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Value"))
               {
                 recipe.setState(auxNode.getTextContent());
@@ -707,12 +717,10 @@ public abstract class DeviceAdapter
             if (gogogo)
             {
               //get skill - first node with SR inside
-              String nodeName = n2.getNodeName();
               if (n2.getNodeType() == Node.ELEMENT_NODE)
               {
                 for (Skill auxSkill : subSystem.getSkills())
                 {
-                  String auxSkillName = auxSkill.getName();
                   if (n2.getNodeName().equals(auxSkill.getName()))
                   {
                     recipe.setSkill(auxSkill);
@@ -725,6 +733,7 @@ public abstract class DeviceAdapter
           }
         }
       }
+      recipe.setParameterSettings(PARAMETERS);
       recipe.setKpiSettings(KPIs);
       recipe.setSkillRequirements(SRs);
       recipeList.add(recipe);
@@ -791,7 +800,6 @@ public abstract class DeviceAdapter
 
   private static List<Skill> ReadSkill(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    //String query = "//Skills/*[contains(name(),'AtomicSkill') or contains(name(),'CompositeSkill')]/Type[not(contains(@namespace, 'openMOSSystemUnitClassLib'))]";
     String query = "//Skills/*[contains(name(),'AtomicSkill') or contains(name(),'CompositeSkill')]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
@@ -807,7 +815,6 @@ public abstract class DeviceAdapter
       for (int j = 0; j < skillChilds.getLength(); j++)
       {
         Node n2 = skillChilds.item(j);
-        //System.out.println("***NODE NAME: " + n2.getNodeName());
 
         if (n2.getNodeType() == Node.ELEMENT_NODE && !n2.getNodeName().equals("Type") && !n2.getNodeName().equals("Path"))
         {
@@ -820,7 +827,6 @@ public abstract class DeviceAdapter
           for (int k = 0; k < auxChilds.getLength(); k++)
           {
             Node auxData = auxChilds.item(k);
-            String name = auxData.getNodeName();
             if (auxData.getNodeType() == Node.ELEMENT_NODE)
             {
               if (auxData.getNodeName().matches("SR(\\d).*")) //SR+um digito pelo menos
@@ -835,10 +841,6 @@ public abstract class DeviceAdapter
                 NodeList IDchilds = auxData.getChildNodes();
                 for (int z = 0; z < IDchilds.getLength(); z++)
                 {
-                  String name2 = IDchilds.item(z).getNodeName();
-                  String value = IDchilds.item(z).getNodeValue();
-                  String txtcntn = IDchilds.item(z).getTextContent();
-
                   if (IDchilds.item(z).getNodeName().matches("Value"))
                   {
                     auxSkill.setUniqueId(IDchilds.item(z).getTextContent());
@@ -939,9 +941,6 @@ public abstract class DeviceAdapter
 
   private static String ReadDeviceAdapterType(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    //String query1 = "//DeviceAdapter/*/*/*/Path[contains(@ns, 'TransportSystem')]";
-    //String query2 = "//DeviceAdapter/*/*/*/Path[contains(@ns, 'WorkStation')]";
-
     String query1 = "//DeviceAdapter/*/*/TransportSystem";
     String query2 = "//DeviceAdapter/*/*/WorkStation";
 
@@ -966,33 +965,34 @@ public abstract class DeviceAdapter
     }
 
   }
-  
-    private static List<String> ReadDeviceAdapterState(org.w3c.dom.Document xmlDocument) throws XPathExpressionException {
-        //String query1 = "//DeviceAdapter/*/*/*/Path[contains(@ns, 'TransportSystem')]";
-        //String query2 = "//DeviceAdapter/*/*/*/Path[contains(@ns, 'WorkStation')]";
 
-        String query1 = "//DeviceAdapter/*/*/DeviceAdapterState";
+  private static List<String> ReadDeviceAdapterState(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  {
+    String query1 = "//DeviceAdapter/*/*/DeviceAdapterState";
 
-        XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
-        NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
+    XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+    NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
 
-        System.out.println("State elements num: " + nodeList.getLength());
-        NodeList childNodeList = nodeList.item(0).getChildNodes();
+    System.out.println("State elements num: " + nodeList.getLength());
+    NodeList childNodeList = nodeList.item(0).getChildNodes();
 
-        List<String> results = new ArrayList<>();
-        for (int i = 0; i < childNodeList.getLength(); i++) {
-            if (childNodeList.item(i).getNodeName().equals("Value")) {
-                results.add(childNodeList.item(i).getTextContent());
-            } else if (childNodeList.item(i).getNodeName().equals("Path")) {
-                String auxTest = childNodeList.item(i).getAttributes().getNamedItem("ns").getNodeValue();
-                results.add(auxTest + ":" + childNodeList.item(i).getTextContent());
-            }
-
-        }
-
-        return results;
+    List<String> results = new ArrayList<>();
+    for (int i = 0; i < childNodeList.getLength(); i++)
+    {
+      if (childNodeList.item(i).getNodeName().equals("Value"))
+      {
+        results.add(childNodeList.item(i).getTextContent());
+      } else if (childNodeList.item(i).getNodeName().equals("Path"))
+      {
+        String auxTest = childNodeList.item(i).getAttributes().getNamedItem("ns").getNodeValue();
+        results.add(auxTest + ":" + childNodeList.item(i).getTextContent());
+      }
 
     }
+
+    return results;
+
+  }
 // ------------------------------------------------------------------------------------------------------------------ //
 // ------------------------------------------------------------------------------------------------------------------ //
 

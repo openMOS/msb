@@ -120,7 +120,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
   private StopWatch guiWatch;
   private static int priority = 1;
-  
+  private final StopWatch OrderWatch = new StopWatch();
   
   /**
    *
@@ -128,6 +128,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   public MSB_gui() throws Exception
   {
+    createXMLFolder();
     this.guiWatch = new StopWatch();
 
     guiWatch.start();
@@ -1106,7 +1107,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+      
   /**
    *
    * @param evt
@@ -1660,6 +1661,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     private void btnProductExecuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductExecuteActionPerformed
 
+      OrderWatch.reset();
+      OrderWatch.start();
       String ProductID = cb_productSelection.getSelectedItem().toString().split("/")[1];
       //call new order with quantity of 1 of the selected product
       Product prodToExecute = null;
@@ -1729,6 +1732,12 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       
       for (ProductInstance prodInst : oi.getProductInstances())
         MSB_gui.addToTableSubmitedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority()); 
+      
+      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    Long time = OrderWatch.getTime();
+    perfMeasure.getOrderTillOrderInstanceCreationTimers().add(time);
+    logger.info("Order Instance took " + time.toString() + "ms to be created from the received order");
+    OrderWatch.stop();
       
       //get first product instance and start doing stuff
       new Thread(new ProductExecution()).start();
@@ -1806,7 +1815,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       OrderLine ol = new OrderLine();
       ol.setOrderId(orderUID);
       ol.setProductId(prod.getUniqueId());
-      ol.setQuantity(1);
+      ol.setQuantity(5);
       ol.setUniqueId(UUID.randomUUID().toString());
       line.add(ol);
     }
@@ -2323,8 +2332,30 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     return "OK";
   }
 
-  // **************************************************************************************************************** //
-  // **************************************************************************************************************** //
+  private void createXMLFolder()
+  {
+    File theDir = new File("xml");
+
+    if (!theDir.exists())
+    {
+      System.out.println("creating directory: " + theDir.getName());
+      boolean result = false;
+
+      try
+      {
+        theDir.mkdir();
+        result = true;
+      } catch (SecurityException se)
+      {
+        //handle it
+      }
+      if (result)
+      {
+        System.out.println("DIR created");
+      }
+    }
+  }
+  
   /**
    * @param args the command line arguments
    */

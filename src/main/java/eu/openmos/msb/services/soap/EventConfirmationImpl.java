@@ -12,10 +12,12 @@ import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.PECManager;
+import eu.openmos.msb.datastructures.PerformanceMasurement;
 import io.vertx.core.Vertx;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import javax.jws.WebService;
 import org.apache.log4j.Logger;
@@ -85,12 +87,15 @@ public class EventConfirmationImpl implements EventConfirmation
     }
 
     logger.debug(getClass().getName() + " - agentCreated - end - websocket started for agentId [" + agentId + "]");
-    /*
+    
       PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
       Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
-      Long diffTime= new Date().getTime()-getStartTime;
-      perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
-     */
+      if (getStartTime != null)
+      {
+        Long diffTime= new Date().getTime() - getStartTime;
+        perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
+      }
+     
     return true;
   }
 
