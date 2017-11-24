@@ -7,7 +7,7 @@ package eu.openmos.msb.services.soap;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.model.ProductInstance;
-import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
+//import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
@@ -55,43 +55,42 @@ public class EventConfirmationImpl implements EventConfirmation
       }
     }
 
-    logger.debug(getClass().getName() + " - agentCreated - begin - starting websocket for agentId [" + agentId + "]");
-
-    // some stuff...
-    //Vertx.vertx().deployVerticle(new WebSocketsSender(agentId));
-    
-    deviceAdapter.getVertx().deployVerticle(new WebSocketsSender(deviceAdapter.getSubSystem().getUniqueId()));
-    // emulation!
-    // add the created agent into the agents list
-    // so that the msb emulator starts sending messages
-    String agentsListFile = ConfigurationLoader.getMandatoryProperty("openmos.msb.agents.list.file");
-    logger.debug("agentsListFile = [" + agentsListFile + "]");
-    String agentsList = new String();
-    try
-    {
-      agentsList = new String(Files.readAllBytes(Paths.get(agentsListFile)));
-    } catch (IOException ex)
-    {
-      logger.error("cant read file " + agentsListFile + ": " + ex.getMessage());
-    }
-    if (agentsList.indexOf(agentId) == -1) // for sure
-    {
-      agentsList = agentsList.concat(agentId).concat("___");
-      try
-      {
-        Files.write(Paths.get(agentsListFile), agentsList.getBytes());
-      } catch (IOException ex)
-      {
-        logger.error("cant write file " + agentsListFile + ": " + ex.getMessage());
-      }
-    }
-
-    logger.debug(getClass().getName() + " - agentCreated - end - websocket started for agentId [" + agentId + "]");
+//////    logger.debug(getClass().getName() + " - agentCreated - begin - starting websocket for agentId [" + agentId + "]");
+//////
+//////    // some stuff...
+//////    //Vertx.vertx().deployVerticle(new WebSocketsSender(agentId));
+//////    
+//////    deviceAdapter.getVertx().deployVerticle(new WebSocketsSender(deviceAdapter.getSubSystem().getUniqueId()));
+//////    // emulation!
+//////    // add the created agent into the agents list
+//////    // so that the msb emulator starts sending messages
+//////    String agentsListFile = ConfigurationLoader.getMandatoryProperty("openmos.msb.agents.list.file");
+//////    logger.debug("agentsListFile = [" + agentsListFile + "]");
+//////    String agentsList = new String();
+//////    try
+//////    {
+//////      agentsList = new String(Files.readAllBytes(Paths.get(agentsListFile)));
+//////    } catch (IOException ex)
+//////    {
+//////      logger.error("cant read file " + agentsListFile + ": " + ex.getMessage());
+//////    }
+//////    if (agentsList.indexOf(agentId) == -1) // for sure
+//////    {
+//////      agentsList = agentsList.concat(agentId).concat("___");
+//////      try
+//////      {
+//////        Files.write(Paths.get(agentsListFile), agentsList.getBytes());
+//////      } catch (IOException ex)
+//////      {
+//////        logger.error("cant write file " + agentsListFile + ": " + ex.getMessage());
+//////      }
+//////    }
+//////
+//////    logger.debug(getClass().getName() + " - agentCreated - end - websocket started for agentId [" + agentId + "]");
     
       PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
       Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
-      if (getStartTime != null)
-      {
+      if (getStartTime != null){
         Long diffTime= new Date().getTime() - getStartTime;
         perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
       }
@@ -116,12 +115,14 @@ public class EventConfirmationImpl implements EventConfirmation
     }
 
     logger.debug(getClass().getName() + " - agentNotCreated - end for agentId [" + agentId + "]");
-    /*
+    
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
-    Long diffTime = new Date().getTime() - getStartTime;
-    perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
-     */
+    if (getStartTime != null){
+        Long diffTime= new Date().getTime() - getStartTime;
+        perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
+      }
+     
     return true;
   }
 
@@ -170,12 +171,13 @@ public class EventConfirmationImpl implements EventConfirmation
 //                    logger.warn("agent " + agentId + " not found into file " + agentsListFile + ": WHY????");                    
 //                }
     logger.debug(getClass().getName() + " - agentRemoved - end for agentId [" + agentId + "]");
-    /*
+    
         PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
         Long getStartTime = perfMeasure.getAgentRemovalTimers().get(agentId);
-        Long diffTime = new Date().getTime() - getStartTime;
-        perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
-     */
+        if (getStartTime != null){
+            Long diffTime = new Date().getTime() - getStartTime;
+            perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
+        }
     return true;
   }
 
@@ -186,12 +188,12 @@ public class EventConfirmationImpl implements EventConfirmation
 
     // some stuff...
     logger.debug(getClass().getName() + " - agentNotRemoved - end for agentId [" + agentId + "]");
-    /*
       PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
       Long getStartTime = perfMeasure.getAgentRemovalTimers().get(agentId);
-      Long diffTime = new Date().getTime() - getStartTime;
-      perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
-     */
+      if (getStartTime != null) {
+          Long diffTime = new Date().getTime() - getStartTime;
+          perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
+      }
     return true;
   }
 
@@ -214,32 +216,32 @@ public class EventConfirmationImpl implements EventConfirmation
     // some stuff...
     for (String agentId : agentIds)
     {
-      Vertx.vertx().deployVerticle(new WebSocketsSender(agentId));
-
-      // emulation!
-      // add the created agents into the agents list
-      // so that the msb emulator starts sending messages
-      String agentsListFile = ConfigurationLoader.getMandatoryProperty("openmos.msb.agents.list.file");
-      logger.debug("agentsListFile = [" + agentsListFile + "]");
-      String agentsList = new String();
-      try
-      {
-        agentsList = new String(Files.readAllBytes(Paths.get(agentsListFile)));
-      } catch (IOException ex)
-      {
-        logger.error("cant read file " + agentsListFile + ": " + ex.getMessage());
-      }
-      if (agentsList.indexOf(agentId) == -1) // for sure
-      {
-        agentsList = agentsList.concat(agentId).concat("___");
-        try
-        {
-          Files.write(Paths.get(agentsListFile), agentsList.getBytes());
-        } catch (IOException ex)
-        {
-          logger.error("cant write file " + agentsListFile + ": " + ex.getMessage());
-        }
-      }
+//////      Vertx.vertx().deployVerticle(new WebSocketsSender(agentId));
+//////
+//////      // emulation!
+//////      // add the created agents into the agents list
+//////      // so that the msb emulator starts sending messages
+//////      String agentsListFile = ConfigurationLoader.getMandatoryProperty("openmos.msb.agents.list.file");
+//////      logger.debug("agentsListFile = [" + agentsListFile + "]");
+//////      String agentsList = new String();
+//////      try
+//////      {
+//////        agentsList = new String(Files.readAllBytes(Paths.get(agentsListFile)));
+//////      } catch (IOException ex)
+//////      {
+//////        logger.error("cant read file " + agentsListFile + ": " + ex.getMessage());
+//////      }
+//////      if (agentsList.indexOf(agentId) == -1) // for sure
+//////      {
+//////        agentsList = agentsList.concat(agentId).concat("___");
+//////        try
+//////        {
+//////          Files.write(Paths.get(agentsListFile), agentsList.getBytes());
+//////        } catch (IOException ex)
+//////        {
+//////          logger.error("cant write file " + agentsListFile + ": " + ex.getMessage());
+//////        }
+//////      }
 
     }
 

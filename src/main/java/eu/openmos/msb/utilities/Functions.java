@@ -32,7 +32,6 @@ public class Functions
       return new NodeId(ns, identifier);
     } catch (Exception ex)
     {
-      System.out.println("DEU MERDA!");
       return null;
     }
   }
