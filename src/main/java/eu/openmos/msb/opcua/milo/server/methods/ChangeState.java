@@ -73,6 +73,7 @@ public class ChangeState
     //add adapter states strings to properties
     NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
     DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+    if (statePath.isNotNull()){
     String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
     da.getSubSystem().setState(state);
 
@@ -80,7 +81,9 @@ public class ChangeState
     {
       System.out.println("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
     }
-
+    }
+    else
+          System.out.println("Error reading ADAPTER STATE!");
     String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
     MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name1);
 
@@ -213,8 +216,14 @@ public class ChangeState
       {
         NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
         DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+        if (statePath.isNotNull()){
         String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-        da.getSubSystem().setState(state);
+        da.getSubSystem().setState(state);}
+        else
+        {
+            System.out.println("[checkAdapterState] Error reading adapter state!");
+            return false;
+        }
       } while (!da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
       //if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
 
@@ -326,6 +335,7 @@ public class ChangeState
                 /*
                 try
                 {
+                  //Sleep to wait for MSB DA update
                   Thread.sleep(5000);
                 } catch (InterruptedException ex)
                 {
@@ -478,7 +488,10 @@ public class ChangeState
             options.addHeader("messageType", eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA); //use this??
             JsonObject objectToSend = JsonObject.mapFrom(red);
 
-            CurrentDA.getVertx().eventBus().send(productInst_ID, objectToSend, options); //serialize the entire class??
+            if (CurrentDA.getVertx() != null)
+                CurrentDA.getVertx().eventBus().send(productInst_ID, objectToSend, options); //serialize the entire class??
+            else
+                System.out.println("ChangeState -> vertx is null, so let's skip it! -> " + productInst_ID);
             
             SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
             SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();

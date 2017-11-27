@@ -65,6 +65,8 @@ public abstract class DeviceAdapter
       {
         vert = res.result();
       }
+      else
+        System.out.println("[DEVICE ADAPTER] vertx creation not succedeed");          
     });
   }
 
