@@ -546,7 +546,7 @@ public class DatabaseInteraction
    * @param deviceName
    * @return
    */
-  public int getDeviceAdapterIdByName(String deviceName)
+  public int getDeviceAdapterDB_ID_ByName(String deviceName)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
@@ -657,7 +657,7 @@ public class DatabaseInteraction
 
   /**
    *
-   * @param deviceName
+   * @param skillName
    * @return
    */
   public int getSkillIdByName(String skillName)
@@ -712,7 +712,7 @@ public class DatabaseInteraction
 
     int device_id;
     int skill_id;
-    device_id = getDeviceAdapterIdByName(device_name);
+    device_id = getDeviceAdapterDB_ID_ByName(device_name);
     if (device_id == -1)
     {
       return false;
@@ -1611,7 +1611,7 @@ public class DatabaseInteraction
     DBqueryTimer.start();
 
     int device_id;
-    device_id = getDeviceAdapterIdByName(device_name);
+    device_id = getDeviceAdapterDB_ID_ByName(device_name);
     if (device_id == -1)
     {
       return false;
@@ -1655,23 +1655,6 @@ public class DatabaseInteraction
     {
       Statement stmt = conn.createStatement();
       int query = stmt.executeUpdate("DELETE FROM Modules WHERE da_id = '" + da_id + "'");
-      stmt.close();
-
-      return query;
-    } catch (SQLException ex)
-    {
-      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
-      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    return -1;
-  }
-
-  public int removeDeviceByDAId(int da_id)
-  {
-    try
-    {
-      Statement stmt = conn.createStatement();
-      int query = stmt.executeUpdate("DELETE FROM Device WHERE da_id = '" + da_id + "'");
       stmt.close();
 
       return query;

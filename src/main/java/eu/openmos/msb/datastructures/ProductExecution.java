@@ -20,17 +20,11 @@ import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
-import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 /**
  *
@@ -47,10 +41,10 @@ public class ProductExecution implements Runnable
   @Override
   public void run()
   {
-    CheckState();
+    CheckExecutorState();
   }
 
-  public void CheckState()
+  public void CheckExecutorState()
   {
     PECManager pecm = PECManager.getInstance();
     if (pecm.getState())
@@ -59,7 +53,7 @@ public class ProductExecution implements Runnable
       checkPriority();
     } else
     {
-      System.out.println("\n\n\n\n**************Starting Executor!********************\n\n\n\n\n");
+      System.out.println("\n\n************** Starting Executor! ********************\n\n\n");
       pecm.setState(true);
       ExecuteOrder();
     }
@@ -75,32 +69,32 @@ public class ProductExecution implements Runnable
     //Get priority and execute the higher value order
     int HighPriority = -1;
     HighOrderIndex = -1;
-    
+
     List<OrderInstance> orderInstanceList = ProdManager.getOrderInstanceList();
     if (orderInstanceList.size() > 0)
     {
-    for (int i = 0; i < orderInstanceList.size(); i++)
-    {
-      int priority = orderInstanceList.get(i).getPriority();
-      if (priority > HighPriority)
+      for (int i = 0; i < orderInstanceList.size(); i++)
       {
-        HighPriority = priority;
-        HighOrderIndex = i;
+        int priority = orderInstanceList.get(i).getPriority();
+        if (priority > HighPriority)
+        {
+          HighPriority = priority;
+          HighOrderIndex = i;
+        }
       }
-    }
-    if (HighOrderIndex != -1)
-    {
-      //get highest order instance 
-      OrderInstance orderInstanceToExecute = ProdManager.getOrderInstanceList().get(HighOrderIndex);
-      //put all the product instances from the orderinstance in the todo Queue
-      ProdManager.getProductsToDo().addAll(orderInstanceToExecute.getProductInstances());
+      if (HighOrderIndex != -1)
+      {
+        //get highest order instance 
+        OrderInstance orderInstanceToExecute = ProdManager.getOrderInstanceList().get(HighOrderIndex);
+        //put all the product instances from the orderinstance in the todo Queue
+        ProdManager.getProductsToDo().addAll(orderInstanceToExecute.getProductInstances());
 
-      System.out.println("...Creating Order Instances...");
-      //add to pec manager doing
-      ExecuteProdsInstance();
-    }
-    }
-    else{
+        System.out.println("...Creating Order Instances...");
+        //add to pec manager doing
+        ExecuteProdsInstance();
+      }
+    } else
+    {
       PECManager.getInstance().setState(false);
     }
   }
@@ -197,7 +191,7 @@ public class ProductExecution implements Runnable
       Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
     }
     ProdManager.setState(false); //true=running false=ready
-    CheckState(); //do the next orderistance
+    CheckExecutorState(); //do the next orderistance
   }
 
   private boolean checkRecipeAvailable(String recipeID)
@@ -338,7 +332,6 @@ public class ProductExecution implements Runnable
           String invokeMethodID = auxRep.getInvokeMethodID();
           DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
           boolean result = false;
-          //System.out.println("\n[1FIRST RECIPE]Trying to execute recipe: " + recipeID + " from prodInstance: " + prodInstID);
 
           if (!notAgain)
           {
@@ -347,7 +340,6 @@ public class ProductExecution implements Runnable
             firstRecipeCallTime.stop();
             notAgain = true;
           }
-          //da.getSubSystem().setState(MSBConstants.ADAPTER_STATE_RUNNING);
           while (true)
           {
             if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
@@ -373,7 +365,6 @@ public class ProductExecution implements Runnable
               }
             }
           }
-          //System.out.println("Executing Recipe: " + recipeID + " of product instance: " + prodInst.getUniqueId() + " from the adapter:" + DA_name + " returned: " + result + "\n");
           prodInst.setStartedProductionTime(new Date());
 
           String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
@@ -392,7 +383,6 @@ public class ProductExecution implements Runnable
           NodeId objID = Functions.convertStringToNodeId(invokeObjectID);
           NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
           result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objID, methodID, prodInst.getUniqueId());
-          //System.out.println("[FIRST RECIPE]Execute invokeSkill Successfull\n");        
 
           return result;
         }
@@ -408,7 +398,7 @@ public class ProductExecution implements Runnable
       PECManager.getInstance().getNewInstanceSemaphore().acquire();
       Thread.sleep(1000);
       List<OrderInstance> orderInstanceList = PECManager.getInstance().getOrderInstanceList();
-      
+
       int highPriority = -1;
       int highIndex = -1;
       for (int i = 0; i < orderInstanceList.size(); i++)
@@ -422,13 +412,13 @@ public class ProductExecution implements Runnable
       if (highIndex != -1 && HighOrderIndex != -1 && highIndex > HighOrderIndex)
       {
         OrderInstance oi = PECManager.getInstance().getOrderInstanceList().get(HighOrderIndex);
-        
+
         int until = oi.getProductInstances().size() - PECManager.getInstance().getProductsToDo().size();
         for (int i = 0; i < until; i++)
         {
           oi.getProductInstances().remove(0);
         }
-        
+
         OrderInstance orderInstanceToExecute = PECManager.getInstance().getOrderInstanceList().get(highIndex);
         PECManager.getInstance().getProductsToDo().clear();
         PECManager.getInstance().getProductsToDo().addAll(orderInstanceToExecute.getProductInstances());

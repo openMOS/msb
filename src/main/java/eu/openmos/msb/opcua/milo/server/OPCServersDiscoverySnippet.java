@@ -397,7 +397,7 @@ public class OPCServersDiscoverySnippet extends Thread
         {
           dacManager.registerModule(da.getSubSystem().getName(), auxModule.getName(), auxModule.getStatus(), auxModule.getAddress());
         }
-        MSB_gui.fillDevicesTable();
+        MSB_gui.fillModulesTable();
       }
 
       if (da.getListOfSkills() != null && da.getListOfSkills().size() > 0)

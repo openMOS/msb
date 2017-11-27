@@ -53,10 +53,8 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.toList;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.jdom2.Element;
 import org.jdom2.Attribute;
 

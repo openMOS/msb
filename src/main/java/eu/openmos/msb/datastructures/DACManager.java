@@ -121,7 +121,7 @@ public class DACManager
   {
 
     //System.out.println("getDeviceAdapter id from name: "+deviceAdapterName);
-    int id = DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName);
+    int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
       return deviceAdapters.get(id);
@@ -138,7 +138,7 @@ public class DACManager
 
     try
     {
-      int id = DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName);
+      int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
       
       if (id != -1 && DatabaseInteraction.getInstance().removeDeviceAdapterByName(deviceAdapterName) && deviceAdapters.containsKey(id))
       {
@@ -155,26 +155,14 @@ public class DACManager
 
   public boolean deleteDAStuffByName(String deviceAdapterName)
   {
-    DeviceAdapter auxDA = deviceAdapters.get(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
-    /*
-      List<Skill> auxSkillList = auxDA.getListOfSkills();
-      for (int i = 0; i < auxSkillList.size(); i++)
-      {
-          DatabaseInteraction.getInstance().removeSkill(auxSkillList.get(i).getName());
-      }
-     */
-
-    DatabaseInteraction.getInstance().removeRecipeByDaId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
-    DatabaseInteraction.getInstance().removeModuleByDAId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
+    DatabaseInteraction.getInstance().removeRecipeByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName));
+    DatabaseInteraction.getInstance().removeModuleByDAId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName));
 
     //remove skills for a DA. from DAS table
-    DatabaseInteraction.getInstance().removeSkillByDaId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
+    DatabaseInteraction.getInstance().removeSkillByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName));
     //remove skills that don't have a DA associated
     ArrayList<String> availableSkillIDList = DatabaseInteraction.getInstance().getAvailableSkillIDList();
     ArrayList<String> DAassociatedSkillIDList = DatabaseInteraction.getInstance().getDAassociatedSkillIDList();
-    
-    //remove Devices 
-    DatabaseInteraction.getInstance().removeDeviceByDAId(DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName));
 
     //check if all the available skills are associated with a da
     for (int i = 0; i < availableSkillIDList.size(); i++)
@@ -191,11 +179,9 @@ public class DACManager
       }
       if (!exists)
       {
-        int ret=DatabaseInteraction.getInstance().removeSkillByID(availableSkillIDList.get(i));
+        int ret = DatabaseInteraction.getInstance().removeSkillByID(availableSkillIDList.get(i));
       }
     }
-
-    //DatabaseInteraction.getInstance().remove
     return true;
   }
   
@@ -205,9 +191,9 @@ public class DACManager
    * @brief WORKSTATIONName vs DEVICE data MAPS
    * @return
    */
-  public List<Module> getDevicesFromDeviceAdapter(String deviceAdapterName)
+  public List<Module> getModulesFromDeviceAdapter(String deviceAdapterName)
   {
-    int id = DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName);
+    int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
       return deviceAdapters.get(id).getListOfEquipments();
@@ -222,7 +208,7 @@ public class DACManager
    */
   public void addEquipmentModuleToList(String deviceAdapterName, Module device)
   {
-    int id = DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName);
+    int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
       deviceAdapters.get(id).getSubSystem().getInternalModules().add(device);
@@ -237,7 +223,7 @@ public class DACManager
    */
   public boolean deleteEquipmentModuleFromList(String deviceAdapterName, String deviceName)
   {
-    int id = DatabaseInteraction.getInstance().getDeviceAdapterIdByName(deviceAdapterName);
+    int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
       return deviceAdapters.get(id).removeEquipmentModule(deviceName);
@@ -263,7 +249,7 @@ public class DACManager
    * @param deviceAdapterName
    * @return
    */
-  public ArrayList<Recipe> getRecipesFromDevice(String deviceAdapterName)
+  public ArrayList<Recipe> getRecipesFromDeviceAdapter(String deviceAdapterName)
   {
     return DatabaseInteraction.getInstance().getRecipesByDAName(deviceAdapterName);
   }
@@ -291,7 +277,7 @@ public class DACManager
   public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, String recipeValid, String recipeName, String object_id, String method_id)
   {
     DatabaseInteraction db = DatabaseInteraction.getInstance();
-    int da_id = db.getDeviceAdapterIdByName(deviceAdapterName);
+    int da_id = db.getDeviceAdapterDB_ID_ByName(deviceAdapterName);
     int sk_id = db.getSkillIdByName(skillName);
     boolean valid = trueSet.contains(recipeValid);
     if (da_id != -1 && sk_id != -1)

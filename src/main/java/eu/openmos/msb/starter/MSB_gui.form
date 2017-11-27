@@ -27,37 +27,37 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane3" max="32767" attributes="0"/>
+                  <Component id="jTabbedPane1" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="125" max="-2" attributes="0"/>
+                      <Component id="l_openmosLogo" min="-2" pref="404" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jScrollPane5" alignment="0" pref="500" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" alignment="0" pref="0" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
+                  <Component id="p_productExecution" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jTabbedPane1" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="125" max="-2" attributes="0"/>
-                              <Component id="l_openmosLogo" min="-2" pref="404" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="modulesTableLabel" min="-2" max="-2" attributes="0"/>
+                          <Component id="recipesTableLabel" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane5" alignment="0" pref="500" max="32767" attributes="0"/>
-                          <Component id="jScrollPane2" alignment="0" pref="0" max="32767" attributes="0"/>
-                          <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
-                          <Component id="p_productExecution" max="32767" attributes="0"/>
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                          </Group>
-                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
           <Group type="102" attributes="0">
               <EmptySpace min="-2" pref="493" max="-2" attributes="0"/>
-              <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+              <Component id="adaptersTableLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+          </Group>
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane3" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -74,11 +74,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jScrollPane1" min="-2" pref="256" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                      <Component id="modulesTableLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane5" min="-2" pref="119" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <Component id="recipesTableLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane2" min="-2" pref="142" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -88,7 +88,7 @@
               <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
               <Component id="jSeparator4" min="-2" pref="10" max="-2" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+              <Component id="adaptersTableLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="jScrollPane3" pref="80" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -145,6 +145,11 @@
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="5" resizable="false">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                   <Title/>
                   <Editor/>
@@ -216,16 +221,22 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JLabel" name="jLabel3">
+    <Component class="javax.swing.JLabel" name="recipesTableLabel">
       <Properties>
         <Property name="text" type="java.lang.String" value="Recipes Table"/>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+      </AuxValues>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel4">
+    <Component class="javax.swing.JLabel" name="adaptersTableLabel">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="Adapters Table"/>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+      </AuxValues>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator4">
     </Component>
@@ -282,7 +293,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JTable" name="devicesTable">
+        <Component class="javax.swing.JTable" name="modulesTable">
           <Properties>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -328,10 +339,13 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JLabel" name="jLabel5">
+    <Component class="javax.swing.JLabel" name="modulesTableLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Devices Table"/>
+        <Property name="text" type="java.lang.String" value="Modules Table"/>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+      </AuxValues>
     </Component>
     <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
       <Properties>
@@ -896,9 +910,9 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                          <Component id="currentOrdersLabel" min="-2" max="-2" attributes="0"/>
+                          <Component id="executedOrdersLabel" min="-2" max="-2" attributes="0"/>
+                          <Component id="submitedOrdersLabel" min="-2" max="-2" attributes="0"/>
                           <Component id="jScrollPane9" pref="617" max="32767" attributes="0"/>
                           <Component id="jScrollPane8" alignment="0" max="32767" attributes="0"/>
                           <Component id="jScrollPane7" alignment="0" max="32767" attributes="0"/>
@@ -911,15 +925,15 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                      <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                      <Component id="submitedOrdersLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane7" min="-2" pref="92" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
+                      <Component id="currentOrdersLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane9" min="-2" pref="93" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
+                      <Component id="executedOrdersLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane8" min="-2" pref="93" max="-2" attributes="0"/>
                       <EmptySpace pref="234" max="32767" attributes="0"/>
@@ -1072,20 +1086,29 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JLabel" name="jLabel9">
+            <Component class="javax.swing.JLabel" name="submitedOrdersLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Submitted Orders"/>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+              </AuxValues>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel12">
+            <Component class="javax.swing.JLabel" name="executedOrdersLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Executed Orders"/>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+              </AuxValues>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel13">
+            <Component class="javax.swing.JLabel" name="currentOrdersLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Current Order"/>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
@@ -1285,7 +1308,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jLabel8" max="32767" attributes="0"/>
+                      <Component id="productExecutionLabel" max="32767" attributes="0"/>
                       <Component id="cb_productSelection" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -1313,7 +1336,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                  <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                  <Component id="productExecutionLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="cb_productSelection" min="-2" pref="30" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
@@ -1335,7 +1358,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="jLabel8">
+        <Component class="javax.swing.JLabel" name="productExecutionLabel">
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" value="Product Execution"/>

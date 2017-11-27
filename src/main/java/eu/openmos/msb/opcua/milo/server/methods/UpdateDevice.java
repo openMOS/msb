@@ -1,7 +1,6 @@
 package eu.openmos.msb.opcua.milo.server.methods;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
@@ -63,6 +62,7 @@ public class UpdateDevice
       {
         System.out.println("ERROR rebrownsing DA: " + da.getSubSystem().getName());
         //WHAT TO DO?
+        //DA have corrupted data
       }
       result.set(1);
     } catch (Exception ex)
