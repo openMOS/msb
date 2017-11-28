@@ -102,7 +102,6 @@ public class ProductExecution implements Runnable
   public void ExecuteProdsInstance()
   {
     PECManager ProdManager = PECManager.getInstance();
-
     System.out.println("number of product instances to be done: " + ProdManager.getProductsToDo().size());
 
     while (ProdManager.getProductsToDo().size() > 0)
@@ -133,8 +132,7 @@ public class ProductExecution implements Runnable
                     boolean getOut = false;
                     for (String recipeID : auxSR.getRecipeIDs())
                     {
-                      //System.out.println("\n Trying to check if recipe is VALID ***** " + recipeID + " *****\n");
-                      if (checkRecipeAvailable(recipeID) /*&& checkProductAgentComms(auxProdInstance.getUniqueId())*/)
+                      if (checkRecipeAvailable(recipeID))
                       {
                         if (executeRecipe(recipeID, auxProdInstance))
                         {
@@ -205,20 +203,24 @@ public class ProductExecution implements Runnable
         String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
         DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
 
-          NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
-          DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-          if (statePath.isNotNull()) {
-              String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-              da.getSubSystem().setState(state);
+        NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+        if (statePath.isNotNull())
+        {
+          String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+          da.getSubSystem().setState(state);
 
-              if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY)) {
-                  if (checkNextRecipe(da, recipeID)) {
-                      return true;
-                  }
-              }
-          } else {
-              return false;
+          if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+          {
+            if (checkNextRecipe(da, recipeID))
+            {
+              return true;
+            }
           }
+        } else
+        {
+          return false;
+        }
 
       }
     }
@@ -244,17 +246,21 @@ public class ProductExecution implements Runnable
 
             NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
             DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da_next;
-                if (statePath.isNotNull()) {
-                    String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-                    da_next.getSubSystem().setState(state);
-                    System.out.println("daState for NEXT: " + state);
+            if (statePath.isNotNull())
+            {
+              String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+              da_next.getSubSystem().setState(state);
+              System.out.println("daState for NEXT: " + state);
 
-                    if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY)) {
-                        return true;
-                    }
-                }
-            } else
-                return false;
+              if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+              {
+                return true;
+              }
+            }
+          } else
+          {
+            return false;
+          }
         }
         return false;
       }
@@ -328,12 +334,12 @@ public class ProductExecution implements Runnable
     {
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
-      for (Recipe auxRep : da.getListOfRecipes())
+      for (Recipe recipe : da.getListOfRecipes())
       {
-        if (auxRep.getUniqueId() == null ? recipeID == null : auxRep.getUniqueId().equals(recipeID))
+        if (recipe.getUniqueId() == null ? recipeID == null : recipe.getUniqueId().equals(recipeID))
         {
-          String invokeObjectID = auxRep.getInvokeObjectID();
-          String invokeMethodID = auxRep.getInvokeMethodID();
+          String invokeObjectID = recipe.getInvokeObjectID();
+          String invokeMethodID = recipe.getInvokeMethodID();
           DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
           boolean result = false;
 
@@ -344,6 +350,7 @@ public class ProductExecution implements Runnable
             firstRecipeCallTime.stop();
             notAgain = true;
           }
+          //need the first 2 adapters available to execute
           while (true)
           {
             if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
@@ -375,18 +382,23 @@ public class ProductExecution implements Runnable
           boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
           if (withAGENTCloud)
           {
-            // THIS CODE IS WORKING!! 
-            SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-            SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-            String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-            BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-            bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-            systemConfigurator.startedProduct(prodInst);
+            try
+            {
+              SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+              SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+              String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+              BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+              bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+              systemConfigurator.startedProduct(prodInst);
+            } catch (Exception ex)
+            {
+              System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+            }
           }
           System.out.println("[EXECUTE] recipeID: " + recipeID);
-          NodeId objID = Functions.convertStringToNodeId(invokeObjectID);
+          NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
           NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
-          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objID, methodID, prodInst.getUniqueId());
+          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, prodInst.getUniqueId());
 
           return result;
         }
@@ -395,6 +407,9 @@ public class ProductExecution implements Runnable
     return false;
   }
 
+  /**
+   * check if the new order have higher priority than the one being executed
+   */
   private void checkPriority()
   {
     try

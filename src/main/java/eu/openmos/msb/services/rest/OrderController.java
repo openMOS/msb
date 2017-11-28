@@ -141,23 +141,28 @@ public class OrderController
 
     if (withAGENTCloud)
     { //check if the agentcloud is active
-      SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-      SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-/////////////////////////////
-      String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-      logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");
+      try
+      {
+        SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+        SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
 
-      BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-      bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-//////////////////////////////              
-      ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrderInstance(oi);
-      logger.info("Order Instance sent to the Agent Cloud with code: " + orderStatus.getCode());
-      logger.info("Order Instance status: " + orderStatus.getDescription());
+        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+        logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");
+
+        BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+             
+        ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrderInstance(oi);
+        logger.info("Order Instance sent to the Agent Cloud with code: " + orderStatus.getCode());
+        logger.info("Order Instance status: " + orderStatus.getDescription());
+      } catch (Exception ex)
+      {
+        System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+      }
     } else
     {
       logger.info("Order Instance not sent to the Agent Cloud because the cloud is deactivated");
     }
-
     //PERFORMANCE MEASUREMENT
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     Long time = OrderWatch.getTime();

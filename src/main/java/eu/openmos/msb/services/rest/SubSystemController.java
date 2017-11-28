@@ -63,7 +63,7 @@ public class SubSystemController extends Base {
         DACManager aux = DACManager.getInstance();
         logger.debug("subsystems getList 2");
         
-        List<String> deviceAdapters = aux.getDeviceAdapters();
+        List<String> deviceAdapters = aux.getDeviceAdaptersNames();
         logger.debug("subsystems getList 2.5: " + deviceAdapters );
         
         for (String adapterName : deviceAdapters)

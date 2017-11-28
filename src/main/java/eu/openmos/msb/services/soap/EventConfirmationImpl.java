@@ -5,18 +5,12 @@
  */
 package eu.openmos.msb.services.soap;
 
-import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.model.ProductInstance;
-//import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
-import io.vertx.core.Vertx;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import javax.jws.WebService;
@@ -54,47 +48,14 @@ public class EventConfirmationImpl implements EventConfirmation
         }
       }
     }
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
+    if (getStartTime != null)
+    {
+      Long diffTime = new Date().getTime() - getStartTime;
+      perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
+    }
 
-//////    logger.debug(getClass().getName() + " - agentCreated - begin - starting websocket for agentId [" + agentId + "]");
-//////
-//////    // some stuff...
-//////    //Vertx.vertx().deployVerticle(new WebSocketsSender(agentId));
-//////    
-//////    deviceAdapter.getVertx().deployVerticle(new WebSocketsSender(deviceAdapter.getSubSystem().getUniqueId()));
-//////    // emulation!
-//////    // add the created agent into the agents list
-//////    // so that the msb emulator starts sending messages
-//////    String agentsListFile = ConfigurationLoader.getMandatoryProperty("openmos.msb.agents.list.file");
-//////    logger.debug("agentsListFile = [" + agentsListFile + "]");
-//////    String agentsList = new String();
-//////    try
-//////    {
-//////      agentsList = new String(Files.readAllBytes(Paths.get(agentsListFile)));
-//////    } catch (IOException ex)
-//////    {
-//////      logger.error("cant read file " + agentsListFile + ": " + ex.getMessage());
-//////    }
-//////    if (agentsList.indexOf(agentId) == -1) // for sure
-//////    {
-//////      agentsList = agentsList.concat(agentId).concat("___");
-//////      try
-//////      {
-//////        Files.write(Paths.get(agentsListFile), agentsList.getBytes());
-//////      } catch (IOException ex)
-//////      {
-//////        logger.error("cant write file " + agentsListFile + ": " + ex.getMessage());
-//////      }
-//////    }
-//////
-//////    logger.debug(getClass().getName() + " - agentCreated - end - websocket started for agentId [" + agentId + "]");
-    
-      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-      Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
-      if (getStartTime != null){
-        Long diffTime= new Date().getTime() - getStartTime;
-        perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
-      }
-     
     return true;
   }
 
@@ -108,21 +69,22 @@ public class EventConfirmationImpl implements EventConfirmation
     deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(agentId));
     if (deviceAdapter != null)
     {
-      deviceAdapter.setHasAgent(false);
+      //deviceAdapter.setHasAgent(false);
     } else
     {
       System.out.println("No DA found for the created agent ! " + agentId);
     }
 
     logger.debug(getClass().getName() + " - agentNotCreated - end for agentId [" + agentId + "]");
-    
+
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     Long getStartTime = perfMeasure.getAgentCreationTimers().get(agentId);
-    if (getStartTime != null){
-        Long diffTime= new Date().getTime() - getStartTime;
-        perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
-      }
-     
+    if (getStartTime != null)
+    {
+      Long diffTime = new Date().getTime() - getStartTime;
+      perfMeasure.getAgentCreationTimers().put(agentId, diffTime);
+    }
+
     return true;
   }
 
@@ -145,39 +107,15 @@ public class EventConfirmationImpl implements EventConfirmation
     {
       System.out.println("No DA found for the created agent ! " + agentId);
     }
-
-//                // emulation!
-//                // remove the created agent from the agents list
-//                // so that the msb emulator stops sending messages
-//        String agentsListFile = ConfigurationLoader.getMandatoryProperty("openmos.msb.agents.list.file");
-//        logger.debug("agentsListFile = [" + agentsListFile + "]");                    
-//        String agentsList = new String();
-//                try {
-//                    agentsList = new String(Files.readAllBytes(Paths.get(agentsListFile)));
-//                } catch (IOException ex) {
-//                    logger.error("cant read file " + agentsListFile + ": " + ex.getMessage());                    
-//                }
-//                if (agentsList.indexOf(agentId) != -1) // for sure
-//                {
-//                    agentsList = agentsList.replaceAll(agentId.concat("___"), "");
-//            try {                    
-//                Files.write(Paths.get(agentsListFile), agentsList.getBytes());
-//            } catch (IOException ex) {
-//                    logger.error("cant write file " + agentsListFile + ": " + ex.getMessage());                    
-//            }
-//                }        
-//                else
-//                {
-//                    logger.warn("agent " + agentId + " not found into file " + agentsListFile + ": WHY????");                    
-//                }
     logger.debug(getClass().getName() + " - agentRemoved - end for agentId [" + agentId + "]");
-    
-        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-        Long getStartTime = perfMeasure.getAgentRemovalTimers().get(agentId);
-        if (getStartTime != null){
-            Long diffTime = new Date().getTime() - getStartTime;
-            perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
-        }
+
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    Long getStartTime = perfMeasure.getAgentRemovalTimers().get(agentId);
+    if (getStartTime != null)
+    {
+      Long diffTime = new Date().getTime() - getStartTime;
+      perfMeasure.getAgentRemovalTimers().put(agentId, diffTime);
+    }
     return true;
   }
 
@@ -256,11 +194,17 @@ public class EventConfirmationImpl implements EventConfirmation
   @Override
   public void cloudActive()
   {
-
     logger.info("CLOUD notified it started and is working properly.");
-
-    // TODO MSB sends workstations
-    // TODO MSB sends transports
-    // TODO MSB sends orders
+    
+    //create agents for the DAs
+    List<String> daNames = DACManager.getInstance().getDeviceAdaptersNames();
+    
+    for(String daName : daNames)
+    {
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(daName);
+      String daAgentCreation = DACManager.daAgentCreation(da);
+      System.out.println("Agent creation for | " + da.getSubSystem().getName() + " | ended with: " + daAgentCreation);
+    }
+    
   }
 }

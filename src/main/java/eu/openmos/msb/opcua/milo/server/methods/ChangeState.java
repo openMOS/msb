@@ -181,17 +181,22 @@ public class ChangeState
         boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
         if (withAGENTCloud)
         {
-          // THIS CODE IS WORKING!! 
-          SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-          SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-          String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-          BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-          FinishedProductInfo fpi = new FinishedProductInfo();
-          fpi.setProductInstanceId(productInst_id);
-          fpi.setFinishedTime(new Date());
-          fpi.setRegistered(prodInst.getStartedProductionTime());
-          systemConfigurator.finishedProduct(fpi);
+          try
+          {
+            SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+            SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+            String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+            BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+            bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+            FinishedProductInfo fpi = new FinishedProductInfo();
+            fpi.setProductInstanceId(productInst_id);
+            fpi.setFinishedTime(new Date());
+            fpi.setRegistered(prodInst.getStartedProductionTime());
+            systemConfigurator.finishedProduct(fpi);
+          } catch (Exception ex)
+          {
+            System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+          }
         }
       }
       else{
@@ -475,33 +480,42 @@ public class ChangeState
           boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
           if (withAGENTCloud)
           {
-            RecipeExecutionData red = new RecipeExecutionData();
-            red.setKpiSettings(recipe.getKpiSettings());
-            red.setParameterSettings(recipe.getParameterSettings());
-            red.setProductInstanceId(productInst_ID);
-            red.setRecipeId(recipe_id);
-            red.setRegistered(new Date());
-            //add header to vertX message?
-            System.out.println("...sending KPI's over websockets...");
-            DeliveryOptions options = new DeliveryOptions();            
-            // options.addHeader(eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA, "MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA"); //use this??
-            options.addHeader("messageType", eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA); //use this??
-            JsonObject objectToSend = JsonObject.mapFrom(red);
+            try
+            {
+              RecipeExecutionData red = new RecipeExecutionData();
+              red.setKpiSettings(recipe.getKpiSettings());
+              red.setParameterSettings(recipe.getParameterSettings());
+              red.setProductInstanceId(productInst_ID);
+              red.setRecipeId(recipe_id);
+              red.setRegistered(new Date());
+              //add header to vertX message?
+              System.out.println("...sending KPI's over websockets...");
+              DeliveryOptions options = new DeliveryOptions();
+              // options.addHeader(eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA, "MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA"); //use this??
+              options.addHeader("messageType", eu.openmos.agentcloud.utilities.Constants.MSB_MESSAGE_TYPE_RECIPE_EXECUTION_DATA); //use this??
+              JsonObject objectToSend = JsonObject.mapFrom(red);
 
-            if (CurrentDA.getVertx() != null)
+              if (CurrentDA.getVertx() != null)
+              {
                 CurrentDA.getVertx().eventBus().send(productInst_ID, objectToSend, options); //serialize the entire class??
-            else
+              } else
+              {
                 System.out.println("ChangeState -> vertx is null, so let's skip it! -> " + productInst_ID);
-            
-            SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-            SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-            String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-            BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-            bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-            
-            System.out.println("Trying to send RED by WS");
-            ServiceCallStatus scs = systemConfigurator.newRecipeExecutionData(red);
-            System.out.println("WS returned: " + scs.getCode() + " | DESC: " + scs.getDescription());
+              }
+
+              SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+              SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+              String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+              BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+              bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+
+              System.out.println("Trying to send RED by WS");
+              ServiceCallStatus scs = systemConfigurator.newRecipeExecutionData(red);
+              System.out.println("WS returned: " + scs.getCode() + " | DESC: " + scs.getDescription());
+            } catch (Exception ex)
+            {
+              System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+            }
           } else
           {
 

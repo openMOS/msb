@@ -156,7 +156,6 @@ public class OPCServersDiscoverySnippet extends Thread
       List<EndpointDescription> edList = new ArrayList<>();
       for (String url : discoveryUrls)
       {
-        //logger.debug("url = " + url);
         String da_url = "";
 
         try
@@ -164,7 +163,6 @@ public class OPCServersDiscoverySnippet extends Thread
           for (EndpointDescription ed : UaTcpStackClient.getEndpoints(url).get())
           {
             edList.add(ed);
-            //logger.debug("VaG -> EndPoints from: " + url + " = " + ed);
 
             String daName = serverApp.getApplicationName().getText();
             // Creates a new Device Adapter
@@ -184,10 +182,6 @@ public class OPCServersDiscoverySnippet extends Thread
               // if Device Adatper created ok, let's do some magic
               da.getSubSystem().setName(daName);
               da.getSubSystem().setAddress(da_url);
-              // VaG - 29/09/2017
-              da.getSubSystem().setUniqueId(daName);
-              da.getSubSystem().setDescription(daName);
-              da.getSubSystem().setRegistered(new Date());
               da_url = ed.getEndpointUrl();
 
               // VaG FABIO PATCH 20170927
@@ -213,7 +207,6 @@ public class OPCServersDiscoverySnippet extends Thread
 
                 // add subscribet for the ServerStatus of the device adatper
                 // Iterate over all values, using the keySet method.
-                // call SendServerURL() method from device
                 if (daName != null && !daName.contains("MSB") && !daName.contains("discovery"))
                 {
                   namespaceParsingTimer.reset();
@@ -251,11 +244,9 @@ public class OPCServersDiscoverySnippet extends Thread
 
                   System.out.println("***** End namespace browsing ***** \n\n");
 
-                  //FILL TABLES
                   if (ok)
                   {
-                    //notify_channel.on_namespace_read(da.getListOfRecipes(), daName);
-                    workStationRegistration(da);
+                    workstationRegistration(da);
                   } else
                   {
                     System.out.println("parseDNToObjects FAILED!");
@@ -271,12 +262,10 @@ public class OPCServersDiscoverySnippet extends Thread
                 {
                   System.out.println("Client = null?");
                 }
-
               }
               // Update the GUI with the new devices discovered 
               notify_channel.on_new_endpoint_discovered(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
             }
-
           } // end of second "for" for Discovery Endpoints
         } catch (InterruptedException | ExecutionException e)
         {
@@ -322,44 +311,34 @@ public class OPCServersDiscoverySnippet extends Thread
 
       if (withAGENTCloud) //check if the agentcloud is active
       {
-        // THIS CODE IS WORKING!! 
-        SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-        SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-        BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-        //SubSystem cpad = dummySubSystemGeneration(parsedClass);
-        //SubSystem cpad = SubSystemTest.getTestObject();
-
-        SubSystem ss = da.getSubSystem();
-        // assume the name is populated
-        if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
+        try
         {
-          ss.setUniqueId(ss.getName());
-        }
-        if (ss.getDescription() == null || ss.getDescription().length() == 0)
+          SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+          SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+          String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+          BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+
+          SubSystem ss = da.getSubSystem();
+
+          if (ss.getDescription() == null || ss.getDescription().length() == 0)
+          {
+            ss.setDescription(ss.getName());
+          }
+
+          PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+          perfMeasure.getAgentRemovalTimers().put(ss.getUniqueId(), new Date().getTime());
+          ServiceCallStatus agentStatus = systemConfigurator.removeAgent(ss.getUniqueId());
+          // end
+
+          System.out.println("\n\n Removing Resource or Transport Agent: " + agentStatus + "\n\n");
+          String resCode = agentStatus.getCode();
+
+          System.out.println("Successfully removed Agent with UID: " + ss.getUniqueId() + "with status: " + resCode);
+        } catch (Exception ex)
         {
-          ss.setDescription(ss.getName());
+          System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
         }
-
-        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-        perfMeasure.getAgentRemovalTimers().put(ss.getUniqueId(), new Date().getTime());
-
-        //ss.setRegistered(new Date());
-        ServiceCallStatus agentStatus = systemConfigurator.removeAgent(ss.getUniqueId());
-        // end
-
-        System.out.println("\n\n Removing Resource or Transport Agent: " + agentStatus + "\n\n");
-        String resCode = agentStatus.getCode();
-
-        System.out.println("Successfully removed Agent with UID: " + ss.getUniqueId() + "with status: " + resCode);
-        //String msgToSend = Constants.MSB_MESSAGE_TYPE_EXTRACTEDDATA + "anything";
-        //Vertx.vertx().deployVerticle(new WebSocketsSender(cpad.getUniqueName())); // TODO - DELETE THIS
-        //da.getVertx().deployVerticle(new WebSocketsSender(da.getSubSystem().getUniqueName()));
-
-        //add the sender client object to the respective agentID
-        //da.setSubSystem(cpad);
-        //return agentStatus.getCode(); //OK? ou KO?
       }
       if (DACManager.getInstance().deleteDeviceAdapter(serverName)) //if da removed from the system
       {
@@ -384,7 +363,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
   }
 
-  private String workStationRegistration(DeviceAdapter da)
+  private String workstationRegistration(DeviceAdapter da)
   {
     try
     {
@@ -432,73 +411,19 @@ public class OPCServersDiscoverySnippet extends Thread
 
       // --------------------------------------------------------------------------------------------------------------
       // create new agent
-      // TODO falar com o velerio
-      // boolean withAGENTCloud = true;
-      String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
-      if (withAGENTCloud)
-      {
-        // THIS CODE IS WORKING!! 
-        SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-        SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-        BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
-
-        // VaG - 28/09/2017
-        // begin
-        SubSystem ss = da.getSubSystem();
-        // assume the name is populated
-        if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
-        {
-          ss.setUniqueId(ss.getName());
-        }
-        if (ss.getDescription() == null || ss.getDescription().length() == 0)
-        {
-          ss.setDescription(ss.getName());
-        }
-
-        ss.setRegistered(new Date());
-
-        
-        //perfMeasure.getNameSpaceParsingTimers().add(time);
-
-        ServiceCallStatus agentStatus;
-        if (ss.getType().equals("TransportSystem"))
-        {
-          agentStatus = systemConfigurator.createNewTransportAgent(ss);
-          PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-          perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
-        } else
-        {
-          agentStatus = systemConfigurator.createNewResourceAgent(ss);
-          PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-          perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
-        }
-
-        System.out.println("\n\n Creating Resource or Transport Agent... \n\n");
-
-        MSB_gui.fillRecipesTable();
-
-        if (agentStatus != null)
-        {
-          return agentStatus.getCode(); //OK? ou KO?
-        } else
-        {
-          return "KO";
-        }
-
-      } else //without AC
-      {
-        //call mainwindow filltables
-        MSB_gui.fillRecipesTable();
-
-        return "OK - No AgentPlatform";
-      }
+      return DACManager.daAgentCreation(da);
     } catch (Exception ex)
     {
       System.out.println("Errors in workStationRegistration - " + ex.getMessage());
     }
     return null;
   }
+
+  private boolean isCloudRunning()
+  {
+
+    return true;
+  }
+  
+  
 }

@@ -1,23 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.msb.datastructures;
 
+import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.agentcloud.utilities.ServiceCallStatus;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
-import eu.openmos.model.Equipment;
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
-import eu.openmos.model.Skill;
-
+import eu.openmos.model.SubSystem;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.xml.ws.BindingProvider;
 
 /**
  *
@@ -72,6 +71,7 @@ public class DACManager
    * @param device_protocol
    * @param short_info
    * @param long_info
+   * @return 
    */
   public DeviceAdapter addDeviceAdapter(String deviceAdapterName, EProtocol device_protocol, String short_info, String long_info)
   {
@@ -112,15 +112,13 @@ public class DACManager
       }
     } catch (UnsupportedOperationException ex)
     {
-      System.out.println("[ERRO] at addDeviceAdapter" + ex.getMessage());
+      System.out.println("[ERROR] at addDeviceAdapter" + ex.getMessage());
     }
     return null;
   }
 
   public DeviceAdapter getDeviceAdapterbyName(String deviceAdapterName)
   {
-
-    //System.out.println("getDeviceAdapter id from name: "+deviceAdapterName);
     int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
@@ -258,7 +256,7 @@ public class DACManager
    *
    * @return
    */
-  public List<String> getDeviceAdapters()
+  public List<String> getDeviceAdaptersNames()
   {
     return DatabaseInteraction.getInstance().getDeviceAdapters();
   }
@@ -314,4 +312,60 @@ public class DACManager
     DatabaseInteraction db = DatabaseInteraction.getInstance();
     return db.skillExists(aml_id);
   }
+  
+  public static String daAgentCreation(DeviceAdapter da)
+  {
+    String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+    boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+    if (withAGENTCloud)
+    {
+      try{
+      SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+      SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+      String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+      BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+      bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+
+      SubSystem ss = da.getSubSystem();
+
+      if (ss.getDescription() == null || ss.getDescription().length() == 0)
+      {
+        ss.setDescription(ss.getName());
+      }
+      if (ss.getRegistered() == null)
+        ss.setRegistered(new Date());
+      ServiceCallStatus agentStatus;
+      if (ss.getType().equals("TransportSystem"))
+      {
+        agentStatus = systemConfigurator.createNewTransportAgent(ss);
+        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+        perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
+        System.out.println("\n\n Creating Transport Agent... \n\n");
+      } else
+      {
+        agentStatus = systemConfigurator.createNewResourceAgent(ss);
+        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+        perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
+        System.out.println("\n\n Creating Resource Agent... \n\n");
+      }
+
+      if (agentStatus != null)
+      {
+        return agentStatus.getCode(); //OK? ou KO?
+      } else
+      {
+        return "KO";
+      }
+      }
+      catch(Exception ex)
+      {
+        System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+        return "KO";
+      }
+    }
+    else //no AC
+      return "OK - No AgentPlatform";
+  }
+  
+  
 }
