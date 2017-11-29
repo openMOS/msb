@@ -199,12 +199,15 @@ public class EventConfirmationImpl implements EventConfirmation
     //create agents for the DAs
     List<String> daNames = DACManager.getInstance().getDeviceAdaptersNames();
     
-    for(String daName : daNames)
+    for (String daName : daNames)
     {
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(daName);
-      String daAgentCreation = DACManager.daAgentCreation(da);
-      System.out.println("Agent creation for | " + da.getSubSystem().getName() + " | ended with: " + daAgentCreation);
+      if (!daName.toUpperCase().contains("MSB"))
+      {
+        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(daName);
+        String daAgentCreation = DACManager.daAgentCreation(da);
+        System.out.println("Agent creation for | " + da.getSubSystem().getName() + " | ended with: " + daAgentCreation);
+        da.initVertx();
+      }
     }
-    
   }
 }

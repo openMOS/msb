@@ -319,45 +319,47 @@ public class DACManager
     boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
     if (withAGENTCloud)
     {
-      try{
-      SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
-      SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-      String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-      BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-      bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+      try
+      {
+        SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+        SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+        BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
 
-      SubSystem ss = da.getSubSystem();
+        SubSystem ss = da.getSubSystem();
 
-      if (ss.getDescription() == null || ss.getDescription().length() == 0)
-      {
-        ss.setDescription(ss.getName());
-      }
-      if (ss.getRegistered() == null)
-        ss.setRegistered(new Date());
-      ServiceCallStatus agentStatus;
-      if (ss.getType().equals("TransportSystem"))
-      {
-        agentStatus = systemConfigurator.createNewTransportAgent(ss);
-        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-        perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
-        System.out.println("\n\n Creating Transport Agent... \n\n");
-      } else
-      {
-        agentStatus = systemConfigurator.createNewResourceAgent(ss);
-        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-        perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
-        System.out.println("\n\n Creating Resource Agent... \n\n");
-      }
+        if (ss.getDescription() == null || ss.getDescription().length() == 0)
+        {
+          ss.setDescription(ss.getName());
+        }
+        if (ss.getRegistered() == null)
+        {
+          ss.setRegistered(new Date());
+        }
+        ServiceCallStatus agentStatus;
+        if (ss.getType().equals("TransportSystem"))
+        {
+          agentStatus = systemConfigurator.createNewTransportAgent(ss);
+          PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+          perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
+          System.out.println("\n\n Creating Transport Agent... \n\n");
+        } else
+        {
+          agentStatus = systemConfigurator.createNewResourceAgent(ss);
+          PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+          perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
+          System.out.println("\n\n Creating Resource Agent... \n\n");
+        }
 
-      if (agentStatus != null)
-      {
-        return agentStatus.getCode(); //OK? ou KO?
-      } else
-      {
-        return "KO";
-      }
-      }
-      catch(Exception ex)
+        if (agentStatus != null)
+        {
+          return agentStatus.getCode(); //OK? ou KO?
+        } else
+        {
+          return "KO";
+        }
+      } catch (Exception ex)
       {
         System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
         return "KO";

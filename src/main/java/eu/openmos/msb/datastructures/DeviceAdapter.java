@@ -1,16 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.openmos.msb.datastructures;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import java.util.ArrayList;
 import java.util.List;
-
 import io.vertx.core.Vertx;
-
 import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.KPISetting;
@@ -56,18 +49,8 @@ public abstract class DeviceAdapter
     subSystem = new SubSystem(); // will be depreceated
     hasAgent = false;
 
-    String myIP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
-    VertxOptions options = new VertxOptions();
-    options.setClustered(true).setClusterHost(myIP);
-    Vertx.clusteredVertx(options, res ->
-    {
-      if (res.succeeded())
-      {
-        vert = res.result();
-      }
-      else
-        System.out.println("[DEVICE ADAPTER] vertx creation not succedeed");          
-    });
+    initVertx();
+    
   }
 
   /**
@@ -989,9 +972,30 @@ public abstract class DeviceAdapter
       }
 
     }
-
     return results;
-
+  }
+  
+  public void initVertx()
+  {
+    try
+    {
+      String myIP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
+      VertxOptions options = new VertxOptions();
+      options.setClustered(true).setClusterHost(myIP);
+      Vertx.clusteredVertx(options, res ->
+      {
+        if (res.succeeded())
+        {
+          vert = res.result();
+        } else
+        {
+          System.out.println("[DEVICE ADAPTER] vertx creation not succedeed");
+        }
+      });
+    } catch (Exception ex)
+    {
+      System.out.println("Error trying to init vertx: " + ex.getMessage());
+    }
   }
 // ------------------------------------------------------------------------------------------------------------------ //
 // ------------------------------------------------------------------------------------------------------------------ //

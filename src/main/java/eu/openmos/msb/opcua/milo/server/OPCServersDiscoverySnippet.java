@@ -170,6 +170,13 @@ public class OPCServersDiscoverySnippet extends Thread
 
             if (da == null)
             {
+              da_url = ed.getEndpointUrl();
+              // VaG FABIO PATCH 20170927
+              if (da_url.contains("4840") || da_url.contains("9995"))
+              {
+                continue;
+              }
+              
               System.out.println("\n\n Registered the " + daName + "\n\n");
 
               da = dacManager.addDeviceAdapter(daName, EProtocol.OPC, "", ""); //add to DB
@@ -181,18 +188,7 @@ public class OPCServersDiscoverySnippet extends Thread
               }
               // if Device Adatper created ok, let's do some magic
               da.getSubSystem().setName(daName);
-              da.getSubSystem().setAddress(da_url);
-              da_url = ed.getEndpointUrl();
-
-              // VaG FABIO PATCH 20170927
-              if (da_url.contains("4840"))
-              {
-                continue;
-              }
-              if (da_url.contains("9995"))
-              {
-                continue;
-              }
+              da.getSubSystem().setAddress(da_url);  
 
               ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get();
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
