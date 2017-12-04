@@ -358,20 +358,28 @@ public class ProductExecution implements Runnable
               System.out.println("[SEMAPHORE][PS] ACQUIRED for " + da.getSubSystem().getName());
               DeviceAdapter da_next = getDAofNextRecipe(da, recipeID);
               //ONLY EXECUTE IF NEXT DA IS AVAILABLE
-              if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
+              if (da.getSubSystem().getUniqueId().equals(da_next.getSubSystem().getUniqueId()))
               {
-                System.out.println("[SEMAPHORE] ACQUIRED for NEXT " + da_next.getSubSystem().getName());
+                System.out.println("The first and second recipe are from the same adapter!");
                 break;
-              } else
+              }
+              else
               {
-                PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
-                System.out.println("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
-                try
+                if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
                 {
-                  Thread.sleep(3000);
-                } catch (InterruptedException ex)
+                  System.out.println("[SEMAPHORE] ACQUIRED for NEXT " + da_next.getSubSystem().getName());
+                  break;
+                } else
                 {
-                  Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+                  PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
+                  System.out.println("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
+                  try
+                  {
+                    Thread.sleep(3000);
+                  } catch (InterruptedException ex)
+                  {
+                    Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+                  }
                 }
               }
             }

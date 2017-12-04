@@ -206,7 +206,7 @@ public class EventConfirmationImpl implements EventConfirmation
         DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(daName);
         String daAgentCreation = DACManager.daAgentCreation(da);
         System.out.println("Agent creation for | " + da.getSubSystem().getName() + " | ended with: " + daAgentCreation);
-        da.initVertx();
+        //da.initVertx();
       }
     }
   }
