@@ -5,7 +5,16 @@
  */
 package eu.openmos.msb.utilities;
 
+import java.io.File;
+import java.io.StringWriter;
 import java.util.concurrent.ExecutionException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -54,4 +63,29 @@ public class Functions
         DataValue dv = new DataValue(v, null, null);
         client.writeValue(node, dv);
     }
+  
+  public static String XMLtoString(String path)
+   {
+       try
+       {
+           File fXmlFile = new File(path);
+           DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+           DocumentBuilder dBuilder = null;
+           dBuilder = dbFactory.newDocumentBuilder();
+           org.w3c.dom.Document doc = dBuilder.parse(fXmlFile);
+
+           StringWriter sw = new StringWriter();
+           TransformerFactory tf = TransformerFactory.newInstance();
+           Transformer transformer = tf.newTransformer();
+           transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+           transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+           transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+           transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+           transformer.transform(new DOMSource((org.w3c.dom.Node) doc), new StreamResult(sw));
+           return sw.toString();
+       } catch (Exception ex)
+       {
+           throw new RuntimeException("Error converting to String", ex);
+       }
+   }
 }
