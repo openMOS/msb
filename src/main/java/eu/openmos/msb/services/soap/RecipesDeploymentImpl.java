@@ -8,6 +8,7 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import static eu.openmos.msb.utilities.Functions.XMLtoString;
 import java.io.File;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.logging.Level;
 import javax.jws.WebService;
@@ -33,6 +34,7 @@ public class RecipesDeploymentImpl implements RecipesDeployment
   @Override
   public boolean updateRecipes(String deviceName, int mode, List<Recipe> recipes)
   {
+    Boolean ret=false;
     logger.debug("updateRecipes MSB method");
     logger.debug("device name = [" + deviceName + "]");
 
@@ -58,7 +60,11 @@ public class RecipesDeploymentImpl implements RecipesDeployment
             jaxbMArshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             jaxbMArshaller.marshal(recipes, System.out); //print in the console
             jaxbMArshaller.marshal(recipes, file); //print in the file
-            String recipesString = XMLtoString("updateRecipes.xml"); //TODO: use outputStream instead of file!
+            
+            StringWriter sw = new StringWriter();
+            jaxbMArshaller.marshal(recipes, sw); //print to String
+            //String recipesString = XMLtoString("updateRecipes.xml"); //TODO: use outputStream instead of file!
+            String recipesString = sw.toString();
             
           } catch (JAXBException ex)
           {
@@ -66,9 +72,11 @@ public class RecipesDeploymentImpl implements RecipesDeployment
           }
          
         //boolean res = client.InvokeUpdateRecipe(client.getClientObject(), objNode, methodNode, mode, recipesString); //TO be done by DA
+        ret=true;
       } else
       {
         logger.error("DA for recipe update not found in the database!");
+        return false;
       }
     } else if (RecipesDeploymentImpl.ACTIVATION == mode)
     {
@@ -92,6 +100,7 @@ public class RecipesDeploymentImpl implements RecipesDeployment
 
     String execTableUniqueId = executionTable.getUniqueId();
     List<String> deviceAdaptersNames = DACManager.getInstance().getDeviceAdaptersNames();
+    Boolean ret=false;
 
     for (int i = 0; i < deviceAdaptersNames.size(); i++)
     {
@@ -110,7 +119,10 @@ public class RecipesDeploymentImpl implements RecipesDeployment
             jaxbMArshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             jaxbMArshaller.marshal(executionTable, System.out); //print in the console
             jaxbMArshaller.marshal(executionTable, file); //print in the file
-            String excTablesString = XMLtoString("updateExecTables.xml"); //TODO: use outputStream instead of file!
+            StringWriter sw = new StringWriter();
+            jaxbMArshaller.marshal(executionTable, sw); //print to String
+            //String excTablesString = XMLtoString("updateExecTables.xml"); //TODO: use outputStream instead of file!
+            String excTablesString = sw.toString();
             
           } catch (JAXBException ex)
           {
@@ -118,12 +130,15 @@ public class RecipesDeploymentImpl implements RecipesDeployment
           }
           
           //client.InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
+          ret=true;
           logger.info("Sending new execution table to DA: " + deviceAdaptersNames.get(i));
+        }else{
+          
         }
       }
     }
 
-    return true;
+    return ret;
   }
 
 }
