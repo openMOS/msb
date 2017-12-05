@@ -255,9 +255,14 @@ public abstract class DeviceAdapter
       subSystem.setSkills(ReadSkill(skillDescriptionDoc));
       subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc));
       subSystem.setExecutionTable(ReadExecutionTable(deviceDescriptionDoc));
-      subSystem.setInternaleModules(ReadModules(deviceDescriptionDoc));
+      subSystem.setInternaleModules(ReadModules2(deviceDescriptionDoc));
       subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc));
-
+      
+      for (Module module : subSystem.getInternalModules())
+      {
+          subSystem.getRecipes().addAll(module.getRecipes());
+      }
+      
       subSystem.setType(ReadDeviceAdapterType(deviceDescriptionDoc));
 
       List<String> ReadDeviceAdapterState = ReadDeviceAdapterState(deviceDescriptionDoc);
@@ -562,7 +567,7 @@ public abstract class DeviceAdapter
             }
             SRs.add(auxSkillReq);
             //KPIs
-          } else if (n2.getNodeName().endsWith("_InformationPort"))
+          } else if (n2.getNodeName().endsWith("InformationPort"))
           {
             NodeList auxNodeList = n2.getChildNodes();
             for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -621,7 +626,7 @@ public abstract class DeviceAdapter
                 KPIs.add(auxKPISetting);
               }
             }
-          } else if (n2.getNodeName().endsWith("_ParameterPort"))
+          } else if (n2.getNodeName().endsWith("ParameterPort"))
           {
             NodeList auxNodeList = n2.getChildNodes();
             for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -636,7 +641,6 @@ public abstract class DeviceAdapter
                 for (int h = 0; h < auxNodeList12.getLength(); h++)
                 {
                   Node auxNode = auxNodeList12.item(h);
-
                   if (auxNode.getNodeName().equals("ID"))
                   {
                     NodeList auxNodeList1 = auxNode.getChildNodes();
@@ -650,7 +654,7 @@ public abstract class DeviceAdapter
                       }
                     }
                   } else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
-                          && !auxNode.getNodeName().toLowerCase().endsWith("parameter"))
+                          && !auxNode.getNodeName().toLowerCase().endsWith("parameter") && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                   {
                     auxParameterSetting.setName(auxNode.getNodeName());
                     NodeList auxNodeList1 = auxNode.getChildNodes();
@@ -661,6 +665,7 @@ public abstract class DeviceAdapter
                       {
                         auxParameterSetting.setValue(auxNode1.getTextContent());
                         System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
+                        break;
                       }
                     }
                   }
@@ -776,6 +781,318 @@ public abstract class DeviceAdapter
           }
         }
       }
+      moduleList.add(module);
+    }
+    return moduleList;
+  }
+  
+  private List<Module> ReadModules2(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  {
+    String query = "//DeviceAdapter/*/*/*[Module][Equipment]";
+    XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+    NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
+
+    System.out.println("Elements " + nodeList.getLength());
+    List<Module> moduleList = new ArrayList<>();
+
+    for (int i = 0; i < nodeList.getLength(); i++)
+    {
+      Module module = new Module();
+      List<Recipe> recipeList = new ArrayList<>();
+      Node n = nodeList.item(i);
+      NodeList moduleChilds = n.getChildNodes();
+
+      for (int j = 0; j < moduleChilds.getLength(); j++)
+      {
+        Node n2 = moduleChilds.item(j);
+        if ("Path".equals(n2.getNodeName()))
+        {
+          String[] temp = n2.getTextContent().split("/");
+          module.setName(temp[temp.length - 1]);
+          System.out.println("moduleName " + module.getName());
+        } else if ("ID".equals(n2.getNodeName()))
+        {
+          for (int t = 0; t < n2.getChildNodes().getLength(); t++)
+          {
+            Node IdChildNodes = n2.getChildNodes().item(t);
+
+            if (IdChildNodes.getNodeName().equals("Value"))
+            {
+              module.setUniqueId(IdChildNodes.getTextContent());
+            }
+          }
+        } else if ("description".equals(n2.getNodeName()))
+          {
+            NodeList descChilds = n2.getChildNodes();
+            for (int k = 0; k < descChilds.getLength(); k++)
+            {
+              Node descChild = descChilds.item(k);
+              if (descChild.getNodeName().equals("Value"))
+              {
+                module.setDescription(descChild.getTextContent());
+                System.out.println("moduleDescription " + module.getDescription());
+              }
+            }        
+        }
+        else if(n2.getNodeName().toLowerCase().endsWith("_recipe"))
+        {
+            Recipe recipe = new Recipe();
+      boolean gogogo = true;
+      List<SkillRequirement> SRs = new ArrayList<>();
+      List<KPISetting> KPIs = new ArrayList<>();
+      List<ParameterSetting> PARAMETERS = new ArrayList<>();
+      NodeList recipeChilds = n2.getChildNodes();
+
+      for (int q = 0; q < recipeChilds.getLength(); q++)
+      {
+             Node nRecipe = recipeChilds.item(q);
+        if ("Path".equals(nRecipe.getNodeName()))
+        {
+          String auxTest = nRecipe.getAttributes().getNamedItem("ns").getNodeValue();
+          recipe.setInvokeObjectID(auxTest + ":" + nRecipe.getTextContent());
+
+          String[] temp = nRecipe.getTextContent().split("/");
+          recipe.setName(temp[temp.length - 1]);
+          System.out.println("recipeName " + recipe.getName());
+        } else if ("ID".equals(nRecipe.getNodeName()))
+        {
+          for (int t = 0; t < nRecipe.getChildNodes().getLength(); t++)
+          {
+            Node IdChildNodes = nRecipe.getChildNodes().item(t);
+
+            if (IdChildNodes.getNodeName().equals("Value"))
+            {
+              recipe.setUniqueId(IdChildNodes.getTextContent());
+            }
+          }
+        } else
+        {
+          //description
+          if ("description".equals(nRecipe.getNodeName()))
+          {
+            NodeList descChilds = nRecipe.getChildNodes();
+            for (int k = 0; k < descChilds.getLength(); k++)
+            {
+              Node descChild = descChilds.item(k);
+              if (descChild.getNodeName().equals("Value"))
+              {
+                recipe.setDescription(descChild.getTextContent());
+                System.out.println("recipeDescription " + recipe.getDescription());
+                recipe.setValid(true); //let's supose all recipes on the adapter are valid upon registration?
+              }
+            }
+            //SKRequirements
+          } else if (nRecipe.getNodeName().matches(("SR(\\d).*")))//SR+um digito pelo menos
+          {
+            System.out.println("isto é um SR: " + nRecipe.getNodeName());
+            NodeList SkillReqs = nRecipe.getChildNodes();
+            SkillRequirement auxSkillReq = new SkillRequirement();
+            auxSkillReq.setDescription(nRecipe.getTextContent());
+            for (int z = 0; z < SkillReqs.getLength(); z++)
+            {
+              Node skillReq = SkillReqs.item(z);
+              if (skillReq.getNodeName().equals("ID"))
+              {
+                NodeList auxNodeList = skillReq.getChildNodes();
+                for (int index = 0; index < auxNodeList.getLength(); index++)
+                {
+                  Node auxNode = auxNodeList.item(index);
+                  if (auxNode.getNodeName().equals("Value"))
+                  {
+                    auxSkillReq.setUniqueId(auxNode.getTextContent());
+                    System.out.println("SR ID: " + auxSkillReq.getUniqueId());
+                  }
+                }
+              } else if (skillReq.getNodeName().equals("name"))
+              {
+                NodeList auxNodeList = skillReq.getChildNodes();
+                for (int index = 0; index < auxNodeList.getLength(); index++)
+                {
+                  Node auxNode = auxNodeList.item(index);
+                  if (auxNode.getNodeName().equals("Value"))
+                  {
+                    auxSkillReq.setName(auxNode.getTextContent());
+                    System.out.println("SR Name: " + auxSkillReq.getName());
+                  }
+                }
+              } else if (skillReq.getNodeName().equals("InvokeSkill"))
+              {
+                NodeList auxNodeList = skillReq.getChildNodes();
+                for (int index = 0; index < auxNodeList.getLength(); index++)
+                {
+                  Node auxNode = auxNodeList.item(index);
+                  if (auxNode.getNodeName().equals("Path"))
+                  {
+                    //INVOKESKILL FOR SR IS HERE!
+                    //auxSkillReq.set
+                    //System.out.println("SR Name: " + auxSkillReq.getName());
+                  }
+                }
+              }
+            }
+            SRs.add(auxSkillReq);
+            //KPIs
+          } else if (nRecipe.getNodeName().endsWith("_InformationPort"))
+          {
+            NodeList auxNodeList = nRecipe.getChildNodes();
+            for (int z = 0; z < auxNodeList.getLength(); z++)
+            {
+              Node kpiNode = auxNodeList.item(z);
+              if (kpiNode.getNodeName().toLowerCase().contains("kpi"))
+              {
+                System.out.println("KPI NAME: " + kpiNode.getNodeName());
+                KPISetting auxKPISetting = new KPISetting();
+                auxKPISetting.setName(kpiNode.getNodeName()); //MASMEC
+
+                NodeList auxNodeList12 = kpiNode.getChildNodes();
+                for (int h = 0; h < auxNodeList12.getLength(); h++)
+                {
+                  Node auxNode = auxNodeList12.item(h);
+
+                  if (auxNode.getNodeName().equals("ID"))
+                  {
+                    NodeList auxNodeList1 = auxNode.getChildNodes();
+                    for (int index = 0; index < auxNodeList1.getLength(); index++)
+                    {
+                      Node auxNode1 = auxNodeList1.item(index);
+                      if (auxNode1.getNodeName().equals("Value"))
+                      {
+                        auxKPISetting.setUniqueId(auxNode1.getTextContent());
+                        System.out.println("KPI ID: " + auxKPISetting.getUniqueId());
+                      }
+                    }
+                  } else if (auxNode.getNodeName().equals("value"))
+                  {
+                    NodeList auxNodeList1 = auxNode.getChildNodes();
+                    for (int index = 0; index < auxNodeList1.getLength(); index++)
+                    {
+                      Node auxNode1 = auxNodeList1.item(index);
+                      if (auxNode1.getNodeName().equals("Path"))
+                      {
+                        int ns = Integer.parseInt(auxNode1.getAttributes().getNamedItem("ns").getNodeValue());
+                        auxKPISetting.setPath(ns + ":" + auxNode1.getTextContent()); //CHECK THIS!
+                        System.out.println("KPI path: " + auxKPISetting.getPath());
+                      }
+                    }
+                  } else if (auxNode.getNodeName().equals("Unit"))
+                  {
+                    NodeList auxNodeList1 = auxNode.getChildNodes();
+                    for (int index = 0; index < auxNodeList1.getLength(); index++)
+                    {
+                      Node auxNode1 = auxNodeList1.item(index);
+                      if (auxNode1.getNodeName().equals("Value"))
+                      {
+                        auxKPISetting.setUnit(auxNode1.getTextContent());
+                        System.out.println("KPI Unit: " + auxKPISetting.getUnit());
+                      }
+                    }
+                  }
+                }
+                KPIs.add(auxKPISetting);
+              }
+            }
+          } else if (nRecipe.getNodeName().endsWith("_ParameterPort"))
+          {
+            NodeList auxNodeList = nRecipe.getChildNodes();
+            for (int z = 0; z < auxNodeList.getLength(); z++)
+            {
+              Node parameterNode = auxNodeList.item(z);
+              if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+              {
+                System.out.println("PARAMETER NAME: " + parameterNode.getNodeName());
+                ParameterSetting auxParameterSetting = new ParameterSetting();
+
+                NodeList auxNodeList12 = parameterNode.getChildNodes();
+                for (int h = 0; h < auxNodeList12.getLength(); h++)
+                {
+                  Node auxNode = auxNodeList12.item(h);
+
+                  if (auxNode.getNodeName().equals("ID"))
+                  {
+                    NodeList auxNodeList1 = auxNode.getChildNodes();
+                    for (int index = 0; index < auxNodeList1.getLength(); index++)
+                    {
+                      Node auxNode1 = auxNodeList1.item(index);
+                      if (auxNode1.getNodeName().equals("Value"))
+                      {
+                        auxParameterSetting.setUniqueId(auxNode1.getTextContent());
+                        System.out.println("PARAMETER ID: " + auxParameterSetting.getUniqueId());
+                      }
+                    }
+                  } else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
+                          && !auxNode.getNodeName().toLowerCase().endsWith("parameter"))
+                  {
+                    auxParameterSetting.setName(auxNode.getNodeName());
+                    NodeList auxNodeList1 = auxNode.getChildNodes();
+                    for (int index = 0; index < auxNodeList1.getLength(); index++)
+                    {
+                      Node auxNode1 = auxNodeList1.item(index);
+                      if (auxNode1.getNodeName().equals("Value"))
+                      {
+                        auxParameterSetting.setValue(auxNode1.getTextContent());
+                        System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
+                      }
+                    }
+                  }
+                }
+                PARAMETERS.add(auxParameterSetting);
+              }
+            }
+          } else if (nRecipe.getNodeName().equals("InvokeSkill"))
+          {
+            NodeList auxNodeList = nRecipe.getChildNodes();
+            for (int z = 0; z < auxNodeList.getLength(); z++)
+            {
+              Node auxNode = auxNodeList.item(z);
+              if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
+              {
+                String auxTest = auxNode.getAttributes().getNamedItem("ns").getNodeValue();
+                recipe.setInvokeMethodID(auxTest + ":" + auxNode.getTextContent());
+              }
+            }
+          } else if (nRecipe.getNodeName().equals("SkillState"))
+          {
+            NodeList auxNodeList = nRecipe.getChildNodes();
+            for (int z = 0; z < auxNodeList.getLength(); z++)
+            {
+              Node auxNode = auxNodeList.item(z);
+              if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
+              {
+                int ns = Integer.parseInt(auxNode.getAttributes().getNamedItem("ns").getNodeValue());
+                recipe.setStatePath(ns + ":" + auxNode.getTextContent()); //CHECK THIS!
+              } else if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Value"))
+              {
+                recipe.setState(auxNode.getTextContent());
+              }
+            }
+          } else
+          {
+            if (gogogo)
+            {
+              //get skill - first node with SR inside
+              if (nRecipe.getNodeType() == Node.ELEMENT_NODE)
+              {
+                for (Skill auxSkill : subSystem.getSkills())
+                {
+                  if (nRecipe.getNodeName().equals(auxSkill.getName()))
+                  {
+                    recipe.setSkill(auxSkill);
+                    gogogo = false;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+        }
+      recipe.setParameterSettings(PARAMETERS);
+      recipe.setKpiSettings(KPIs);
+      recipe.setSkillRequirements(SRs);
+      recipeList.add(recipe);
+        }
+      }
+      module.setRecipes(recipeList);
       moduleList.add(module);
     }
     return moduleList;

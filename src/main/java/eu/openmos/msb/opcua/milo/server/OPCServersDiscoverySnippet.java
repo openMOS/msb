@@ -130,6 +130,7 @@ public class OPCServersDiscoverySnippet extends Thread
           this.logger.error(ex.getMessage());
         }
       }
+      
       return true;
     } catch (InterruptedException | ExecutionException ex)
     {
