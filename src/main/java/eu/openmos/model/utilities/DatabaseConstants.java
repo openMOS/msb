@@ -81,8 +81,9 @@ public class DatabaseConstants {
     public final static String PART_INSTANCE_IDS = "partInstanceIds";
 
     public final static String EQUIPMENT_IDS = "equipmentIds";
-    public final static String EQUIPMENT_OBSERVATION_REL2_ROW_IDS = "equipmentObservationRel2RowIds";;
+    public final static String EQUIPMENT_OBSERVATION_REL2_ROW_IDS = "equipmentObservationRel2RowIds";
     public final static String EQUIPMENT_OBSERVATION_REL2_ID = "equipmentObservationRel2Id";
+    public final static String EQUIPMENT_ASSESSMENT_ROW_IDS = "equipmentAssessmentRowIds";
     
     public final static String PRIORITY = "priority";
     public final static String ORDER_LINE_IDS = "orderLineIds";
@@ -93,5 +94,7 @@ public class DatabaseConstants {
     
     public final static String VERSION = "version";
 
+    public final static String EQUIPMENT_ASSESSMENT_ID = "equipmentAssessmentId";
+    public final static String RATING = "rating";
     
 }

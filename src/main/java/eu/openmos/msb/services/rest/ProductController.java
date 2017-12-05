@@ -8,8 +8,6 @@ package eu.openmos.msb.services.rest;
 import eu.openmos.model.Product;
 // import eu.openmos.agentcloud.data.recipe.SkillRequirement;
 import eu.openmos.model.*;
-import eu.openmos.model.testdata.ProductTest;
-import eu.openmos.model.testdata.SkillRequirementTest;
 import eu.openmos.msb.datastructures.PECManager;
 import java.util.LinkedList;
 import java.util.List;

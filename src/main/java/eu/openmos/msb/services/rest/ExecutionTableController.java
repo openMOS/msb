@@ -8,7 +8,8 @@ package eu.openmos.msb.services.rest;
 import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.SubSystem;
-import eu.openmos.model.testdata.ExecutionTableTest;
+import eu.openmos.msb.datastructures.DACManager;
+import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.services.rest.data.ExecutionTableRowHelper;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -47,7 +48,20 @@ public class ExecutionTableController {
     @Path(value = "/{executionTableId}")
     public ExecutionTable getDetail(@PathParam("executionTableId") String executionTableId) {
         logger.debug("execution table getDetail - executionTableId = " + executionTableId);
-        return ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1));
+        
+      
+      DACManager DACinstance = DACManager.getInstance();
+      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+      {
+        DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyName(deviceAdaptersNames.get(i));
+        if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
+        {
+          return deviceAdapterbyName.getExecutionTable();
+        }
+      }
+        
+        return null;
    }
 
 
@@ -131,7 +145,19 @@ public class ExecutionTableController {
     @Path(value = "/{executionTableId}/rows")
     public List<ExecutionTableRow> getRows(@PathParam("executionTableId") String executionTableId) {
         logger.debug("execution table getRows - executionTableId = " + executionTableId);
-        return ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1)).getRows();
+        
+       DACManager DACinstance = DACManager.getInstance();
+      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+      {
+        DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyName(deviceAdaptersNames.get(i));
+        if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
+        {
+          return deviceAdapterbyName.getExecutionTable().getRows();
+        }
+      }
+      
+        return null;
    }
 
     /**
@@ -152,10 +178,29 @@ public class ExecutionTableController {
         logger.debug("execution table getRow - executionTableId = " + executionTableId);
         logger.debug("execution table getRow - executionTableRowId = " + executionTableRowId);
         
-        List<ExecutionTableRow> rows = ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1)).getRows();
+        
+      DACManager DACinstance = DACManager.getInstance();
+      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+      {
+        DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyName(deviceAdaptersNames.get(i));
+        if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
+        {
+          List<ExecutionTableRow> rows = deviceAdapterbyName.getExecutionTable().getRows();
+          for (int j = 0; j < rows.size(); j++)
+          {
+            if (rows.get(i).getUniqueId().equals(executionTableRowId))
+            {
+                return rows.get(i);
+            }
+          }
+        }
+      }
+                
+       /* List<ExecutionTableRow> rows = ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1)).getRows();
         for (ExecutionTableRow row : rows)
             if (row.getUniqueId().equalsIgnoreCase(executionTableRowId))
-                    return row;
+                    return row;*/
 
         return null;
    }
@@ -213,7 +258,33 @@ public class ExecutionTableController {
         logger.debug("execution table updateRow - executionTableRowId = " + executionTableRowId);
         logger.debug("execution table updateRow - rowToUpdate = " + rowToUpdate);
         
-        return ExecutionTableTest.getTestObject(executionTableId, 6);
+        
+         DACManager DACinstance = DACManager.getInstance();
+      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+      {
+        DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyName(deviceAdaptersNames.get(i));
+        if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
+        {
+          List<ExecutionTableRow> rows = deviceAdapterbyName.getExecutionTable().getRows();
+          for (int j = 0; j < rows.size(); j++)
+          {
+            if (rows.get(i).getUniqueId().equals(executionTableRowId))
+            {
+                rows.get(i).setNextRecipeId(rowToUpdate.getNextRecipeId());
+                rows.get(i).setNextRecipeIdPath(rowToUpdate.getNextRecipeIdPath());
+                rows.get(i).setPossibleRecipeChoices(rowToUpdate.getPossibleRecipeChoices());
+                rows.get(i).setProductId(rowToUpdate.getProductId());
+                rows.get(i).setRecipeId(rowToUpdate.getRecipeId());
+                rows.get(i).setRegistered(rowToUpdate.getRegistered());
+                rows.get(i).setUniqueId(rowToUpdate.getUniqueId());
+                return deviceAdapterbyName.getExecutionTable();
+            }
+          }
+        }
+      }
+      
+        return null;
     }
     
     private SubSystem getSubSystemById(String subSystemId) {

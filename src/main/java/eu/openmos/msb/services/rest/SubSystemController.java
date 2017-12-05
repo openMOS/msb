@@ -3,22 +3,12 @@ package eu.openmos.msb.services.rest;
 //import _masmec.aml5;
 //import _masmec.MasmecModel;
 import eu.openmos.model.*;
-import eu.openmos.model.testdata.RecipeTest;
-import eu.openmos.model.testdata.SkillTest;
-import eu.openmos.agentcloud.utilities.Constants;
-import eu.openmos.model.testdata.ExecutionTableTest;
-import eu.openmos.model.testdata.ModuleTest;
-import eu.openmos.model.testdata.SubSystemTest;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
-import eu.openmos.msb.services.rest.data.ExecutionTableRowHelper;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Predicate;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -149,9 +139,6 @@ public class SubSystemController extends Base {
     public SubSystem getDetail(@PathParam("subsystemId") String subsystemId) {
         logger.debug("subsystem - getDetail - subsystemId = " + subsystemId);
         for (SubSystem subsystem : getList()) {
-            // VaG - 19/10/2017
-            // Since we have ids....
-//            if (subsystem.getName().equals(subsystemId)) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem;
@@ -177,9 +164,6 @@ public class SubSystemController extends Base {
         logger.debug("subsystem getRecipesList - of the subsystem = " + subsystemId);
 //        return RecipeTest.getTestList();
         for (SubSystem subsystem : getList()) {
-            // VaG - 19/10/2017
-            // Since we have ids....
-//            if (subsystem.getName().equals(subsystemId)) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getRecipes();
@@ -205,11 +189,46 @@ public class SubSystemController extends Base {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{subsystemId}/recipes")
-    public List<Recipe> newRecipe(@PathParam("subsystemId") String subsystemId, 
-            Recipe newRecipe) {   
-        getDetail(subsystemId).getRecipes().add(newRecipe);
+    public List<Recipe> newRecipe(@PathParam("subsystemId") String pathToInsert,
+            Recipe newRecipe) {
         
-        return getRecipesList(subsystemId);
+        logger.debug("New Recipe for: " + pathToInsert);
+        
+        PathHelper helper = new PathHelper(pathToInsert, logger);
+        
+        if (helper.hasSubModules()){
+            Module module = (new ModuleController()).getDetail(helper.getModulesPath());
+            if (module != null) {
+                //module.getRecipes().add(newRecipe);
+                //return module.getRecipes();
+            }
+        } else {
+            SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
+            if (subSystem != null) {
+                subSystem.getRecipes().add(newRecipe);
+                return subSystem.getRecipes();
+            }
+        }
+        return null;
+        
+        /*
+        
+        if (subsystemId.contains(Base.PARAMSEPARATOR + Base.SKILLMARKERPREFIX)) {
+            subsystemId = subsystemId.substring(0, subsystemId.lastIndexOf(Base.PARAMSEPARATOR + Base.SKILLMARKERPREFIX) + 1);
+            logger.debug("Trimmed String: " + subsystemId);
+        }
+        
+        String[] ids = subsystemId.split(Base.PARAMSEPARATOR);
+        String realSubSystemId = ids[0].split(Base.PARAMVALUESEPARATOR)[1];
+        
+        if (ids.length == 1) {
+            getDetail(realSubSystemId).getRecipes().add(newRecipe);
+        } else {
+            new ModuleController().getDetail(subsystemId).getRecipes().add(newRecipe);
+            return new ModuleController().getDetail(subsystemId).getRecipes();
+        }
+
+        return getRecipesList(subsystemId);*/
     }
 
     /**
@@ -228,9 +247,6 @@ public class SubSystemController extends Base {
         logger.debug("subsystem getEquipmentsList - of the subsystem = " + subsystemId);
 //        return ModuleTest.getTestList(subsystemId);
         for (SubSystem subsystem : getList()) {
-            // VaG - 19/10/2017
-            // Since we have ids....
-//            if (subsystem.getName().equals(subsystemId)) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getInternalModules();
@@ -240,7 +256,7 @@ public class SubSystemController extends Base {
         return null; // TBV
     }
 
-    /**
+/**
      * Returns the list of skills associated to a workstation or a transport.
      * Fills the skills list view page (slide 16 of 34). This method is exposed
      * via a "/subsystems/{subsystemId}/skills" service call.
@@ -256,9 +272,6 @@ public class SubSystemController extends Base {
         logger.debug("subsystem getSkillsList - of the subsystem = " + subsystemId);
 //        return SkillTest.getTestList();
         for (SubSystem subsystem : getList()) {
-            // VaG - 19/10/2017
-            // Since we have ids....
-//            if (subsystem.getName().equals(subsystemId)) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getSkills();
@@ -268,7 +281,7 @@ public class SubSystemController extends Base {
         return null; // TBV
     }
 
-    /**
+     /**
      * Allows to insert a new skill associated to a workstation or a transport.
      * Returns the updated list of skills associated to the same workstation or
      * transport. Fills the composite skill creation view (slide 21 of 34) This
@@ -290,7 +303,7 @@ public class SubSystemController extends Base {
         return getSkillsList(subsystemId);
     }
 
-    /**
+      /**
      * Returns the full execution table given its unique identifier. Fills the
      * execution table view page (slide 8 of 34).
      *
@@ -305,15 +318,21 @@ public class SubSystemController extends Base {
     public ExecutionTable getExecutionTable(@PathParam("subsystemId") String subsystemId) {
         logger.debug("execution table getDetail of subsystem  = " + subsystemId);
         for (SubSystem subsystem : getList()) {
-            // VaG - 19/10/2017
-            // Since we have ids....
-//            if (subsystem.getName().equals(subsystemId)) {
-            if (subsystem.getUniqueId().equals(subsystemId)) {
+            if (subsystem.getName().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getExecutionTable();
             }
         }
         logger.debug("subsystem - not found " + subsystemId + " - returning null");
         return null; // TBV
+    }
+    
+     @DELETE
+    public void deleteSubSystem() {
+        int pos = this.getList().size() - 1;
+        if (pos >= 0) {
+            this.getList().remove(pos);
+            logger.debug("Deleted subSystem in position: " + pos);
+        }
     }
 }

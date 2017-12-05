@@ -34,6 +34,16 @@ public class Module extends Equipment implements Serializable {
      */
     protected String parentType;
 
+        private List<Recipe> recipes;
+
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
+    }
+
     public List<Module> getInternalModules() {
         return internalModules;
     }
@@ -88,6 +98,7 @@ public class Module extends Equipment implements Serializable {
             List<Skill> skills,
             List<PhysicalPort> ports,
             List<Module> internalModules,
+            List<Recipe> recipes,
             String address,
             String status,
             String manufacturer,
@@ -99,6 +110,7 @@ public class Module extends Equipment implements Serializable {
         super(uniqueId, name, description, connected, skills, ports, address, status, manufacturer, registeredTimestamp);
 
         this.internalModules = internalModules;
+        this.recipes = recipes;
         this.parentId = parentId;
         this.parentType = parentType;
     }    
@@ -123,6 +135,10 @@ public class Module extends Equipment implements Serializable {
         if (internalModules != null)
             moduleIds = internalModules.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
         
+        List<String> recipeIds = null;
+        if (recipes != null)
+            recipeIds = recipes.stream().map(recipe -> recipe.getUniqueId()).collect(Collectors.toList());        
+        
         doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
         doc.append(DatabaseConstants.NAME, name);
         doc.append(DatabaseConstants.DESCRIPTION, description);
@@ -130,6 +146,7 @@ public class Module extends Equipment implements Serializable {
         doc.append(DatabaseConstants.SKILL_IDS, skillIds);        
         doc.append(DatabaseConstants.PHYSICAL_PORT_IDS, physicalPortIds);        
         doc.append(DatabaseConstants.INTERNAL_MODULE_IDS, moduleIds);        
+        doc.append(DatabaseConstants.RECIPE_IDS, recipeIds);        
         doc.append(DatabaseConstants.ADDRESS, address);
         doc.append(DatabaseConstants.STATUS, status);
         doc.append(DatabaseConstants.MANUFACTURER, manufacturer);

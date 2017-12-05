@@ -243,7 +243,8 @@ public class ProductInstance extends Base implements Serializable {
         doc.append(DatabaseConstants.PART_INSTANCE_IDS, partInstanceIds);
 //        doc.append("skillRequirements", skillRequirementIds);      
         doc.append(DatabaseConstants.FINISHED, finished);         
-        doc.append(DatabaseConstants.FINISHED_TIME, finishedTime == null ? null : new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.finishedTime));  
+        // doc.append(DatabaseConstants.FINISHED_TIME, finishedTime == null ? null : new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.finishedTime));  
+        doc.append(DatabaseConstants.FINISHED_TIME, finishedTime == null ? null : this.finishedTime);  
 
         doc.append(DatabaseConstants.STATUS, status.toString());         
         doc.append(DatabaseConstants.STARTED_PRODUCTION_TIME, startedProductionTime == null ? null : new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.startedProductionTime));  

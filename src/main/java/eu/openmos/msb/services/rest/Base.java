@@ -12,4 +12,9 @@ package eu.openmos.msb.services.rest;
 public class Base {
     protected static String PARAMSEPARATOR = "<";
     protected static String PARAMVALUESEPARATOR = ">";    
+    
+    protected static String SUBSYTEMMARKERPREFIX = "ss";
+    protected static String MODULEMARKERPREFIX = "m";
+    protected static String SKILLMARKERPREFIX = "sk";
+    protected static String RECIPEMARKERPREFIX = "r";
 }

@@ -11,11 +11,7 @@ package eu.openmos.msb.services.rest;
 // import eu.openmos.agentcloud.data.recipe.Recipe;
 // import eu.openmos.agentcloud.data.recipe.SkillRequirement;
 import eu.openmos.model.*;
-import eu.openmos.model.testdata.KPISettingTest;
-import eu.openmos.model.testdata.ParameterSettingTest;
-import eu.openmos.model.testdata.ParameterTest;
-import eu.openmos.model.testdata.RecipeTest;
-import eu.openmos.model.testdata.SkillRequirementTest;
+import eu.openmos.msb.datastructures.DACManager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -189,7 +185,24 @@ public class RecipeController extends Base {
     public List<ParameterSetting> getParameterSettingsList(@PathParam("recipeId") String recipeId) {
         logger.debug("cpad - getParameterSettingsList - skillId = " + recipeId);
         logger.debug("cpad getParameterSettingsList - of the skill = " + recipeId);
-        return ParameterSettingTest.getTestList();
+        
+        List<ParameterSetting> parameterSett = new LinkedList<>();
+        
+       DACManager DACinstance = DACManager.getInstance();
+      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+      {
+        ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
+        for (int j = 0; j < recipesFromDeviceAdapter.size(); j++)
+        {
+          if (recipesFromDeviceAdapter.get(i).getUniqueId().equals(recipeId))
+          {
+            return recipesFromDeviceAdapter.get(i).getParameterSettings();
+          }
+        }
+      }
+      
+        return parameterSett;
     }
 
     /**
@@ -207,7 +220,24 @@ public class RecipeController extends Base {
     public List<SkillRequirement> getSkillRequirementsList(@PathParam("recipeId") String recipeId) {
         logger.debug("cpad - getSkillRequirementsList - skillId = " + recipeId);
         logger.debug("cpad getSkillRequirementsList - of the skill = " + recipeId);
-        return SkillRequirementTest.getTestList();
+        
+      List<SkillRequirement> skillReq = new LinkedList<>();
+
+      DACManager DACinstance = DACManager.getInstance();
+      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+      {
+        ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
+        for (int j = 0; j < recipesFromDeviceAdapter.size(); j++)
+        {
+          if (recipesFromDeviceAdapter.get(i).getUniqueId().equals(recipeId))
+          {
+            return recipesFromDeviceAdapter.get(i).getSkillRequirements();
+          }
+        }
+      }
+        
+        return skillReq;
     }
 
     /**
@@ -224,7 +254,24 @@ public class RecipeController extends Base {
     public List<KPISetting> getKPISettingList(@PathParam("recipeId") String recipeId) {
         logger.debug("cpad - getKPISettingList - skillId = " + recipeId);
         logger.debug("cpad getKPISettingList - of the skill = " + recipeId);
-        return KPISettingTest.getTestList();
+        
+        List<KPISetting> kpiSett = new LinkedList<>();
+
+      DACManager DACinstance = DACManager.getInstance();
+      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+      {
+        ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
+        for (int j = 0; j < recipesFromDeviceAdapter.size(); j++)
+        {
+          if (recipesFromDeviceAdapter.get(i).getUniqueId().equals(recipeId))
+          {
+            return recipesFromDeviceAdapter.get(i).getKpiSettings();
+          }
+        }
+      }
+      
+        return kpiSett;
     }
 
     @POST
