@@ -9,8 +9,6 @@ import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SubSystem;
-import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsReceiver;
-import eu.openmos.msb.cloud.cloudinterface.testactions.WebSocketsSender;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +35,7 @@ import java.util.logging.Level;
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.slf4j.Logger;
@@ -214,12 +213,22 @@ public class OPCServersDiscoverySnippet extends Thread
                   Element node = new Element("DeviceAdapter");
                   Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
                   ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
-
+                  
+                  
+                  System.out.println("TESTING: browse instance Hierarchy started");
+                 
+                 NodeId aux = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
+                 System.out.println("TESTING: browse instance Hierarchy ended with: " + aux.getIdentifier().toString());
+                 node.addContent(instance.browseNode(client,
+                         aux,
+                         Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
+                         ignore));
+/*
                   node.addContent(instance.browseNode(client,
                           new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.dainstance")),
                           Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
                           ignore));
-
+*/
                   Element nSkills = new Element("Skills");
                   nSkills.addContent(instance.browseNode(client,
                           new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
@@ -421,5 +430,42 @@ public class OPCServersDiscoverySnippet extends Thread
     return true;
   }
   
+  public static NodeId browseInstaceHierarchyNode(String indent, OpcUaClient client, NodeId nodeToBrowse) {
+       try {
+           List<Node> nodes = client.getAddressSpace().browse(nodeToBrowse).get();
+           int count = 0;
+           
+         while (count < 10)
+         {
+           NodeId aux = getInst(nodes);
+           if (aux != null)
+           {
+             return aux;
+           }
+
+           List<Node> nodes1 = new ArrayList<>();
+           for (int i = 0; i < nodes.size(); i++)
+           {
+             nodes1.addAll(client.getAddressSpace().browse(nodes.get(i).getNodeId().get()).get());
+           }
+           nodes = nodes1;
+           count++;
+         }
+           return null;
+       } catch (InterruptedException | ExecutionException ex) {
+           return null;
+       }
+   }
   
+  private static NodeId getInst(List<Node> nodes) throws InterruptedException, ExecutionException
+  {
+    for (int i = 0; i < nodes.size(); i++)
+    {
+      if (nodes.get(i).getBrowseName().get().getName().toLowerCase().contains("_instancehierarchy"))
+      {
+        return nodes.get(i).getNodeId().get();
+      }
+    }
+    return null;
+  }
 }
