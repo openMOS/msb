@@ -131,6 +131,23 @@ public class OPCServersDiscoverySnippet extends Thread
         }
       }
       
+      //get da and check for server status
+        for (String name : DACManager.getInstance().getDeviceAdaptersNames()) {
+            DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(name);
+            String daName = da.getSubSystem().getName();
+            boolean found = false;
+            for (int i = 0; i < serverList.length; i++) {
+                ApplicationDescription server = serverList[i];
+                if (daName.equals(server.getApplicationName().getText())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                DACManager.getInstance().deleteDAStuffByName(daName); //remove from DB?
+                removeDownServer(daName);
+            }
+        }
+      
       return true;
     } catch (InterruptedException | ExecutionException ex)
     {
