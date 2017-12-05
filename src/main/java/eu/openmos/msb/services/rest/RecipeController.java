@@ -31,10 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import org.apache.log4j.Logger;
-import org.eclipse.persistence.jaxb.JAXBContext;
 
 /**
  *
@@ -207,7 +204,7 @@ public class RecipeController extends Base
         List<Recipe> recipes = deviceAdapter.getSubSystem().getRecipes();
         for (int j = 0; j < recipes.size(); j++)
         {
-          if (recipes.get(j).getUniqueId().equals(recipeId))
+          if (recipes.get(j).getUniqueId().equals(recipe.getUniqueId()))
           {
             recipes.get(j).setDescription(recipe.getDescription());
             recipes.get(j).setEquipmentIds(recipe.getEquipmentIds());
@@ -238,9 +235,13 @@ public class RecipeController extends Base
           }
         }
 
+        if(ret){
         MSBClientSubscription client = (MSBClientSubscription) deviceAdapter.getClient();
+        String RecipeSerialized= recipe.toString();
+        return recipe;
+        }
 
-        try
+       /* try
         {
           File file = new File("updateRecipeRest.xml");
           javax.xml.bind.JAXBContext jc = JAXBContext.newInstance(ExecutionTable.class);
@@ -256,12 +257,13 @@ public class RecipeController extends Base
         } catch (JAXBException ex)
         {
           System.out.println(ex);
-        }
+          return recipe;
+        }*/
 
       }
     }
 
-    return recipe;
+    return null;
   }
 
   /**
