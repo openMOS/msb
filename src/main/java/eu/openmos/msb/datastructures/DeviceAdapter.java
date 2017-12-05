@@ -49,7 +49,7 @@ public abstract class DeviceAdapter
     subSystem = new SubSystem(); // will be depreceated
     hasAgent = false;
 
-    initVertx();
+    //initVertx();
     
   }
 

@@ -50,29 +50,61 @@ public class RecipesDeploymentImpl implements RecipesDeployment
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(deviceName);
       if (da != null)
       {
+        List<Recipe> daRecipesList = da.getSubSystem().getRecipes();
+        for (int j = 0; j < daRecipesList.size(); j++)
+        {
+          for (int i = 0; i < recipes.size(); i++)
+          {
+
+            if (daRecipesList.get(j).getUniqueId().equals(recipes.get(i).getUniqueId()))
+            {
+              recipes.get(i).setDescription(recipes.get(i).getDescription());
+              recipes.get(i).setEquipmentIds(recipes.get(i).getEquipmentIds());
+              recipes.get(i).setExecutedBySkillControlPort(recipes.get(i).getExecutedBySkillControlPort());
+              recipes.get(i).setInvokeMethodID(recipes.get(i).getInvokeMethodID());
+              recipes.get(i).setInvokeObjectID(recipes.get(i).getInvokeObjectID());
+              recipes.get(i).setKpiSettings(recipes.get(i).getKpiSettings());
+              recipes.get(i).setLastOptimizationTime(recipes.get(i).getLastOptimizationTime());
+              recipes.get(i).setMsbProtocolEndpoint(recipes.get(i).getMsbProtocolEndpoint());
+              recipes.get(i).setName(recipes.get(i).getName());
+              recipes.get(i).setOptimized(recipes.get(i).isOptimized());
+              recipes.get(i).setParameterSettings(recipes.get(i).getParameterSettings());
+              recipes.get(i).setRegistered(recipes.get(i).getRegistered());
+              recipes.get(i).setSkill(recipes.get(i).getSkill());
+              recipes.get(i).setSkillRequirements(recipes.get(i).getSkillRequirements());
+              recipes.get(i).setState(recipes.get(i).getState());
+              recipes.get(i).setStatePath(recipes.get(i).getStatePath());
+              recipes.get(i).setUniqueAgentName(recipes.get(i).getUniqueAgentName());
+              recipes.get(i).setUniqueId(recipes.get(i).getUniqueId());
+              recipes.get(i).setValid(recipes.get(i).isValid());
+
+            }
+          }
+
+        }
         MSBClientSubscription client = (MSBClientSubscription) da.getClient();
 
-         try
-          {
-            File file = new File("updateRecipes.xml");
-            javax.xml.bind.JAXBContext jc = JAXBContext.newInstance(ExecutionTable.class);
-            Marshaller jaxbMArshaller = jc.createMarshaller();
-            jaxbMArshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMArshaller.marshal(recipes, System.out); //print in the console
-            jaxbMArshaller.marshal(recipes, file); //print in the file
-            
-            StringWriter sw = new StringWriter();
-            jaxbMArshaller.marshal(recipes, sw); //print to String
-            //String recipesString = XMLtoString("updateRecipes.xml"); //TODO: use outputStream instead of file!
-            String recipesString = sw.toString();
-            
-          } catch (JAXBException ex)
-          {
-            java.util.logging.Logger.getLogger(RecipesDeploymentImpl.class.getName()).log(Level.SEVERE, null, ex);
-          }
-         
+        try
+        {
+          File file = new File("updateRecipes.xml");
+          javax.xml.bind.JAXBContext jc = JAXBContext.newInstance(ExecutionTable.class);
+          Marshaller jaxbMArshaller = jc.createMarshaller();
+          jaxbMArshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+          jaxbMArshaller.marshal(da.getSubSystem().getRecipes(), System.out); //print in the console
+          jaxbMArshaller.marshal(da.getSubSystem().getRecipes(), file); //print in the file
+
+          StringWriter sw = new StringWriter();
+          jaxbMArshaller.marshal(da.getSubSystem().getRecipes(), sw); //print to String
+          //String recipesString = XMLtoString("updateRecipes.xml"); //TODO: use outputStream instead of file!
+          String recipesString = sw.toString();
+
+        } catch (JAXBException ex)
+        {
+          java.util.logging.Logger.getLogger(RecipesDeploymentImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         //boolean res = client.InvokeUpdateRecipe(client.getClientObject(), objNode, methodNode, mode, recipesString); //TO be done by DA
-        ret=true;
+        ret = true;
       } else
       {
         logger.error("DA for recipe update not found in the database!");
