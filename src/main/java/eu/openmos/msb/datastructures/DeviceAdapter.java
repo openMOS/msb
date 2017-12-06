@@ -8,6 +8,7 @@ import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Module;
+import eu.openmos.model.Parameter;
 import eu.openmos.model.ParameterSetting;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
@@ -489,7 +490,7 @@ public abstract class DeviceAdapter
       boolean gogogo = true;
       List<SkillRequirement> SRs = new ArrayList<>();
       List<KPISetting> KPIs = new ArrayList<>();
-      List<ParameterSetting> PARAMETERS = new ArrayList<>();
+      List<ParameterSetting> paraSettings = new ArrayList<>();
       Node n = nodeList.item(i);
       NodeList recipeChilds = n.getChildNodes();
 
@@ -685,7 +686,7 @@ public abstract class DeviceAdapter
                     }
                   }
                 }
-                PARAMETERS.add(auxParameterSetting);
+                paraSettings.add(auxParameterSetting);
               }
             }
           } else if (n2.getNodeName().equals("InvokeSkill"))
@@ -722,11 +723,22 @@ public abstract class DeviceAdapter
               //get skill - first node with SR inside
               if (n2.getNodeType() == Node.ELEMENT_NODE)
               {
-                for (Skill auxSkill : subSystem.getSkills())
+                for (Skill skill : subSystem.getSkills())
                 {
-                  if (n2.getNodeName().equals(auxSkill.getName()))
+                  if (n2.getNodeName().equals(skill.getName()))
                   {
-                    recipe.setSkill(auxSkill);
+                    recipe.setSkill(skill);
+                    
+                    for (ParameterSetting paraSetting : paraSettings)
+                    {
+                        for (Parameter para : skill.getParameters())
+                        {
+                            if (paraSetting.getName().equals(para.getName()))
+                            {
+                                paraSetting.setParameter(para);
+                            }
+                        }
+                    }
                     gogogo = false;
                     break;
                   }
@@ -736,7 +748,7 @@ public abstract class DeviceAdapter
           }
         }
       }
-      recipe.setParameterSettings(PARAMETERS);
+      recipe.setParameterSettings(paraSettings);
       recipe.setKpiSettings(KPIs);
       recipe.setSkillRequirements(SRs);
       
@@ -1084,6 +1096,7 @@ public abstract class DeviceAdapter
         {
           Skill auxSkill = new Skill();
           List<SkillRequirement> auxReq = new ArrayList<>();
+          List<Parameter> auxPara = new ArrayList<>();
           System.out.println("***SKILL NAME: " + n2.getNodeName());
           auxSkill.setName(n2.getNodeName());
 
@@ -1112,8 +1125,67 @@ public abstract class DeviceAdapter
                   }
                 }
               }
+              else if(auxData.getNodeName().toLowerCase().contains("parameterport"))
+              {
+                    NodeList childs = auxData.getChildNodes();
+                    for (int z = 0; z < childs.getLength(); z++) {
+                        if (childs.item(z).getNodeName().toLowerCase().contains("parameter")
+                                && !childs.item(z).getNodeName().toLowerCase().contains("parameterport")) 
+                        {
+                            NodeList pChilds = childs.item(z).getChildNodes();
+                            Parameter parameter = new Parameter();
+                            
+                            for (int x = 0; x < pChilds.getLength(); x++) 
+                            {
+                                if (!pChilds.item(x).getNodeName().toLowerCase().contains("type")
+                                        && !pChilds.item(x).getNodeName().toLowerCase().contains("path")
+                                        && !pChilds.item(x).getNodeName().toLowerCase().contains("parameter")) 
+                                {
+                                   if (pChilds.item(x).getNodeName().equals("ID")) 
+                                   {
+                                       NodeList paraChilds = pChilds.item(x).getChildNodes();
+                                       for (int p = 0; p < paraChilds.getLength(); p++) 
+                                        {
+                                            if (paraChilds.item(p).getNodeName().toLowerCase().equals("value"))
+                                            {
+                                                parameter.setUniqueId(paraChilds.item(p).getTextContent());
+                                            }
+                                        }
+                                   }
+                                   else if(pChilds.item(x).getNodeName().toLowerCase().equals("unit"))
+                                   {
+                                       NodeList paraChilds = pChilds.item(x).getChildNodes();
+                                       for (int p = 0; p < paraChilds.getLength(); p++) 
+                                        {
+                                            if (paraChilds.item(p).getNodeName().toLowerCase().equals("value"))
+                                            {
+                                                parameter.setUnit(paraChilds.item(p).getTextContent());
+                                            }
+                                        }
+                                   }
+                                   else
+                                   {
+                                       NodeList paraChilds = pChilds.item(x).getChildNodes();
+                                       for (int p = 0; p < paraChilds.getLength(); p++) 
+                                        {
+                                            if (paraChilds.item(p).getNodeName().toLowerCase().equals("value"))
+                                            {
+                                                parameter.setName(pChilds.item(x).getNodeName());
+                                                parameter.setDefaultValue(paraChilds.item(p).getTextContent());
+                                            }
+                                        }
+                                   }
+                                }
+                            }
+                            auxPara.add(parameter);
+
+                            System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
+                        }
+                    }
+                }
             }
           }
+          auxSkill.setParameters(auxPara);
           auxSkill.setSkillRequirements(auxReq);
           if (auxSkill.getUniqueId() == null)
           {
@@ -1131,10 +1203,7 @@ public abstract class DeviceAdapter
     {
       for (int j = i; j < skillList.size(); j++)
       {
-        if (i == j)
-        {
-          continue;
-        } else
+        if (i != j)
         {
           if (skillList.get(i).getName().equals(skillList.get(j).getName()))
           {
