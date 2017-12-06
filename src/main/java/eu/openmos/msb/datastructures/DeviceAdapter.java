@@ -920,7 +920,7 @@ public abstract class DeviceAdapter
                         System.out.println("KPI ID: " + auxKPISetting.getUniqueId());
                       }
                     }
-                  } else if (auxNode.getNodeName().equals("value"))
+                  } else if (auxNode.getNodeName().toLowerCase().equals("value"))
                   {
                     NodeList auxNodeList1 = auxNode.getChildNodes();
                     for (int index = 0; index < auxNodeList1.getLength(); index++)
