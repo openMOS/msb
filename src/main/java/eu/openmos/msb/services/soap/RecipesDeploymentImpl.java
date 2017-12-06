@@ -182,8 +182,12 @@ public class RecipesDeploymentImpl implements RecipesDeployment
     for (int i = 0; i < deviceAdaptersNames.size(); i++)
     {
       DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(deviceAdaptersNames.get(i));
+      if(deviceAdaptersNames.get(i).contains("MSB"))
+        continue;
+      
       if (deviceAdapter != null)
       {
+
         if (deviceAdapter.getSubSystem().getExecutionTable().getUniqueId().equals(execTableUniqueId))
         {
           deviceAdapter.getSubSystem().setExecutionTable(executionTable);
