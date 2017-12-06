@@ -318,7 +318,7 @@ public class SubSystemController extends Base {
     public ExecutionTable getExecutionTable(@PathParam("subsystemId") String subsystemId) {
         logger.debug("execution table getDetail of subsystem  = " + subsystemId);
         for (SubSystem subsystem : getList()) {
-            if (subsystem.getName().equals(subsystemId)) {
+            if (subsystem.getUniqueId().equals(subsystemId)) {
                 logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getExecutionTable();
             }
