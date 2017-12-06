@@ -255,7 +255,7 @@ public abstract class DeviceAdapter
       subSystem.setSkills(ReadSkill(skillDescriptionDoc));
       subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc));
       subSystem.setExecutionTable(ReadExecutionTable(deviceDescriptionDoc));
-      subSystem.setInternaleModules(ReadModules2(deviceDescriptionDoc));
+      subSystem.setInternaleModules(ReadModules(deviceDescriptionDoc));
       subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc));
       
       for (Module module : subSystem.getInternalModules())
@@ -729,64 +729,7 @@ public abstract class DeviceAdapter
     return recipeList;
   }
 
-  private static List<Module> ReadModules(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
-  {
-    String query = "//DeviceAdapter/*/*/*[Module][Equipment]";
-    XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
-    NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
-
-    System.out.println("Elements " + nodeList.getLength());
-    List<Module> moduleList = new ArrayList<>();
-
-    for (int i = 0; i < nodeList.getLength(); i++)
-    {
-      Module module = new Module();
-      Node n = nodeList.item(i);
-      NodeList moduleChilds = n.getChildNodes();
-
-      for (int j = 0; j < moduleChilds.getLength(); j++)
-      {
-        Node n2 = moduleChilds.item(j);
-        if ("Path".equals(n2.getNodeName()))
-        {
-          String[] temp = n2.getTextContent().split("/");
-          module.setName(temp[temp.length - 1]);
-          System.out.println("moduleName " + module.getName());
-        } else if ("ID".equals(n2.getNodeName()))
-        {
-          for (int t = 0; t < n2.getChildNodes().getLength(); t++)
-          {
-            Node IdChildNodes = n2.getChildNodes().item(t);
-
-            if (IdChildNodes.getNodeName().equals("Value"))
-            {
-              module.setUniqueId(IdChildNodes.getTextContent());
-            }
-          }
-        } else
-        {
-          //description
-          if ("description".equals(n2.getNodeName()))
-          {
-            NodeList descChilds = n2.getChildNodes();
-            for (int k = 0; k < descChilds.getLength(); k++)
-            {
-              Node descChild = descChilds.item(k);
-              if (descChild.getNodeName().equals("Value"))
-              {
-                module.setDescription(descChild.getTextContent());
-                System.out.println("moduleDescription " + module.getDescription());
-              }
-            }
-          }
-        }
-      }
-      moduleList.add(module);
-    }
-    return moduleList;
-  }
-  
-  private List<Module> ReadModules2(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  private List<Module> ReadModules(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
     String query = "//DeviceAdapter/*/*/*[Module][Equipment]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
@@ -932,7 +875,7 @@ public abstract class DeviceAdapter
             }
             SRs.add(auxSkillReq);
             //KPIs
-          } else if (nRecipe.getNodeName().endsWith("_InformationPort"))
+          } else if (nRecipe.getNodeName().endsWith("InformationPort"))
           {
             NodeList auxNodeList = nRecipe.getChildNodes();
             for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -991,7 +934,7 @@ public abstract class DeviceAdapter
                 KPIs.add(auxKPISetting);
               }
             }
-          } else if (nRecipe.getNodeName().endsWith("_ParameterPort"))
+          } else if (nRecipe.getNodeName().endsWith("ParameterPort"))
           {
             NodeList auxNodeList = nRecipe.getChildNodes();
             for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -1020,7 +963,7 @@ public abstract class DeviceAdapter
                       }
                     }
                   } else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
-                          && !auxNode.getNodeName().toLowerCase().endsWith("parameter"))
+                          && !auxNode.getNodeName().toLowerCase().endsWith("parameter") && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                   {
                     auxParameterSetting.setName(auxNode.getNodeName());
                     NodeList auxNodeList1 = auxNode.getChildNodes();
