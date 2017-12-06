@@ -486,7 +486,7 @@ public class MSBClientSubscription implements IClient
         }
         */
 
-        Element node = new Element(referenceName.replaceAll(":", "").replaceAll(" ", "_"));
+        Element node = new Element(referenceName.replaceAll(":", "").replaceAll(" ", "_").replaceAll(",","").replaceAll("\\(", "_").replaceAll("\\)", ""));
 
         Element nodeType = new Element("Type");
         nodeType.setAttribute("id", rd.getNodeId().getType().toString());
