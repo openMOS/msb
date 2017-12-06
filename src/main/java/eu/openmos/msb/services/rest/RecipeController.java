@@ -45,122 +45,80 @@ public class RecipeController extends Base
   private final Logger logger = Logger.getLogger(RecipeController.class.getName());
 
   /**
-   * Returns the recipe object given its unique identifier. Fills the skill recipe view page (slide 24 of 34).
-   *
-   * @return detail of recipe
-   *
-   * @param uniqueId the unique id of the recipe
-   * @return recipe object, or null if not existing
-   */
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path(value = "/{recipeId}")
-  public Recipe getDetail(@PathParam("recipeId") String recipeId)
-  {
-    logger.debug("recipe getDetail - recipeId = " + recipeId);
-//        return RecipeTest.getTestObject();
-
-    String[] n = recipeId.split(RecipeController.PARAMSEPARATOR);
-    if (n.length < 2)
-    {
-      // TODO url has some problems 
-    }
-
-    String realSubSystemId = "-1";
-    String realModuleId = "-1";
-    String realSkillId = "-1";
-    String realRecipeId = "-1";
-    for (int w = 0; w < n.length; w++)
-    {
-      logger.debug("n di " + w + " = " + n[w]);
-      String[] nn = n[w].split(RecipeController.PARAMVALUESEPARATOR);
-      logger.debug("nn length " + nn.length);
-      for (int z = 0; z < nn.length; z++)
-      {
-        logger.debug("nn di " + z + " = " + nn[z]);
-      }
-
-      if (nn[0].equalsIgnoreCase("ss"))
-      {
-        realSubSystemId = nn[1];
-      } else if (nn[0].equalsIgnoreCase("m"))
-      {
-        realModuleId = nn[1];
-      } else if (nn[0].equalsIgnoreCase("sk"))
-      {
-        realSkillId = nn[1];
-      } else if (nn[0].equalsIgnoreCase("r"))
-      {
-        realRecipeId = nn[1];
-      }
-    }
-
-    /*        
-        logger.debug("n di 0 = " + n[0]);
-        logger.debug("n di 1 = " + n[1]);
-        String[] nn = n[0].split(SkillController.PARAMVALUESEPARATOR);
-        logger.debug("nn length " + nn.length);
-        for (int z = 0;z < nn.length; z++)
-            logger.debug("nn di " + z + " = " + nn[z]);
-        
-        String subSystemId = nn[1];
-
-        String[] oo = n[1].split(RecipeController.PARAMVALUESEPARATOR);
-        logger.debug("oo length " + oo.length);
-        for (int z = 0;z < nn.length; z++)
-            logger.debug("oo di " + z + " = " + oo[z]);
-        
-        String realRecipeId = oo[1];
+     * Returns the recipe object given its unique identifier. Fills the skill
+     * recipe view page (slide 24 of 34).
+     *
+     * @return detail of recipe
+     *
+     * @param uniqueId the unique id of the recipe
+     * @return recipe object, or null if not existing
      */
- /*
-        for (SubSystem subsystem : (new SubSystemController()).getList()) {
-//            if (subsystem.getName().equals(n[0])) {
-            if (subsystem.getName().equals(subSystemId)) {
-                logger.debug("subsystem - found " + subSystemId);
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path(value = "/{recipeId}")
+    public Recipe getDetail(@PathParam("recipeId") String recipePath) {
+        logger.debug("recipe getDetail - recipeId = " + recipePath);
+        
+        PathHelper helper = new PathHelper(recipePath, logger);        
+        if (helper.hasSubModules()) {
+            Module module = (new ModuleController()).getDetail(helper.getModulesPath());
+            return this.getRecipeFromList(module.getRecipes(), helper.getRecipeId());
+        } else {
+            SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
+            return this.getRecipeFromList(subSystem.getRecipes(), helper.getRecipeId());
+        }
+       
+        /*
+        String[] ids = recipeId.split(Base.PARAMSEPARATOR);
+        String subSystemId = "";
+        String realRecipeId = "";
 
-                for (Recipe r : subsystem.getRecipes())
-                {
-                    if (r.getUniqueId().equalsIgnoreCase(realRecipeId))
-                    {
-                        logger.debug("recipe found: " + r);
-                        return r;
+        if (ids != null) {
+            realRecipeId = ids[ids.length - 1].split(Base.PARAMVALUESEPARATOR)[1];
+            subSystemId = ids[0].split(Base.PARAMVALUESEPARATOR)[1];
+            logger.debug("REAL ID : " + realRecipeId);
+            
+            if (ids.length == 2) {
+                for (SubSystem ss : new SubSystemController().getList()) {
+                    if (ss.getUniqueId().equals(subSystemId)) {
+                        for (Recipe rec : ss.getRecipes()) {
+                            if (rec.getUniqueId().equalsIgnoreCase(realRecipeId)) {
+                                return rec;
+                            }
+                        }
+                    }
+                }
+            } else {
+                String modulePath = recipeId.substring(0, recipeId.lastIndexOf(Base.PARAMSEPARATOR + Base.RECIPEMARKERPREFIX));
+                if (modulePath.contains(Base.SKILLMARKERPREFIX)) {
+                    modulePath = modulePath.substring(0, modulePath.indexOf(Base.PARAMSEPARATOR + Base.SKILLMARKERPREFIX));
+                }
+                logger.debug("Recipe Controller GET MODULE: " + modulePath);
+                
+                for (Recipe rec : new ModuleController().getModuleRecipes(modulePath)) {
+                    if (rec.getUniqueId().equals(realRecipeId)) {
+                        return rec;
                     }
                 }
             }
         }
-     */
-    for (SubSystem subsystem : (new SubSystemController()).getList())
-    {
-//            if (subsystem.getName().equals(n[0])) {
-      if (subsystem.getUniqueId().equals(realSubSystemId))
-      {
-        logger.debug("subsystem - found " + realSubSystemId);
 
-        if (!realRecipeId.equalsIgnoreCase("-1") && realSkillId.equalsIgnoreCase("-1"))
+        logger.debug("Error getting recipe");
+        return null;*/
+    }
+    
+  private Recipe getRecipeFromList(List<Recipe> recipes, String recipeId)
+  {
+    if (recipes != null && !recipes.isEmpty())
+    {
+      for (Recipe recipe : recipes)
+      {
+        if (recipe.getUniqueId().equalsIgnoreCase(recipeId))
         {
-          for (Recipe r : subsystem.getRecipes())
-          {
-            if (r.getUniqueId().equalsIgnoreCase(realRecipeId))
-            {
-              logger.debug("recipe found case1: " + r);
-              return r;
-            }
-          }
-        }
-        if (!realRecipeId.equalsIgnoreCase("-1") && !realSkillId.equalsIgnoreCase("-1"))
-        {
-          for (Recipe r : subsystem.getRecipes())
-          {
-            if (r.getUniqueId().equalsIgnoreCase(realRecipeId))
-            {
-              logger.debug("recipe found case2: " + r);
-              return r;
-            }
-          }
+          return recipe;
         }
       }
     }
-
     return null;
   }
 
@@ -225,7 +183,6 @@ public class RecipeController extends Base
             recipes.get(j).setUniqueAgentName(recipe.getUniqueAgentName());
             recipes.get(j).setUniqueId(recipe.getUniqueId());
             recipes.get(j).setValid(recipe.isValid());
-
             //client.InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
             ret = true;
             logger.info("Sending new execution table to DA: " + deviceAdaptersNames.get(i));
@@ -368,45 +325,67 @@ public class RecipeController extends Base
     return kpiSett;
   }
 
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/insertNewRecipe/{subSystemId}")
-  public Recipe startInsertNewRecipe(@PathParam("subSystemId") String subSystemId,
-          Skill skill)
-  {
+      @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/insertNewRecipe/{subSystemId}")
+    public Recipe startInsertNewRecipe(@PathParam("subSystemId") String subSystemId,
+            Skill skill) {
 
-    // Creating new Recipe Object
-    Recipe recipe = new Recipe();
-    // Getting SubSystem Detail 
-    SubSystem subSystem = (new SubSystemController()).getDetail(subSystemId);
+        logger.debug("Insert Skill for : " + subSystemId);
+        
+        Equipment equipment;
+        
+        // Creating new Recipe Object
+        Recipe recipe = new Recipe();
+       
+        PathHelper helper = new PathHelper(subSystemId, logger);
+        
+        equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
+        /*
+        Not used at the moment, need only subSystemId
+        if (helper.hasSubModules()) {
+            equipment = (new ModuleController()).getDetail(helper.getModulesPath());
+        } else {
+            equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
+        }*/
+        
+        // Getting SubSystem Detail 
+        // SubSystem subSystem = (new SubSystemController()).getDetail(subSystemId);
 
-    // Setting Recipe registered Date
-    recipe.setRegistered(new Date());
+        // Setting Recipe registered Date
+        recipe.setRegistered(new Date());
 
-    // Setting Recipe uniqueID
-    recipe.setUniqueId(this.generateId(recipe.getRegistered()));
+        // Setting Recipe uniqueID
+        recipe.setUniqueId(this.generateId(recipe.getRegistered()));
 
-    // Setting recipe skill
-    recipe.setSkill(skill);
+        // Setting recipe skill
+        recipe.setSkill(skill);
 
-    // Setting Recipe Skill Requirements with empty list that 
-    // that will be filled using HMI
-    recipe.setSkillRequirements(new ArrayList<>());
+        // Setting Recipe Skill Requirements with empty list that 
+        // that will be filled using HMI
+        recipe.setSkillRequirements(new ArrayList<>());
+        
+        recipe.setOptimized(true);
+        recipe.setValid(true);
 
-    // Setting Recipe subSystemId
+        // Setting Recipe subSystemId
 //        recipe.setEquipmentId(subSystem.getUniqueId());
-    List<String> equipmentIds = new LinkedList<>();
-    equipmentIds.add(subSystem.getUniqueId());
-    recipe.setEquipmentIds(equipmentIds);
+        List<String> equipmentIds = new LinkedList<>();
+        equipmentIds.add(equipment.getUniqueId());
+        recipe.setEquipmentIds(equipmentIds);
 
-    recipe.setKpiSettings(getKPISettingFromSkill(skill));
+        recipe.setKpiSettings(getKPISettingFromSkill(skill));
 
-    recipe.setParameterSettings(getParameterSettingsFromSkill(skill));
-    // recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
-
-    return recipe;
-  }
+        recipe.setParameterSettings(getParameterSettingsFromSkill(skill));
+        //recipe.setParameterSettings(new ArrayList());
+        //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
+        //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
+        //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
+        
+ 
+        return recipe;
+    }
 
   public List<KPISetting> getKPISettingFromSkill(Skill skill)
   {

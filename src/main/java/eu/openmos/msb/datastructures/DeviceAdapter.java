@@ -14,6 +14,7 @@ import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import io.vertx.core.VertxOptions;
+import java.util.LinkedList;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -263,6 +264,20 @@ public abstract class DeviceAdapter
           subSystem.getRecipes().addAll(module.getRecipes());
       }
       
+      
+      //Introsys DEMO: associate DAid to the recipe
+      List<Recipe> recipes = subSystem.getRecipes();
+      List<String> equipmentIds = new LinkedList<>();
+      equipmentIds.add(subSystem.getUniqueId());
+      for(int i=0; i<recipes.size(); i++){
+        recipes.get(i).setEquipmentIds(equipmentIds);
+      }
+      
+      /*for (Recipe recipe : subSystem.getRecipes())
+      {
+        recipe.getEquipmentIds().add(subSystem.getUniqueId());
+      }*/
+
       subSystem.setType(ReadDeviceAdapterType(deviceDescriptionDoc));
 
       List<String> ReadDeviceAdapterState = ReadDeviceAdapterState(deviceDescriptionDoc);
@@ -724,6 +739,7 @@ public abstract class DeviceAdapter
       recipe.setParameterSettings(PARAMETERS);
       recipe.setKpiSettings(KPIs);
       recipe.setSkillRequirements(SRs);
+      
       recipeList.add(recipe);
     }
     return recipeList;
@@ -1032,6 +1048,11 @@ public abstract class DeviceAdapter
       recipe.setParameterSettings(PARAMETERS);
       recipe.setKpiSettings(KPIs);
       recipe.setSkillRequirements(SRs);
+      
+      /*List<String> equipmentIds = new LinkedList<>();
+      equipmentIds.add(module.getUniqueId());
+      recipe.setEquipmentIds(equipmentIds); //Introsys DEMO*/
+      
       recipeList.add(recipe);
         }
       }

@@ -32,11 +32,14 @@ public class RecipesDeploymentImpl implements RecipesDeployment
   private static final Logger logger = Logger.getLogger(RecipesDeploymentImpl.class.getName());
 
   @Override
-  public boolean updateRecipes(String deviceName, int mode, List<Recipe> recipes)
+  public boolean updateRecipes(String DAid, int mode, List<Recipe> recipes)
   {
-    Boolean ret=false;
+    
+    Boolean ret = false;
     logger.debug("updateRecipes MSB method");
-    logger.debug("device name = [" + deviceName + "]");
+    logger.debug("device ID = [" + DAid + "]");
+    
+    String deviceName=DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(DAid);
 
     logger.info("[RecipesDeploymentImpl] Received an update Recipe call from Cloud to DA: " + deviceName);
 
@@ -44,18 +47,16 @@ public class RecipesDeploymentImpl implements RecipesDeployment
     if (mode == RecipesDeploymentImpl.SUGGESTION)
     {
       logger.debug("suggested recipes mode");
-    } else if (mode == RecipesDeploymentImpl.ACTUAL)
-    {
-      logger.debug("actual recipes mode");
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(deviceName);
+      
+            DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(deviceName);
       if (da != null)
       {
-        List<Recipe> daRecipesList = da.getSubSystem().getRecipes();
+        /*List<Recipe> daRecipesList = da.getSubSystem().getRecipes();
         for (int j = 0; j < daRecipesList.size(); j++)
         {
+          boolean exists=false;
           for (int i = 0; i < recipes.size(); i++)
           {
-
             if (daRecipesList.get(j).getUniqueId().equals(recipes.get(i).getUniqueId()))
             {
               recipes.get(i).setDescription(recipes.get(i).getDescription());
@@ -77,14 +78,54 @@ public class RecipesDeploymentImpl implements RecipesDeployment
               recipes.get(i).setUniqueAgentName(recipes.get(i).getUniqueAgentName());
               recipes.get(i).setUniqueId(recipes.get(i).getUniqueId());
               recipes.get(i).setValid(recipes.get(i).isValid());
+              exists=true;
+            }
+          }
+          if(!exists){
+            
+          }
 
+        }*/
+
+        //updated:*******
+        for (int j = 0; j < recipes.size(); j++)
+        {
+          for (int i = 0; i < da.getSubSystem().getRecipes().size(); i++)
+          {
+            if (da.getSubSystem().getRecipes().get(i).getUniqueId().equals(recipes.get(j).getUniqueId()))
+            {
+              da.getSubSystem().getRecipes().get(i).setDescription(recipes.get(j).getDescription());
+              da.getSubSystem().getRecipes().get(i).setEquipmentIds(recipes.get(j).getEquipmentIds());
+              da.getSubSystem().getRecipes().get(i).setExecutedBySkillControlPort(recipes.get(j).getExecutedBySkillControlPort());
+              da.getSubSystem().getRecipes().get(i).setInvokeMethodID(recipes.get(j).getInvokeMethodID());
+              da.getSubSystem().getRecipes().get(i).setInvokeObjectID(recipes.get(j).getInvokeObjectID());
+              da.getSubSystem().getRecipes().get(i).setKpiSettings(recipes.get(j).getKpiSettings());
+              da.getSubSystem().getRecipes().get(i).setLastOptimizationTime(recipes.get(j).getLastOptimizationTime());
+              da.getSubSystem().getRecipes().get(i).setMsbProtocolEndpoint(recipes.get(j).getMsbProtocolEndpoint());
+              da.getSubSystem().getRecipes().get(i).setName(recipes.get(j).getName());
+              da.getSubSystem().getRecipes().get(i).setOptimized(recipes.get(j).isOptimized());
+              da.getSubSystem().getRecipes().get(i).setParameterSettings(recipes.get(j).getParameterSettings());
+              da.getSubSystem().getRecipes().get(i).setRegistered(recipes.get(j).getRegistered());
+              da.getSubSystem().getRecipes().get(i).setSkill(recipes.get(j).getSkill());
+              da.getSubSystem().getRecipes().get(i).setSkillRequirements(recipes.get(j).getSkillRequirements());
+              da.getSubSystem().getRecipes().get(i).setState(recipes.get(j).getState());
+              da.getSubSystem().getRecipes().get(i).setStatePath(recipes.get(j).getStatePath());
+              da.getSubSystem().getRecipes().get(i).setUniqueAgentName(recipes.get(j).getUniqueAgentName());
+              da.getSubSystem().getRecipes().get(i).setUniqueId(recipes.get(j).getUniqueId());
+              da.getSubSystem().getRecipes().get(i).setValid(recipes.get(j).isValid());
+
+            } else if (!da.getSubSystem().getRecipes().contains(recipes.get(j)))
+            { //if it doesn't exist, add it to DA's recipes list - DONT WORK
+              da.getSubSystem().getRecipes().add(recipes.get(j));
             }
           }
 
         }
-        MSBClientSubscription client = (MSBClientSubscription) da.getClient();
 
-        try
+        //*********
+        //MSBClientSubscription client = (MSBClientSubscription) da.getClient();
+
+        /*try
         {
           File file = new File("updateRecipes.xml");
           javax.xml.bind.JAXBContext jc = JAXBContext.newInstance(ExecutionTable.class);
@@ -101,8 +142,7 @@ public class RecipesDeploymentImpl implements RecipesDeployment
         } catch (JAXBException ex)
         {
           java.util.logging.Logger.getLogger(RecipesDeploymentImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        }*/
         //boolean res = client.InvokeUpdateRecipe(client.getClientObject(), objNode, methodNode, mode, recipesString); //TO be done by DA
         ret = true;
       } else
@@ -110,6 +150,11 @@ public class RecipesDeploymentImpl implements RecipesDeployment
         logger.error("DA for recipe update not found in the database!");
         return false;
       }
+      
+    } else if (mode == RecipesDeploymentImpl.ACTUAL)
+    {
+      logger.debug("actual recipes mode");
+
     } else if (RecipesDeploymentImpl.ACTIVATION == mode)
     {
       logger.debug("activation of already sent recipes mode");
@@ -132,7 +177,7 @@ public class RecipesDeploymentImpl implements RecipesDeployment
 
     String execTableUniqueId = executionTable.getUniqueId();
     List<String> deviceAdaptersNames = DACManager.getInstance().getDeviceAdaptersNames();
-    Boolean ret=false;
+    Boolean ret = false;
 
     for (int i = 0; i < deviceAdaptersNames.size(); i++)
     {
@@ -141,9 +186,10 @@ public class RecipesDeploymentImpl implements RecipesDeployment
       {
         if (deviceAdapter.getSubSystem().getExecutionTable().getUniqueId().equals(execTableUniqueId))
         {
-          MSBClientSubscription client = (MSBClientSubscription) deviceAdapter.getClient();
-          
-          try
+          deviceAdapter.getSubSystem().setExecutionTable(executionTable);
+          //MSBClientSubscription client = (MSBClientSubscription) deviceAdapter.getClient();
+
+          /*try
           {
             File file = new File("updateExecTables.xml");
             javax.xml.bind.JAXBContext jc = JAXBContext.newInstance(ExecutionTable.class);
@@ -159,13 +205,13 @@ public class RecipesDeploymentImpl implements RecipesDeployment
           } catch (JAXBException ex)
           {
             java.util.logging.Logger.getLogger(RecipesDeploymentImpl.class.getName()).log(Level.SEVERE, null, ex);
-          }
-          
+          }*/
           //client.InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
-          ret=true;
+          ret = true;
           logger.info("Sending new execution table to DA: " + deviceAdaptersNames.get(i));
-        }else{
-          
+        } else
+        {
+
         }
       }
     }
