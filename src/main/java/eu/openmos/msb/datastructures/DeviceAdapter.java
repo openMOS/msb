@@ -770,7 +770,7 @@ public abstract class DeviceAdapter
 
   private List<Module> ReadModules(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*/*/*[Module][Equipment]";
+    String query = "//DeviceAdapter/*/*/*[Module][Equipment][ID]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -1123,7 +1123,7 @@ public abstract class DeviceAdapter
       {
         Node n2 = skillChilds.item(j);
 
-        if (n2.getNodeType() == Node.ELEMENT_NODE && !n2.getNodeName().equals("Type") && !n2.getNodeName().equals("Path"))
+        if (n2.getNodeType() == Node.ELEMENT_NODE && !n2.getNodeName().equals("Type") && !n2.getNodeName().equals("Path") && !n2.getNodeName().equals("Skill"))
         {
           Skill auxSkill = new Skill();
           List<SkillRequirement> auxReq = new ArrayList<>();

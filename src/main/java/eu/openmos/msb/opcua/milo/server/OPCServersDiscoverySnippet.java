@@ -1,7 +1,6 @@
 package eu.openmos.msb.opcua.milo.server;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.agentcloud.utilities.Constants;
 import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
@@ -29,8 +28,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
