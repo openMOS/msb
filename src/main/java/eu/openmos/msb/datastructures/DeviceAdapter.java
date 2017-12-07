@@ -6,6 +6,7 @@ import java.util.List;
 import io.vertx.core.Vertx;
 import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.ExecutionTableRow;
+import eu.openmos.model.KPI;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Module;
 import eu.openmos.model.Parameter;
@@ -487,9 +488,9 @@ public abstract class DeviceAdapter
     for (int i = 0; i < nodeList.getLength(); i++)
     {
       Recipe recipe = new Recipe();
-      boolean gogogo = true;
+      boolean searchForSkill = true;
       List<SkillRequirement> SRs = new ArrayList<>();
-      List<KPISetting> KPIs = new ArrayList<>();
+      List<KPISetting> KPIsettings = new ArrayList<>();
       List<ParameterSetting> paraSettings = new ArrayList<>();
       Node n = nodeList.item(i);
       NodeList recipeChilds = n.getChildNodes();
@@ -639,7 +640,7 @@ public abstract class DeviceAdapter
                     }
                   }
                 }
-                KPIs.add(auxKPISetting);
+                KPIsettings.add(auxKPISetting);
               }
             }
           } else if (n2.getNodeName().endsWith("ParameterPort"))
@@ -718,7 +719,7 @@ public abstract class DeviceAdapter
             }
           } else
           {
-            if (gogogo)
+            if (searchForSkill)
             {
               //get skill - first node with SR inside
               if (n2.getNodeType() == Node.ELEMENT_NODE)
@@ -739,7 +740,17 @@ public abstract class DeviceAdapter
                             }
                         }
                     }
-                    gogogo = false;
+                    for(KPISetting kpiSetting : KPIsettings)
+                    {
+                        for(KPI kpi : skill.getKpis())
+                        {
+                            if (kpiSetting.getName().equals(kpi.getName()))
+                            {
+                                kpiSetting.setKpi(kpi);
+                            }
+                        }
+                    }
+                    searchForSkill = false;
                     break;
                   }
                 }
@@ -749,7 +760,7 @@ public abstract class DeviceAdapter
         }
       }
       recipe.setParameterSettings(paraSettings);
-      recipe.setKpiSettings(KPIs);
+      recipe.setKpiSettings(KPIsettings);
       recipe.setSkillRequirements(SRs);
       
       recipeList.add(recipe);
@@ -808,9 +819,9 @@ public abstract class DeviceAdapter
         else if(n2.getNodeName().toLowerCase().endsWith("_recipe"))
         {
             Recipe recipe = new Recipe();
-      boolean gogogo = true;
+      boolean searchForSkill = true;
       List<SkillRequirement> SRs = new ArrayList<>();
-      List<KPISetting> KPIs = new ArrayList<>();
+      List<KPISetting> KPIsettings = new ArrayList<>();
       List<ParameterSetting> paraSettings = new ArrayList<>();
       NodeList recipeChilds = n2.getChildNodes();
 
@@ -959,7 +970,7 @@ public abstract class DeviceAdapter
                     }
                   }
                 }
-                KPIs.add(auxKPISetting);
+                KPIsettings.add(auxKPISetting);
               }
             }
           } else if (nRecipe.getNodeName().endsWith("ParameterPort"))
@@ -1038,7 +1049,7 @@ public abstract class DeviceAdapter
             }
           } else
           {
-            if (gogogo)
+            if (searchForSkill)
             {
               //get skill - first node with SR inside
               if (nRecipe.getNodeType() == Node.ELEMENT_NODE)
@@ -1058,7 +1069,17 @@ public abstract class DeviceAdapter
                             }
                         }
                     }
-                    gogogo = false;
+                    for(KPISetting kpiSetting : KPIsettings)
+                    {
+                        for(KPI kpi : skill.getKpis())
+                        {
+                            if (kpiSetting.getName().equals(kpi.getName()))
+                            {
+                                kpiSetting.setKpi(kpi);
+                            }
+                        }
+                    }
+                    searchForSkill = false;
                     break;
                   }
                 }
@@ -1068,7 +1089,7 @@ public abstract class DeviceAdapter
         }
         }
       recipe.setParameterSettings(paraSettings);
-      recipe.setKpiSettings(KPIs);
+      recipe.setKpiSettings(KPIsettings);
       recipe.setSkillRequirements(SRs);
       
       /*List<String> equipmentIds = new LinkedList<>();
@@ -1107,6 +1128,7 @@ public abstract class DeviceAdapter
           Skill auxSkill = new Skill();
           List<SkillRequirement> auxReq = new ArrayList<>();
           List<Parameter> auxPara = new ArrayList<>();
+          List<KPI> auxKPI = new ArrayList<>();
           System.out.println("***SKILL NAME: " + n2.getNodeName());
           auxSkill.setName(n2.getNodeName());
 
@@ -1193,9 +1215,67 @@ public abstract class DeviceAdapter
                         }
                     }
                 }
+              else if(auxData.getNodeName().toLowerCase().contains("informationport"))
+              {
+                   NodeList childs = auxData.getChildNodes();
+                    for (int z = 0; z < childs.getLength(); z++) {
+                        if (childs.item(z).getNodeName().toLowerCase().contains("kpi"))
+                        {
+                            NodeList pChilds = childs.item(z).getChildNodes();
+                            KPI kpi = new KPI();
+                            kpi.setName(childs.item(z).getNodeName());
+                            
+                            for (int x = 0; x < pChilds.getLength(); x++) 
+                            {
+                                if (!pChilds.item(x).getNodeName().toLowerCase().contains("type")
+                                        && !pChilds.item(x).getNodeName().toLowerCase().contains("path")
+                                        && !pChilds.item(x).getNodeName().toLowerCase().endsWith("kpi")) 
+                                {
+                                   if (pChilds.item(x).getNodeName().equals("ID")) 
+                                   {
+                                       NodeList paraChilds = pChilds.item(x).getChildNodes();
+                                       for (int p = 0; p < paraChilds.getLength(); p++) 
+                                        {
+                                            if (paraChilds.item(p).getNodeName().toLowerCase().equals("value"))
+                                            {
+                                                kpi.setUniqueId(paraChilds.item(p).getTextContent());
+                                            }
+                                        }
+                                   }
+                                   else if(pChilds.item(x).getNodeName().toLowerCase().equals("unit"))
+                                   {
+                                       NodeList paraChilds = pChilds.item(x).getChildNodes();
+                                       for (int p = 0; p < paraChilds.getLength(); p++) 
+                                        {
+                                            if (paraChilds.item(p).getNodeName().toLowerCase().equals("value"))
+                                            {
+                                                kpi.setUnit(paraChilds.item(p).getTextContent());
+                                            }
+                                        }
+                                   }
+                                   else
+                                   {
+                                       NodeList paraChilds = pChilds.item(x).getChildNodes();
+                                       for (int p = 0; p < paraChilds.getLength(); p++) 
+                                        {
+                                            if (paraChilds.item(p).getNodeName().toLowerCase().equals("value"))
+                                            {
+                                                kpi.setValue(paraChilds.item(p).getTextContent());
+                                            }
+                                        }
+                                   }
+                                }
+                            }
+                            auxKPI.add(kpi);
+
+                            System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
+                        }
+                    }
+              }
             }
           }
           auxSkill.setParameters(auxPara);
+          auxSkill.setKpis(auxKPI);
           auxSkill.setSkillRequirements(auxReq);
           if (auxSkill.getUniqueId() == null)
           {
