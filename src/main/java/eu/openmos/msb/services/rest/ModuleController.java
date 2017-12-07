@@ -73,7 +73,7 @@ public class ModuleController extends Base {
 
         String moduleId = moduleNames[currentModuleNamesIndex];
         for (Module mod : modulesList) {
-            if (mod.getName().equals(moduleId)) {
+            if (mod.getUniqueId().equals(moduleId)) {
                 logger.debug("module - found " + moduleId);
                 if (currentModuleNamesIndex == (moduleNames.length - 1)){
                     logger.debug("ModuleController - SearchForModule - returning: " + mod);

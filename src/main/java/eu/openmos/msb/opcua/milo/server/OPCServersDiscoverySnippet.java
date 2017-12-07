@@ -236,11 +236,13 @@ public class OPCServersDiscoverySnippet extends Thread
                   System.out.println("TESTING: browse instance Hierarchy started");
                  
                  NodeId aux = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
+                 if(aux!=null){
                  System.out.println("TESTING: browse instance Hierarchy ended with: " + aux.getIdentifier().toString());
                  node.addContent(instance.browseNode(client,
                          aux,
                          Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
                          ignore));
+                 }
 /*
                   node.addContent(instance.browseNode(client,
                           new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.dainstance")),

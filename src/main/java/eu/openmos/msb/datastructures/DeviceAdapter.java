@@ -257,13 +257,13 @@ public abstract class DeviceAdapter
       subSystem.setSkills(ReadSkill(skillDescriptionDoc));
       subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc));
       subSystem.setExecutionTable(ReadExecutionTable(deviceDescriptionDoc));
-      subSystem.setInternaleModules(ReadModules(deviceDescriptionDoc));
+      subSystem.setInternalModules(ReadModules(deviceDescriptionDoc));
       subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc));
       
-      for (Module module : subSystem.getInternalModules())
+      /*for (Module module : subSystem.getInternalModules()) //PF noncompliant
       {
           subSystem.getRecipes().addAll(module.getRecipes());
-      }
+      }*/
       
       
       //Introsys DEMO: associate DAid to the recipe
@@ -290,7 +290,7 @@ public abstract class DeviceAdapter
 
       PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
       System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
-
+      
       return true;
     } catch (XPathExpressionException ex)
     {

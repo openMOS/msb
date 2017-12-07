@@ -605,7 +605,7 @@ public static void main_OLD(String[] args) throws Exception
         s.setName(getNodeAttributeValue(subsystemNode, "Name"));    
         
         s.setExecutionTable(loadExecutionTable(subsystemNode));
-        s.setInternaleModules(loadModules(subsystemNode));
+        s.setInternalModules(loadModules(subsystemNode));
         
         s.setSkills(loadSkills(subsystemNode, s.getName()));
         

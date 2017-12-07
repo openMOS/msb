@@ -78,7 +78,7 @@ public class SubSystem extends Equipment implements Serializable {
         return internalModules;
     }
 
-    public void setInternaleModules(List<Module> internalModules) {
+    public void setInternalModules(List<Module> internalModules) {
         this.internalModules = internalModules;
     }
     
@@ -281,6 +281,9 @@ public class SubSystem extends Equipment implements Serializable {
         builder.append(ListsToString.writeSkills(skills)).append("\n");
         builder.append(ListsToString.writePhysicalPorts(physicalPorts)).append("\n");
         builder.append(ListsToString.writeRecipes(recipes)).append("\n");
+        for(int i=0; i<internalModules.size(); i++)
+        builder.append(internalModules.get(i).toString()).append("\n");
+        
         builder.append(address).append("\n");
         builder.append(status).append("\n");
         builder.append(manufacturer).append("\n");
