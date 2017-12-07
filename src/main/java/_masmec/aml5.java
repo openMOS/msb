@@ -1206,9 +1206,15 @@ public static void main_OLD(String[] args) throws Exception
         return productsList;        
     }
 
-    private static String getLinkID(Node internalLinkLine)
+    private static String getLinkID_RefA(Node internalLinkLine)
     {
         String recipeID = getNodeAttributeValue(internalLinkLine, "RefPartnerSideA").split(":")[0];
+        return recipeID;
+    }
+    
+    private static String getLinkID_RefB(Node internalLinkLine)
+    {
+        String recipeID = getNodeAttributeValue(internalLinkLine, "RefPartnerSideB").split(":")[0];
         return recipeID;
     }
     
@@ -1254,7 +1260,12 @@ public static void main_OLD(String[] args) throws Exception
             for(int i = 0; i < internalLinkLines.getLength(); i++)
             {
                 Node internalLinkLine = internalLinkLines.item(i);
-                recipesIDs.add(getLinkID(internalLinkLine));
+                String refA = getLinkID_RefA(internalLinkLine);
+                String refB = getLinkID_RefB(internalLinkLine);
+                if (refA.equals(sr.getUniqueId()))
+                    recipesIDs.add(refB);
+                else
+                    recipesIDs.add(refA);
             }
             sr.setRecipeIDs(recipesIDs);
             lsr.add(sr);

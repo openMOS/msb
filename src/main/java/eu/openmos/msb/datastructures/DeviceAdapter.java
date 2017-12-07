@@ -353,7 +353,7 @@ public abstract class DeviceAdapter
                 }
               }
             }
-          } else if (n2.getNodeName().equals("Recipe"))
+          } else if (n2.getNodeName().startsWith("Recipe"))
           {
             NodeList recipes = n2.getChildNodes();
             for (int k = 0; k < recipes.getLength(); k++)
@@ -379,7 +379,7 @@ public abstract class DeviceAdapter
                 }
               }
             }
-          } else if (n2.getNodeName().equals("Product"))
+          } else if (n2.getNodeName().startsWith("Product"))
           {
             NodeList products = n2.getChildNodes();
             for (int k = 0; k < products.getLength(); k++)
@@ -399,7 +399,7 @@ public abstract class DeviceAdapter
                 }
               }
             }
-          } else if (n2.getNodeName().equals("NextRecipeToExecute"))
+          } else if (n2.getNodeName().startsWith("NextRecipeToExecute"))
           {
             NodeList nRtE = n2.getChildNodes();
             for (int k = 0; k < nRtE.getLength(); k++)
@@ -437,7 +437,7 @@ public abstract class DeviceAdapter
                 }
               }
             }
-          } else if (n2.getNodeName().equals("ListOfPossibleRecipeChoices"))
+          } else if (n2.getNodeName().startsWith("ListOfPossibleRecipeChoices"))
           { //TODO WHEN THERE IS SOMETHING WITH DATA HERE
             NodeList ListOfpossRchoices = n2.getChildNodes();
             List<String> PossibleRC = new ArrayList<>();
@@ -811,7 +811,7 @@ public abstract class DeviceAdapter
       boolean gogogo = true;
       List<SkillRequirement> SRs = new ArrayList<>();
       List<KPISetting> KPIs = new ArrayList<>();
-      List<ParameterSetting> PARAMETERS = new ArrayList<>();
+      List<ParameterSetting> paraSettings = new ArrayList<>();
       NodeList recipeChilds = n2.getChildNodes();
 
       for (int q = 0; q < recipeChilds.getLength(); q++)
@@ -1006,7 +1006,7 @@ public abstract class DeviceAdapter
                     }
                   }
                 }
-                PARAMETERS.add(auxParameterSetting);
+                paraSettings.add(auxParameterSetting);
               }
             }
           } else if (nRecipe.getNodeName().equals("InvokeSkill"))
@@ -1043,11 +1043,21 @@ public abstract class DeviceAdapter
               //get skill - first node with SR inside
               if (nRecipe.getNodeType() == Node.ELEMENT_NODE)
               {
-                for (Skill auxSkill : subSystem.getSkills())
+                for (Skill skill : subSystem.getSkills())
                 {
-                  if (nRecipe.getNodeName().equals(auxSkill.getName()))
+                  if (nRecipe.getNodeName().equals(skill.getName()))
                   {
-                    recipe.setSkill(auxSkill);
+                    recipe.setSkill(skill);
+                    for (ParameterSetting paraSetting : paraSettings)
+                    {
+                        for (Parameter para : skill.getParameters())
+                        {
+                            if (paraSetting.getName().equals(para.getName()))
+                            {
+                                paraSetting.setParameter(para);
+                            }
+                        }
+                    }
                     gogogo = false;
                     break;
                   }
@@ -1057,7 +1067,7 @@ public abstract class DeviceAdapter
           }
         }
         }
-      recipe.setParameterSettings(PARAMETERS);
+      recipe.setParameterSettings(paraSettings);
       recipe.setKpiSettings(KPIs);
       recipe.setSkillRequirements(SRs);
       
