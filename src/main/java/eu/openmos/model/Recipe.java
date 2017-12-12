@@ -97,6 +97,10 @@ public class Recipe extends Base implements Serializable {
     
     private String invokeMethodID;
     
+    private transient String changeRecipeObjectID;
+    
+    private transient String changeRecipeMethodID;
+    
     private String state;
     
     private transient String statePath;
@@ -207,6 +211,27 @@ public class Recipe extends Base implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+  public String getChangeRecipeObjectID()
+  {
+    return changeRecipeObjectID;
+  }
+
+  public void setChangeRecipeObjectID(String changeRecipeObjectID)
+  {
+    this.changeRecipeObjectID = changeRecipeObjectID;
+  }
+
+  public String getChangeRecipeMethodID()
+  {
+    return changeRecipeMethodID;
+  }
+
+  public void setChangeRecipeMethodID(String changeRecipeMethodID)
+  {
+    this.changeRecipeMethodID = changeRecipeMethodID;
+  }
+    
 
     public List<ParameterSetting> getParameterSettings() {
         return parameterSettings;

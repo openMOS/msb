@@ -502,6 +502,7 @@ public abstract class DeviceAdapter
         {
           String auxTest = n2.getAttributes().getNamedItem("ns").getNodeValue();
           recipe.setInvokeObjectID(auxTest + ":" + n2.getTextContent());
+          recipe.setChangeRecipeObjectID(auxTest + ":" + n2.getTextContent());
 
           String[] temp = n2.getTextContent().split("/");
           recipe.setName(temp[temp.length - 1]);
@@ -717,7 +718,23 @@ public abstract class DeviceAdapter
                 recipe.setState(auxNode.getTextContent());
               }
             }
-          } else
+          } 
+          else if(n2.getNodeName().equals("ChangeSkill"))
+          {
+            NodeList auxNodeList = n2.getChildNodes();
+            for (int z = 0; z < auxNodeList.getLength(); z++)
+            {
+              Node auxNode = auxNodeList.item(z);
+              if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
+              {
+                int ns = Integer.parseInt(auxNode.getAttributes().getNamedItem("ns").getNodeValue());
+                recipe.setChangeRecipeMethodID(ns + ":" + auxNode.getTextContent()); //CHECK THIS!
+              } else if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Value"))
+              {
+                recipe.setState(auxNode.getTextContent());
+              }
+            }
+          }else
           {
             if (searchForSkill)
             {
