@@ -15,6 +15,7 @@ import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
+import eu.openmos.model.utilities.DatabaseConstants;
 import io.vertx.core.VertxOptions;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -1294,6 +1295,11 @@ public abstract class DeviceAdapter
           auxSkill.setParameters(auxPara);
           auxSkill.setKpis(auxKPI);
           auxSkill.setSkillRequirements(auxReq);
+          if (auxSkill.getSkillRequirements() == null || auxSkill.getSkillRequirements().isEmpty())
+              auxSkill.setType(DatabaseConstants.SKILLTYPE_ATOMIC);
+          else
+              auxSkill.setType(DatabaseConstants.SKILLTYPE_COMPOSITE);
+          
           if (auxSkill.getUniqueId() == null)
           {
             auxSkill.setUniqueId(UUID.randomUUID().toString());

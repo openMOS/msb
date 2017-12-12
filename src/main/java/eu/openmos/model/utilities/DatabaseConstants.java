@@ -97,4 +97,7 @@ public class DatabaseConstants {
     public final static String EQUIPMENT_ASSESSMENT_ID = "equipmentAssessmentId";
     public final static String RATING = "rating";
     
+    public final static String SKILLTYPE_ATOMIC = "ATOMIC";
+    public final static String SKILLTYPE_COMPOSITE = "COMPOSITE";
+    
 }
