@@ -113,7 +113,6 @@ public class Functions
       jaxbMArshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
       jaxbMArshaller.marshal(classToParse, sw); //print to String
-      //String excTablesString = XMLtoString("updateExecTables.xml"); //TODO: use outputStream instead of file!
       String classString = sw.toString();
       return classString;
     } catch (JAXBException ex)

@@ -6,6 +6,10 @@ import eu.openmos.model.utilities.*;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.bson.Document;
 import org.apache.log4j.Logger;
        
@@ -17,44 +21,55 @@ import org.apache.log4j.Logger;
  * @author Luis Ribeiro
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
-public class Recipe extends Base implements Serializable {    
-    private static final Logger logger = Logger.getLogger(Recipe.class.getName());
+@XmlRootElement(name = "recipe")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Recipe_DA extends Base implements Serializable {    
+    private static final Logger logger = Logger.getLogger(Recipe_DA.class.getName());
     private static final long serialVersionUID = 6529685098267757025L;
 
     /**
      * Recipe ID.
      */
+    @XmlElement(name = "amlId")
     private String uniqueId;
     /**
      * Recipe name.
      */
+    @XmlElement(name = "name")
     private String name;
     /**
      * Recipe description.
-     */   
+     */
+    @XmlElement(name = "description")    
     private String description;
     /**
      * Whether the recipe is valid or not.
      */
+    @XmlElement(name = "valid")
     private boolean valid = false;
     /**
      * Recipe's parameter settings. These must match the skill's parameters.
      */
+    @XmlElement(name = "parameterSettings")
     private List<ParameterSetting> parameterSettings;
     /**
      * The skills necessary to execute this recipe.
      */
+    @XmlElement(name = "skillRequirements")
     private List<SkillRequirement> skillRequirements;
     /**
      * Recipe's KPI Settings. These must match the skill's KPIs.
      */
+    @XmlElement(name = "kpiSettings")
     private List<KPISetting> kpiSettings;
 
     /**
      * Pointer to the skill.
      */
+    @XmlElement(name = "skill")
     private Skill skill;
     
+    @XmlElement(name = "executedBySkillControlPort")
     private ControlPort executedBySkillControlPort;
     
     /**
@@ -63,6 +78,7 @@ public class Recipe extends Base implements Serializable {
      * MSB alignment.
      * on the msb side they have the adapter id, and on the adapter class they have the agent id
      */
+    @XmlElement(name = "uniqueAgentName")
     private String uniqueAgentName;
     /**
      * Recipe's equipment.
@@ -70,38 +86,48 @@ public class Recipe extends Base implements Serializable {
     //private Equipment equipment;
     // private SubSystem equipment;
 //    private String equipmentId;
+    @XmlElement(name = "equipmentIds")
     private List<String> equipmentIds;
     
     /**
      * Whether the recipe is optimized or not.
      */
+    @XmlElement(name = "optimized")
     private boolean optimized = false;
     /**
      * Last optimization timestamp.
     */
+    @XmlElement(name = "lastOptimizationTime")
     private Date lastOptimizationTime;
     
     /** 
      * MSB alignment.
      */
+    @XmlElement(name = "msbProtocolEndpoint")
     private String msbProtocolEndpoint;
 
+    @XmlElement(name = "invokeObjectID")
     private String invokeObjectID;
     
+    @XmlElement(name = "invokeMethodID")
     private String invokeMethodID;
     
-    private transient String changeRecipeObjectID;
+    @XmlElement(name = "changeRecipeObjectID")
+    private String changeRecipeObjectID;
     
-    private transient String changeRecipeMethodID;
+    @XmlElement(name = "changeRecipeMethodID")
+    private String changeRecipeMethodID;
     
+    @XmlElement(name = "state")
     private String state;
     
-    private transient String statePath;
+    @XmlElement(name = "statePath")
+    private String statePath;
     
     /**
      * Default constructor, for reflection
      */
-    public Recipe() {super();}
+    public Recipe_DA() {super();}
     
     /**
      * Parameterized constructor.
@@ -121,7 +147,7 @@ public class Recipe extends Base implements Serializable {
      * @param msbProtocolEndpoint,
      * @param registeredTimestamp
      */
-    public Recipe(String description, 
+    public Recipe_DA(String description, 
             String uniqueId, 
             List<KPISetting> kpiSettings, 
             String name, 
@@ -135,7 +161,7 @@ public class Recipe extends Base implements Serializable {
             boolean valid,
             Date registeredTimestamp) {
         super(registeredTimestamp);
-
+        
         this.description = description;
         this.uniqueId = uniqueId;
         this.kpiSettings = kpiSettings;
@@ -353,13 +379,44 @@ public class Recipe extends Base implements Serializable {
         doc.append(DatabaseConstants.SKILL_REQUIREMENT_IDS, skillRequirementIds);           
         doc.append(DatabaseConstants.SKILL_ID, skillId);
         doc.append(DatabaseConstants.EXECUTED_BY_SKILL_CONTROL_PORT_ID, controlPortId);
+//        doc.append(DatabaseConstants.EQUIPMENT_ID, equipmentId);
         doc.append(DatabaseConstants.EQUIPMENT_IDS, equipmentIds);
         doc.append(DatabaseConstants.OPTIMIZED, optimized);
         doc.append(DatabaseConstants.OPTIMIZED_TIME, this.lastOptimizationTime == null ? "null" : sdf.format(this.lastOptimizationTime));
         doc.append(DatabaseConstants.MSB_PROTOCOL_ENDPOINT, msbProtocolEndpoint);
+        
         doc.append(DatabaseConstants.VALID, valid);
+        
         doc.append(DatabaseConstants.REGISTERED, this.registered == null ? "null" : sdf.format(this.registered));
         
         return doc;
     }
+    
+    public static Recipe_DA createRecipe_DA(Recipe recipe)
+    {
+        Recipe_DA recipe_da = new Recipe_DA();
+        recipe_da.setChangeRecipeMethodID(recipe.getChangeRecipeMethodID());
+        recipe_da.setChangeRecipeObjectID(recipe.getChangeRecipeObjectID());
+        recipe_da.setDescription(recipe.getDescription());
+        recipe_da.setEquipmentIds(recipe.getEquipmentIds());
+        recipe_da.setExecutedBySkillControlPort(recipe.getExecutedBySkillControlPort());
+        recipe_da.setInvokeMethodID(recipe.getInvokeMethodID());
+        recipe_da.setInvokeObjectID(recipe.getInvokeObjectID());
+        recipe_da.setKpiSettings(recipe.getKpiSettings());
+        recipe_da.setLastOptimizationTime(recipe.getLastOptimizationTime());
+        recipe_da.setMsbProtocolEndpoint(recipe.getMsbProtocolEndpoint());
+        recipe_da.setName(recipe.getName());
+        recipe_da.setOptimized(recipe.isOptimized());
+        recipe_da.setParameterSettings(recipe.getParameterSettings());
+        recipe_da.setRegistered(recipe.getRegistered());
+        recipe_da.setSkill(recipe.getSkill());
+        recipe_da.setSkillRequirements(recipe.getSkillRequirements());
+        recipe_da.setState(recipe.getState());
+        recipe_da.setStatePath(recipe.getStatePath());
+        recipe_da.setUniqueAgentName(recipe.getUniqueAgentName());
+        recipe_da.setUniqueId(recipe.getUniqueId());
+        recipe_da.setValid(recipe.isValid());
+        return recipe_da;
+    }
+    
 }

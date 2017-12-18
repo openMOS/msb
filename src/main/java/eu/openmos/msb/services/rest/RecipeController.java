@@ -14,16 +14,12 @@ import eu.openmos.model.*;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
-import eu.openmos.msb.services.soap.RecipesDeploymentImpl;
 import eu.openmos.msb.utilities.Functions;
-import java.io.File;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -196,10 +192,11 @@ public class RecipeController extends Base
 
         if (ret)
         {
+            Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
           MSBClientSubscription client = (MSBClientSubscription) deviceAdapter.getClient();
-          String RecipeSerialized = Functions.ClassToString(recipe);
-          NodeId objectID = Functions.convertStringToNodeId(recipe.getChangeRecipeObjectID());
-          NodeId methodID = Functions.convertStringToNodeId(recipe.getChangeRecipeMethodID());
+          String RecipeSerialized = Functions.ClassToString(recipe_DA);
+          NodeId objectID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeObjectID());
+          NodeId methodID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeMethodID());
           boolean updateRecipe = client.updateRecipe(client.getClientObject(), objectID, methodID, RecipeSerialized);
 
           if (updateRecipe)
