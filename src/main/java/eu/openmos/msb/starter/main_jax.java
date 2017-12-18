@@ -5,9 +5,9 @@
  */
 package eu.openmos.msb.starter;
 
-import _masmec.NodeToStringConverter;
-import static _masmec.aml5.getAMLProduct;
-import static _masmec.aml5.getNodeAttributeValue;
+import eu.openmos.msb.utilities.NodeToStringConverter;
+import static eu.openmos.msb.utilities.ProductUpload.getAMLProduct;
+import static eu.openmos.msb.utilities.ProductUpload.getNodeAttributeValue;
 import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.KPISetting;

@@ -1,4 +1,4 @@
-package _masmec;
+package eu.openmos.msb.utilities;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.utilities.Constants;
@@ -40,8 +40,8 @@ import org.xml.sax.SAXParseException;
  *
  * @author valerio.gentile
  */
-public class aml5 {
-    private static final Logger logger = Logger.getLogger(aml5.class.getName());
+public class ProductUpload {
+    private static final Logger logger = Logger.getLogger(ProductUpload.class.getName());
 
     public static void main(String[] args) throws Exception    
 {
@@ -1106,7 +1106,7 @@ public static void main_OLD(String[] args) throws Exception
 
     public static List<Product> getMasmecProducts()
     {
-        return getMasmecProductsFromFile(ConfigurationLoader.getMandatoryProperty("amlfile"));
+        return getProductsFromFile(ConfigurationLoader.getMandatoryProperty("amlfile"));
 /*        
         List<Product> productsList = new LinkedList<>();
         
@@ -1141,7 +1141,7 @@ public static void main_OLD(String[] args) throws Exception
 */
     }
 
-    public static List<Product> getMasmecProductsFromFile(String fileFullName)
+    public static List<Product> getProductsFromFile(String fileFullName)
     {
         List<Product> productsList = new LinkedList<>();
         

@@ -5,7 +5,7 @@
  */
 package eu.openmos.msb.services.rest;
 
-import _masmec.aml5;
+import eu.openmos.msb.utilities.ProductUpload;
 import eu.openmos.model.Product;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
@@ -55,7 +55,7 @@ public Response uploadPdfFile(  @FormDataParam("file") InputStream fileInputStre
     out.flush();
     out.close();
 
-    List<Product> newProducts = aml5.getMasmecProductsFromFile(UPLOAD_PATH + fileMetaData.getFileName());
+    List<Product> newProducts = ProductUpload.getProductsFromFile(UPLOAD_PATH + fileMetaData.getFileName());
     
     PECManager aux = PECManager.getInstance();
 

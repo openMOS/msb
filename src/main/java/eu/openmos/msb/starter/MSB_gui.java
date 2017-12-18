@@ -36,7 +36,7 @@ import DDS.HANDLE_NIL;
 import MSB2ADAPTER.StringMessage;
 import MSB2ADAPTER.StringMessageDataWriter;
 import MSB2ADAPTER.StringMessageDataWriterHelper;
-import _masmec.aml5;
+import eu.openmos.msb.utilities.ProductUpload;
 import com.sun.net.httpserver.HttpServer;
 import eu.openmos.model.Equipment;
 import eu.openmos.model.KPISetting;
@@ -1207,19 +1207,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    * @param evt
    */
     private void startWebServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startWebServiceActionPerformed
-      // TODO handle the stop
 
       String address = soapServiceAddress.getText();
 
-      //myRecipeWS.publish(address, new RecipesDeployerImpl());
-      //System.out.println("Listening: " + address);
-      //opc_comms_log.setText("Starting WebServer...\n Listening on: "+ address);
-      // TODO - af-silva test without the thread stuf
-//      Thread wsThread = new Thread()
-//      {
-//        @Override
-//        public void run()
-//        {
       logger.debug("Starting MSB WebServices...\nListening on: " + address + "\n");
       opc_comms_log.append("Starting MSB WebServices...\nListening on: " + address + "\n");
       Endpoint e1 = Endpoint.publish(address + "wsRecipesDeployment", new RecipesDeploymentImpl());
@@ -1235,10 +1225,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         setConnectionColor(false, true, OnOffSOAP, labelSOAP);
         opc_comms_log.append("Failed to Start MSB WebServices\n");
       }
-//        }
-//      };
-//
-//      wsThread.start();
     }//GEN-LAST:event_startWebServiceActionPerformed
 
   /**
@@ -1953,7 +1939,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       // user selects a file
       selectedFile = fc.getSelectedFile();
 
-      List<Product> newProducts = aml5.getMasmecProductsFromFile(selectedFile.getAbsolutePath());
+      List<Product> newProducts = ProductUpload.getProductsFromFile(selectedFile.getAbsolutePath());
 
       PECManager aux = PECManager.getInstance();
 

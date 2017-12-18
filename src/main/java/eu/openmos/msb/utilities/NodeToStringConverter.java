@@ -1,4 +1,4 @@
-package _masmec;
+package eu.openmos.msb.utilities;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
