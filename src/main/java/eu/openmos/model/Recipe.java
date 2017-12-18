@@ -6,6 +6,10 @@ import eu.openmos.model.utilities.*;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.bson.Document;
 import org.apache.log4j.Logger;
        
@@ -17,8 +21,8 @@ import org.apache.log4j.Logger;
  * @author Luis Ribeiro
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
-//@XmlRootElement(name = "recipe")
-//@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "recipe")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Recipe extends Base implements Serializable {    
     private static final Logger logger = Logger.getLogger(Recipe.class.getName());
     private static final long serialVersionUID = 6529685098267757025L;
@@ -26,42 +30,46 @@ public class Recipe extends Base implements Serializable {
     /**
      * Recipe ID.
      */
-    //@XmlElement(name = "amlId")
+    @XmlElement(name = "amlId")
     private String uniqueId;
     /**
      * Recipe name.
      */
-    //@XmlElement(name = "name")
+    @XmlElement(name = "name")
     private String name;
     /**
      * Recipe description.
      */
-    //@XmlElement(name = "description")    
+    @XmlElement(name = "description")    
     private String description;
     /**
      * Whether the recipe is valid or not.
      */
-    //@XmlElement(name = "valid")
+    @XmlElement(name = "valid")
     private boolean valid = false;
     /**
      * Recipe's parameter settings. These must match the skill's parameters.
      */
+    @XmlElement(name = "parameterSettings")
     private List<ParameterSetting> parameterSettings;
     /**
      * The skills necessary to execute this recipe.
      */
-    //@XmlElement(name = "skillRequirements")
+    @XmlElement(name = "skillRequirements")
     private List<SkillRequirement> skillRequirements;
     /**
      * Recipe's KPI Settings. These must match the skill's KPIs.
      */
+    @XmlElement(name = "kpiSettings")
     private List<KPISetting> kpiSettings;
 
     /**
      * Pointer to the skill.
      */
-    //@XmlElement(name = "skill")
+    @XmlElement(name = "skill")
     private Skill skill;
+    
+    @XmlElement(name = "executedBySkillControlPort")
     private ControlPort executedBySkillControlPort;
     
     /**
@@ -70,6 +78,7 @@ public class Recipe extends Base implements Serializable {
      * MSB alignment.
      * on the msb side they have the adapter id, and on the adapter class they have the agent id
      */
+    @XmlElement(name = "uniqueAgentName")
     private String uniqueAgentName;
     /**
      * Recipe's equipment.
@@ -77,33 +86,43 @@ public class Recipe extends Base implements Serializable {
     //private Equipment equipment;
     // private SubSystem equipment;
 //    private String equipmentId;
+    @XmlElement(name = "equipmentIds")
     private List<String> equipmentIds;
     
     /**
      * Whether the recipe is optimized or not.
      */
+    @XmlElement(name = "optimized")
     private boolean optimized = false;
     /**
      * Last optimization timestamp.
     */
+    @XmlElement(name = "lastOptimizationTime")
     private Date lastOptimizationTime;
     
     /** 
      * MSB alignment.
      */
+    @XmlElement(name = "msbProtocolEndpoint")
     private String msbProtocolEndpoint;
 
+    @XmlElement(name = "invokeObjectID")
     private String invokeObjectID;
     
+    @XmlElement(name = "invokeMethodID")
     private String invokeMethodID;
     
-    private transient String changeRecipeObjectID;
+    @XmlElement(name = "changeRecipeObjectID")
+    private String changeRecipeObjectID;
     
-    private transient String changeRecipeMethodID;
+    @XmlElement(name = "changeRecipeMethodID")
+    private String changeRecipeMethodID;
     
+    @XmlElement(name = "state")
     private String state;
     
-    private transient String statePath;
+    @XmlElement(name = "statePath")
+    private String statePath;
     
     /**
      * Default constructor, for reflection
@@ -231,7 +250,6 @@ public class Recipe extends Base implements Serializable {
   {
     this.changeRecipeMethodID = changeRecipeMethodID;
   }
-    
 
     public List<ParameterSetting> getParameterSettings() {
         return parameterSettings;
@@ -253,27 +271,6 @@ public class Recipe extends Base implements Serializable {
         return equipmentIds;
     }
 
-    /* public Equipment getEquipment() {
-    return equipment;
-    }
-    public void setEquipment(Equipment equipment) {
-    this.equipment = equipment;
-    } */
-/*
-    public SubSystem getEquipment() {
-    return equipment;
-    }
-    public void setEquipment(SubSystem equipment) {
-    this.equipment = equipment;
-    }
-     */
-//    public String getEquipmentId() {
-//        return equipmentId;
-//    }
-//    
-//    public void setEquipmentId(String equipmentId) {
-//        this.equipmentId = equipmentId;
-//    }
     public void setEquipmentIds(List<String> equipmentIds) {
         this.equipmentIds = equipmentIds;
     }
