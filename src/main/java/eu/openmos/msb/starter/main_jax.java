@@ -23,6 +23,8 @@ import eu.openmos.msb.datastructures.DecisionTree;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +32,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +49,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -59,48 +66,63 @@ public class main_jax
   {
     try
     {
-        /*
-      FileInputStream fileIS = new FileInputStream("C:\\temp\\VER4 - Product.aml");
-      DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = builderFactory.newDocumentBuilder();
-      Document xmlDocument = builder.parse(fileIS);
-      
-        List<Product> newProducts = loadProducts(xmlDocument);
-
-        for (int i = 0; i < newProducts.size(); i++) {
-            Product auxProduct = newProducts.get(i);
-            for (int j = 0; j < auxProduct.getSkillRequirements().size(); j++) {
-                SkillRequirement auxSR = auxProduct.getSkillRequirements().get(j);
-                DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
-            }
-        }
-      */
-      //CreateTree(testing.get(0));
-      
-      /*
-      FileInputStream fileIS1 = new FileInputStream("C:\\Users\\Introsys\\Desktop\\XMLTest\\file2.xml");
-      DocumentBuilderFactory builderFactory1 = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder1 = builderFactory1.newDocumentBuilder();
-      Document xmlDocument1 = builder1.parse(fileIS1);
-      
-      SubSystem auxSystem = new SubSystem();  
-      //auxSystem.setExecutionTable(ReadExecutionTable(xmlDocument));
-      auxSystem.setRecipes(ReadRecipes(xmlDocument));
-      //auxSystem.setInternaleModules(ReadModules(xmlDocument));
-      //auxSystem.setSkills(ReadSkill(xmlDocument1));
-      */
-        
-        
-        
+      String marsh = createString();      
+      Recipe recipe = (Recipe) StringToClass(marsh, new Recipe());
       int i = 0;
-      
-    } catch (Exception ex)
+    } catch (JAXBException ex)
     {
       System.out.println("ERROR " + ex.getMessage());
     }
   }
 
-  
+    private static String createString() throws JAXBException {
+        SkillRequirement SR = new SkillRequirement();
+        SR.setUniqueId("SR_ID");
+        SR.setName("SR_NAME");
+        List<SkillRequirement> SR_List = new ArrayList<>();
+        SR_List.add(SR);
+        Skill skill = new Skill();
+        skill.setUniqueId("skill_ID");
+        skill.setName("skill_NAME");
+        Recipe recipe = new Recipe();
+        recipe.setUniqueId("recipe_ID");
+        recipe.setName("recipe_NAME");
+        recipe.setSkill(skill);
+        recipe.setSkillRequirements(SR_List);
+
+        StringWriter sw = new StringWriter();
+        javax.xml.bind.JAXBContext jc = JAXBContext.newInstance(Recipe.class);
+        Marshaller jaxbMArshaller = jc.createMarshaller();
+        jaxbMArshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        jaxbMArshaller.marshal(recipe, sw); //print to String
+        //String excTablesString = XMLtoString("updateExecTables.xml"); //TODO: use outputStream instead of file!
+        String recipeString = sw.toString();
+        return recipeString;
+    }
+
+    private static Object StringToClass(String stringClass, Object classToParse) {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = null;
+
+        try {
+            db = dbf.newDocumentBuilder();
+            InputSource is = new InputSource();
+            is.setCharacterStream(new StringReader(stringClass));
+
+            org.w3c.dom.Document doc = db.parse(is);
+            JAXBContext jc = JAXBContext.newInstance(classToParse.getClass());
+            Unmarshaller unmar = jc.createUnmarshaller();
+            classToParse = (Object) unmar.unmarshal(doc);
+            
+            return classToParse;
+        } catch (IOException | JAXBException | ParserConfigurationException | SAXException ex) {
+            // handle ParserConfigurationException
+            System.out.println("Error parsing stringToClass: " + ex);
+        }
+        return null;
+    }
+
   private static List<Product> loadProducts(Document document) throws XPathExpressionException, Exception 
   {
         XPath xpath = XPathFactory.newInstance().newXPath();
