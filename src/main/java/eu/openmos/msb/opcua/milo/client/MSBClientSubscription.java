@@ -73,6 +73,8 @@ public class MSBClientSubscription implements IClient
   private final AtomicLong clientHandles = new AtomicLong(1L);
   private List<UaMonitoredItem> items;
   private final StopWatch recipeExecutionWatch = new StopWatch();
+  private final StopWatch recipeUpdateWatch = new StopWatch();
+  
 
   /**
    *
@@ -294,6 +296,48 @@ public class MSBClientSubscription implements IClient
     {
       perfMeasurement.getRecipeCallMethodTillResultTimers().add(recipeExecutionWatch.getTime());
       recipeExecutionWatch.stop();
+      java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
+
+    }
+    return false;
+  }
+  
+  public boolean updateRecipe(OpcUaClient client, NodeId objectId, NodeId methodId, String recipeString)
+  {
+    PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+    recipeUpdateWatch.reset();
+    recipeUpdateWatch.start();
+
+    CallMethodRequest request = new CallMethodRequest(
+            objectId, methodId, new Variant[]
+            {
+              new Variant(recipeString)
+            });
+
+    try
+    {
+      StatusCode res = client.call(request).get().getStatusCode();
+
+      if (res.isGood())
+      {
+        perfMeasurement.getRecipeUpdateMethodTillResultTimers().add(recipeUpdateWatch.getTime());
+        //recipeExecutionWatch.stop();
+        return true;
+      } else if (res.isBad())
+      {
+        perfMeasurement.getRecipeUpdateMethodTillResultTimers().add(recipeUpdateWatch.getTime());
+        //recipeExecutionWatch.stop();
+        return false;
+      } else
+      {
+        perfMeasurement.getRecipeUpdateMethodTillResultTimers().add(recipeUpdateWatch.getTime());
+        //recipeExecutionWatch.stop();
+        return false;
+      }
+    } catch (InterruptedException | ExecutionException ex)
+    {
+      perfMeasurement.getRecipeUpdateMethodTillResultTimers().add(recipeUpdateWatch.getTime());
+      recipeUpdateWatch.stop();
       java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
 
     }
