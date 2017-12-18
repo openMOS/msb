@@ -41,7 +41,8 @@ public static void main(String[] args)
                 .register(RecipeController.class)
                 .register(SkillController.class)
                 .register(SubSystemController.class)
-                .register(MultiPartFeature.class);
+                .register(MultiPartFeature.class)
+                .register(SystemStatusController.class);
                 
         
         resourceConfig.register(new CORSFilter());
