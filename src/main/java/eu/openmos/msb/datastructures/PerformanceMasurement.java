@@ -25,6 +25,7 @@ public class PerformanceMasurement
   private final List<Long> OrderTillRecipeCallTimers;
   private final List<Long> OrderTillOrderInstanceCreationTimers;
   private final List<Long> RecipeCallMethodTillResultTimers;
+  private final List<Long> RecipeUpdateMethodTillResultTimers;
   private final List<Long> ChangeStateTillNextRecipeCallTimers;
   private final List<Long> AdapterReadyTillRecipeCallTimers;
   private final List<Long> AgentCreationTillAgentConfirmationTimers;
@@ -41,6 +42,7 @@ public class PerformanceMasurement
     OrderTillRecipeCallTimers = new ArrayList<>();
     OrderTillOrderInstanceCreationTimers = new ArrayList<>();
     RecipeCallMethodTillResultTimers = new ArrayList<>();
+    RecipeUpdateMethodTillResultTimers = new ArrayList<>();
     ChangeStateTillNextRecipeCallTimers = new ArrayList<>();
     AdapterReadyTillRecipeCallTimers = new ArrayList<>();
     AgentCreationTillAgentConfirmationTimers = new ArrayList<>();
@@ -87,6 +89,12 @@ public class PerformanceMasurement
   {
     PerformanceMasurement aux = PerformanceMasurement.getInstance();
     return aux.RecipeCallMethodTillResultTimers;
+  }
+
+  public List<Long> getRecipeUpdateMethodTillResultTimers()
+  {
+    PerformanceMasurement aux = PerformanceMasurement.getInstance();
+    return aux.RecipeUpdateMethodTillResultTimers;
   }
 
   public List<Long> getChangeStateTillNextRecipeCallTimers()
@@ -182,6 +190,13 @@ public class PerformanceMasurement
       writer.write("\n");
       writer.write("RecipeCallMethodTillResult: ");
       for (Long time : aux.getRecipeCallMethodTillResultTimers())
+      {
+        writer.write(time.toString());
+        writer.write("ms ");
+      }
+      writer.write("\n");
+      writer.write("RecipeUpdateMethodTillResult: ");
+      for (Long time : aux.getRecipeUpdateMethodTillResultTimers())
       {
         writer.write(time.toString());
         writer.write("ms ");

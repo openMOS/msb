@@ -15,6 +15,7 @@ import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.services.soap.RecipesDeploymentImpl;
+import eu.openmos.msb.utilities.Functions;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  *
@@ -192,30 +194,22 @@ public class RecipeController extends Base
           }
         }
 
-        if(ret){
-        MSBClientSubscription client = (MSBClientSubscription) deviceAdapter.getClient();
-        String RecipeSerialized= recipe.toString();
-        return recipe;
+        if (ret)
+        {
+          MSBClientSubscription client = (MSBClientSubscription) deviceAdapter.getClient();
+          String RecipeSerialized = Functions.ClassToString(recipe);
+          NodeId objectID = Functions.convertStringToNodeId(recipe.getChangeRecipeObjectID());
+          NodeId methodID = Functions.convertStringToNodeId(recipe.getChangeRecipeMethodID());
+          boolean updateRecipe = client.updateRecipe(client.getClientObject(), objectID, methodID, RecipeSerialized);
+
+          if (updateRecipe)
+          {
+            return recipe;
+          } else
+          {
+            return null;
+          }
         }
-
-       /* try
-        {
-          File file = new File("updateRecipeRest.xml");
-          javax.xml.bind.JAXBContext jc = JAXBContext.newInstance(ExecutionTable.class);
-          Marshaller jaxbMArshaller = jc.createMarshaller();
-          jaxbMArshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-          jaxbMArshaller.marshal(recipe, System.out); //print in the console
-          jaxbMArshaller.marshal(recipe, file); //print in the file
-          StringWriter sw = new StringWriter();
-          jaxbMArshaller.marshal(recipe, sw); //print to String
-          //String excTablesString = XMLtoString("updateExecTables.xml"); //TODO: use outputStream instead of file!
-          String recipeString = sw.toString();
-
-        } catch (JAXBException ex)
-        {
-          System.out.println(ex);
-          return recipe;
-        }*/
 
       }
     }
