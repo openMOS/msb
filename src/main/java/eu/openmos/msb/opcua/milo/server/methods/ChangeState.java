@@ -68,8 +68,8 @@ public class ChangeState
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
     System.out.println("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id + " productID: " + productInstance_id + " recipeID:" + recipe_id);
 
-    String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+    String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
+    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
     //add adapter states strings to properties
     NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
     DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
@@ -88,8 +88,7 @@ public class ChangeState
       System.out.println("Error reading ADAPTER STATE!");
       logger.error("Error reading ADAPTER STATE!");
     }
-    String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-    MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name1);
+    MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
 
     //read recipe KPIs
     Thread threadKPI = new Thread()

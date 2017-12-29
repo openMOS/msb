@@ -5,15 +5,10 @@
  */
 package eu.openmos.msb.utilities;
 
-import eu.openmos.model.Recipe;
-import eu.openmos.model.Skill;
-import eu.openmos.model.SkillRequirement;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,6 +19,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -53,8 +49,9 @@ public class Functions
       int ns = Integer.parseInt(toConvert.split(":")[0]);
       String identifier = toConvert.substring(toConvert.indexOf(":") + 1);
       return new NodeId(ns, identifier);
-    } catch (Exception ex)
+    } catch (NumberFormatException ex)
     {
+        System.out.println("ERROR convertStringToNodeId: " + ex.getMessage());
       return null;
     }
   }
@@ -66,42 +63,17 @@ public class Functions
       return client.readValue(0, TimestampsToReturn.Neither, node).get().getValue().getValue().toString();
     } catch (InterruptedException | ExecutionException ex)
     {
-      System.out.println("ERROR reading node: " + ex);
+      System.out.println("ERROR reading node: " + ex.getMessage());
       return "";
     }
   }
   
-  public static void writeNode(OpcUaClient client, NodeId node, String value)
+    public static void writeNode(OpcUaClient client, NodeId node, String value)
     {
         Variant v = new Variant(value);
         DataValue dv = new DataValue(v, null, null);
         client.writeValue(node, dv);
     }
-  
-  public static String XMLtoString(String path)
-   {
-       try
-       {
-           File fXmlFile = new File(path);
-           DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-           DocumentBuilder dBuilder = null;
-           dBuilder = dbFactory.newDocumentBuilder();
-           org.w3c.dom.Document doc = dBuilder.parse(fXmlFile);
-
-           StringWriter sw = new StringWriter();
-           TransformerFactory tf = TransformerFactory.newInstance();
-           Transformer transformer = tf.newTransformer();
-           transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-           transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-           transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-           transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-           transformer.transform(new DOMSource((org.w3c.dom.Node) doc), new StreamResult(sw));
-           return sw.toString();
-       } catch (Exception ex)
-       {
-           throw new RuntimeException("Error converting to String", ex);
-       }
-   }
   
   public static String ClassToString(Object classToParse)
   {
