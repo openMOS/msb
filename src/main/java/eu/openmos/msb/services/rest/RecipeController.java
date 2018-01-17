@@ -264,7 +264,6 @@ public class RecipeController extends Base
     logger.debug("cpad getSkillRequirementsList - of the skill = " + recipeId);
 
     List<SkillRequirement> skillReq = new LinkedList<>();
-
     DACManager DACinstance = DACManager.getInstance();
     List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
     for (int i = 0; i < deviceAdaptersNames.size(); i++)
@@ -278,7 +277,6 @@ public class RecipeController extends Base
         }
       }
     }
-
     return skillReq;
   }
 
@@ -316,7 +314,7 @@ public class RecipeController extends Base
     return kpiSett;
   }
 
-      @POST
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/insertNewRecipe/{subSystemId}")

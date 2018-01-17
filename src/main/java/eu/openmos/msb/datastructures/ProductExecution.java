@@ -146,9 +146,9 @@ public class ProductExecution implements Runnable
                     boolean getOut = false;
                     for (String recipeID : auxSR.getRecipeIDs())
                     {
-                      if (checkRecipeAvailable(recipeID))
+                      if (checkRecipeAvailable(recipeID)) //check if the recipe is valid and if the DA and nextDA are at ready state
                       {
-                        if (executeRecipe(recipeID, auxProdInstance))
+                        if (executeRecipe(recipeID, auxProdInstance)) //if returns false, check another alternative recipe for the same SR
                         {
                           System.out.println("The execution of Recipe: " + recipeID + " Returned true");
 
@@ -167,7 +167,7 @@ public class ProductExecution implements Runnable
                           break;
                         } else
                         {
-                          System.out.println("[ERROR] The execution of Recipe: " + recipeID + " Returned false!");
+                          System.out.println("[INFO] The execution of Recipe: " + recipeID + " Returned false! checking alternatives...");
                         }
                       }
                     }
@@ -221,7 +221,7 @@ public class ProductExecution implements Runnable
         DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
         if (statePath.isNotNull())
         {
-          String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+          String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath); //read the DA state, capable of executing the required recipeID
           da.getSubSystem().setState(state);
 
           if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
@@ -235,7 +235,6 @@ public class ProductExecution implements Runnable
         {
           return false;
         }
-
       }
     }
     return false;
@@ -303,44 +302,6 @@ public class ProductExecution implements Runnable
     return null;
   }
 
-  private boolean checkProductAgentComms(String productInstID)
-  {
-
-    for (ProductInstance prodInst : PECManager.getInstance().getProductsToDo())
-    {
-      if (productInstID.equals(prodInst.getUniqueId()))
-      {
-        System.out.println("Checking if the current product instance has agent representation...");
-        Boolean hasAgent = prodInst.getHasAgent();
-
-        if (hasAgent)
-        {
-          System.out.println("It has!");
-        }
-
-        String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-        boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
-
-        if (withAGENTCloud && hasAgent)
-        {
-          return true;
-        } else if (!withAGENTCloud && !hasAgent)
-        {
-          return true;
-        } else if (!withAGENTCloud && hasAgent)
-        {
-          return true;
-        } else
-        {
-          return false;
-        }
-      }
-    }
-
-    return false;
-
-  }
-
   private boolean executeRecipe(String recipeID, ProductInstance prodInst)
   {
     String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
@@ -357,7 +318,7 @@ public class ProductExecution implements Runnable
           DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
           boolean result = false;
 
-          if (!notAgain)
+          if (!notAgain) //only get timer once
           {
             PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
             perfMeasurement.getOrderTillRecipeCallTimers().add(firstRecipeCallTime.getTime());
@@ -403,6 +364,10 @@ public class ProductExecution implements Runnable
                 PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
                 System.out.println("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
               }
+            }
+            else if (MSBConstants.MSB_OPTIMIZER)
+            {
+                return false;
             }
           }
           

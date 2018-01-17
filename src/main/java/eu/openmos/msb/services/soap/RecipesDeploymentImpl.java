@@ -9,17 +9,10 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.services.rest.SystemStatusController;
 import eu.openmos.msb.utilities.Functions;
-import static eu.openmos.msb.utilities.Functions.XMLtoString;
-import java.io.File;
-import java.io.StringWriter;
 import java.util.List;
-import java.util.logging.Level;
 import javax.jws.WebService;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import org.apache.log4j.Logger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.persistence.jaxb.JAXBContext;
 
 /**
  *
