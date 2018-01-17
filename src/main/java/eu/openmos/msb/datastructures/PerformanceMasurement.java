@@ -7,10 +7,14 @@ package eu.openmos.msb.datastructures;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 
 /**
  *
@@ -135,8 +139,11 @@ public class PerformanceMasurement
   public void exportTimers() throws IOException
   {
     PerformanceMasurement aux = PerformanceMasurement.getInstance();
-
-    try (FileWriter writer = new FileWriter("outputMSBPerformanceTimers.txt"))
+    System.out.println("Exporting Timers");
+    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH_mm_ss");
+    String formatedDate = formatter.format(new Date());
+    
+    try (FileWriter writer = new FileWriter("C:\\Users\\Introsys\\Desktop\\outputMSBPerformanceTimers"+formatedDate+".txt"))
     {
       writer.write("\n");
       writer.write("AgentCreationTillAgentConfirmation: ");
@@ -210,6 +217,8 @@ public class PerformanceMasurement
       }
       writer.write("\n");
 
+    }catch(IOException ex){
+      System.out.println(""+ex.getMessage());
     }
   }
 

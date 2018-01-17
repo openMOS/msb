@@ -655,6 +655,42 @@ public class DatabaseInteraction
     return name;
   }
 
+  public int getDeviceAdapter_DB_ID_byModuleID(String module_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+
+    int id = 0;
+    String sql = "SELECT Modules.da_id FROM Modules WHERE Modules.aml_id = '" + module_id + "'";
+
+    try (Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql))
+    {
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        //System.out.println("No data");
+      } else
+      {
+        while (rs.next())
+        {
+          id = rs.getInt("da_id");
+          //System.out.println("Found device with name:  " + name);
+          break;
+        }
+      }
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return id;
+  }
+  
   /**
    *
    * @param skillName
@@ -1604,14 +1640,14 @@ public class DatabaseInteraction
     return null;
   }
 
-  public boolean registerModule(String device_name, String module_name, String status, String address)
+  public boolean registerModule(String da_name, String module_name, String aml_id, String status, String address)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
 
     int device_id;
-    device_id = getDeviceAdapterDB_ID_ByName(device_name);
+    device_id = getDeviceAdapterDB_ID_ByName(da_name);
     if (device_id == -1)
     {
       return false;
@@ -1622,14 +1658,14 @@ public class DatabaseInteraction
       Statement stmt = conn.createStatement();
       {
         String sql = "INSERT INTO Modules"
-                + "(da_id, status, name, address)"
+                + "(da_id, aml_id, status, name, address)"
                 + " VALUES ("
-                + "'" + device_id + "','" + status + "','" + module_name + "','" + address + "')";
+                + "'" + device_id + "','" + aml_id + "','" + status + "','" + module_name + "','" + address + "')";
         stmt.execute(sql);
         ResultSet r = stmt.getGeneratedKeys();
       }
       stmt.close();
-      System.out.println("REGISTER MODULE  " + module_name + " " + status + " " + device_name);
+      System.out.println("REGISTER MODULE  " + module_name + " " + status + " " + da_name);
 
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);

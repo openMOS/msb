@@ -20,6 +20,7 @@ import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.ws.BindingProvider;
@@ -53,9 +54,14 @@ public class ProductExecution implements Runnable
       checkPriority();
     } else
     {
-      System.out.println("\n\n************** Starting Executor! ********************\n\n\n");
-      pecm.setState(true);
-      ExecuteOrder();
+      if (hasPendingOrders())
+      {
+        System.out.println("\n\n************** Starting Executor! ********************\n\n\n");
+        pecm.setState(true);
+        ExecuteOrder();
+      }
+      else
+        System.out.println("\n\n************** All orders have been finished! ********************\n\n\n");
     }
   }
 
@@ -99,6 +105,14 @@ public class ProductExecution implements Runnable
     }
   }
 
+  private boolean hasPendingOrders()
+  {
+    PECManager ProdManager = PECManager.getInstance();
+    List<OrderInstance> orderInstanceList = ProdManager.getOrderInstanceList();
+
+    return orderInstanceList.size() > 0;
+  }
+  
   public void ExecuteProdsInstance()
   {
     PECManager ProdManager = PECManager.getInstance();
@@ -358,32 +372,48 @@ public class ProductExecution implements Runnable
               System.out.println("[SEMAPHORE][PS] ACQUIRED for " + da.getSubSystem().getName());
               DeviceAdapter da_next = getDAofNextRecipe(da, recipeID);
               //ONLY EXECUTE IF NEXT DA IS AVAILABLE
-              if (da.getSubSystem().getUniqueId().equals(da_next.getSubSystem().getUniqueId()))
+              if (da_next != null)
               {
-                System.out.println("The first and second recipe are from the same adapter!");
-                break;
-              }
-              else
-              {
-                if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
+                if (da.getSubSystem().getUniqueId().equals(da_next.getSubSystem().getUniqueId()))
                 {
-                  System.out.println("[SEMAPHORE] ACQUIRED for NEXT " + da_next.getSubSystem().getName());
+                  System.out.println("The first and second recipe are from the same adapter!");
                   break;
                 } else
                 {
-                  PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
-                  System.out.println("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
-                  try
+                  if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
                   {
-                    Thread.sleep(3000);
-                  } catch (InterruptedException ex)
+                    System.out.println("[SEMAPHORE] ACQUIRED for NEXT " + da_next.getSubSystem().getName());
+                    break;
+                  } else
                   {
-                    Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+                    PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
+                    System.out.println("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
+                    try
+                    {
+                      Thread.sleep(3000);
+                    } catch (InterruptedException ex)
+                    {
+                      Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                   }
                 }
               }
+              else
+              {
+                PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
+                System.out.println("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
+              }
             }
           }
+          
+          try
+          {
+            Thread.sleep(2000);
+          } catch (InterruptedException ex)
+          {
+            Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          
           prodInst.setStartedProductionTime(new Date());
 
           String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");

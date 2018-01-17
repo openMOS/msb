@@ -194,7 +194,17 @@ public class DACManager
     int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      return deviceAdapters.get(id).getListOfEquipments();
+      return deviceAdapters.get(id).getListOfModules();
+    }
+    return null;
+  }
+  
+  public DeviceAdapter getDeviceAdapterFromModuleID(String module_id)
+  {
+    int id = DatabaseInteraction.getInstance().getDeviceAdapter_DB_ID_byModuleID(module_id);
+    if (id != -1 && deviceAdapters.containsKey(id))
+    {
+      return deviceAdapters.get(id);
     }
     return null;
   }
@@ -301,10 +311,10 @@ public class DACManager
     return db.registerSkill(deviceAdapterName, aml_id, name, description);
   }
 
-  public boolean registerModule(String deviceAdapterName, String name, String status, String address)
+  public boolean registerModule(String da_Name, String module_name, String aml_id, String status, String address)
   {
     DatabaseInteraction db = DatabaseInteraction.getInstance();
-    return db.registerModule(deviceAdapterName, name, status, address);
+    return db.registerModule(da_Name, module_name, aml_id, status, address);
   }
   
   public boolean skillExists(String aml_id)

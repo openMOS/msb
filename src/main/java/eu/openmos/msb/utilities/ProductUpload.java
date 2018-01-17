@@ -150,6 +150,7 @@ public class ProductUpload {
         expr = xpath.compile(
                 "/CAEXFile/"
                 + "InstanceHierarchy/"
+                + "InternalElement/"
                 + "InternalElement[@RefBaseSystemUnitPath='openMOSSystemUnitClassLib/Part']"
         );
         NodeList products = (NodeList) expr.evaluate(document, XPathConstants.NODESET);

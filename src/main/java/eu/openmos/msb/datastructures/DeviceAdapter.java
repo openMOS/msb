@@ -131,7 +131,7 @@ public abstract class DeviceAdapter
    *
    * @return
    */
-  public List<Module> getListOfEquipments()
+  public List<Module> getListOfModules()
   {
     return this.subSystem.getInternalModules();
   }
@@ -267,7 +267,6 @@ public abstract class DeviceAdapter
           subSystem.getRecipes().addAll(module.getRecipes());
       }*/
       
-      
       //Introsys DEMO: associate DAid to the recipe
       List<Recipe> recipes = subSystem.getRecipes();
       List<String> equipmentIds = new LinkedList<>();
@@ -276,11 +275,6 @@ public abstract class DeviceAdapter
         recipes.get(i).setEquipmentIds(equipmentIds);
       }
       
-      /*for (Recipe recipe : subSystem.getRecipes())
-      {
-        recipe.getEquipmentIds().add(subSystem.getUniqueId());
-      }*/
-
       subSystem.setType(ReadDeviceAdapterType(deviceDescriptionDoc));
 
       List<String> ReadDeviceAdapterState = ReadDeviceAdapterState(deviceDescriptionDoc);
@@ -290,7 +284,10 @@ public abstract class DeviceAdapter
         subSystem.setStatePath(ReadDeviceAdapterState.get(0));
       }
 
-      PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
+      if (subSystem.getName().contains("AGV"))
+        PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(2));
+      else
+        PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
       System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
       
       return true;

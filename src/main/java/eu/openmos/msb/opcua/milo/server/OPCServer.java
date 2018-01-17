@@ -194,8 +194,8 @@ public class OPCServer
             .setBuildInfo(
                     new BuildInfo(
                             productUri,
-                            "eclipse",
-                            "eclipse milo msb server",
+                            "OpenMOS",
+                            "MSB OPC-UA Server",
                             OpcUaServer.SDK_VERSION,
                             "", DateTime.now()))
             .setCertificateManager(certificateManager)

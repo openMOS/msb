@@ -78,6 +78,7 @@ import eu.openmos.msb.services.rest.FileUploadController;
 import eu.openmos.msb.services.rest.ModuleController;
 import eu.openmos.msb.services.rest.SubSystemController;
 import eu.openmos.msb.services.rest.SystemStatusController;
+import eu.openmos.msb.utilities.Functions;
 import java.io.FileNotFoundException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -122,6 +123,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private StopWatch guiWatch;
   private static int priority = 1;
   private final StopWatch OrderWatch = new StopWatch();
+  
+
   
   /**
    *
@@ -257,6 +260,15 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     l_testDDS = new javax.swing.JLabel();
     l_DDSDevice = new javax.swing.JLabel();
     l_DDSRecipe = new javax.swing.JLabel();
+    jPanel5 = new javax.swing.JPanel();
+    startWebService = new javax.swing.JButton();
+    soapServiceAddress = new javax.swing.JTextField();
+    OnOffSOAP = new javax.swing.JPanel();
+    jLabel10 = new javax.swing.JLabel();
+    jLabel11 = new javax.swing.JLabel();
+    restServiceAddress = new javax.swing.JTextField();
+    startRESTWebService = new javax.swing.JButton();
+    OnOffREST = new javax.swing.JPanel();
     jPanel4 = new javax.swing.JPanel();
     jScrollPane7 = new javax.swing.JScrollPane();
     tableSubmittedOrders = new javax.swing.JTable();
@@ -267,15 +279,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     submitedOrdersLabel = new javax.swing.JLabel();
     executedOrdersLabel = new javax.swing.JLabel();
     currentOrdersLabel = new javax.swing.JLabel();
-    jPanel5 = new javax.swing.JPanel();
-    startWebService = new javax.swing.JButton();
-    soapServiceAddress = new javax.swing.JTextField();
-    OnOffSOAP = new javax.swing.JPanel();
-    jLabel10 = new javax.swing.JLabel();
-    jLabel11 = new javax.swing.JLabel();
-    restServiceAddress = new javax.swing.JTextField();
-    startRESTWebService = new javax.swing.JButton();
-    OnOffREST = new javax.swing.JPanel();
+    btnClearSubmittedOrders = new javax.swing.JButton();
+    btnClearCurrentOrders = new javax.swing.JButton();
     l_openmosLogo = new javax.swing.JLabel();
     p_productExecution = new javax.swing.JPanel();
     productExecutionLabel = new javax.swing.JLabel();
@@ -635,12 +640,12 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                 .addComponent(textToSend, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                  .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btn_SendURL, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_RequestProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_sendRecipe, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_invoqueMethod, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(comboServers, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE))
+                  .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btn_SendURL, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE)
+                    .addComponent(btn_RequestProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE)
+                    .addComponent(btn_sendRecipe, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE)
+                    .addComponent(btn_invoqueMethod, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE)
+                    .addComponent(comboServers, 0, 311, Short.MAX_VALUE))
                   .addGap(27, 27, 27)
                   .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btn_updatestatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -692,7 +697,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addComponent(LDSRegisterserver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel6)
@@ -840,83 +845,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     jTabbedPane1.addTab("DDS", p_dds);
 
-    tableSubmittedOrders.setModel(new javax.swing.table.DefaultTableModel(
-      new Object [][]
-      {
-
-      },
-      new String []
-      {
-        "Order_ID", "Product_ID", "ProdInst_ID", "Priority"
-      }
-    ));
-    jScrollPane7.setViewportView(tableSubmittedOrders);
-
-    tableExecutedOrders.setModel(new javax.swing.table.DefaultTableModel(
-      new Object [][]
-      {
-
-      },
-      new String []
-      {
-        "Order_ID", "Product_ID", "ProdInst_ID"
-      }
-    ));
-    jScrollPane8.setViewportView(tableExecutedOrders);
-
-    tableCurrentOrder.setModel(new javax.swing.table.DefaultTableModel(
-      new Object [][]
-      {
-
-      },
-      new String []
-      {
-        "OrderID", "ProductID", "ProdInst_ID", "Last DA", "Next DA"
-      }
-    ));
-    jScrollPane9.setViewportView(tableCurrentOrder);
-
-    submitedOrdersLabel.setText("Submitted Orders");
-
-    executedOrdersLabel.setText("Executed Orders");
-
-    currentOrdersLabel.setText("Current Order");
-
-    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-    jPanel4.setLayout(jPanel4Layout);
-    jPanel4Layout.setHorizontalGroup(
-      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel4Layout.createSequentialGroup()
-        .addGap(29, 29, 29)
-        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(currentOrdersLabel)
-          .addComponent(executedOrdersLabel)
-          .addComponent(submitedOrdersLabel)
-          .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
-          .addComponent(jScrollPane8)
-          .addComponent(jScrollPane7))
-        .addContainerGap(31, Short.MAX_VALUE))
-    );
-    jPanel4Layout.setVerticalGroup(
-      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel4Layout.createSequentialGroup()
-        .addGap(14, 14, 14)
-        .addComponent(submitedOrdersLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(18, 18, 18)
-        .addComponent(currentOrdersLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(18, 18, 18)
-        .addComponent(executedOrdersLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(234, Short.MAX_VALUE))
-    );
-
-    jTabbedPane1.addTab("Orders", jPanel4);
-
     startWebService.setText("Start");
     startWebService.addActionListener(new java.awt.event.ActionListener()
     {
@@ -1033,6 +961,103 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     );
 
     jTabbedPane1.addTab("WebService", jPanel5);
+
+    tableSubmittedOrders.setModel(new javax.swing.table.DefaultTableModel(
+      new Object [][]
+      {
+
+      },
+      new String []
+      {
+        "Order_ID", "Product_ID", "ProdInst_ID", "Priority"
+      }
+    ));
+    jScrollPane7.setViewportView(tableSubmittedOrders);
+
+    tableExecutedOrders.setModel(new javax.swing.table.DefaultTableModel(
+      new Object [][]
+      {
+
+      },
+      new String []
+      {
+        "Order_ID", "Product_ID", "ProdInst_ID"
+      }
+    ));
+    jScrollPane8.setViewportView(tableExecutedOrders);
+
+    tableCurrentOrder.setModel(new javax.swing.table.DefaultTableModel(
+      new Object [][]
+      {
+
+      },
+      new String []
+      {
+        "OrderID", "ProductID", "ProdInst_ID", "Last DA", "Next DA"
+      }
+    ));
+    jScrollPane9.setViewportView(tableCurrentOrder);
+
+    submitedOrdersLabel.setText("Submitted Orders");
+
+    executedOrdersLabel.setText("Executed Orders");
+
+    currentOrdersLabel.setText("Current Order");
+
+    btnClearSubmittedOrders.setText("Clear");
+    btnClearSubmittedOrders.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btnClearSubmittedOrdersActionPerformed(evt);
+      }
+    });
+
+    btnClearCurrentOrders.setText("Clear");
+
+    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+    jPanel4.setLayout(jPanel4Layout);
+    jPanel4Layout.setHorizontalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel4Layout.createSequentialGroup()
+        .addGap(29, 29, 29)
+        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(btnClearCurrentOrders)
+          .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+              .addComponent(currentOrdersLabel)
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(btnClearSubmittedOrders))
+            .addComponent(executedOrdersLabel)
+            .addComponent(submitedOrdersLabel)
+            .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
+            .addComponent(jScrollPane8)
+            .addComponent(jScrollPane7)))
+        .addContainerGap(31, Short.MAX_VALUE))
+    );
+    jPanel4Layout.setVerticalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel4Layout.createSequentialGroup()
+        .addGap(14, 14, 14)
+        .addComponent(submitedOrdersLabel)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(btnClearSubmittedOrders)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+        .addComponent(currentOrdersLabel)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(btnClearCurrentOrders)
+        .addGap(24, 24, 24)
+        .addComponent(executedOrdersLabel)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(171, 171, 171))
+    );
+
+    jTabbedPane1.addTab("Orders", jPanel4);
 
     jTabbedPane1.setSelectedComponent(jPanel1);
 
@@ -1410,20 +1435,33 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    */
   private void btn_invoqueMethodActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_invoqueMethodActionPerformed
   {//GEN-HEADEREND:event_btn_invoqueMethodActionPerformed
-    /*
-     * String deviceName = String.valueOf(comboServers.getSelectedItem()); //ver hashmap e chamar o metodo DACManager
-     * myOpcUaClientsMap = DACManager.getInstance(); //singleton to access client objects in other classes
-     * MSB_MiloClientSubscription MSBcs = myOpcUaClientsMap.getOPCclientIDMaps().get(deviceName);
-     *
-     * //TESTE INVOQUESKILL NodeId objectId = NodeId.parse("ns=2;s=Pre-Demonstrator_InstanceHierarchy/" +
-     * "AssemblySystem/WorkStation/SC1:Task_slow_Recipe"); NodeId methodId =
-     * NodeId.parse("ns=2;s=InvokeSkill/SC1:Task_slow_Recipe");
-     *
-     * MSBcs.InvoqueDeviceSkill(MSBcs.milo_client_instanceMSB, objectId, methodId).exceptionally(ex -> {
-     * System.out.println("error invoking Call InvoqueMethod() for server: " + ex); //logger.error("error invoking
-     * SendServerURL()", ex); return "-1.0"; }).thenAccept(v -> { //logger.info("SendServerURL(cenas)={}", v);
-     * System.out.println("Call InvoqueMethod(uri)={}\n" + v); //future.complete(client); });
-     */
+    Thread threadNiftyFifty = new Thread()
+    {
+      public synchronized void run()
+      {
+        String deviceName = String.valueOf(comboServers.getSelectedItem()); //ver hashmap e chamar o metodo DACManager
+        DACManager myOpcUaClientsMap = DACManager.getInstance(); //singleton to access client objects in other classes
+        DeviceAdapter da = myOpcUaClientsMap.getDeviceAdapterbyName(deviceName);
+        List<Recipe> listOfRecipes = da.getListOfRecipes();
+        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+
+        for (int i = 0; i < listOfRecipes.size(); i++)
+        {
+          if (listOfRecipes.get(i).getName().contains(textToSend.getText()))
+          {
+            System.out.println("Found Recipe!");
+            NodeId methodNode = Functions.convertStringToNodeId(listOfRecipes.get(i).getInvokeMethodID());
+            NodeId objNode = Functions.convertStringToNodeId(listOfRecipes.get(i).getInvokeObjectID());
+            boolean ret = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objNode, methodNode, deviceName);
+            System.out.println("Method call retuned: " + ret);
+          } else
+          {
+
+          }
+        }
+      }
+    };
+    threadNiftyFifty.start();
   }//GEN-LAST:event_btn_invoqueMethodActionPerformed
 
   /**
@@ -1815,10 +1853,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         MSB_gui.addToTableSubmitedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority()); 
       
       PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-    Long time = OrderWatch.getTime();
-    perfMeasure.getOrderTillOrderInstanceCreationTimers().add(time);
-    logger.info("Order Instance took " + time.toString() + "ms to be created from the received order");
-    OrderWatch.stop();
+      Long time = OrderWatch.getTime();
+      perfMeasure.getOrderTillOrderInstanceCreationTimers().add(time);
+      logger.info("Order Instance took " + time.toString() + "ms to be created from the received order");
+      OrderWatch.stop();
       
       //get first product instance and start doing stuff
       new Thread(new ProductExecution()).start();
@@ -1872,6 +1910,13 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     }
 
   }//GEN-LAST:event_exportTimersActionPerformed
+
+  private void btnClearSubmittedOrdersActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnClearSubmittedOrdersActionPerformed
+  {//GEN-HEADEREND:event_btnClearSubmittedOrdersActionPerformed
+    // TODO add your handling code here:
+    PECManager prodExecMan = PECManager.getInstance();
+    //prodExecMan.ge
+  }//GEN-LAST:event_btnClearSubmittedOrdersActionPerformed
 
   public static Order fillOrder(Product prod)
   {
@@ -2004,7 +2049,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         for (Equipment module : modules)
         {
-          addToTableModules(module.getName(), (module.getStatus().equals("1")), module.getAddress(), adapter);
+          addToTableModules(module.getName(), (module.getStatus().equals("1")), module.getUniqueId(), adapter);
         }
       }
     }
@@ -2551,6 +2596,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private static javax.swing.JLabel adaptersTableLabel;
   private static javax.swing.JButton b_DDSCallRecipe;
   private javax.swing.JButton b_startMSBDDS;
+  private javax.swing.JButton btnClearCurrentOrders;
+  private javax.swing.JButton btnClearSubmittedOrders;
   private javax.swing.JButton btnProductExecute;
   private javax.swing.JButton btnProductSubmit;
   private javax.swing.JButton btn_ChangedState;

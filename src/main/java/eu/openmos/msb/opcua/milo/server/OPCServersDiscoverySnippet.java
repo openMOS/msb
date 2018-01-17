@@ -392,11 +392,11 @@ public class OPCServersDiscoverySnippet extends Thread
       DACManager dacManager = DACManager.getInstance();
       DatabaseInteraction.getInstance().UpdateDAamlID(da.getSubSystem().getUniqueId(), da.getId()); //insert aml ID into the DB
 
-      if (da.getListOfEquipments() != null && da.getListOfEquipments().size() > 0)
+      if (da.getListOfModules() != null && da.getListOfModules().size() > 0)
       {
-        for (Module auxModule : da.getListOfEquipments())
+        for (Module auxModule : da.getListOfModules())
         {
-          dacManager.registerModule(da.getSubSystem().getName(), auxModule.getName(), auxModule.getStatus(), auxModule.getAddress());
+          dacManager.registerModule(da.getSubSystem().getName(), auxModule.getName(), auxModule.getUniqueId(), auxModule.getStatus(), auxModule.getAddress());
         }
         MSB_gui.fillModulesTable();
       }
