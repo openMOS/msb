@@ -275,7 +275,7 @@ public class ChangeState
    */
   private int checkAdapterState(String da_id, String nextRecipeID)
   {
-    logger.info("[checkAdapterState] checking da state - " + da_id);
+    logger.info("[checkAdapterState] current da - " + da_id);
     String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
     
     if (Daid_next != null)
@@ -297,6 +297,14 @@ public class ChangeState
           logger.error("[checkAdapterState] Error reading adapter state!");
           return 0;
         }
+        try
+        {
+          Thread.sleep(50);
+        } catch (InterruptedException ex)
+        {
+          java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        logger.info("[checkAdapterState] waiting for da_next state READY - " + da_next.getSubSystem().getUniqueId());
       } while (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
 
       logger.info("[checkAdapterState] DA_next STATE: " + da_next.getSubSystem().getState());
