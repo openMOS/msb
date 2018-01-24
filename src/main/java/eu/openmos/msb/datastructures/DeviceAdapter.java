@@ -16,6 +16,7 @@ import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import eu.openmos.model.utilities.DatabaseConstants;
+import eu.openmos.msb.starter.MSB_gui;
 import io.vertx.core.VertxOptions;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -285,9 +286,10 @@ public abstract class DeviceAdapter
       }
 
       if (subSystem.getName().contains("AGV"))
-        PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(2));
+        PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(3));
       else
         PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
+              
       System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
       
       return true;

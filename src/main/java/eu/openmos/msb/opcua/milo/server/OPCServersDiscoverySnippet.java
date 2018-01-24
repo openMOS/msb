@@ -20,9 +20,11 @@ import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
+import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
+import static eu.openmos.msb.starter.MSB_gui.addToTableAdapters;
 import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Date;
@@ -269,11 +271,14 @@ public class OPCServersDiscoverySnippet extends Thread
                   if (ok)
                   {
                     workstationRegistration(da);
+                    MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());     
+                  
                   } else
                   {
                     System.out.println("parseDNToObjects FAILED!");
                   }
-
+                  
+                  
                   PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
                   Long time = namespaceParsingTimer.getTime();
                   perfMeasure.getNameSpaceParsingTimers().add(time);
@@ -391,6 +396,8 @@ public class OPCServersDiscoverySnippet extends Thread
     {
       DACManager dacManager = DACManager.getInstance();
       DatabaseInteraction.getInstance().UpdateDAamlID(da.getSubSystem().getUniqueId(), da.getId()); //insert aml ID into the DB
+      
+      MSB_gui.addToTableAdapters(da.getSubSystem().getName(), "opcua", da.getSubSystem().getAddress());
 
       if (da.getListOfModules() != null && da.getListOfModules().size() > 0)
       {

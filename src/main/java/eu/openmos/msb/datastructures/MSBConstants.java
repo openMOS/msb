@@ -18,7 +18,7 @@ public class MSBConstants {
     public static final String ADAPTER_STATE_ERROR = "Error";
     public static final String ADAPTER_STATE_EMERGENCY_STOP = "EMERGENCY_STOP";
     
-    public static Boolean MSB_OPTIMIZER = false;
+    public static Boolean MSB_OPTIMIZER = true;
 }
 
 /*

@@ -308,17 +308,17 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       },
       new String []
       {
-        "Server Name", "Protocol", "URL"
+        "Server Name", "Protocol", "URL", "Status"
       }
     )
     {
       Class[] types = new Class []
       {
-        java.lang.String.class, java.lang.String.class, java.lang.String.class
+        java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
       };
       boolean[] canEdit = new boolean []
       {
-        false, false, false
+        false, false, false, true
       };
 
       public Class getColumnClass(int columnIndex)
@@ -1565,7 +1565,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         {
           Logger.getLogger(MSB_gui.class.getName()).log(Level.INFO, null, "NAME: " + name + " URL: " + app_uri);
           opc_comms_log.append("New Server found and registered: " + name + " " + app_uri + "\n");
-          addToTableAdapters(name, "opcua", app_uri);
+          //addToTableAdapters(name, "opcua", app_uri);
           if (name.contains("MSB"))
           {
             ComboMSB.addItem(name);
@@ -2062,7 +2062,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
    * @param protocol
    * @param serverUri
    */
-  private void addToTableAdapters(String serverName, String protocol, String serverUri)
+  public static void addToTableAdapters(String serverName, String protocol, String serverUri)
   {
     adaptersTableModel.addRow(new Object[]
     {
@@ -2075,6 +2075,21 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     }
     opc_comms_log.append("Server successfully added to table. Name: " + serverName + "URL: " + serverUri + "\n");
     UpdateTableRowCount(); //update counter
+  }
+  
+  public static void updateTableAdaptersSomaphore(String somaphoreState, String serverName)
+  {
+       String rowData;
+       int rowCount=adaptersTableModel.getRowCount();
+    //Object[] rowData = new Object[adaptersTableModel.getRowCount()];
+    for (int i = 0; i < adaptersTableModel.getRowCount(); i++)
+    {
+      rowData = (String) adaptersTableModel.getValueAt(i, 0);
+      if (rowData.contains(serverName))
+      {
+        adaptersTableModel.setValueAt(somaphoreState, i, 3);
+      }
+    }
   }
 
   /**

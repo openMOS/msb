@@ -191,6 +191,10 @@ public class ChangeState
                 String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
                 logger.info("[SEMAPHORE] RELEASED1 " + da_name1);
                 PECManager.getInstance().getExecutionMap().get(da_id).release();
+                
+                DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
+                MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()), da_test.getSubSystem().getName());
+            
               }
             }
             MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, DA_name_next);
@@ -232,6 +236,10 @@ public class ChangeState
         String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
         logger.info("[SEMAPHORE" + da_name1 + "] RELEASED1");
         PECManager.getInstance().getExecutionMap().get(da_id).release();
+        
+        DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
+        MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()), da_test.getSubSystem().getName());
+            
 
         Long prodTime = new Date().getTime() - prodInst.getStartedProductionTime().getTime();
         PerformanceMasurement.getInstance().getProdInstanceTime().add(prodTime);
@@ -305,11 +313,16 @@ public class ChangeState
           java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
         }
         logger.info("[checkAdapterState] waiting for da_next state READY - " + da_next.getSubSystem().getUniqueId());
+        
+        //MARTELO
+        if (da_next.getSubSystem().getName().toLowerCase().equals("agv"))
+          break;
+        
       } while (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
 
       logger.info("[checkAdapterState] DA_next STATE: " + da_next.getSubSystem().getState());
       
-      if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+      if (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
       {
         DeviceAdapter da_next_next = getDAofNextRecipe(da_next, nextRecipeID);
         int ret = 0;
@@ -327,6 +340,7 @@ public class ChangeState
               logger.info("[checkAdapterState][SEMAPHORE] Acquiring for " + da_next_next.getSubSystem().getName());
               PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).acquire();
               logger.info("[checkAdapterState][SEMAPHORE] ACQUIRED for " + da_next_next.getSubSystem().getName());
+              MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).availablePermits()), da_next_next.getSubSystem().getName());
               ret = 1;
             } catch (InterruptedException ex)
             {
