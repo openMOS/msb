@@ -61,7 +61,7 @@ public class ProductExecution implements Runnable
         ExecuteOrder();
       }
       else
-        System.out.println("\n\n************** All orders have been finished! ********************\n\n\n");
+        System.out.println("\n\n************** All orders are being executed! ********************\n\n\n");
     }
   }
 
@@ -146,7 +146,7 @@ public class ProductExecution implements Runnable
                     boolean getOut = false;
                     for (String recipeID : auxSR.getRecipeIDs())
                     {
-                      if (checkRecipeAvailable(recipeID)) //check if the recipe is valid and if the DA and nextDA are at ready state
+                      if (checkRecipeAvailable(recipeID, auxProdInstance)) //check if the recipe is valid and if the DA and nextDA are at ready state
                       {
                         if (executeRecipe(recipeID, auxProdInstance)) //if returns false, check another alternative recipe for the same SR
                         {
@@ -214,7 +214,7 @@ public class ProductExecution implements Runnable
     CheckExecutorState(); //do the next orderistance
   }
 
-  private boolean checkRecipeAvailable(String recipeID)
+  private boolean checkRecipeAvailable(String recipeID, ProductInstance prodInst)
   {
     boolean recipeIdIsValid = DatabaseInteraction.getInstance().getRecipeIdIsValid(recipeID);
     if (recipeIdIsValid)
@@ -235,7 +235,7 @@ public class ProductExecution implements Runnable
           //MARTELO
           //if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
           {
-            if (checkNextRecipe(da, recipeID))
+            if (checkNextRecipe(da, recipeID, prodInst))
             {
               return true;
             }
@@ -249,55 +249,60 @@ public class ProductExecution implements Runnable
     return false;
   }
 
-  private boolean checkNextRecipe(DeviceAdapter da, String recipeID)
+  private boolean checkNextRecipe(DeviceAdapter da, String recipeID, ProductInstance prodInst)
   {
     String nextRecipeID = "";
-    for (ExecutionTableRow auxRow : da.getExecutionTable().getRows())
+    
+    for (int i = 0; i < 2; i++)
     {
-      if (auxRow.getRecipeId().equals(recipeID))
+      for (ExecutionTableRow auxRow : da.getExecutionTable().getRows())
       {
-        nextRecipeID = auxRow.getNextRecipeId();
-        boolean recipeIdIsValid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
-        if (recipeIdIsValid)
+        if (auxRow.getRecipeId().equals(recipeID))
         {
-          String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-          if (Daid_next != null)
+          nextRecipeID = auxRow.getNextRecipeId();
+          boolean recipeIdIsValid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
+          if (recipeIdIsValid)
           {
-            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
-            DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
-
-            NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
-            DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da_next;
-            if (statePath.isNotNull())
+            String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+            if (Daid_next != null)
             {
-              String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-              da_next.getSubSystem().setState(state);
-              System.out.println("daState for NEXT: " + state);
+              String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
+              DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
 
-              if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+              NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
+              DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da_next;
+              if (statePath.isNotNull())
               {
-                return true;
+                String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+                da_next.getSubSystem().setState(state);
+                System.out.println("daState for NEXT: " + state);
+
+                if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+                {
+                  return true;
+                }
               }
+            } else
+            {
+              return false;
             }
-          } else
-          {
-            return false;
           }
+          return false;
         }
-        return false;
       }
     }
     return false;
   }
 
-  public static DeviceAdapter getDAofNextRecipe(DeviceAdapter da, String recipeID)
+  public static DeviceAdapter getDAofNextRecipe(DeviceAdapter da, String recipeID, ProductInstance prodInst)
   {
     String nextRecipeID = "";
-    for (ExecutionTableRow auxRow : da.getExecutionTable().getRows())
+    for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
     {
-      if (auxRow.getRecipeId().equals(recipeID))
+      if (execRow.getRecipeId().equals(recipeID) && 
+              (execRow.getProductId().equals(prodInst.getUniqueId()) || execRow.getProductId().equals(prodInst.getProductId())))
       {
-        nextRecipeID = auxRow.getNextRecipeId();
+        nextRecipeID = execRow.getNextRecipeId();
         String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
         if (Daid_next != null)
         {
@@ -343,7 +348,7 @@ public class ProductExecution implements Runnable
             if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
             {
               System.out.println("[SEMAPHORE][PS] ACQUIRED for " + da.getSubSystem().getName());
-              DeviceAdapter da_next = getDAofNextRecipe(da, recipeID);
+              DeviceAdapter da_next = getDAofNextRecipe(da, recipeID, prodInst);
               MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
 
               //ONLY EXECUTE IF NEXT DA IS AVAILABLE
@@ -395,7 +400,7 @@ public class ProductExecution implements Runnable
               if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
               {
                 System.out.println("[SEMAPHORE][PS] ACQUIRED for " + da.getSubSystem().getName());
-                DeviceAdapter da_next = getDAofNextRecipe(da, recipeID);
+                DeviceAdapter da_next = getDAofNextRecipe(da, recipeID, prodInst);
 
                 MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
 

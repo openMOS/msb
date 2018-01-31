@@ -154,11 +154,11 @@ public class ChangeState
         logger.info("[ChangeStateChecker] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State");
         
         String method = DatabaseInteraction.getInstance().getRecipeMethodByID(nextRecipeID);
-        NodeId methodNode = new NodeId(Integer.parseInt(method.split(":")[0]), method.substring(method.indexOf(":") + 1));
+        NodeId methodNode = Functions.convertStringToNodeId(method);
         String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(nextRecipeID);
-        NodeId objNode = new NodeId(Integer.parseInt(obj.split(":")[0]), obj.substring(obj.indexOf(":") + 1));
+        NodeId objNode = Functions.convertStringToNodeId(obj);
+        
         String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-
         String DA_name_next = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
         DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name_next);
         //System.out.println("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + DA_name_next);
@@ -179,7 +179,6 @@ public class ChangeState
 
           if (res)
           {
-            //if (da_id.equals(da_next.getSubSystem().getUniqueId()))
             if (retSem == 2)
             {
               logger.info("[ChangeStateChecker] DA is the same as the previous one, semaphore will not be released!");
@@ -194,7 +193,6 @@ public class ChangeState
                 
                 DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
                 MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()), da_test.getSubSystem().getName());
-            
               }
             }
             MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, DA_name_next);
@@ -202,7 +200,7 @@ public class ChangeState
           } else
           {
             //ERROR EXECUTING RECIPE
-            MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, "ERROR " + tries);
+            MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, "Try " + tries);
             logger.error("Error executing recipe: " + nextRecipeID + " -- probably because the recipe was already in execution.");
             logger.warn("** " + tries + " **Trying every 5s until success! - DA_NAME:" + da_next.getSubSystem().getName() + " * Recipe_ID: " + nextRecipeID);
             try
@@ -439,7 +437,6 @@ public class ChangeState
 
             NodeId nextRecipeNode = Functions.convertStringToNodeId(auxNextRecipeNode);
             DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-
             String nextRecipeID = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), nextRecipeNode);
 
             if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))
@@ -455,70 +452,54 @@ public class ChangeState
             String SR_ID = DatabaseInteraction.getInstance().getSkillReqIDbyRecipeID(nextRecipeID);
             List<String> recipeID_for_SR = DatabaseInteraction.getInstance().getRecipesIDbySkillReqID(SR_ID);
 
-            Boolean testing = true;
-            if (testing)
+            if (recipeID_for_SR.size() > 1)
             {
-              if (recipeID_for_SR.size() > 1)
+              Recipe firstRecipe = null;
+              //check if the precedences are the same
+              List<Recipe> recipes = new ArrayList<>();
+              for (String auxRecipeID : recipeID_for_SR)
               {
-                Recipe firstRecipe = null;
-                //check if the precedences are the same
-                List<Recipe> recipes = new ArrayList<>();
-                for (String auxRecipeID : recipeID_for_SR)
+                String da_db_ID = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(auxRecipeID);
+                if (da_db_ID == null)
                 {
-                  String da_db_ID = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(auxRecipeID);
-                  if (da_db_ID == null)
+                  continue;
+                }
+                String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(da_db_ID);
+                DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+                for (Recipe auxRecipe : auxDA.getListOfRecipes())
+                {
+                  if (auxRecipe.getUniqueId().equals(auxRecipeID))
                   {
-                    continue;
-                  }
-                  String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(da_db_ID);
-                  DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyName(da_name);
-                  for (Recipe auxRecipe : auxDA.getListOfRecipes())
-                  {
-                    if (auxRecipe.getUniqueId().equals(auxRecipeID))
+                    recipes.add(auxRecipe);
+                    if (auxRecipeID.equals(nextRecipeID))
                     {
-                      recipes.add(auxRecipe);
-                      if (auxRecipeID.equals(nextRecipeID))
-                      {
-                        firstRecipe = auxRecipe;
-                      }
-                      break;
+                      firstRecipe = auxRecipe;
                     }
+                    break;
                   }
+                }
+              }
+              //first validate if the main path is available, if not available check the others
+              if (firstRecipe != null)
+              {
+                recipes.remove(firstRecipe);
+              }
 
-                }
-                //first validate if the main path is available, if not available check the others
-                if (firstRecipe != null)
-                {
-                  recipes.remove(firstRecipe);
-                }
-
-                if (checkNextValidation(nextRecipeID))
-                {
-                  logger.info("[checkNextRecipe] returning - " + nextRecipeID);
-                  return nextRecipeID;
-                } else
-                {
-                  for (Recipe auxRecipe : recipes)
-                  {
-                    if (checkNextValidation(auxRecipe.getUniqueId()))
-                    {
-                      logger.info("[checkNextRecipe] returning - " + auxRecipe.getUniqueId());
-                      return auxRecipe.getUniqueId();
-                    }
-                  }
-                  logger.warn("There are no other Recipe choices for the current recipe " + recipeID);
-                }
+              if (checkNextValidation(nextRecipeID))
+              {
+                logger.info("[checkNextRecipe] returning - " + nextRecipeID);
+                return nextRecipeID;
               } else
               {
-                boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
-                if (valid)
+                for (Recipe auxRecipe : recipes)
                 {
-                  //yes
-                  return nextRecipeID;
-                } else
-                {
-                  logger.warn("There are no other Recipe choices for the current recipe " + recipeID);
+                  if (checkNextValidation(auxRecipe.getUniqueId()))
+                  {
+                    logger.info("[checkNextRecipe] returning - " + auxRecipe.getUniqueId());
+                    return auxRecipe.getUniqueId();
+                  }
                 }
+                logger.warn("There are no other Recipe choices for the current recipe " + recipeID);
               }
             } else
             {
@@ -526,7 +507,6 @@ public class ChangeState
               if (valid)
               {
                 //yes
-                logger.info("[checkNextRecipe] returning - " + nextRecipeID);
                 return nextRecipeID;
               } else
               {
