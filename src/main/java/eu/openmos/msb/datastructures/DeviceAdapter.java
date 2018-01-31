@@ -16,7 +16,7 @@ import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import eu.openmos.model.utilities.DatabaseConstants;
-import eu.openmos.msb.starter.MSB_gui;
+import eu.openmos.msb.utilities.Functions;
 import io.vertx.core.VertxOptions;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.DOMOutputter;
@@ -244,11 +246,12 @@ public abstract class DeviceAdapter
   // ---------------------------------------------------------------------------------------------------------------- //
   /**
    *
+   * @param client
    * @param deviceDescriptionNode
    * @param skillsDescriptionNode
    * @return
    */
-  public boolean parseDNToObjects(Element deviceDescriptionNode, Element skillsDescriptionNode)
+  public boolean parseDNToObjects(OpcUaClient client, Element deviceDescriptionNode, Element skillsDescriptionNode)
   {
     try
     {
@@ -285,10 +288,13 @@ public abstract class DeviceAdapter
         subSystem.setStatePath(ReadDeviceAdapterState.get(0));
       }
 
-      if (subSystem.getName().contains("AGV"))
-        PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(3));
-      else
+      //set number of resources/semaphores
+      NodeId resourceNumber = new NodeId(2, "Resources");
+      String resources = Functions.readOPCNodeToString(client, resourceNumber);
+      if (resources.equals(""))
         PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
+      else
+        PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(Integer.parseInt(resources)));
               
       System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
       

@@ -25,6 +25,7 @@ import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import static eu.openmos.msb.starter.MSB_gui.addToTableAdapters;
+import eu.openmos.msb.utilities.Functions;
 import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Date;
@@ -129,24 +130,28 @@ public class OPCServersDiscoverySnippet extends Thread
           this.logger.error(ex.getMessage());
         }
       }
-      
+
       //get da and check for server status
-        for (String name : DACManager.getInstance().getDeviceAdaptersNames()) {
-            DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(name);
-            String daName = da.getSubSystem().getName();
-            boolean found = false;
-            for (int i = 0; i < serverList.length; i++) {
-                ApplicationDescription server = serverList[i];
-                if (daName.equals(server.getApplicationName().getText())) {
-                    found = true;
-                }
-            }
-            if (!found) {
-                DACManager.getInstance().deleteDAStuffByName(daName); //remove from DB?
-                removeDownServer(daName);
-            }
+      for (String name : DACManager.getInstance().getDeviceAdaptersNames())
+      {
+        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(name);
+        String daName = da.getSubSystem().getName();
+        boolean found = false;
+        for (int i = 0; i < serverList.length; i++)
+        {
+          ApplicationDescription server = serverList[i];
+          if (daName.equals(server.getApplicationName().getText()))
+          {
+            found = true;
+          }
         }
-      
+        if (!found)
+        {
+          DACManager.getInstance().deleteDAStuffByName(daName); //remove from DB?
+          removeDownServer(daName);
+        }
+      }
+
       return true;
     } catch (InterruptedException | ExecutionException ex)
     {
@@ -192,7 +197,7 @@ public class OPCServersDiscoverySnippet extends Thread
               {
                 continue;
               }
-              
+
               System.out.println("\n\n Registered the " + daName + "\n\n");
 
               da = dacManager.addDeviceAdapter(daName, EProtocol.OPC, "", ""); //add to DB
@@ -204,16 +209,16 @@ public class OPCServersDiscoverySnippet extends Thread
               }
               // if Device Adatper created ok, let's do some magic
               da.getSubSystem().setName(daName);
-              da.getSubSystem().setAddress(da_url);  
+              da.getSubSystem().setAddress(da_url);
 
               ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get();
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
               {
 
                 DeviceAdapterOPC opc = (DeviceAdapterOPC) dacManager.getDeviceAdapterbyName(daName);
-                MSBClientSubscription instance = opc.getClient();
-                instance.startConnection(da_url);
-                OpcUaClient client = instance.getClientObject();
+                MSBClientSubscription msbClient = opc.getClient();
+                msbClient.startConnection(da_url);
+                OpcUaClient client = msbClient.getClientObject();
 
                 da.getClient();
 
@@ -230,26 +235,21 @@ public class OPCServersDiscoverySnippet extends Thread
                   Element node = new Element("DeviceAdapter");
                   Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
                   ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
-                  
-                  
-                  System.out.println("TESTING: browse instance Hierarchy started");
-                 
-                 NodeId InstaceHierarchyNode = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
-                 if(InstaceHierarchyNode != null){
-                 System.out.println("TESTING: browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
-                 node.addContent(instance.browseNode(client,
-                         InstaceHierarchyNode,
-                         Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
-                         ignore));
-                 }
-/*
-                  node.addContent(instance.browseNode(client,
-                          new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.dainstance")),
-                          Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
-                          ignore));
-*/
+
+                  System.out.println("Browse instance Hierarchy started");
+
+                  NodeId InstaceHierarchyNode = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
+                  if (InstaceHierarchyNode != null)
+                  {
+                    System.out.println("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
+                    node.addContent(msbClient.browseNode(client,
+                            InstaceHierarchyNode,
+                            Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
+                            ignore));
+                  }
+
                   Element nSkills = new Element("Skills");
-                  nSkills.addContent(instance.browseNode(client,
+                  nSkills.addContent(msbClient.browseNode(client,
                           new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
                           Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level.skills")),
                           ignore));
@@ -264,21 +264,19 @@ public class OPCServersDiscoverySnippet extends Thread
 
                   System.out.println("Starting DA Parser **********************");
 
-                  boolean ok = da.parseDNToObjects(node, nSkills);
+                  boolean ok = da.parseDNToObjects(client, node, nSkills);
 
                   System.out.println("***** End namespace browsing ***** \n\n");
 
                   if (ok)
                   {
                     workstationRegistration(da);
-                    MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());     
-                  
+                    MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
                   } else
                   {
                     System.out.println("parseDNToObjects FAILED!");
                   }
-                  
-                  
+
                   PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
                   Long time = namespaceParsingTimer.getTime();
                   perfMeasure.getNameSpaceParsingTimers().add(time);
@@ -396,7 +394,7 @@ public class OPCServersDiscoverySnippet extends Thread
     {
       DACManager dacManager = DACManager.getInstance();
       DatabaseInteraction.getInstance().UpdateDAamlID(da.getSubSystem().getUniqueId(), da.getId()); //insert aml ID into the DB
-      
+
       MSB_gui.addToTableAdapters(da.getSubSystem().getName(), "opcua", da.getSubSystem().getAddress());
 
       if (da.getListOfModules() != null && da.getListOfModules().size() > 0)
@@ -453,34 +451,37 @@ public class OPCServersDiscoverySnippet extends Thread
 
     return true;
   }
-  
-  public static NodeId browseInstaceHierarchyNode(String indent, OpcUaClient client, NodeId nodeToBrowse) {
-       try {
-           List<Node> nodes = client.getAddressSpace().browse(nodeToBrowse).get();
-           int count = 0;
-           
-         while (count < 10)
-         {
-           NodeId aux = getInst(nodes);
-           if (aux != null)
-           {
-             return aux;
-           }
 
-           List<Node> nodes1 = new ArrayList<>();
-           for (int i = 0; i < nodes.size(); i++)
-           {
-             nodes1.addAll(client.getAddressSpace().browse(nodes.get(i).getNodeId().get()).get());
-           }
-           nodes = nodes1;
-           count++;
-         }
-           return null;
-       } catch (InterruptedException | ExecutionException ex) {
-           return null;
-       }
-   }
-  
+  public static NodeId browseInstaceHierarchyNode(String indent, OpcUaClient client, NodeId nodeToBrowse)
+  {
+    try
+    {
+      List<Node> nodes = client.getAddressSpace().browse(nodeToBrowse).get();
+      int count = 0;
+
+      while (count < 10)
+      {
+        NodeId aux = getInst(nodes);
+        if (aux != null)
+        {
+          return aux;
+        }
+
+        List<Node> nodes1 = new ArrayList<>();
+        for (int i = 0; i < nodes.size(); i++)
+        {
+          nodes1.addAll(client.getAddressSpace().browse(nodes.get(i).getNodeId().get()).get());
+        }
+        nodes = nodes1;
+        count++;
+      }
+      return null;
+    } catch (InterruptedException | ExecutionException ex)
+    {
+      return null;
+    }
+  }
+
   private static NodeId getInst(List<Node> nodes) throws InterruptedException, ExecutionException
   {
     for (int i = 0; i < nodes.size(); i++)

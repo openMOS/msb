@@ -63,7 +63,7 @@ public class Functions
       return client.readValue(0, TimestampsToReturn.Neither, node).get().getValue().getValue().toString();
     } catch (InterruptedException | ExecutionException ex)
     {
-      System.out.println("ERROR reading node: " + ex.getMessage());
+      //System.out.println("ERROR reading node: " + ex.getMessage());
       return "";
     }
   }

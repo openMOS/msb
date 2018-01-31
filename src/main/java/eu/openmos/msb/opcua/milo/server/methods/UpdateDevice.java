@@ -7,6 +7,7 @@ import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
+import static eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet.browseInstaceHierarchyNode;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,10 +87,15 @@ public class UpdateDevice
       Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
       ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
 
-      node.addContent(msbClient.browseNode(client,
-              new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.dainstance")),
-              Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
-              ignore));
+      NodeId InstaceHierarchyNode = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
+      if (InstaceHierarchyNode != null)
+      {
+        System.out.println("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
+        node.addContent(msbClient.browseNode(client,
+                InstaceHierarchyNode,
+                Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
+                ignore));
+      }
 
       Element nSkills = new Element("Skills");
       nSkills.addContent(msbClient.browseNode(client,
@@ -107,7 +113,7 @@ public class UpdateDevice
 
       System.out.println("Starting DA Parser **********************");
 
-      boolean ok = da.parseDNToObjects(node, nSkills);
+      boolean ok = da.parseDNToObjects(client, node, nSkills);
 
       if (ok)
       {
@@ -199,5 +205,5 @@ public class UpdateDevice
     }
 
   }
-*/
+   */
 }
