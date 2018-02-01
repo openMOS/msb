@@ -3,7 +3,6 @@
  */
 package eu.openmos.msb.starter;
 
-// IMOPORTS
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.dds.DDSDeviceManager;
 import eu.openmos.msb.dds.DDSDevice;

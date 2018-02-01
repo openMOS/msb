@@ -5,11 +5,9 @@
  */
 package eu.openmos.msb.utilities;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.concurrent.ExecutionException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -17,12 +15,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -58,10 +50,12 @@ public class Functions
   
   public static String readOPCNodeToString(OpcUaClient client, NodeId node)
   {
+    String res = "";
     try
     {
-      return client.readValue(0, TimestampsToReturn.Neither, node).get().getValue().getValue().toString();
-    } catch (InterruptedException | ExecutionException ex)
+      res = client.readValue(0, TimestampsToReturn.Neither, node).get().getValue().getValue().toString();
+      return res;
+    } catch (Exception ex)
     {
       //System.out.println("ERROR reading node: " + ex.getMessage());
       return "";
