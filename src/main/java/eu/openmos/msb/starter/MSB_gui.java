@@ -1451,7 +1451,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
             System.out.println("Found Recipe!");
             NodeId methodNode = Functions.convertStringToNodeId(listOfRecipes.get(i).getInvokeMethodID());
             NodeId objNode = Functions.convertStringToNodeId(listOfRecipes.get(i).getInvokeObjectID());
-            boolean ret = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objNode, methodNode, deviceName);
+            boolean ret = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objNode, methodNode, deviceName, deviceName);
             System.out.println("Method call retuned: " + ret);
           } else
           {

@@ -252,14 +252,14 @@ public class ProductExecution implements Runnable
   private boolean checkNextRecipe(DeviceAdapter da, String recipeID, ProductInstance prodInst)
   {
     String nextRecipeID = "";
-    
+    String prodID = prodInst.getUniqueId();
     for (int i = 0; i < 2; i++)
     {
-      for (ExecutionTableRow auxRow : da.getExecutionTable().getRows())
+      for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
       {
-        if (auxRow.getRecipeId().equals(recipeID))
+        if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
-          nextRecipeID = auxRow.getNextRecipeId();
+          nextRecipeID = execRow.getNextRecipeId();
           boolean recipeIdIsValid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
           if (recipeIdIsValid)
           {
@@ -290,6 +290,8 @@ public class ProductExecution implements Runnable
           return false;
         }
       }
+      //no prodInst found in execTable, search for productType now
+      prodID = prodInst.getProductId();
     }
     return false;
   }
@@ -297,21 +299,26 @@ public class ProductExecution implements Runnable
   public static DeviceAdapter getDAofNextRecipe(DeviceAdapter da, String recipeID, ProductInstance prodInst)
   {
     String nextRecipeID = "";
-    for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
+    String prodID = prodInst.getUniqueId();
+    for (int i = 0; i < 2; i++)
     {
-      if (execRow.getRecipeId().equals(recipeID) && 
-              (execRow.getProductId().equals(prodInst.getUniqueId()) || execRow.getProductId().equals(prodInst.getProductId())))
+      for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
       {
-        nextRecipeID = execRow.getNextRecipeId();
-        String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-        if (Daid_next != null)
+        if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
-          String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
-          DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
-          return da_next;
+          nextRecipeID = execRow.getNextRecipeId();
+          String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+          if (Daid_next != null)
+          {
+            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
+            DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+            return da_next;
+          }
+          break;
         }
-        break;
       }
+      //no prodInst found in execTable, search for productType now
+      prodID = prodInst.getProductId();
     }
     return null;
   }
@@ -468,7 +475,7 @@ public class ProductExecution implements Runnable
           System.out.println("[EXECUTE] recipeID: " + recipeID);
           NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
           NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
-          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, prodInst.getUniqueId());
+          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, prodInst.getUniqueId(), prodInst.getProductId());
 
           return result;
         }
