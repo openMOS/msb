@@ -391,17 +391,25 @@ public abstract class DeviceAdapter
             NodeList products = n2.getChildNodes();
             for (int k = 0; k < products.getLength(); k++)
             {
-              if (products.item(k).getNodeType() == Node.ELEMENT_NODE && products.item(k).getNodeName().equals("ID") /*&& !products.item(k).getNodeName().contains("Column")
-                                    && !products.item(k).getNodeName().equals("Path") && !products.item(k).getNodeName().equals("Type")*/)
+              if (products.item(k).getNodeType() == Node.ELEMENT_NODE && !products.item(k).getNodeName().equals("ID") && !products.item(k).getNodeName().contains("Column")
+                                    && !products.item(k).getNodeName().equals("Path") && !products.item(k).getNodeName().equals("Type")
+                                    && !products.item(k).getNodeName().equals("Line") && !products.item(k).getNodeName().equals("TaskExecutionTable"))
               {
                 Node nID = products.item(k);
                 NodeList nIDChild = nID.getChildNodes();
                 for (int x = 0; x < nIDChild.getLength(); x++)
                 {
                   Node IdChildNodes = nIDChild.item(x);
-                  if (IdChildNodes.getNodeName().equals("Value"))
+                  if (IdChildNodes.getNodeName().equals("ID"))
                   {
-                    execRow.setProductId(IdChildNodes.getTextContent());
+                    NodeList realIDchildNodes = IdChildNodes.getChildNodes();
+                    for (int wot = 0; wot < realIDchildNodes.getLength(); wot++)
+                    {
+                      if (realIDchildNodes.item(wot).getNodeName().equals("Value"))
+                      {
+                        execRow.setProductId(realIDchildNodes.item(wot).getTextContent());
+                      }
+                    }
                   }
                 }
               }
