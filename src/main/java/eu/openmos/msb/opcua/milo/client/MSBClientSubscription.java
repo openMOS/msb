@@ -486,7 +486,7 @@ public class MSBClientSubscription implements IClient
       }
     });
   }
-
+  
   /**
    * equipmentNamespace = "openMOSRoleClassLib/Equipment"; skillNamespace = "openMOSRoleClassLib/Skill"; moduleNamespace
    * = "openMOSRoleClassLib/Equipment/Module";
@@ -500,7 +500,6 @@ public class MSBClientSubscription implements IClient
    */
   public List<Element> browseNode(OpcUaClient client, NodeId browseRoot, int level, Set<String> ignoreList)
   {
-
     final int nextInteraction = level - 1;
     final List<Element> nodes = new ArrayList<>();
     try
@@ -532,7 +531,7 @@ public class MSBClientSubscription implements IClient
         }
         */
 
-        Element node = new Element(referenceName.replaceAll(":", "").replaceAll(" ", "_").replaceAll(",","").replaceAll("\\(", "_").replaceAll("\\)", ""));
+        Element node = new Element(referenceName.replaceAll(":", "").replaceAll(" ", "_").replaceAll(",","").replaceAll("\\(", "_").replaceAll("\\)", "").replaceAll("Area/Geometry_Parameter", "Area_Geometry_Parameter"));
 
         Element nodeType = new Element("Type");
         nodeType.setAttribute("id", rd.getNodeId().getType().toString());

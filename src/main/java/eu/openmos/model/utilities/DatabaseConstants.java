@@ -84,6 +84,7 @@ public class DatabaseConstants {
     public final static String EQUIPMENT_OBSERVATION_REL2_ROW_IDS = "equipmentObservationRel2RowIds";
     public final static String EQUIPMENT_OBSERVATION_REL2_ID = "equipmentObservationRel2Id";
     public final static String EQUIPMENT_ASSESSMENT_ROW_IDS = "equipmentAssessmentRowIds";
+    public final static String PROCESS_ASSESSMENT_ROW_IDS = "processAssessmentRowIds";
     
     public final static String PRIORITY = "priority";
     public final static String ORDER_LINE_IDS = "orderLineIds";
@@ -96,8 +97,14 @@ public class DatabaseConstants {
 
     public final static String EQUIPMENT_ASSESSMENT_ID = "equipmentAssessmentId";
     public final static String RATING = "rating";
+    public final static String PROCESS_ASSESSMENT_ID = "processAssessmentId";
     
     public final static String SKILLTYPE_ATOMIC = "ATOMIC";
     public final static String SKILLTYPE_COMPOSITE = "COMPOSITE";
-    
+
+    public final static String USER_NAME = "userName";
+    public final static String SYSTEM_STATUS = "systemStatus";
+    public final static String PHYSICAL_ADJUSTMENT_PARAMETER_IDS = "physicalAdjustmentParameterIds";
+    public final static String PHYSICAL_ADJUSTMENT_PARAMETER_ID = "physicalAdjustmentParameterId";
+    public final static String PHYSICAL_ADJUSTMENT_PARAMETER_SETTING_ID = "physicalAdjustmentParameterSettingId";
 }

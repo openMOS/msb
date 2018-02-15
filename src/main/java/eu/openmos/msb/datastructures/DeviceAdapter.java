@@ -492,7 +492,8 @@ public abstract class DeviceAdapter
 
   private List<Recipe> ReadRecipes(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*/*/*[contains(name(),'Recipe')]";
+    String query = "//DeviceAdapter/*/*/*[contains(name(),'_Recipe')]";
+    
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -697,6 +698,12 @@ public abstract class DeviceAdapter
                       {
                         auxParameterSetting.setValue(auxNode1.getTextContent());
                         System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
+                        break;
+                      }
+                      else if (auxNode1.getNodeName().equals("Path"))
+                      {
+                        auxParameterSetting.setValuePath(auxNode1.getTextContent());
+                        System.out.println("PARAMETER PATH value: " + auxParameterSetting.getValuePath());
                         break;
                       }
                     }

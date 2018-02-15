@@ -10,6 +10,8 @@ import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.SubSystem;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.MSBConstants;
+import eu.openmos.msb.datastructures.MSBVar;
 import eu.openmos.msb.services.rest.data.ExecutionTableRowHelper;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -81,15 +83,29 @@ public class ExecutionTableController {
     @Path(value = "/{subSystemId}")
     public ExecutionTable update(@PathParam("subSystemId") String subSystemId, 
             ExecutionTable executionTable) {        
-        
-        logger.debug("execution table update - Update ExecutionTable from SubSystem: " + subSystemId);
+
+      logger.debug("execution table update - Update ExecutionTable from SubSystem: " + subSystemId);
+
+      if (MSBVar.getSystemStage().equals(MSBConstants.SYSTEM_STATE_RAMP_UP))
+      {
         SubSystem subSystem = getSubSystemById(subSystemId);
-        if(subSystem != null){
-            subSystem.setExecutionTable(executionTable);       
-        }        
-        logger.debug(subSystem != null ? "execution update - ExecutionTable successfully updated" :
-            "execution table update - can not find subSystem with Id: " + subSystemId);
-        return subSystem != null ? subSystem.getExecutionTable() : executionTable;
+        if (subSystem != null)
+        {
+          subSystem.setExecutionTable(executionTable);
+          logger.debug(subSystem != null ? "execution update - ExecutionTable successfully updated"
+                  : "execution table update - can not find subSystem with Id: " + subSystemId);
+          
+          //TODO send it to DA
+          
+          return subSystem != null ? subSystem.getExecutionTable() : executionTable;
+        }
+        else
+          return null;
+      } else
+      {
+        logger.debug("The system is not at Ramp Up Stage!");
+        return null;
+      }
    }   
 
     /**
@@ -124,6 +140,8 @@ public class ExecutionTableController {
             
             subSystem.getExecutionTable().getRows()
                     .add(rowToInsert.getRowPosition(), rowToInsert.getRow());
+            
+            //TODO send the whole table to DA -> Lboro valentine's day discussions
         }        
         logger.debug(subSystem != null ? 
                 "execution table insert - new row insert successfully" :
@@ -231,6 +249,9 @@ public class ExecutionTableController {
                 }
             }
             subSystem.getExecutionTable().getRows().removeAll(toRemove);
+            
+            //TODO send the whole table to DA -> Lboro valentine's day discussions
+            
         }
         logger.debug(subSystem != null ? 
                 "execution table delete row - Row successfully deleted from execution table" : 
@@ -278,6 +299,9 @@ public class ExecutionTableController {
                 rows.get(i).setRecipeId(rowToUpdate.getRecipeId());
                 rows.get(i).setRegistered(rowToUpdate.getRegistered());
                 rows.get(i).setUniqueId(rowToUpdate.getUniqueId());
+                
+                //TODO send the whole table to DA -> Lboro valentine's day discussions
+                
                 return deviceAdapterbyName.getExecutionTable();
             }
           }

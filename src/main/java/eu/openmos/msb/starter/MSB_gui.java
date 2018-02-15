@@ -52,6 +52,8 @@ import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
+import eu.openmos.msb.datastructures.MSBConstants;
+import eu.openmos.msb.datastructures.MSBVar;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.datastructures.ProductExecution;
@@ -1686,7 +1688,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         Thread.currentThread().interrupt();
       }
-
+      
+      MSBVar.setSystemStage(MSBConstants.SYSTEM_STATE_RAMP_UP);
+      
     } catch (Exception ex)
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, "[StartMSBServerActionPerformed] Exception: " + ex);

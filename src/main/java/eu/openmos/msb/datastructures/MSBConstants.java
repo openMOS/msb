@@ -18,16 +18,11 @@ public class MSBConstants {
     public static final String ADAPTER_STATE_ERROR = "Error";
     public static final String ADAPTER_STATE_EMERGENCY_STOP = "EMERGENCY_STOP";
     
+    public static final String SYSTEM_STATE_RAMP_UP = "Ramp_Up";
+    public static final String SYSTEM_STATE_PRE_PRODUCTION = "Pre_Production";
+    public static final String SYSTEM_STATE_PRODUCTION = "Production";
+    
     public static Boolean MSB_OPTIMIZER = true;
+    
 }
 
-/*
-
-public enum SkillState {
-	Ready,
-	Running,
-	Suspend,
-	Error,
-	EmergencyStop
-}
-*/

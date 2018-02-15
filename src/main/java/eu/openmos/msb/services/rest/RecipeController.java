@@ -13,6 +13,7 @@ package eu.openmos.msb.services.rest;
 import eu.openmos.model.*;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
@@ -181,7 +182,9 @@ public class RecipeController extends Base
             recipes.get(j).setUniqueAgentName(recipe.getUniqueAgentName());
             recipes.get(j).setUniqueId(recipe.getUniqueId());
             recipes.get(j).setValid(recipe.isValid());
-            //client.InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
+            
+            DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter.getClient();
+            //client.getClient().InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
             ret = true;
             logger.info("Sending new execution table to DA: " + deviceAdaptersNames.get(i));
           } else
