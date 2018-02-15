@@ -312,5 +312,19 @@ public class ListsToString {
         }
         return builder.toString();
     }
+
+    public static String writePhysicalAdjustmentParameters(List<PhysicalAdjustmentParameter> physicalAdjustmentParameters) {
+        StringBuilder builder = new StringBuilder();
+
+        if(physicalAdjustmentParameters == null || physicalAdjustmentParameters.isEmpty())
+            builder.append(SerializationConstants.EMPTY_LIST);
+        else {
+            for(PhysicalAdjustmentParameter physicalAdjustmentParameter : physicalAdjustmentParameters) {
+                builder.append(physicalAdjustmentParameter.toString());
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
+    }
     
 }

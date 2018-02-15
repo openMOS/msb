@@ -1,5 +1,6 @@
 package eu.openmos.msb.services.rest;
 
+import eu.openmos.msb.datastructures.MSBVar;
 import eu.openmos.msb.services.rest.data.SystemStatus;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,9 +27,7 @@ public class SystemStatusController extends Base
   {
     logger.debug("get system status");
     
-    // TODO
-
-    return new SystemStatus("PRODUCTION");
+    return new SystemStatus(MSBVar.getSystemStage());
   }
 
   @POST
@@ -36,9 +35,8 @@ public class SystemStatusController extends Base
   @Produces(MediaType.APPLICATION_JSON)
   public SystemStatus setStatus(String newStatus)
   {
-    logger.debug("set system status - new status = " + newStatus);
-    
-    // TODO
+    logger.debug("set system status - new status = " + newStatus); 
+    MSBVar.setSystemStage(newStatus);
     
     return new SystemStatus(newStatus);
   }

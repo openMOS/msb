@@ -112,6 +112,7 @@ public class SubSystem extends Equipment implements Serializable {
             boolean connected,
             List<Skill> skills,
             List<PhysicalPort> ports,
+            List<PhysicalAdjustmentParameter> physicalAdjustmentParameters,
             List<Recipe> recipes, 
             List<Module> internalModules,
             String address,
@@ -123,6 +124,7 @@ public class SubSystem extends Equipment implements Serializable {
             Date registeredTimestamp
     ) {
         super(uniqueId, name, description, connected, skills, ports,
+                physicalAdjustmentParameters,
                 address, status, manufacturer, registeredTimestamp);
 
         this.executionTable = executionTable;
@@ -219,6 +221,11 @@ public class SubSystem extends Equipment implements Serializable {
             physicalPortIds = physicalPorts.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
 
         logger.trace("subsystem-toBSON - 2.5");
+        List<String> physicalAdjustmentParameterIds = null;
+        if (physicalAdjustmentParameters != null)
+            physicalAdjustmentParameterIds = physicalAdjustmentParameters.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());
+        
+        logger.trace("subsystem-toBSON - 3");
         List<String> recipeIds = null;
         if (recipes != null)
             recipeIds = recipes.stream().map(recipe -> recipe.getUniqueId()).collect(Collectors.toList());
@@ -243,6 +250,9 @@ public class SubSystem extends Equipment implements Serializable {
 
         logger.trace("subsystem-toBSON - 5");
         doc.append(DatabaseConstants.PHYSICAL_PORT_IDS, physicalPortIds);
+
+        logger.trace("subsystem-toBSON - 5.5");
+        doc.append(DatabaseConstants.PHYSICAL_ADJUSTMENT_PARAMETER_IDS, physicalAdjustmentParameterIds);
 
         logger.trace("subsystem-toBSON - 6");
         doc.append(DatabaseConstants.RECIPE_IDS, recipeIds);
@@ -269,7 +279,7 @@ public class SubSystem extends Equipment implements Serializable {
         return doc;
     }
     
-    public String toString()
+public String toString()
     {
         StringBuilder builder = new StringBuilder();
         builder.append("SubSystem = ")
@@ -279,14 +289,20 @@ public class SubSystem extends Equipment implements Serializable {
         builder.append(executionTable.toString()).append("\n");
         builder.append(connected).append("\n");
         builder.append(ListsToString.writeSkills(skills)).append("\n");
+
         builder.append(ListsToString.writePhysicalPorts(physicalPorts)).append("\n");
+        builder.append(ListsToString.writePhysicalAdjustmentParameters(physicalAdjustmentParameters)).append("\n");
+
         builder.append(ListsToString.writeRecipes(recipes)).append("\n");
-        for(int i=0; i<internalModules.size(); i++)
-        builder.append(internalModules.get(i).toString()).append("\n");
-        
         builder.append(address).append("\n");
         builder.append(status).append("\n");
         builder.append(manufacturer).append("\n");
+
+        if (internalModules != null)
+            for (Module m : internalModules)
+                builder.append(m.toString());        
+            builder.append("\n");
+        
         if (physicalLocation != null)
             builder.append(physicalLocation.toString()).append("\n");
         else

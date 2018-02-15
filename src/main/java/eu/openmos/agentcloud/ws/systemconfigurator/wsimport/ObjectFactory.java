@@ -28,18 +28,22 @@ public class ObjectFactory {
     private final static QName _AcceptNewOrderInstanceResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "acceptNewOrderInstanceResponse");
     private final static QName _CreateNewTransportAgentResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewTransportAgentResponse");
     private final static QName _OrderInstanceRemovalResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceRemovalResponse");
+    private final static QName _GetEquipmentObservationRel2SResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getEquipmentObservationRel2sResponse");
     private final static QName _StartedProduct_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "startedProduct");
     private final static QName _GetOrderInstanceResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getOrderInstanceResponse");
     private final static QName _GetRecipeExecutionData_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getRecipeExecutionData");
     private final static QName _NewProductDefinition_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "newProductDefinition");
+    private final static QName _GetEquipmentAssessmentsResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getEquipmentAssessmentsResponse");
     private final static QName _CreateNewRecipe_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewRecipe");
     private final static QName _CreateNewResourceAgentResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewResourceAgentResponse");
+    private final static QName _UpdateExecutionTablesResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "updateExecutionTablesResponse");
     private final static QName _AcceptNewOrderInstance_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "acceptNewOrderInstance");
     private final static QName _GetRecipesResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getRecipesResponse");
-    private final static QName _InitializePlatform_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "initializePlatform");
     private final static QName _GetRecipeExecutionDataResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getRecipeExecutionDataResponse");
     private final static QName _PutRecipes_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "putRecipes");
     private final static QName _StartedProductResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "startedProductResponse");
+    private final static QName _GetFilteredRecipeExecutionDataResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getFilteredRecipeExecutionDataResponse");
+    private final static QName _GetProcessAssessmentsResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getProcessAssessmentsResponse");
     private final static QName _CreateNewResourceAgent_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewResourceAgent");
     private final static QName _GetRecipes_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getRecipes");
     private final static QName _GetSkill_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getSkill");
@@ -48,7 +52,10 @@ public class ObjectFactory {
     private final static QName _GetOrderInstance_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getOrderInstance");
     private final static QName _GetRecipesBySubSystemIdResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getRecipesBySubSystemIdResponse");
     private final static QName _GetSkillResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getSkillResponse");
+    private final static QName _UpdateExecutionTables_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "updateExecutionTables");
     private final static QName _GetProductResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getProductResponse");
+    private final static QName _GetEquipmentObservationRel2S_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getEquipmentObservationRel2s");
+    private final static QName _GetEquipmentAssessments_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getEquipmentAssessments");
     private final static QName _PutRecipesResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "putRecipesResponse");
     private final static QName _FinishedProduct_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "finishedProduct");
     private final static QName _CreateNewSkill_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "createNewSkill");
@@ -56,10 +63,11 @@ public class ObjectFactory {
     private final static QName _GetExecutionTableById_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getExecutionTableById");
     private final static QName _OrderInstanceUpdate_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceUpdate");
     private final static QName _GetSubSystems_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getSubSystems");
+    private final static QName _GetFilteredRecipeExecutionData_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getFilteredRecipeExecutionData");
     private final static QName _OrderInstanceUpdateResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceUpdateResponse");
     private final static QName _NewProductDefinitionResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "newProductDefinitionResponse");
-    private final static QName _InitializePlatformResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "initializePlatformResponse");
     private final static QName _GetExecutionTableBySubSystemIdResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getExecutionTableBySubSystemIdResponse");
+    private final static QName _GetProcessAssessments_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getProcessAssessments");
     private final static QName _GetProduct_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getProduct");
     private final static QName _OrderInstanceRemoval_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceRemoval");
     private final static QName _UpdateExecutionTableResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "updateExecutionTableResponse");
@@ -80,6 +88,14 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link GetEquipmentObservationRel2SResponse }
+     * 
+     */
+    public GetEquipmentObservationRel2SResponse createGetEquipmentObservationRel2SResponse() {
+        return new GetEquipmentObservationRel2SResponse();
     }
 
     /**
@@ -155,19 +171,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InitializePlatform }
-     * 
-     */
-    public InitializePlatform createInitializePlatform() {
-        return new InitializePlatform();
-    }
-
-    /**
      * Create an instance of {@link GetRecipeExecutionDataResponse }
      * 
      */
     public GetRecipeExecutionDataResponse createGetRecipeExecutionDataResponse() {
         return new GetRecipeExecutionDataResponse();
+    }
+
+    /**
+     * Create an instance of {@link UpdateExecutionTablesResponse }
+     * 
+     */
+    public UpdateExecutionTablesResponse createUpdateExecutionTablesResponse() {
+        return new UpdateExecutionTablesResponse();
     }
 
     /**
@@ -195,6 +211,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetEquipmentAssessmentsResponse }
+     * 
+     */
+    public GetEquipmentAssessmentsResponse createGetEquipmentAssessmentsResponse() {
+        return new GetEquipmentAssessmentsResponse();
+    }
+
+    /**
      * Create an instance of {@link RemoveAgent }
      * 
      */
@@ -208,6 +232,22 @@ public class ObjectFactory {
      */
     public StartedProductResponse createStartedProductResponse() {
         return new StartedProductResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetFilteredRecipeExecutionDataResponse }
+     * 
+     */
+    public GetFilteredRecipeExecutionDataResponse createGetFilteredRecipeExecutionDataResponse() {
+        return new GetFilteredRecipeExecutionDataResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetProcessAssessmentsResponse }
+     * 
+     */
+    public GetProcessAssessmentsResponse createGetProcessAssessmentsResponse() {
+        return new GetProcessAssessmentsResponse();
     }
 
     /**
@@ -251,6 +291,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetEquipmentAssessments }
+     * 
+     */
+    public GetEquipmentAssessments createGetEquipmentAssessments() {
+        return new GetEquipmentAssessments();
+    }
+
+    /**
      * Create an instance of {@link PutRecipesResponse }
      * 
      */
@@ -264,6 +312,14 @@ public class ObjectFactory {
      */
     public GetProductResponse createGetProductResponse() {
         return new GetProductResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetEquipmentObservationRel2S }
+     * 
+     */
+    public GetEquipmentObservationRel2S createGetEquipmentObservationRel2S() {
+        return new GetEquipmentObservationRel2S();
     }
 
     /**
@@ -315,6 +371,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link UpdateExecutionTables }
+     * 
+     */
+    public UpdateExecutionTables createUpdateExecutionTables() {
+        return new UpdateExecutionTables();
+    }
+
+    /**
      * Create an instance of {@link NewProductDefinitionResponse }
      * 
      */
@@ -352,6 +416,14 @@ public class ObjectFactory {
      */
     public OrderInstanceUpdate createOrderInstanceUpdate() {
         return new OrderInstanceUpdate();
+    }
+
+    /**
+     * Create an instance of {@link GetFilteredRecipeExecutionData }
+     * 
+     */
+    public GetFilteredRecipeExecutionData createGetFilteredRecipeExecutionData() {
+        return new GetFilteredRecipeExecutionData();
     }
 
     /**
@@ -411,11 +483,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InitializePlatformResponse }
+     * Create an instance of {@link GetProcessAssessments }
      * 
      */
-    public InitializePlatformResponse createInitializePlatformResponse() {
-        return new InitializePlatformResponse();
+    public GetProcessAssessments createGetProcessAssessments() {
+        return new GetProcessAssessments();
     }
 
     /**
@@ -483,6 +555,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RecipeExecutionDataFilter }
+     * 
+     */
+    public RecipeExecutionDataFilter createRecipeExecutionDataFilter() {
+        return new RecipeExecutionDataFilter();
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NewRecipeExecutionData }{@code >}}
      * 
      */
@@ -516,6 +596,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "orderInstanceRemovalResponse")
     public JAXBElement<OrderInstanceRemovalResponse> createOrderInstanceRemovalResponse(OrderInstanceRemovalResponse value) {
         return new JAXBElement<OrderInstanceRemovalResponse>(_OrderInstanceRemovalResponse_QNAME, OrderInstanceRemovalResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetEquipmentObservationRel2SResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getEquipmentObservationRel2sResponse")
+    public JAXBElement<GetEquipmentObservationRel2SResponse> createGetEquipmentObservationRel2SResponse(GetEquipmentObservationRel2SResponse value) {
+        return new JAXBElement<GetEquipmentObservationRel2SResponse>(_GetEquipmentObservationRel2SResponse_QNAME, GetEquipmentObservationRel2SResponse.class, null, value);
     }
 
     /**
@@ -555,6 +644,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetEquipmentAssessmentsResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getEquipmentAssessmentsResponse")
+    public JAXBElement<GetEquipmentAssessmentsResponse> createGetEquipmentAssessmentsResponse(GetEquipmentAssessmentsResponse value) {
+        return new JAXBElement<GetEquipmentAssessmentsResponse>(_GetEquipmentAssessmentsResponse_QNAME, GetEquipmentAssessmentsResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CreateNewRecipe }{@code >}}
      * 
      */
@@ -573,6 +671,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateExecutionTablesResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "updateExecutionTablesResponse")
+    public JAXBElement<UpdateExecutionTablesResponse> createUpdateExecutionTablesResponse(UpdateExecutionTablesResponse value) {
+        return new JAXBElement<UpdateExecutionTablesResponse>(_UpdateExecutionTablesResponse_QNAME, UpdateExecutionTablesResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link AcceptNewOrderInstance }{@code >}}
      * 
      */
@@ -588,15 +695,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getRecipesResponse")
     public JAXBElement<GetRecipesResponse> createGetRecipesResponse(GetRecipesResponse value) {
         return new JAXBElement<GetRecipesResponse>(_GetRecipesResponse_QNAME, GetRecipesResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InitializePlatform }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "initializePlatform")
-    public JAXBElement<InitializePlatform> createInitializePlatform(InitializePlatform value) {
-        return new JAXBElement<InitializePlatform>(_InitializePlatform_QNAME, InitializePlatform.class, null, value);
     }
 
     /**
@@ -624,6 +722,24 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "startedProductResponse")
     public JAXBElement<StartedProductResponse> createStartedProductResponse(StartedProductResponse value) {
         return new JAXBElement<StartedProductResponse>(_StartedProductResponse_QNAME, StartedProductResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetFilteredRecipeExecutionDataResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getFilteredRecipeExecutionDataResponse")
+    public JAXBElement<GetFilteredRecipeExecutionDataResponse> createGetFilteredRecipeExecutionDataResponse(GetFilteredRecipeExecutionDataResponse value) {
+        return new JAXBElement<GetFilteredRecipeExecutionDataResponse>(_GetFilteredRecipeExecutionDataResponse_QNAME, GetFilteredRecipeExecutionDataResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetProcessAssessmentsResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getProcessAssessmentsResponse")
+    public JAXBElement<GetProcessAssessmentsResponse> createGetProcessAssessmentsResponse(GetProcessAssessmentsResponse value) {
+        return new JAXBElement<GetProcessAssessmentsResponse>(_GetProcessAssessmentsResponse_QNAME, GetProcessAssessmentsResponse.class, null, value);
     }
 
     /**
@@ -699,12 +815,39 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateExecutionTables }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "updateExecutionTables")
+    public JAXBElement<UpdateExecutionTables> createUpdateExecutionTables(UpdateExecutionTables value) {
+        return new JAXBElement<UpdateExecutionTables>(_UpdateExecutionTables_QNAME, UpdateExecutionTables.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetProductResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getProductResponse")
     public JAXBElement<GetProductResponse> createGetProductResponse(GetProductResponse value) {
         return new JAXBElement<GetProductResponse>(_GetProductResponse_QNAME, GetProductResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetEquipmentObservationRel2S }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getEquipmentObservationRel2s")
+    public JAXBElement<GetEquipmentObservationRel2S> createGetEquipmentObservationRel2S(GetEquipmentObservationRel2S value) {
+        return new JAXBElement<GetEquipmentObservationRel2S>(_GetEquipmentObservationRel2S_QNAME, GetEquipmentObservationRel2S.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetEquipmentAssessments }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getEquipmentAssessments")
+    public JAXBElement<GetEquipmentAssessments> createGetEquipmentAssessments(GetEquipmentAssessments value) {
+        return new JAXBElement<GetEquipmentAssessments>(_GetEquipmentAssessments_QNAME, GetEquipmentAssessments.class, null, value);
     }
 
     /**
@@ -771,6 +914,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetFilteredRecipeExecutionData }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getFilteredRecipeExecutionData")
+    public JAXBElement<GetFilteredRecipeExecutionData> createGetFilteredRecipeExecutionData(GetFilteredRecipeExecutionData value) {
+        return new JAXBElement<GetFilteredRecipeExecutionData>(_GetFilteredRecipeExecutionData_QNAME, GetFilteredRecipeExecutionData.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link OrderInstanceUpdateResponse }{@code >}}
      * 
      */
@@ -789,21 +941,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InitializePlatformResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "initializePlatformResponse")
-    public JAXBElement<InitializePlatformResponse> createInitializePlatformResponse(InitializePlatformResponse value) {
-        return new JAXBElement<InitializePlatformResponse>(_InitializePlatformResponse_QNAME, InitializePlatformResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetExecutionTableBySubSystemIdResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getExecutionTableBySubSystemIdResponse")
     public JAXBElement<GetExecutionTableBySubSystemIdResponse> createGetExecutionTableBySubSystemIdResponse(GetExecutionTableBySubSystemIdResponse value) {
         return new JAXBElement<GetExecutionTableBySubSystemIdResponse>(_GetExecutionTableBySubSystemIdResponse_QNAME, GetExecutionTableBySubSystemIdResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetProcessAssessments }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getProcessAssessments")
+    public JAXBElement<GetProcessAssessments> createGetProcessAssessments(GetProcessAssessments value) {
+        return new JAXBElement<GetProcessAssessments>(_GetProcessAssessments_QNAME, GetProcessAssessments.class, null, value);
     }
 
     /**

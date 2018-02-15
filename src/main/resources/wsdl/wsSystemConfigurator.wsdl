@@ -13,14 +13,22 @@
 <xs:element name="createNewTransportAgentResponse" type="tns:createNewTransportAgentResponse" />
 <xs:element name="finishedProduct" type="tns:finishedProduct" />
 <xs:element name="finishedProductResponse" type="tns:finishedProductResponse" />
+<xs:element name="getEquipmentAssessments" type="tns:getEquipmentAssessments" />
+<xs:element name="getEquipmentAssessmentsResponse" type="tns:getEquipmentAssessmentsResponse" />
+<xs:element name="getEquipmentObservationRel2s" type="tns:getEquipmentObservationRel2s" />
+<xs:element name="getEquipmentObservationRel2sResponse" type="tns:getEquipmentObservationRel2sResponse" />
 <xs:element name="getExecutionTableById" type="tns:getExecutionTableById" />
 <xs:element name="getExecutionTableByIdResponse" type="tns:getExecutionTableByIdResponse" />
 <xs:element name="getExecutionTableBySubSystemId" type="tns:getExecutionTableBySubSystemId" />
 <xs:element name="getExecutionTableBySubSystemIdResponse" type="tns:getExecutionTableBySubSystemIdResponse" />
 <xs:element name="getExecutionTables" type="tns:getExecutionTables" />
 <xs:element name="getExecutionTablesResponse" type="tns:getExecutionTablesResponse" />
+<xs:element name="getFilteredRecipeExecutionData" type="tns:getFilteredRecipeExecutionData" />
+<xs:element name="getFilteredRecipeExecutionDataResponse" type="tns:getFilteredRecipeExecutionDataResponse" />
 <xs:element name="getOrderInstance" type="tns:getOrderInstance" />
 <xs:element name="getOrderInstanceResponse" type="tns:getOrderInstanceResponse" />
+<xs:element name="getProcessAssessments" type="tns:getProcessAssessments" />
+<xs:element name="getProcessAssessmentsResponse" type="tns:getProcessAssessmentsResponse" />
 <xs:element name="getProduct" type="tns:getProduct" />
 <xs:element name="getProductResponse" type="tns:getProductResponse" />
 <xs:element name="getRecipeExecutionData" type="tns:getRecipeExecutionData" />
@@ -33,8 +41,6 @@
 <xs:element name="getSkillResponse" type="tns:getSkillResponse" />
 <xs:element name="getSubSystems" type="tns:getSubSystems" />
 <xs:element name="getSubSystemsResponse" type="tns:getSubSystemsResponse" />
-<xs:element name="initializePlatform" type="tns:initializePlatform" />
-<xs:element name="initializePlatformResponse" type="tns:initializePlatformResponse" />
 <xs:element name="newProductDefinition" type="tns:newProductDefinition" />
 <xs:element name="newProductDefinitionResponse" type="tns:newProductDefinitionResponse" />
 <xs:element name="newRecipeExecutionData" type="tns:newRecipeExecutionData" />
@@ -51,6 +57,8 @@
 <xs:element name="startedProductResponse" type="tns:startedProductResponse" />
 <xs:element name="updateExecutionTable" type="tns:updateExecutionTable" />
 <xs:element name="updateExecutionTableResponse" type="tns:updateExecutionTableResponse" />
+<xs:element name="updateExecutionTables" type="tns:updateExecutionTables" />
+<xs:element name="updateExecutionTablesResponse" type="tns:updateExecutionTablesResponse" />
 <xs:complexType name="getOrderInstance">
 <xs:sequence>
 <xs:element minOccurs="0" name="orderInstanceId" type="xs:string" />
@@ -189,6 +197,118 @@
 <xs:element minOccurs="0" name="operationName" type="xs:string" />
 </xs:sequence>
 </xs:complexType>
+<xs:complexType name="updateExecutionTables">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="executionTables" type="tns:executionTable" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="executionTable">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:executionTableRow" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="executionTableRow">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="nextRecipeId" type="xs:string" />
+<xs:element minOccurs="0" name="nextRecipeIdPath" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="possibleRecipeChoices" nillable="true" type="xs:string" />
+<xs:element minOccurs="0" name="productId" type="xs:string" />
+<xs:element minOccurs="0" name="recipeId" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="updateExecutionTablesResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="getEquipmentObservationRel2s">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="getEquipmentObservationRel2sResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="equipmentObservationRel2s" type="tns:equipmentObservationRel2" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="equipmentObservationRel2">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentType" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:equipmentObservationRel2Row" />
+<xs:element minOccurs="0" name="systemStatus" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="userName" type="xs:string" />
+<xs:element minOccurs="0" name="userText" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="equipmentObservationRel2Row">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="equipmentObservationId" type="xs:string" />
+<xs:element minOccurs="0" name="subtype" type="xs:string" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="unit" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:double" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="getEquipmentAssessments">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="getEquipmentAssessmentsResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="equipmentAssessments" type="tns:equipmentAssessment" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="equipmentAssessment">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentType" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:equipmentAssessmentRow" />
+<xs:element minOccurs="0" name="systemStatus" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="userName" type="xs:string" />
+<xs:element minOccurs="0" name="userText" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="equipmentAssessmentRow">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="equipmentAssessmentId" type="xs:string" />
+<xs:element minOccurs="0" name="rating" type="xs:double" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
 <xs:complexType name="finishedProduct">
 <xs:sequence>
 <xs:element minOccurs="0" name="finishedProductInfo" type="tns:finishedProductInfo" />
@@ -292,6 +412,7 @@
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="precedents" nillable="true" type="tns:skillReqPrecedent" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="recipeIDs" nillable="true" type="xs:string" />
 <xs:element minOccurs="0" name="requiresPart" type="tns:part" />
 <xs:element minOccurs="0" name="skillType" type="tns:skillType" />
 <xs:element minOccurs="0" name="type" type="xs:string" />
@@ -338,16 +459,6 @@
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
 </xs:complexType>
-<xs:complexType name="orderInstanceUpdate">
-<xs:sequence>
-<xs:element minOccurs="0" name="order" type="tns:orderInstance" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="orderInstanceUpdateResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
 <xs:complexType name="getExecutionTableById">
 <xs:sequence>
 <xs:element minOccurs="0" name="executionTableId" type="xs:string" />
@@ -358,31 +469,15 @@
 <xs:element minOccurs="0" name="executionTable" type="tns:executionTable" />
 </xs:sequence>
 </xs:complexType>
-<xs:complexType name="executionTable">
-<xs:complexContent>
-<xs:extension base="tns:base">
+<xs:complexType name="orderInstanceUpdate">
 <xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:executionTableRow" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="order" type="tns:orderInstance" />
 </xs:sequence>
-</xs:extension>
-</xs:complexContent>
 </xs:complexType>
-<xs:complexType name="executionTableRow">
-<xs:complexContent>
-<xs:extension base="tns:base">
+<xs:complexType name="orderInstanceUpdateResponse">
 <xs:sequence>
-<xs:element minOccurs="0" name="nextRecipeId" type="xs:string" />
-<xs:element minOccurs="0" name="nextRecipeIdPath" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="possibleRecipeChoices" nillable="true" type="xs:string" />
-<xs:element minOccurs="0" name="productId" type="xs:string" />
-<xs:element minOccurs="0" name="recipeId" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
-</xs:extension>
-</xs:complexContent>
 </xs:complexType>
 <xs:complexType name="getSubSystems">
 <xs:sequence />
@@ -397,6 +492,7 @@
 <xs:extension base="tns:equipment">
 <xs:sequence>
 <xs:element minOccurs="0" name="executionTable" type="tns:executionTable" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="internalModules" nillable="true" type="tns:module" />
 <xs:element minOccurs="0" name="logicalLocation" type="tns:logicalLocation" />
 <xs:element minOccurs="0" name="physicalLocation" type="tns:physicalLocation" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" nillable="true" type="tns:recipe" />
@@ -416,11 +512,75 @@
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="manufacturer" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="physicalAdjustmentParameters" nillable="true" type="tns:physicalAdjustmentParameter" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="physicalPorts" nillable="true" type="tns:physicalPort" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="skills" nillable="true" type="tns:skill" />
 <xs:element minOccurs="0" name="status" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="module">
+<xs:complexContent>
+<xs:extension base="tns:equipment">
+<xs:sequence>
+<xs:element minOccurs="0" name="parentId" type="xs:string" />
+<xs:element minOccurs="0" name="parentType" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" nillable="true" type="tns:recipe" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="recipe">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="changeRecipeMethodID" type="xs:string" />
+<xs:element minOccurs="0" name="changeRecipeObjectID" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="equipmentIds" nillable="true" type="xs:string" />
+<xs:element minOccurs="0" name="executedBySkillControlPort" type="tns:controlPort" />
+<xs:element minOccurs="0" name="invokeMethodID" type="xs:string" />
+<xs:element minOccurs="0" name="invokeObjectID" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
+<xs:element minOccurs="0" name="lastOptimizationTime" type="xs:dateTime" />
+<xs:element minOccurs="0" name="msbProtocolEndpoint" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element name="optimized" type="xs:boolean" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="parameterSettings" nillable="true" type="tns:parameterSetting" />
+<xs:element minOccurs="0" name="skill" type="tns:skill" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
+<xs:element minOccurs="0" name="state" type="xs:string" />
+<xs:element minOccurs="0" name="statePath" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element name="valid" type="xs:boolean" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="physicalAdjustmentParameter">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="defaultValue" type="xs:string" />
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="lowerBound" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="unit" type="xs:string" />
+<xs:element minOccurs="0" name="upperBound" type="xs:string" />
+<xs:element minOccurs="0" name="valueType" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="physicalPort">
+<xs:complexContent>
+<xs:extension base="tns:port">
+<xs:sequence />
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
@@ -457,38 +617,24 @@
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
-<xs:complexType name="recipe">
-<xs:complexContent>
-<xs:extension base="tns:base">
+<xs:complexType name="getFilteredRecipeExecutionData">
 <xs:sequence>
-<xs:element minOccurs="0" name="description" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="equipmentIds" nillable="true" type="xs:string" />
-<xs:element minOccurs="0" name="executedBySkillControlPort" type="tns:controlPort" />
-<xs:element minOccurs="0" name="invokeMethodID" type="xs:string" />
-<xs:element minOccurs="0" name="invokeObjectID" type="xs:string" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
-<xs:element minOccurs="0" name="lastOptimizationTime" type="xs:dateTime" />
-<xs:element minOccurs="0" name="msbProtocolEndpoint" type="xs:string" />
-<xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element name="optimized" type="xs:boolean" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="parameterSettings" nillable="true" type="tns:parameterSetting" />
-<xs:element minOccurs="0" name="skill" type="tns:skill" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
-<xs:element minOccurs="0" name="state" type="xs:string" />
-<xs:element minOccurs="0" name="statePath" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueAgentName" type="xs:string" />
-<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
-<xs:element name="valid" type="xs:boolean" />
+<xs:element minOccurs="0" name="recipeExecutionDataFilter" type="tns:recipeExecutionDataFilter" />
 </xs:sequence>
-</xs:extension>
-</xs:complexContent>
 </xs:complexType>
-<xs:complexType name="physicalPort">
-<xs:complexContent>
-<xs:extension base="tns:port">
-<xs:sequence />
-</xs:extension>
-</xs:complexContent>
+<xs:complexType name="recipeExecutionDataFilter">
+<xs:sequence>
+<xs:element minOccurs="0" name="kpiSettingName" type="xs:string" />
+<xs:element minOccurs="0" name="productInstanceId" type="xs:string" />
+<xs:element minOccurs="0" name="recipeId" type="xs:string" />
+<xs:element minOccurs="0" name="startInterval" type="xs:string" />
+<xs:element minOccurs="0" name="stopInterval" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="getFilteredRecipeExecutionDataResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="recipeExecutionData" type="tns:recipeExecutionData" />
+</xs:sequence>
 </xs:complexType>
 <xs:complexType name="getRecipeExecutionData">
 <xs:sequence />
@@ -531,6 +677,42 @@
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
 </xs:complexType>
+<xs:complexType name="getProcessAssessments">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="getProcessAssessmentsResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="processAssessments" type="tns:processAssessment" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="processAssessment">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="recipeId" type="xs:string" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:processAssessmentRow" />
+<xs:element minOccurs="0" name="systemStatus" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="userName" type="xs:string" />
+<xs:element minOccurs="0" name="userText" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="processAssessmentRow">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="processAssessmentId" type="xs:string" />
+<xs:element minOccurs="0" name="rating" type="xs:double" />
+<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
 <xs:complexType name="getProduct">
 <xs:sequence>
 <xs:element minOccurs="0" name="productId" type="xs:string" />
@@ -568,17 +750,6 @@
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="acceptNewOrderInstanceResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="initializePlatform">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="cyberPhysicalAgentDescriptions" type="tns:subSystem" />
-<xs:element maxOccurs="unbounded" minOccurs="0" name="orders" type="tns:orderInstance" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="initializePlatformResponse">
 <xs:sequence>
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
@@ -688,6 +859,10 @@
     <wsdl:part element="tns:orderInstanceRemovalResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getEquipmentObservationRel2sResponse">
+    <wsdl:part element="tns:getEquipmentObservationRel2sResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="startedProduct">
     <wsdl:part element="tns:startedProduct" name="parameters">
     </wsdl:part>
@@ -704,6 +879,10 @@
     <wsdl:part element="tns:newProductDefinition" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getEquipmentAssessmentsResponse">
+    <wsdl:part element="tns:getEquipmentAssessmentsResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="createNewRecipe">
     <wsdl:part element="tns:createNewRecipe" name="parameters">
     </wsdl:part>
@@ -712,16 +891,16 @@
     <wsdl:part element="tns:createNewResourceAgentResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="updateExecutionTablesResponse">
+    <wsdl:part element="tns:updateExecutionTablesResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="acceptNewOrderInstance">
     <wsdl:part element="tns:acceptNewOrderInstance" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getRecipesResponse">
     <wsdl:part element="tns:getRecipesResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="initializePlatform">
-    <wsdl:part element="tns:initializePlatform" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getRecipeExecutionDataResponse">
@@ -734,6 +913,14 @@
   </wsdl:message>
   <wsdl:message name="startedProductResponse">
     <wsdl:part element="tns:startedProductResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getFilteredRecipeExecutionDataResponse">
+    <wsdl:part element="tns:getFilteredRecipeExecutionDataResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getProcessAssessmentsResponse">
+    <wsdl:part element="tns:getProcessAssessmentsResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createNewResourceAgent">
@@ -768,8 +955,20 @@
     <wsdl:part element="tns:getSkillResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="updateExecutionTables">
+    <wsdl:part element="tns:updateExecutionTables" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getProductResponse">
     <wsdl:part element="tns:getProductResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getEquipmentObservationRel2s">
+    <wsdl:part element="tns:getEquipmentObservationRel2s" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getEquipmentAssessments">
+    <wsdl:part element="tns:getEquipmentAssessments" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="putRecipesResponse">
@@ -788,16 +987,20 @@
     <wsdl:part element="tns:getExecutionTablesResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="orderInstanceUpdate">
-    <wsdl:part element="tns:orderInstanceUpdate" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="getExecutionTableById">
     <wsdl:part element="tns:getExecutionTableById" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="orderInstanceUpdate">
+    <wsdl:part element="tns:orderInstanceUpdate" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getSubSystems">
     <wsdl:part element="tns:getSubSystems" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getFilteredRecipeExecutionData">
+    <wsdl:part element="tns:getFilteredRecipeExecutionData" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="orderInstanceUpdateResponse">
@@ -808,8 +1011,8 @@
     <wsdl:part element="tns:newProductDefinitionResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="initializePlatformResponse">
-    <wsdl:part element="tns:initializePlatformResponse" name="parameters">
+  <wsdl:message name="getProcessAssessments">
+    <wsdl:part element="tns:getProcessAssessments" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getExecutionTableBySubSystemIdResponse">
@@ -885,6 +1088,24 @@
       <wsdl:output message="tns:newRecipeExecutionDataResponse" name="newRecipeExecutionDataResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="updateExecutionTables">
+      <wsdl:input message="tns:updateExecutionTables" name="updateExecutionTables">
+    </wsdl:input>
+      <wsdl:output message="tns:updateExecutionTablesResponse" name="updateExecutionTablesResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEquipmentObservationRel2s">
+      <wsdl:input message="tns:getEquipmentObservationRel2s" name="getEquipmentObservationRel2s">
+    </wsdl:input>
+      <wsdl:output message="tns:getEquipmentObservationRel2sResponse" name="getEquipmentObservationRel2sResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEquipmentAssessments">
+      <wsdl:input message="tns:getEquipmentAssessments" name="getEquipmentAssessments">
+    </wsdl:input>
+      <wsdl:output message="tns:getEquipmentAssessmentsResponse" name="getEquipmentAssessmentsResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="finishedProduct">
       <wsdl:input message="tns:finishedProduct" name="finishedProduct">
     </wsdl:input>
@@ -903,22 +1124,28 @@
       <wsdl:output message="tns:createNewSkillResponse" name="createNewSkillResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="orderInstanceUpdate">
-      <wsdl:input message="tns:orderInstanceUpdate" name="orderInstanceUpdate">
-    </wsdl:input>
-      <wsdl:output message="tns:orderInstanceUpdateResponse" name="orderInstanceUpdateResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getExecutionTableById">
       <wsdl:input message="tns:getExecutionTableById" name="getExecutionTableById">
     </wsdl:input>
       <wsdl:output message="tns:getExecutionTableByIdResponse" name="getExecutionTableByIdResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="orderInstanceUpdate">
+      <wsdl:input message="tns:orderInstanceUpdate" name="orderInstanceUpdate">
+    </wsdl:input>
+      <wsdl:output message="tns:orderInstanceUpdateResponse" name="orderInstanceUpdateResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getSubSystems">
       <wsdl:input message="tns:getSubSystems" name="getSubSystems">
     </wsdl:input>
       <wsdl:output message="tns:getSubSystemsResponse" name="getSubSystemsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFilteredRecipeExecutionData">
+      <wsdl:input message="tns:getFilteredRecipeExecutionData" name="getFilteredRecipeExecutionData">
+    </wsdl:input>
+      <wsdl:output message="tns:getFilteredRecipeExecutionDataResponse" name="getFilteredRecipeExecutionDataResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getRecipeExecutionData">
@@ -937,6 +1164,12 @@
       <wsdl:input message="tns:createNewRecipe" name="createNewRecipe">
     </wsdl:input>
       <wsdl:output message="tns:createNewRecipeResponse" name="createNewRecipeResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getProcessAssessments">
+      <wsdl:input message="tns:getProcessAssessments" name="getProcessAssessments">
+    </wsdl:input>
+      <wsdl:output message="tns:getProcessAssessmentsResponse" name="getProcessAssessmentsResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getProduct">
@@ -961,12 +1194,6 @@
       <wsdl:input message="tns:acceptNewOrderInstance" name="acceptNewOrderInstance">
     </wsdl:input>
       <wsdl:output message="tns:acceptNewOrderInstanceResponse" name="acceptNewOrderInstanceResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="initializePlatform">
-      <wsdl:input message="tns:initializePlatform" name="initializePlatform">
-    </wsdl:input>
-      <wsdl:output message="tns:initializePlatformResponse" name="initializePlatformResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="putRecipes">
@@ -1026,6 +1253,15 @@
   </wsdl:portType>
   <wsdl:binding name="SystemConfiguratorSoapBinding" type="tns:SystemConfigurator">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="getOrderInstance">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="getOrderInstance">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getOrderInstanceResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="newRecipeExecutionData">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="newRecipeExecutionData">
@@ -1035,12 +1271,30 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getOrderInstance">
+    <wsdl:operation name="updateExecutionTables">
       <soap:operation soapAction="" style="document" />
-      <wsdl:input name="getOrderInstance">
+      <wsdl:input name="updateExecutionTables">
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="getOrderInstanceResponse">
+      <wsdl:output name="updateExecutionTablesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEquipmentObservationRel2s">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="getEquipmentObservationRel2s">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getEquipmentObservationRel2sResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEquipmentAssessments">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="getEquipmentAssessments">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getEquipmentAssessmentsResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -1071,15 +1325,6 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getExecutionTableById">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="getExecutionTableById">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="getExecutionTableByIdResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="orderInstanceUpdate">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="orderInstanceUpdate">
@@ -1089,12 +1334,30 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getExecutionTableById">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="getExecutionTableById">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getExecutionTableByIdResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getSubSystems">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="getSubSystems">
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="getSubSystemsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFilteredRecipeExecutionData">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="getFilteredRecipeExecutionData">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getFilteredRecipeExecutionDataResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -1122,6 +1385,15 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="createNewRecipeResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getProcessAssessments">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="getProcessAssessments">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getProcessAssessmentsResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -1158,15 +1430,6 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="acceptNewOrderInstanceResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="initializePlatform">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="initializePlatform">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="initializePlatformResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

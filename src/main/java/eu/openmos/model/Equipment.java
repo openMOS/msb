@@ -66,6 +66,11 @@ public abstract class Equipment extends Base implements Serializable {
      */
     protected List<PhysicalPort> physicalPorts;
     
+    /**
+     * List of physical adhustment parameters.
+     */
+    protected List<PhysicalAdjustmentParameter> physicalAdjustmentParameters;
+    
     // for reflection purpose
     public Equipment() {super();}
 
@@ -90,6 +95,7 @@ public abstract class Equipment extends Base implements Serializable {
             boolean connected,
             List<Skill> skills,
             List<PhysicalPort> ports,
+            List<PhysicalAdjustmentParameter> physicalAdjustmentParameters,
             String address,
             String status,
             String manufacturer,
@@ -103,6 +109,7 @@ public abstract class Equipment extends Base implements Serializable {
         this.connected = connected;
         this.skills = skills;
         this.physicalPorts = ports;
+        this.physicalAdjustmentParameters = physicalAdjustmentParameters;
         
         this.address = address;
         this.status = status;
@@ -181,4 +188,14 @@ public abstract class Equipment extends Base implements Serializable {
     public void setPhysicalPorts(List<PhysicalPort> ports) {
         this.physicalPorts = ports;
     }
+
+    public List<PhysicalAdjustmentParameter> getPhysicalAdjustmentParameters() {
+        return physicalAdjustmentParameters;
+    }
+
+    public void setPhysicalAdjustmentParameters(List<PhysicalAdjustmentParameter> physicalAdjustmentParameters) {
+        this.physicalAdjustmentParameters = physicalAdjustmentParameters;
+    }
+    
+    
 }

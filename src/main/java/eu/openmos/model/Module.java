@@ -97,6 +97,7 @@ public class Module extends Equipment implements Serializable {
             boolean connected,
             List<Skill> skills,
             List<PhysicalPort> ports,
+            List<PhysicalAdjustmentParameter> physicalAdjustmentParameters,
             List<Module> internalModules,
             List<Recipe> recipes,
             String address,
@@ -107,7 +108,9 @@ public class Module extends Equipment implements Serializable {
             Date registeredTimestamp
     ) 
     {
-        super(uniqueId, name, description, connected, skills, ports, address, status, manufacturer, registeredTimestamp);
+        super(uniqueId, name, description, connected, skills, ports,
+                physicalAdjustmentParameters,
+                address, status, manufacturer, registeredTimestamp);
 
         this.internalModules = internalModules;
         this.recipes = recipes;
@@ -131,6 +134,10 @@ public class Module extends Equipment implements Serializable {
         if (physicalPorts != null)
             physicalPortIds = physicalPorts.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());        
         
+        List<String> physicalAdjustmentParameterIds = null;
+        if (physicalAdjustmentParameters != null)
+            physicalAdjustmentParameterIds = physicalAdjustmentParameters.stream().map(port -> port.getUniqueId()).collect(Collectors.toList());
+        
         List<String> moduleIds = null;
         if (internalModules != null)
             moduleIds = internalModules.stream().map(module -> module.getUniqueId()).collect(Collectors.toList());        
@@ -145,6 +152,7 @@ public class Module extends Equipment implements Serializable {
         doc.append(DatabaseConstants.CONNECTED, connected);
         doc.append(DatabaseConstants.SKILL_IDS, skillIds);        
         doc.append(DatabaseConstants.PHYSICAL_PORT_IDS, physicalPortIds);        
+        doc.append(DatabaseConstants.PHYSICAL_ADJUSTMENT_PARAMETER_IDS, physicalAdjustmentParameterIds); 
         doc.append(DatabaseConstants.INTERNAL_MODULE_IDS, moduleIds);        
         doc.append(DatabaseConstants.RECIPE_IDS, recipeIds);        
         doc.append(DatabaseConstants.ADDRESS, address);

@@ -53,9 +53,9 @@
 <!-- jxb:bindings node="//xs:complexType[@name='equipment']">
     <jxb:class ref="eu.openmos.model.Equipment" />
 </jxb:bindings -->
-<!-- jxb:bindings node="//xs:complexType[@name='module']">
+<jxb:bindings node="//xs:complexType[@name='module']">
     <jxb:class ref="eu.openmos.model.Module" />
-</jxb:bindings -->
+</jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='executionTable']">
     <jxb:class ref="eu.openmos.model.ExecutionTable" />
 </jxb:bindings>
@@ -110,17 +110,29 @@
 <jxb:bindings node="//xs:complexType[@name='serviceCallStatus']">
     <jxb:class ref="eu.openmos.agentcloud.utilities.ServiceCallStatus" />
 </jxb:bindings>
-<!--jxb:bindings node="//xs:complexType[@name='equipmentAssessment']">
+<jxb:bindings node="//xs:complexType[@name='equipmentAssessment']">
     <jxb:class ref="eu.openmos.model.EquipmentAssessment" />
 </jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='equipmentAssessmentRow']">
     <jxb:class ref="eu.openmos.model.EquipmentAssessmentRow" />
 </jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='processAssessment']">
+    <jxb:class ref="eu.openmos.model.ProcessAssessment" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='processAssessmentRow']">
+    <jxb:class ref="eu.openmos.model.ProcessAssessmentRow" />
+</jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='equipmentObservationRel2']">
     <jxb:class ref="eu.openmos.model.EquipmentObservationRel2" />
 </jxb:bindings>
 <jxb:bindings node="//xs:complexType[@name='equipmentObservationRel2Row']">
-    <jxb:class ref="eu.openmos.model.EquipmentObservationRel2Row" /->
-</jxb:bindings>-->
+    <jxb:class ref="eu.openmos.model.EquipmentObservationRel2Row" />
+</jxb:bindings>
+<jxb:bindings node="//xs:complexType[@name='physicalAdjustmentParameter']">
+    <jxb:class ref="eu.openmos.model.PhysicalAdjustmentParameter" />
+</jxb:bindings>
+<!-- jxb:bindings node="//xs:complexType[@name='physicalAdjustmentParameterSetting']">
+    <jxb:class ref="eu.openmos.model.PhysicalAdjustmentParameterSetting" />
+</jxb:bindings -->
 </jxb:bindings>
 </jxb:bindings>
