@@ -11,9 +11,11 @@ package eu.openmos.msb.services.rest;
 // import eu.openmos.agentcloud.data.recipe.Recipe;
 // import eu.openmos.agentcloud.data.recipe.SkillRequirement;
 import eu.openmos.model.*;
+import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
+import eu.openmos.msb.datastructures.MSBConstants;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
@@ -443,4 +445,56 @@ public class RecipeController extends Base
             + "_"
             + new Random().nextInt(10000);
   }
+  
+    /**
+     * Service for triggering a specific Recipe. Returns a status message
+     * depending on the outcome.
+     *
+     * @return status
+     *
+     * @param uniqueId the unique id of the recipe
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+      @Path("/{recipeId}/trigger")
+    public String recipeTriggering(@PathParam("recipeId") String recipeId) {
+
+        DACManager DACinstance = DACManager.getInstance();
+        List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+        for (int i = 0; i < deviceAdaptersNames.size(); i++) {
+            ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
+            for (int j = 0; j < recipesFromDeviceAdapter.size(); j++) {
+                if (recipesFromDeviceAdapter.get(i).getUniqueId().equals(recipeId)) {
+                    
+                    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(deviceAdaptersNames.get(i));
+                    
+                    //CHECK IF THE DA is on rampup?
+                    if (da.getSubSystem().getStage().equals(MSBConstants.SYSTEM_STATE_RAMP_UP)) {
+
+                        String invokeObjectID = recipesFromDeviceAdapter.get(i).getInvokeObjectID();
+                        String invokeMethodID = recipesFromDeviceAdapter.get(i).getInvokeMethodID();
+                        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+                        boolean result = false;
+
+                        //EXECUTE THE RECIPE
+                        logger.debug("[EXECUTE] recipeID: " + recipeId);
+                        NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
+                        NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
+
+                        result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, "HMItest", "HMItest");
+
+                        if (result) { //status code of the call
+                            return "Success";
+                        } else {
+                            return "Couldn't Execute";
+                        }
+                    }else{
+                        return "Adapter is not on RampUp stage!";
+                    }
+                }
+            }
+        }
+        return "Recipe not found";
+    }
+    
 }
