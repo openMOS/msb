@@ -1,0 +1,454 @@
+2018-02-14 16:47:49,109 | INFO  | Successfully removed cryptography restrictions.
+2018-02-14 16:47:49,112 | INFO  | security temp dir: E:\msbLoughborough\openmos-msb\.\security
+2018-02-14 16:47:51,503 | INFO  | Loaded nodes in 740ms.
+2018-02-14 16:47:51,560 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-02-14 16:47:51,568 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-02-14 16:47:51,574 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 16:47:51,578 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 16:47:51,578 | INFO  | Binding endpoint opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 16:47:51,672 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-02-14 16:47:51,672 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-02-14 16:47:52,436 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-02-14 16:47:53,828 | INFO  | opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 16:47:53,828 | INFO  | opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 16:47:53,828 | INFO  | opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 16:47:56,028 | INFO  | Property file default.properties successfully loaded.
+2018-02-14 16:55:37,012 | INFO  | Successfully removed cryptography restrictions.
+2018-02-14 16:55:37,014 | INFO  | security temp dir: E:\msbLoughborough\openmos-msb\.\security
+2018-02-14 16:55:38,180 | INFO  | Loaded nodes in 516ms.
+2018-02-14 16:55:38,214 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-02-14 16:55:38,222 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-02-14 16:55:38,227 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 16:55:38,228 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 16:55:38,228 | INFO  | Binding endpoint opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 16:55:38,255 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-02-14 16:55:38,255 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-02-14 16:55:38,818 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-02-14 16:55:40,063 | INFO  | opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 16:55:40,063 | INFO  | opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 16:55:40,063 | INFO  | opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 16:55:42,306 | INFO  | Property file default.properties successfully loaded.
+2018-02-14 16:55:42,912 | ERROR | [remote=FMIRANDA-PC.introsys.lan/10.5.83.122:4840] Received error message: ErrorMessage{error=StatusCode{name=Bad_CertificateUntrusted, value=0x801A0000, quality=bad}, reason=null}
+2018-02-14 16:55:42,920 | ERROR | Error: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+java.util.concurrent.CompletionException: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:292)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:308)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:769)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture$Completion.exec(CompletableFuture.java:443)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.onError(UaTcpClientAcknowledgeHandler.java:290)
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.decode(UaTcpClientAcknowledgeHandler.java:186)
+	at io.netty.handler.codec.ByteToMessageCodec$1.decode(ByteToMessageCodec.java:42)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:411)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.handler.codec.ByteToMessageCodec.channelRead(ByteToMessageCodec.java:103)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2018-02-14 17:03:49,745 | INFO  | Successfully removed cryptography restrictions.
+2018-02-14 17:03:49,747 | INFO  | security temp dir: E:\msbLoughborough\openmos-msb\.\security
+2018-02-14 17:03:50,899 | INFO  | Loaded nodes in 475ms.
+2018-02-14 17:03:50,934 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-02-14 17:03:50,941 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-02-14 17:03:50,947 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:03:50,948 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:03:50,948 | INFO  | Binding endpoint opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:03:50,975 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-02-14 17:03:50,975 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-02-14 17:03:51,544 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-02-14 17:03:52,786 | INFO  | opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:03:52,786 | INFO  | opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:03:52,786 | INFO  | opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:03:55,239 | INFO  | Property file default.properties successfully loaded.
+2018-02-14 17:03:55,640 | ERROR | [remote=FMIRANDA-PC.introsys.lan/10.5.83.122:4840] Received error message: ErrorMessage{error=StatusCode{name=Bad_CertificateUntrusted, value=0x801A0000, quality=bad}, reason=null}
+2018-02-14 17:03:55,643 | ERROR | Error: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+java.util.concurrent.CompletionException: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:292)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:308)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:769)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture$Completion.exec(CompletableFuture.java:443)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.onError(UaTcpClientAcknowledgeHandler.java:290)
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.decode(UaTcpClientAcknowledgeHandler.java:186)
+	at io.netty.handler.codec.ByteToMessageCodec$1.decode(ByteToMessageCodec.java:42)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:411)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.handler.codec.ByteToMessageCodec.channelRead(ByteToMessageCodec.java:103)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2018-02-14 17:08:55,577 | ERROR | [remote=FMIRANDA-PC.introsys.lan/10.5.83.122:4840] Received error message: ErrorMessage{error=StatusCode{name=Bad_CertificateUntrusted, value=0x801A0000, quality=bad}, reason=null}
+2018-02-14 17:08:55,578 | ERROR | Error: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+java.util.concurrent.CompletionException: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:292)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:308)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:769)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture$Completion.exec(CompletableFuture.java:443)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.onError(UaTcpClientAcknowledgeHandler.java:290)
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.decode(UaTcpClientAcknowledgeHandler.java:186)
+	at io.netty.handler.codec.ByteToMessageCodec$1.decode(ByteToMessageCodec.java:42)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:411)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.handler.codec.ByteToMessageCodec.channelRead(ByteToMessageCodec.java:103)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2018-02-14 17:31:41,436 | INFO  | Successfully removed cryptography restrictions.
+2018-02-14 17:31:41,438 | INFO  | security temp dir: E:\msbLoughborough\openmos-msb\.\security
+2018-02-14 17:31:42,695 | INFO  | Loaded nodes in 623ms.
+2018-02-14 17:31:42,741 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-02-14 17:31:42,749 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-02-14 17:31:42,755 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER to 10.5.83.122 [None/None]
+2018-02-14 17:31:42,756 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER to 10.5.83.122 [None/None]
+2018-02-14 17:31:42,756 | INFO  | Binding endpoint opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER to 10.5.83.122 [None/None]
+2018-02-14 17:31:42,784 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-02-14 17:31:42,785 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-02-14 17:31:43,493 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-02-14 17:31:44,790 | INFO  | opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER bound to 10.5.83.122:12637 [None/None]
+2018-02-14 17:31:44,790 | INFO  | opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER bound to 10.5.83.122:12637 [None/None]
+2018-02-14 17:31:44,790 | INFO  | opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER bound to 10.5.83.122:12637 [None/None]
+2018-02-14 17:31:51,240 | INFO  | Property file default.properties successfully loaded.
+2018-02-14 17:31:51,582 | ERROR | [remote=FMIRANDA-PC.introsys.lan/10.5.83.122:4840] Received error message: ErrorMessage{error=StatusCode{name=Bad_CertificateUntrusted, value=0x801A0000, quality=bad}, reason=null}
+2018-02-14 17:31:51,584 | ERROR | Error: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+java.util.concurrent.CompletionException: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:292)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:308)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:769)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture$Completion.exec(CompletableFuture.java:443)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.onError(UaTcpClientAcknowledgeHandler.java:290)
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.decode(UaTcpClientAcknowledgeHandler.java:186)
+	at io.netty.handler.codec.ByteToMessageCodec$1.decode(ByteToMessageCodec.java:42)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:411)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.handler.codec.ByteToMessageCodec.channelRead(ByteToMessageCodec.java:103)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2018-02-14 17:36:51,527 | ERROR | [remote=FMIRANDA-PC.introsys.lan/10.5.83.122:4840] Received error message: ErrorMessage{error=StatusCode{name=Bad_CertificateUntrusted, value=0x801A0000, quality=bad}, reason=null}
+2018-02-14 17:36:51,528 | ERROR | Error: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+java.util.concurrent.CompletionException: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:292)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:308)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:769)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture$Completion.exec(CompletableFuture.java:443)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.onError(UaTcpClientAcknowledgeHandler.java:290)
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.decode(UaTcpClientAcknowledgeHandler.java:186)
+	at io.netty.handler.codec.ByteToMessageCodec$1.decode(ByteToMessageCodec.java:42)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:411)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.handler.codec.ByteToMessageCodec.channelRead(ByteToMessageCodec.java:103)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2018-02-14 17:43:24,671 | INFO  | Successfully removed cryptography restrictions.
+2018-02-14 17:43:24,675 | INFO  | security temp dir: E:\msbLoughborough\openmos-msb\.\security
+2018-02-14 17:43:25,929 | INFO  | Loaded nodes in 549ms.
+2018-02-14 17:43:25,966 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-02-14 17:43:25,973 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-02-14 17:43:25,978 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:43:25,979 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:43:25,979 | INFO  | Binding endpoint opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:43:26,006 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-02-14 17:43:26,006 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-02-14 17:43:26,537 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-02-14 17:43:27,654 | INFO  | opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:43:27,654 | INFO  | opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:43:27,654 | INFO  | opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:43:29,138 | INFO  | Property file default.properties successfully loaded.
+2018-02-14 17:43:29,504 | ERROR | [remote=FMIRANDA-PC.introsys.lan/10.5.83.122:4840] Received error message: ErrorMessage{error=StatusCode{name=Bad_CertificateUntrusted, value=0x801A0000, quality=bad}, reason=null}
+2018-02-14 17:43:29,507 | ERROR | Error: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+java.util.concurrent.CompletionException: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:292)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:308)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:769)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture$Completion.exec(CompletableFuture.java:443)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.onError(UaTcpClientAcknowledgeHandler.java:290)
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.decode(UaTcpClientAcknowledgeHandler.java:186)
+	at io.netty.handler.codec.ByteToMessageCodec$1.decode(ByteToMessageCodec.java:42)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:411)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.handler.codec.ByteToMessageCodec.channelRead(ByteToMessageCodec.java:103)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2018-02-14 17:46:19,918 | INFO  | Successfully removed cryptography restrictions.
+2018-02-14 17:46:19,921 | INFO  | security temp dir: E:\msbLoughborough\openmos-msb\.\security
+2018-02-14 17:46:21,291 | INFO  | Loaded nodes in 592ms.
+2018-02-14 17:46:21,327 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-02-14 17:46:21,335 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-02-14 17:46:21,340 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:46:21,341 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:46:21,342 | INFO  | Binding endpoint opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:46:21,372 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-02-14 17:46:21,373 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-02-14 17:46:21,932 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-02-14 17:46:23,163 | INFO  | opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:46:23,163 | INFO  | opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:46:23,164 | INFO  | opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:46:35,872 | INFO  | Property file default.properties successfully loaded.
+2018-02-14 17:46:36,254 | ERROR | [remote=FMIRANDA-PC.introsys.lan/10.5.83.122:4840] Received error message: ErrorMessage{error=StatusCode{name=Bad_CertificateUntrusted, value=0x801A0000, quality=bad}, reason=null}
+2018-02-14 17:46:36,257 | ERROR | Error: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+java.util.concurrent.CompletionException: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:292)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:308)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:769)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture$Completion.exec(CompletableFuture.java:443)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: UaException: status=Bad_CertificateUntrusted, message=The Certificate is not trusted.
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.onError(UaTcpClientAcknowledgeHandler.java:290)
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.decode(UaTcpClientAcknowledgeHandler.java:186)
+	at io.netty.handler.codec.ByteToMessageCodec$1.decode(ByteToMessageCodec.java:42)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:411)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.handler.codec.ByteToMessageCodec.channelRead(ByteToMessageCodec.java:103)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2018-02-14 17:49:34,901 | INFO  | Successfully removed cryptography restrictions.
+2018-02-14 17:49:34,903 | INFO  | security temp dir: E:\msbLoughborough\openmos-msb\.\security
+2018-02-14 17:49:36,177 | INFO  | Loaded nodes in 571ms.
+2018-02-14 17:49:36,219 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-02-14 17:49:36,227 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-02-14 17:49:36,233 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:49:36,234 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:49:36,235 | INFO  | Binding endpoint opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:49:36,268 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-02-14 17:49:36,268 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-02-14 17:49:36,966 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-02-14 17:49:38,486 | INFO  | opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:49:38,487 | INFO  | opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:49:38,487 | INFO  | opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:49:40,509 | INFO  | Property file default.properties successfully loaded.
+2018-02-14 17:49:40,913 | ERROR | [remote=FMIRANDA-PC/10.5.83.122:4840] Received error message: ErrorMessage{error=StatusCode{name=Bad_SecurityChecksFailed, value=0x80130000, quality=bad}, reason=security checks failed}
+2018-02-14 17:49:40,938 | ERROR | [remote=FMIRANDA-PC/10.5.83.122:4840] Received error message: ErrorMessage{error=StatusCode{name=Bad_SecurityChecksFailed, value=0x80130000, quality=bad}, reason=security checks failed}
+2018-02-14 17:49:40,939 | ERROR | Error: UaException: status=Bad_SecurityChecksFailed, message=security checks failed
+java.util.concurrent.CompletionException: UaException: status=Bad_SecurityChecksFailed, message=security checks failed
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:292)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:308)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:769)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture$Completion.exec(CompletableFuture.java:443)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: UaException: status=Bad_SecurityChecksFailed, message=security checks failed
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.onError(UaTcpClientAcknowledgeHandler.java:290)
+	at org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandler.decode(UaTcpClientAcknowledgeHandler.java:186)
+	at io.netty.handler.codec.ByteToMessageCodec$1.decode(ByteToMessageCodec.java:42)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:411)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.handler.codec.ByteToMessageCodec.channelRead(ByteToMessageCodec.java:103)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2018-02-14 17:50:09,757 | INFO  | Successfully removed cryptography restrictions.
+2018-02-14 17:50:09,759 | INFO  | security temp dir: E:\msbLoughborough\openmos-msb\.\security
+2018-02-14 17:50:11,062 | INFO  | Loaded nodes in 600ms.
+2018-02-14 17:50:11,098 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-02-14 17:50:11,106 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-02-14 17:50:11,111 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:50:11,112 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:50:11,113 | INFO  | Binding endpoint opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:50:11,140 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-02-14 17:50:11,140 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-02-14 17:50:11,684 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-02-14 17:50:12,859 | INFO  | opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:50:12,859 | INFO  | opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:50:12,859 | INFO  | opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:50:14,452 | INFO  | Property file default.properties successfully loaded.
+2018-02-14 17:50:15,032 | INFO  | Received RegisterServerResponse output=ResponseHeader{Timestamp=DateTime{utcTime=131631042150160000, javaDate=Wed Feb 14 17:50:15 GMT 2018}, RequestHandle=1, ServiceResult=StatusCode{name=Good, value=0x00000000, quality=good}, ServiceDiagnostics=null, StringTable=null, AdditionalHeader=ExtensionObject{encoded=null, encodingTypeId=NodeId{ns=0, id=0}}}
+2018-02-14 17:50:16,942 | INFO  | Using endpoint: opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER [None]
+2018-02-14 17:50:17,250 | INFO  | ServerArray=[urn:MSB:opcua:server]
+2018-02-14 17:50:17,250 | INFO  | NamespaceArray=[http://opcfoundation.org/UA/, urn:MSB:opcua:server, urn:eclipse:milo:MSB-namespace]
+2018-02-14 17:50:17,267 | INFO  | ServerStatus=ServerStatusDataType{StartTime=DateTime{utcTime=131631042110760000, javaDate=Wed Feb 14 17:50:11 GMT 2018}, CurrentTime=DateTime{utcTime=131631042172640000, javaDate=Wed Feb 14 17:50:17 GMT 2018}, State=Running, BuildInfo=BuildInfo{ProductUri=urn:msb:opcua:sdk, ManufacturerName=OpenMOS, ProductName=MSB OPC-UA Server, SoftwareVersion=0.1.1, BuildNumber=, BuildDate=DateTime{utcTime=131631042102580000, javaDate=Wed Feb 14 17:50:10 GMT 2018}}, SecondsTillShutdown=0, ShutdownReason=LocalizedText{text=null, locale=null}}
+2018-02-14 17:50:17,301 | INFO  | ServerStatus.BuildInfo=BuildInfo{ProductUri=urn:msb:opcua:sdk, ManufacturerName=OpenMOS, ProductName=MSB OPC-UA Server, SoftwareVersion=0.1.1, BuildNumber=, BuildDate=DateTime{utcTime=131631042102580000, javaDate=Wed Feb 14 17:50:10 GMT 2018}}
+2018-02-14 17:50:17,301 | INFO  | ServerStatus.StartTime=DateTime{utcTime=131631042110760000, javaDate=Wed Feb 14 17:50:11 GMT 2018}
+2018-02-14 17:50:17,301 | INFO  | ServerStatus.CurrentTime=DateTime{utcTime=131631042172940000, javaDate=Wed Feb 14 17:50:17 GMT 2018}
+2018-02-14 17:50:17,302 | INFO  | ServerStatus.State=Running
+2018-02-14 17:50:50,592 | INFO  | Using endpoint: opc.tcp://10.5.83.122:12693/gluglu [None]
+2018-02-14 17:50:50,690 | INFO  | ServerArray=[urn:gluglu:opcua:server]
+2018-02-14 17:50:50,690 | INFO  | NamespaceArray=[http://opcfoundation.org/UA/, urn:gluglu:opcua:server, urn:eclipse:milo:opcua:test-namespace]
+2018-02-14 17:50:50,702 | INFO  | ServerStatus=ServerStatusDataType{StartTime=DateTime{utcTime=131631042456370000, javaDate=Wed Feb 14 17:50:45 GMT 2018}, CurrentTime=DateTime{utcTime=131631042506990000, javaDate=Wed Feb 14 17:50:50 GMT 2018}, State=Running, BuildInfo=BuildInfo{ProductUri=, ManufacturerName=, ProductName=, SoftwareVersion=, BuildNumber=, BuildDate=DateTime{utcTime=0, javaDate=Mon Jan 01 00:00:00 GMT 1601}}, SecondsTillShutdown=0, ShutdownReason=LocalizedText{text=null, locale=null}}
+2018-02-14 17:50:50,744 | INFO  | ServerStatus.BuildInfo=BuildInfo{ProductUri=, ManufacturerName=, ProductName=, SoftwareVersion=, BuildNumber=, BuildDate=DateTime{utcTime=0, javaDate=Mon Jan 01 00:00:00 GMT 1601}}
+2018-02-14 17:50:50,744 | INFO  | ServerStatus.StartTime=DateTime{utcTime=131631042456370000, javaDate=Wed Feb 14 17:50:45 GMT 2018}
+2018-02-14 17:50:50,744 | INFO  | ServerStatus.CurrentTime=DateTime{utcTime=131631042507350000, javaDate=Wed Feb 14 17:50:50 GMT 2018}
+2018-02-14 17:50:50,744 | INFO  | ServerStatus.State=Running
+2018-02-14 17:51:08,419 | INFO  | Namespace Parsing took 17658ms to be executed
+2018-02-14 17:52:37,177 | INFO  | Successfully removed cryptography restrictions.
+2018-02-14 17:52:37,178 | INFO  | security temp dir: E:\msbLoughborough\openmos-msb\.\security
+2018-02-14 17:52:38,486 | INFO  | Loaded nodes in 548ms.
+2018-02-14 17:52:38,522 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-02-14 17:52:38,529 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-02-14 17:52:38,535 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:52:38,537 | INFO  | Binding endpoint opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:52:38,537 | INFO  | Binding endpoint opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER to FMIRANDA-PC [None/None]
+2018-02-14 17:52:38,565 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-02-14 17:52:38,565 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-02-14 17:52:39,141 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-02-14 17:52:40,338 | INFO  | opc.tcp://10.5.83.122:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:52:40,338 | INFO  | opc.tcp://FMIRANDA-PC.introsys.lan:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:52:40,338 | INFO  | opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER bound to FMIRANDA-PC:12637 [None/None]
+2018-02-14 17:52:42,466 | INFO  | Property file default.properties successfully loaded.
+2018-02-14 17:52:43,698 | INFO  | Received RegisterServerResponse output=ResponseHeader{Timestamp=DateTime{utcTime=131631043636790000, javaDate=Wed Feb 14 17:52:43 GMT 2018}, RequestHandle=1, ServiceResult=StatusCode{name=Good, value=0x00000000, quality=good}, ServiceDiagnostics=null, StringTable=null, AdditionalHeader=ExtensionObject{encoded=null, encodingTypeId=NodeId{ns=0, id=0}}}
+2018-02-14 17:52:44,541 | INFO  | Using endpoint: opc.tcp://FMIRANDA-PC:12637/MSB-OPCUA-SERVER [None]
+2018-02-14 17:52:44,664 | INFO  | ServerArray=[urn:MSB:opcua:server]
+2018-02-14 17:52:44,664 | INFO  | NamespaceArray=[http://opcfoundation.org/UA/, urn:MSB:opcua:server, urn:eclipse:milo:MSB-namespace]
+2018-02-14 17:52:44,680 | INFO  | ServerStatus=ServerStatusDataType{StartTime=DateTime{utcTime=131631043584990000, javaDate=Wed Feb 14 17:52:38 GMT 2018}, CurrentTime=DateTime{utcTime=131631043646770000, javaDate=Wed Feb 14 17:52:44 GMT 2018}, State=Running, BuildInfo=BuildInfo{ProductUri=urn:msb:opcua:sdk, ManufacturerName=OpenMOS, ProductName=MSB OPC-UA Server, SoftwareVersion=0.1.1, BuildNumber=, BuildDate=DateTime{utcTime=131631043577380000, javaDate=Wed Feb 14 17:52:37 GMT 2018}}, SecondsTillShutdown=0, ShutdownReason=LocalizedText{text=null, locale=null}}
+2018-02-14 17:52:44,725 | INFO  | ServerStatus.BuildInfo=BuildInfo{ProductUri=urn:msb:opcua:sdk, ManufacturerName=OpenMOS, ProductName=MSB OPC-UA Server, SoftwareVersion=0.1.1, BuildNumber=, BuildDate=DateTime{utcTime=131631043577380000, javaDate=Wed Feb 14 17:52:37 GMT 2018}}
+2018-02-14 17:52:44,725 | INFO  | ServerStatus.StartTime=DateTime{utcTime=131631043584990000, javaDate=Wed Feb 14 17:52:38 GMT 2018}
+2018-02-14 17:52:44,725 | INFO  | ServerStatus.CurrentTime=DateTime{utcTime=131631043647180000, javaDate=Wed Feb 14 17:52:44 GMT 2018}
+2018-02-14 17:52:44,725 | INFO  | ServerStatus.State=Running
+2018-02-14 17:53:06,922 | INFO  | Using endpoint: opc.tcp://10.5.83.122:12693/gluglu [None]
+2018-02-14 17:53:07,018 | INFO  | ServerArray=[urn:gluglu:opcua:server]
+2018-02-14 17:53:07,019 | INFO  | NamespaceArray=[http://opcfoundation.org/UA/, urn:gluglu:opcua:server, urn:eclipse:milo:opcua:test-namespace]
+2018-02-14 17:53:07,031 | INFO  | ServerStatus=ServerStatusDataType{StartTime=DateTime{utcTime=131631043821580000, javaDate=Wed Feb 14 17:53:02 GMT 2018}, CurrentTime=DateTime{utcTime=131631043870280000, javaDate=Wed Feb 14 17:53:07 GMT 2018}, State=Running, BuildInfo=BuildInfo{ProductUri=, ManufacturerName=, ProductName=, SoftwareVersion=, BuildNumber=, BuildDate=DateTime{utcTime=0, javaDate=Mon Jan 01 00:00:00 GMT 1601}}, SecondsTillShutdown=0, ShutdownReason=LocalizedText{text=null, locale=null}}
+2018-02-14 17:53:07,071 | INFO  | ServerStatus.BuildInfo=BuildInfo{ProductUri=, ManufacturerName=, ProductName=, SoftwareVersion=, BuildNumber=, BuildDate=DateTime{utcTime=0, javaDate=Mon Jan 01 00:00:00 GMT 1601}}
+2018-02-14 17:53:07,071 | INFO  | ServerStatus.StartTime=DateTime{utcTime=131631043821580000, javaDate=Wed Feb 14 17:53:02 GMT 2018}
+2018-02-14 17:53:07,071 | INFO  | ServerStatus.CurrentTime=DateTime{utcTime=131631043870630000, javaDate=Wed Feb 14 17:53:07 GMT 2018}
+2018-02-14 17:53:07,072 | INFO  | ServerStatus.State=Running
+2018-02-14 17:53:23,184 | INFO  | Namespace Parsing took 16089ms to be executed
+2018-02-14 17:57:42,783 | INFO  | Received RegisterServerResponse output=ResponseHeader{Timestamp=DateTime{utcTime=131631046627810000, javaDate=Wed Feb 14 17:57:42 GMT 2018}, RequestHandle=1, ServiceResult=StatusCode{name=Good, value=0x00000000, quality=good}, ServiceDiagnostics=null, StringTable=null, AdditionalHeader=ExtensionObject{encoded=null, encodingTypeId=NodeId{ns=0, id=0}}}
+2018-02-14 18:00:55,668 | ERROR | [remote=/10.5.83.122:12693] Exception caught: An existing connection was forcibly closed by the remote host
+java.io.IOException: An existing connection was forcibly closed by the remote host
+	at sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:43)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:192)
+	at sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:380)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1100)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:367)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:118)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
