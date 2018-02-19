@@ -469,7 +469,7 @@ public class RecipeController extends Base
                     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(deviceAdaptersNames.get(i));
                     
                     //CHECK IF THE DA is on rampup?
-                    if (da.getSubSystem().getStage().equals(MSBConstants.SYSTEM_STAGE_RAMP_UP)) {
+                    if (da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP)) {
 
                         String invokeObjectID = recipesFromDeviceAdapter.get(i).getInvokeObjectID();
                         String invokeMethodID = recipesFromDeviceAdapter.get(i).getInvokeMethodID();

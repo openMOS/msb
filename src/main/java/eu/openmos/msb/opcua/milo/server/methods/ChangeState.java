@@ -127,7 +127,7 @@ public class ChangeState
       threadKPI.start();
 
       //start checker depending on the adapterStage
-      if (!da.getSubSystem().getStage().equals(MSBConstants.SYSTEM_STAGE_RAMP_UP))
+      if (!da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP))
       {
         Thread threadCheck = new Thread()
         {
