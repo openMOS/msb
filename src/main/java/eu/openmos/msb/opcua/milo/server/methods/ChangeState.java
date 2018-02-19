@@ -126,16 +126,20 @@ public class ChangeState
       };
       threadKPI.start();
 
-      Thread threadCheck = new Thread()
+      //start checker depending on the adapterStage
+      if (!da.getSubSystem().getStage().equals(MSBConstants.SYSTEM_STATE_RAMP_UP))
       {
-        public synchronized void run()
+        Thread threadCheck = new Thread()
         {
-          logger.info("[ChangeState] Starting ChangeStateChecker!");
-          ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
-        }
-      };
-      threadCheck.start();
-
+          public synchronized void run()
+          {
+            logger.info("[ChangeState] Starting ChangeStateChecker!");
+            ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
+          }
+        };
+        threadCheck.start();
+      }
+      //********************************************************************************************
       result.set(1);
       logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
       return;
@@ -341,7 +345,12 @@ public class ChangeState
               PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).acquire();
               logger.info("[checkAdapterState][SEMAPHORE] ACQUIRED for " + da_next_next.getSubSystem().getName());
               MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).availablePermits()), da_next_next.getSubSystem().getName());
-              ret = 1;
+              //CHECK LATER
+              if (da_id.equals(da_next.getSubSystem().getUniqueId()))
+                ret = 2;
+              else
+                ret = 1;
+              
             } catch (InterruptedException ex)
             {
               java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
