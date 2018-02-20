@@ -69,6 +69,8 @@ public class SubSystem extends Equipment implements Serializable {
     
     private transient String stage;
     
+    private transient String stagePath;
+    
     private boolean valid = true;
     
     /**
@@ -210,6 +212,14 @@ public class SubSystem extends Equipment implements Serializable {
      */
     public boolean isValid() {
         return this.valid;
+    }
+
+    public String getStagePath() {
+        return stagePath;
+    }
+
+    public void setStagePath(String stagePath) {
+        this.stagePath = stagePath;
     }
 
     /**
