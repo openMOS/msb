@@ -18,6 +18,8 @@ public class MSBConstants {
     public static final String ADAPTER_STATE_ERROR = "Error";
     public static final String ADAPTER_STATE_EMERGENCY_STOP = "EMERGENCY_STOP";
     
+    public static final String DEVICE_ADAPTER_TYPE_TRANSPORT = "TransportSystem";
+    public static final String DEVICE_ADAPTER_TYPE_WORKSTATION = "WorkStation";
     public static final String STAGE_RAMP_UP = "Ramp_Up";
     public static final String STAGE_PRE_PRODUCTION = "Pre_Production";
     public static final String STAGE_PRODUCTION = "Production";

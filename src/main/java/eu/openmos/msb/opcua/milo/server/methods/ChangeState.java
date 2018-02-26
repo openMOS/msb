@@ -127,7 +127,7 @@ public class ChangeState
       threadKPI.start();
 
       //start checker depending on the adapterStage
-      if (!da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP))
+      //if (!da.getSubSystem().getStage().equals(MSBConstants.SYSTEM_STATE_RAMP_UP))
       {
         Thread threadCheck = new Thread()
         {
@@ -149,7 +149,6 @@ public class ChangeState
   private void ChangeStateChecker(String recipe_id, String productInst_id, String da_id, String productType_id)
   {
     String nextRecipeID = checkNextRecipe(recipe_id, productInst_id, productType_id); //returns the next recipe to execute
-    //System.out.println("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID + "\n");
     logger.info("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID);
     
     if (!nextRecipeID.isEmpty() && !nextRecipeID.equals("last"))
@@ -157,7 +156,6 @@ public class ChangeState
       int retSem = checkAdapterState(da_id, nextRecipeID, productInst_id, productType_id);
       if (retSem != 0) //check if adapter is ready
       { //if is ready
-        //System.out.println("[ChangeStateChecker] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State\n");
         logger.info("[ChangeStateChecker] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State");
         
         String method = DatabaseInteraction.getInstance().getRecipeMethodByID(nextRecipeID);
@@ -168,7 +166,6 @@ public class ChangeState
         String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
         String DA_name_next = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
         DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name_next);
-        //System.out.println("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + DA_name_next);
         logger.info("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + DA_name_next);
         MSBClientSubscription client = (MSBClientSubscription) da_next.getClient();
 
@@ -199,7 +196,9 @@ public class ChangeState
                 PECManager.getInstance().getExecutionMap().get(da_id).release();
                 
                 DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
-                MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()), da_test.getSubSystem().getName());
+                MSB_gui.updateTableAdaptersSomaphore(
+                        String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()), 
+                        da_test.getSubSystem().getName());
               }
             }
             MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, DA_name_next);
@@ -243,7 +242,9 @@ public class ChangeState
         PECManager.getInstance().getExecutionMap().get(da_id).release();
         
         DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
-        MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()), da_test.getSubSystem().getName());
+        MSB_gui.updateTableAdaptersSomaphore(
+                String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()),
+                da_test.getSubSystem().getName());
             
         Long prodTime = new Date().getTime() - prodInst.getStartedProductionTime().getTime();
         PerformanceMasurement.getInstance().getProdInstanceTime().add(prodTime);
@@ -344,7 +345,9 @@ public class ChangeState
               logger.info("[checkAdapterState][SEMAPHORE] Acquiring for " + da_next_next.getSubSystem().getName());
               PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).acquire();
               logger.info("[checkAdapterState][SEMAPHORE] ACQUIRED for " + da_next_next.getSubSystem().getName());
-              MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).availablePermits()), da_next_next.getSubSystem().getName());
+              MSB_gui.updateTableAdaptersSomaphore(
+                      String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).availablePermits()), 
+                      da_next_next.getSubSystem().getName());
               //CHECK LATER
               if (da_id.equals(da_next.getSubSystem().getUniqueId()))
                 ret = 2;
@@ -396,13 +399,7 @@ public class ChangeState
           if (auxNextLKT1 == null)
             return true;
           boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(auxNextLKT1);
-          if (valid && !da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
-          {
-            return true;
-          } else
-          {
-            return false;
-          }
+          return valid && !da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR);
         }
       }
     }
@@ -508,9 +505,20 @@ public class ChangeState
                   return nextRecipeID;
                 } else
                 {
+                  String auxDAFirst_id = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(firstRecipe.getUniqueId());
+                  String auxDAFirst_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(auxDAFirst_id);
+                  DeviceAdapter auxDAFirst = DACManager.getInstance().getDeviceAdapterbyName(auxDAFirst_name);
+                  
                   for (Recipe auxRecipe : recipes)
                   {
-                    if (checkNextValidation(auxRecipe.getUniqueId()))
+                    //check if DA is the same? only offer possibilities if next if a transport or same DA as first option
+                    String auxDA_id = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(auxRecipe.getUniqueId());
+                    String auxDA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(auxDA_id);
+                    DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyName(auxDA_name);
+                    
+                    if ((auxDA.getSubSystem().getType().equals(MSBConstants.DEVICE_ADAPTER_TYPE_TRANSPORT) 
+                            || auxDA.getSubSystem().getUniqueId().equals(auxDAFirst.getSubSystem().getUniqueId()))
+                            && checkNextValidation(auxRecipe.getUniqueId()))
                     {
                       logger.info("[checkNextRecipe] returning - " + auxRecipe.getUniqueId());
                       return auxRecipe.getUniqueId();
