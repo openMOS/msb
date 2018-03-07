@@ -196,7 +196,7 @@ public class ChangeState
                 PECManager.getInstance().getExecutionMap().get(da_id).release();
                 
                 DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
-                MSB_gui.updateTableAdaptersSomaphore(
+                MSB_gui.updateTableAdaptersSemaphore(
                         String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()), 
                         da_test.getSubSystem().getName());
               }
@@ -223,7 +223,6 @@ public class ChangeState
         PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
         perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
         //changeStateAndNextRecipeTimer.stop();
-        //System.out.println("NEXT ADAPTER IS AT ERROR STATE");
         logger.info("NEXT ADAPTER IS AT ERROR STATE");
       }
     } else if (nextRecipeID.equals("last"))
@@ -242,7 +241,7 @@ public class ChangeState
         PECManager.getInstance().getExecutionMap().get(da_id).release();
         
         DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
-        MSB_gui.updateTableAdaptersSomaphore(
+        MSB_gui.updateTableAdaptersSemaphore(
                 String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()),
                 da_test.getSubSystem().getName());
             
@@ -345,7 +344,7 @@ public class ChangeState
               logger.info("[checkAdapterState][SEMAPHORE] Acquiring for " + da_next_next.getSubSystem().getName());
               PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).acquire();
               logger.info("[checkAdapterState][SEMAPHORE] ACQUIRED for " + da_next_next.getSubSystem().getName());
-              MSB_gui.updateTableAdaptersSomaphore(
+              MSB_gui.updateTableAdaptersSemaphore(
                       String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).availablePermits()), 
                       da_next_next.getSubSystem().getName());
               //CHECK LATER
@@ -505,7 +504,7 @@ public class ChangeState
                   return nextRecipeID;
                 } else
                 {
-                  String auxDAFirst_id = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(firstRecipe.getUniqueId());
+                  String auxDAFirst_id = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
                   String auxDAFirst_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(auxDAFirst_id);
                   DeviceAdapter auxDAFirst = DACManager.getInstance().getDeviceAdapterbyName(auxDAFirst_name);
                   

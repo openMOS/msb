@@ -2080,7 +2080,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     UpdateTableRowCount(); //update counter
   }
   
-  public static void updateTableAdaptersSomaphore(String somaphoreState, String serverName)
+  public static void updateTableAdaptersSemaphore(String somaphoreState, String serverName)
   {
        String rowData;
        int rowCount=adaptersTableModel.getRowCount();

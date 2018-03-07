@@ -20,6 +20,7 @@ public class MSBConstants {
     
     public static final String DEVICE_ADAPTER_TYPE_TRANSPORT = "TransportSystem";
     public static final String DEVICE_ADAPTER_TYPE_WORKSTATION = "WorkStation";
+    public static final String DEVICE_ADAPTER_TYPE_UNKNOWNTYPE = "UnknownType";
     public static final String STAGE_RAMP_UP = "Ramp_Up";
     public static final String STAGE_PRE_PRODUCTION = "Pre_Production";
     public static final String STAGE_PRODUCTION = "Production";

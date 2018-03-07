@@ -271,7 +271,7 @@ public class OPCServersDiscoverySnippet extends Thread
                   if (ok)
                   {
                     workstationRegistration(da);
-                    MSB_gui.updateTableAdaptersSomaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
+                    MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
                   } else
                   {
                     System.out.println("parseDNToObjects FAILED!");

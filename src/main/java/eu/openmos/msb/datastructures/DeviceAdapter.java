@@ -1421,13 +1421,13 @@ public abstract class DeviceAdapter
 
     if (nodeList.getLength() > 0)
     {
-      return "TransportSystem";
+      return MSBConstants.DEVICE_ADAPTER_TYPE_TRANSPORT;
     } else if (nodeList2.getLength() > 0)
     {
-      return "WorkStation";
+      return MSBConstants.DEVICE_ADAPTER_TYPE_WORKSTATION;
     } else
     {
-      return "UnknownType";
+      return MSBConstants.DEVICE_ADAPTER_TYPE_UNKNOWNTYPE;
     }
 
   }
