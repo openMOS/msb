@@ -86,7 +86,7 @@ public class ExecutionTableController {
 
       logger.debug("execution table update - Update ExecutionTable from SubSystem: " + subSystemId);
 
-      if (MSBVar.getSystemStage().equals(MSBConstants.SYSTEM_STATE_RAMP_UP))
+      if (MSBVar.getSystemStage().equals(MSBConstants.STAGE_RAMP_UP))
       {
         SubSystem subSystem = getSubSystemById(subSystemId);
         if (subSystem != null)
