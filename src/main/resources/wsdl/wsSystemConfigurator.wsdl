@@ -3,6 +3,10 @@
 <xs:schema elementFormDefault="unqualified" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 <xs:element name="acceptNewOrderInstance" type="tns:acceptNewOrderInstance" />
 <xs:element name="acceptNewOrderInstanceResponse" type="tns:acceptNewOrderInstanceResponse" />
+<xs:element name="changeSubSystemStatus" type="tns:changeSubSystemStatus" />
+<xs:element name="changeSubSystemStatusResponse" type="tns:changeSubSystemStatusResponse" />
+<xs:element name="changeSystemStatus" type="tns:changeSystemStatus" />
+<xs:element name="changeSystemStatusResponse" type="tns:changeSystemStatusResponse" />
 <xs:element name="createNewRecipe" type="tns:createNewRecipe" />
 <xs:element name="createNewRecipeResponse" type="tns:createNewRecipeResponse" />
 <xs:element name="createNewResourceAgent" type="tns:createNewResourceAgent" />
@@ -27,6 +31,8 @@
 <xs:element name="getFilteredRecipeExecutionDataResponse" type="tns:getFilteredRecipeExecutionDataResponse" />
 <xs:element name="getOrderInstance" type="tns:getOrderInstance" />
 <xs:element name="getOrderInstanceResponse" type="tns:getOrderInstanceResponse" />
+<xs:element name="getPhysicalAdjustments" type="tns:getPhysicalAdjustments" />
+<xs:element name="getPhysicalAdjustmentsResponse" type="tns:getPhysicalAdjustmentsResponse" />
 <xs:element name="getProcessAssessments" type="tns:getProcessAssessments" />
 <xs:element name="getProcessAssessmentsResponse" type="tns:getProcessAssessmentsResponse" />
 <xs:element name="getProduct" type="tns:getProduct" />
@@ -250,7 +256,7 @@
 <xs:element minOccurs="0" name="equipmentType" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:equipmentObservationRel2Row" />
-<xs:element minOccurs="0" name="systemStatus" type="xs:string" />
+<xs:element minOccurs="0" name="systemStage" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="userName" type="xs:string" />
 <xs:element minOccurs="0" name="userText" type="xs:string" />
@@ -289,7 +295,7 @@
 <xs:element minOccurs="0" name="equipmentType" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:equipmentAssessmentRow" />
-<xs:element minOccurs="0" name="systemStatus" type="xs:string" />
+<xs:element minOccurs="0" name="systemStage" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="userName" type="xs:string" />
 <xs:element minOccurs="0" name="userText" type="xs:string" />
@@ -496,6 +502,8 @@
 <xs:element minOccurs="0" name="logicalLocation" type="tns:logicalLocation" />
 <xs:element minOccurs="0" name="physicalLocation" type="tns:physicalLocation" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" nillable="true" type="tns:recipe" />
+<xs:element minOccurs="0" name="stage" type="xs:string" />
+<xs:element minOccurs="0" name="stagePath" type="xs:string" />
 <xs:element minOccurs="0" name="state" type="xs:string" />
 <xs:element minOccurs="0" name="statePath" type="xs:string" />
 <xs:element minOccurs="0" name="type" type="xs:string" />
@@ -744,6 +752,53 @@
 <xs:element minOccurs="0" name="executionTable" type="tns:executionTable" />
 </xs:sequence>
 </xs:complexType>
+<xs:complexType name="getPhysicalAdjustments">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="getPhysicalAdjustmentsResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="physicalAdjustments" type="tns:physicalAdjustment" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="physicalAdjustment">
+<xs:complexContent>
+<xs:extension base="tns:equipmentAdjustment">
+<xs:sequence>
+<xs:element minOccurs="0" name="physicalAdjustmentParameterSetting" type="tns:physicalAdjustmentParameterSetting" />
+<xs:element minOccurs="0" name="physicalAdjustmentType" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType abstract="true" name="equipmentAdjustment">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentType" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="systemStage" type="xs:string" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="userName" type="xs:string" />
+<xs:element minOccurs="0" name="userText" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="physicalAdjustmentParameterSetting">
+<xs:complexContent>
+<xs:extension base="tns:base">
+<xs:sequence>
+<xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="name" type="xs:string" />
+<xs:element minOccurs="0" name="physicalAdjustmentParameter" type="tns:physicalAdjustmentParameter" />
+<xs:element minOccurs="0" name="uniqueId" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
 <xs:complexType name="acceptNewOrderInstance">
 <xs:sequence>
 <xs:element minOccurs="0" name="newOrder" type="tns:orderInstance" />
@@ -754,12 +809,33 @@
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
 </xs:complexType>
+<xs:complexType name="changeSubSystemStatus">
+<xs:sequence>
+<xs:element minOccurs="0" name="subSystemId" type="xs:string" />
+<xs:element minOccurs="0" name="newState" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="changeSubSystemStatusResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
 <xs:complexType name="putRecipes">
 <xs:sequence>
 <xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" type="tns:recipe" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="putRecipesResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="changeSystemStatus">
+<xs:sequence>
+<xs:element minOccurs="0" name="newState" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="changeSystemStatusResponse">
 <xs:sequence>
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
@@ -891,6 +967,10 @@
     <wsdl:part element="tns:createNewResourceAgentResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getPhysicalAdjustments">
+    <wsdl:part element="tns:getPhysicalAdjustments" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="updateExecutionTablesResponse">
     <wsdl:part element="tns:updateExecutionTablesResponse" name="parameters">
     </wsdl:part>
@@ -905,6 +985,10 @@
   </wsdl:message>
   <wsdl:message name="getRecipeExecutionDataResponse">
     <wsdl:part element="tns:getRecipeExecutionDataResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="changeSubSystemStatusResponse">
+    <wsdl:part element="tns:changeSubSystemStatusResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="putRecipes">
@@ -941,6 +1025,10 @@
   </wsdl:message>
   <wsdl:message name="removeAgent">
     <wsdl:part element="tns:removeAgent" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getPhysicalAdjustmentsResponse">
+    <wsdl:part element="tns:getPhysicalAdjustmentsResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getOrderInstance">
@@ -1041,6 +1129,18 @@
   </wsdl:message>
   <wsdl:message name="createNewSkillResponse">
     <wsdl:part element="tns:createNewSkillResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="changeSubSystemStatus">
+    <wsdl:part element="tns:changeSubSystemStatus" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="changeSystemStatus">
+    <wsdl:part element="tns:changeSystemStatus" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="changeSystemStatusResponse">
+    <wsdl:part element="tns:changeSystemStatusResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getRecipesBySubSystemId">
@@ -1190,16 +1290,34 @@
       <wsdl:output message="tns:getExecutionTableBySubSystemIdResponse" name="getExecutionTableBySubSystemIdResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getPhysicalAdjustments">
+      <wsdl:input message="tns:getPhysicalAdjustments" name="getPhysicalAdjustments">
+    </wsdl:input>
+      <wsdl:output message="tns:getPhysicalAdjustmentsResponse" name="getPhysicalAdjustmentsResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="acceptNewOrderInstance">
       <wsdl:input message="tns:acceptNewOrderInstance" name="acceptNewOrderInstance">
     </wsdl:input>
       <wsdl:output message="tns:acceptNewOrderInstanceResponse" name="acceptNewOrderInstanceResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="changeSubSystemStatus">
+      <wsdl:input message="tns:changeSubSystemStatus" name="changeSubSystemStatus">
+    </wsdl:input>
+      <wsdl:output message="tns:changeSubSystemStatusResponse" name="changeSubSystemStatusResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="putRecipes">
       <wsdl:input message="tns:putRecipes" name="putRecipes">
     </wsdl:input>
       <wsdl:output message="tns:putRecipesResponse" name="putRecipesResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="changeSystemStatus">
+      <wsdl:input message="tns:changeSystemStatus" name="changeSystemStatus">
+    </wsdl:input>
+      <wsdl:output message="tns:changeSystemStatusResponse" name="changeSystemStatusResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="createNewResourceAgent">
@@ -1424,6 +1542,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getPhysicalAdjustments">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="getPhysicalAdjustments">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getPhysicalAdjustmentsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="acceptNewOrderInstance">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="acceptNewOrderInstance">
@@ -1433,12 +1560,30 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="changeSubSystemStatus">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="changeSubSystemStatus">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="changeSubSystemStatusResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="putRecipes">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="putRecipes">
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="putRecipesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="changeSystemStatus">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="changeSystemStatus">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="changeSystemStatusResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

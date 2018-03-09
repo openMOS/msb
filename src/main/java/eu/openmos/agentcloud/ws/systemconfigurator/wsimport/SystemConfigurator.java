@@ -293,6 +293,17 @@ public interface SystemConfigurator {
 
     /**
      * 
+     * @return
+     *     returns java.util.List<eu.openmos.agentcloud.ws.systemconfigurator.wsimport.PhysicalAdjustment>
+     */
+    @WebMethod
+    @WebResult(name = "physicalAdjustments", targetNamespace = "")
+    @RequestWrapper(localName = "getPhysicalAdjustments", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetPhysicalAdjustments")
+    @ResponseWrapper(localName = "getPhysicalAdjustmentsResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.GetPhysicalAdjustmentsResponse")
+    public List<PhysicalAdjustment> getPhysicalAdjustments();
+
+    /**
+     * 
      * @param newOrder
      * @return
      *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
@@ -307,6 +318,23 @@ public interface SystemConfigurator {
 
     /**
      * 
+     * @param subSystemId
+     * @param newState
+     * @return
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     */
+    @WebMethod
+    @WebResult(name = "serviceCallStatus", targetNamespace = "")
+    @RequestWrapper(localName = "changeSubSystemStatus", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSubSystemStatus")
+    @ResponseWrapper(localName = "changeSubSystemStatusResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSubSystemStatusResponse")
+    public ServiceCallStatus changeSubSystemStatus(
+        @WebParam(name = "subSystemId", targetNamespace = "")
+        String subSystemId,
+        @WebParam(name = "newState", targetNamespace = "")
+        String newState);
+
+    /**
+     * 
      * @param recipes
      * @return
      *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
@@ -318,6 +346,20 @@ public interface SystemConfigurator {
     public ServiceCallStatus putRecipes(
         @WebParam(name = "recipes", targetNamespace = "")
         List<Recipe> recipes);
+
+    /**
+     * 
+     * @param newState
+     * @return
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     */
+    @WebMethod
+    @WebResult(name = "serviceCallStatus", targetNamespace = "")
+    @RequestWrapper(localName = "changeSystemStatus", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSystemStatus")
+    @ResponseWrapper(localName = "changeSystemStatusResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSystemStatusResponse")
+    public ServiceCallStatus changeSystemStatus(
+        @WebParam(name = "newState", targetNamespace = "")
+        String newState);
 
     /**
      * 
