@@ -180,7 +180,7 @@ public class SubSystemController extends Base {
      * method is exposed via a POST to "/subsystems/{subsystemId}/recipes"
      * service call.
      *
-     * @param subsystemId the agent unique identifier.
+   * @param pathToInsert
      * @param newRecipe the recipe to be inserted.
      * @return list of recipe objects associated to the same subsystem
      * (workstation or transport). List can be empty, cannot be null.
@@ -307,10 +307,8 @@ public class SubSystemController extends Base {
      * Returns the full execution table given its unique identifier. Fills the
      * execution table view page (slide 8 of 34).
      *
+   * @param subsystemId
      * @return detail of execution table
-     *
-     * @param uniqueId the unique id of the execution table
-     * @return executiontable object, or null if not existing
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)

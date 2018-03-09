@@ -67,7 +67,7 @@ public class SubSystem extends Equipment implements Serializable {
     
     private transient String statePath;
     
-    private transient String stage;
+    private String stage;
     
     private transient String stagePath;
     
@@ -96,15 +96,23 @@ public class SubSystem extends Equipment implements Serializable {
     /**
      * Parameterized constructor.
      * 
-     * @param equipmentId - the equipment id, aka the agent unique identifier
+   * @param uniqueId
+   * @param name
+   * @param description
+   * @param executionTable
+   * @param connected
+   * @param ports
+   * @param physicalAdjustmentParameters
      * @param skills - The skills the agent is capable of performing (Resource/
      * Transport Agent).
+   * @param internalModules
+   * @param address
      * @param recipes - The recipes the agent can apply (Resource/Transport Agent).
-     * @param equipments - The inner equipment in case of workstation.
+   * @param status
      * @param physicalLocation - The Physical Location of the device abstracted 
      * by this agent.
+   * @param manufacturer
      * @param logicalLocation - The skill requirements of the agent (Product Agent).
-     * @param agentClass - Agent's class - TBV if necessary.
      * @param type - Agent's type - TBV if necessary.
      * @param registeredTimestamp - the agent creation time
      */

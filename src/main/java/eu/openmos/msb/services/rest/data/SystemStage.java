@@ -11,23 +11,23 @@ import java.io.Serializable;
  *
  * @author valerio.gentile
  */
-public class SystemStatus implements Serializable {
+public class SystemStage implements Serializable {
     private static final long serialVersionUID = 6529685098267757033L;
     
-    private String status;
+    private String stage;
 
-    public SystemStatus() {
+    public SystemStage() {
     }    
 
-    public SystemStatus(String status) {
-        this.status = status;
+    public SystemStage(String stage) {
+        this.stage = stage;
     }    
 
-    public String getStatus() {
-        return status;
+    public String getStage() {
+        return stage;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStage(String stage) {
+        this.stage = stage;
     }    
 }

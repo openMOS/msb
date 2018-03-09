@@ -1,7 +1,7 @@
 package eu.openmos.msb.services.rest;
 
 import eu.openmos.msb.datastructures.MSBVar;
-import eu.openmos.msb.services.rest.data.SystemStatus;
+import eu.openmos.msb.services.rest.data.SystemStage;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -23,21 +23,21 @@ public class SystemStatusController extends Base
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public SystemStatus getSystemStatus()
+  public SystemStage getSystemStage()
   {
-    logger.debug("get system status");
+    logger.debug("get system stage");
     
-    return new SystemStatus(MSBVar.getSystemStage());
+    return new SystemStage(MSBVar.getSystemStage());
   }
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public SystemStatus setStatus(String newStatus)
+  public SystemStage setStage(String newStage)
   {
-    logger.debug("set system status - new status = " + newStatus); 
-    MSBVar.setSystemStage(newStatus);
+    logger.debug("set system status - new status = " + newStage); 
+    MSBVar.setSystemStage(newStage);
     
-    return new SystemStatus(newStatus);
+    return new SystemStage(newStage);
   }
 }

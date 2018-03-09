@@ -56,7 +56,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jdom2.Element;
-import org.jdom2.Attribute;
 
 /**
  *
@@ -105,7 +104,6 @@ public class MSBClientSubscription implements IClient
   @Override
   public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception
   {
-
     System.out.println("\n****RUNNING Milo MSB Instance****\n");
 
     // synchronous connect 

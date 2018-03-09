@@ -87,7 +87,7 @@ public class RecipesDeploymentImpl implements RecipesDeployment
 
       
         SystemStatusController ssc = null;
-        if (ssc != null && !ssc.getSystemStatus().equals("PRODUCTION"))
+        if (ssc != null && !ssc.getSystemStage().equals("PRODUCTION"))
         {
           int count = 0;
           for (int i = 0; i < recipes.size(); i++)
