@@ -78,7 +78,7 @@ import eu.openmos.msb.opcua.milo.server.IOPCNotifyGUI;
 import eu.openmos.msb.services.rest.FileUploadController;
 import eu.openmos.msb.services.rest.ModuleController;
 import eu.openmos.msb.services.rest.SubSystemController;
-import eu.openmos.msb.services.rest.SystemStatusController;
+import eu.openmos.msb.services.rest.SystemStageController;
 import eu.openmos.msb.utilities.Functions;
 import java.io.FileNotFoundException;
 import java.net.InetAddress;
@@ -1742,7 +1742,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               .register(SkillController.class)
               .register(SubSystemController.class)
               .register(MultiPartFeature.class)
-              .register(SystemStatusController.class);
+              .register(SystemStageController.class);
 
       // resourceConfig = resourceConfig.register(new CORSFilter());
       try

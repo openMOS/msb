@@ -42,7 +42,7 @@ public static void main(String[] args)
                 .register(SkillController.class)
                 .register(SubSystemController.class)
                 .register(MultiPartFeature.class)
-                .register(SystemStatusController.class);
+                .register(SystemStageController.class);
                 
         
         resourceConfig.register(new CORSFilter());

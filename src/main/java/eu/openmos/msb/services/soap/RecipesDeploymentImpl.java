@@ -7,7 +7,7 @@ import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
-import eu.openmos.msb.services.rest.SystemStatusController;
+import eu.openmos.msb.services.rest.SystemStageController;
 import eu.openmos.msb.utilities.Functions;
 import java.util.List;
 import javax.jws.WebService;
@@ -86,7 +86,7 @@ public class RecipesDeploymentImpl implements RecipesDeployment
         }
 
       
-        SystemStatusController ssc = null;
+        SystemStageController ssc = null;
         if (ssc != null && !ssc.getSystemStage().equals("PRODUCTION"))
         {
           int count = 0;
