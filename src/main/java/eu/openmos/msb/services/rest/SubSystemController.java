@@ -333,4 +333,40 @@ public class SubSystemController extends Base {
             logger.debug("Deleted subSystem in position: " + pos);
         }
     }
+    
+    
+    @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{subsystemId}/stage")
+   public SubSystemStage getSubSystemStage(@PathParam("subsystemId") String subsystemId) {
+       logger.debug("subsystem - getSubSystemStage - subsystemId = " + subsystemId);
+       for (SubSystem subsystem : getList()) {
+           if (subsystem.getUniqueId().equals(subsystemId)) {
+               logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
+               return new SubSystemStage(subsystem.getUniqueId(), subsystem.getStage());
+           }
+       }
+       logger.debug("subsystem - not found " + subsystemId + " - returning null");
+       return null; // TBV
+   }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{subsystemId}/stage")
+   public SubSystemStage updateSubSystemStage(@PathParam("subsystemId") String subsystemId,
+           SubSystemStage newSubSystemStage) {
+       logger.debug("subsystem - updateSubSystemStage - subsystemId = " + subsystemId + " - newstage = " + newSubSystemStage.getStage());
+       for (SubSystem subsystem : getList()) {
+           if (subsystem.getUniqueId().equals(subsystemId)) {
+               logger.debug("subsystem - found " + subsystemId + " - " + subsystem.toString());
+               subsystem.setStage(newSubSystemStage.getStage());
+               return new SubSystemStage(subsystem.getUniqueId(), subsystem.getStage());
+           }
+       }
+       logger.debug("subsystem - not found " + subsystemId + " - returning null");
+       return null; // TBV
+   }
+    
+    
 }

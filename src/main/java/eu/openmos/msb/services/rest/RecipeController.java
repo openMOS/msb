@@ -46,30 +46,32 @@ public class RecipeController extends Base
   private final Logger logger = Logger.getLogger(RecipeController.class.getName());
 
   /**
-     * Returns the recipe object given its unique identifier. Fills the skill
-     * recipe view page (slide 24 of 34).
-     *
-     * @return detail of recipe
-     *
-     * @param uniqueId the unique id of the recipe
-     * @return recipe object, or null if not existing
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{recipeId}")
-    public Recipe getDetail(@PathParam("recipeId") String recipePath) {
-        logger.debug("recipe getDetail - recipeId = " + recipePath);
-        
-        PathHelper helper = new PathHelper(recipePath, logger);        
-        if (helper.hasSubModules()) {
-            Module module = (new ModuleController()).getDetail(helper.getModulesPath());
-            return this.getRecipeFromList(module.getRecipes(), helper.getRecipeId());
-        } else {
-            SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
-            return this.getRecipeFromList(subSystem.getRecipes(), helper.getRecipeId());
-        }
-       
-        /*
+   * Returns the recipe object given its unique identifier. Fills the skill recipe view page (slide 24 of 34).
+   *
+   * @return detail of recipe
+   *
+   * @param uniqueId the unique id of the recipe
+   * @return recipe object, or null if not existing
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{recipeId}")
+  public Recipe getDetail(@PathParam("recipeId") String recipePath)
+  {
+    logger.debug("recipe getDetail - recipeId = " + recipePath);
+
+    PathHelper helper = new PathHelper(recipePath, logger);
+    if (helper.hasSubModules())
+    {
+      Module module = (new ModuleController()).getDetail(helper.getModulesPath());
+      return this.getRecipeFromList(module.getRecipes(), helper.getRecipeId());
+    } else
+    {
+      SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
+      return this.getRecipeFromList(subSystem.getRecipes(), helper.getRecipeId());
+    }
+
+    /*
         String[] ids = recipeId.split(Base.PARAMSEPARATOR);
         String subSystemId = "";
         String realRecipeId = "";
@@ -106,8 +108,8 @@ public class RecipeController extends Base
 
         logger.debug("Error getting recipe");
         return null;*/
-    }
-    
+  }
+
   private Recipe getRecipeFromList(List<Recipe> recipes, String recipeId)
   {
     if (recipes != null && !recipes.isEmpty())
@@ -184,7 +186,7 @@ public class RecipeController extends Base
             recipes.get(j).setUniqueAgentName(recipe.getUniqueAgentName());
             recipes.get(j).setUniqueId(recipe.getUniqueId());
             recipes.get(j).setValid(recipe.isValid());
-            
+
             DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter.getClient();
             //client.getClient().InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
             ret = true;
@@ -319,67 +321,66 @@ public class RecipeController extends Base
     return kpiSett;
   }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/insertNewRecipe/{subSystemId}")
-    public Recipe startInsertNewRecipe(@PathParam("subSystemId") String subSystemId,
-            Skill skill) {
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/insertNewRecipe/{subSystemId}")
+  public Recipe startInsertNewRecipe(@PathParam("subSystemId") String subSystemId,
+          Skill skill)
+  {
 
-        logger.debug("Insert Skill for : " + subSystemId);
-        
-        Equipment equipment;
-        
-        // Creating new Recipe Object
-        Recipe recipe = new Recipe();
-       
-        PathHelper helper = new PathHelper(subSystemId, logger);
-        
-        equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
-        /*
+    logger.debug("Insert Skill for : " + subSystemId);
+
+    Equipment equipment;
+
+    // Creating new Recipe Object
+    Recipe recipe = new Recipe();
+
+    PathHelper helper = new PathHelper(subSystemId, logger);
+
+    equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
+    /*
         Not used at the moment, need only subSystemId
         if (helper.hasSubModules()) {
             equipment = (new ModuleController()).getDetail(helper.getModulesPath());
         } else {
             equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
         }*/
-        
-        // Getting SubSystem Detail 
-        // SubSystem subSystem = (new SubSystemController()).getDetail(subSystemId);
 
-        // Setting Recipe registered Date
-        recipe.setRegistered(new Date());
+    // Getting SubSystem Detail 
+    // SubSystem subSystem = (new SubSystemController()).getDetail(subSystemId);
+    // Setting Recipe registered Date
+    recipe.setRegistered(new Date());
 
-        // Setting Recipe uniqueID
-        recipe.setUniqueId(this.generateId(recipe.getRegistered()));
+    // Setting Recipe uniqueID
+    recipe.setUniqueId(this.generateId(recipe.getRegistered()));
 
-        // Setting recipe skill
-        recipe.setSkill(skill);
+    // Setting recipe skill
+    recipe.setSkill(skill);
 
-        // Setting Recipe Skill Requirements with empty list that 
-        // that will be filled using HMI
-        recipe.setSkillRequirements(new ArrayList<>());
-        
-        recipe.setOptimized(true);
-        recipe.setValid(true);
+    // Setting Recipe Skill Requirements with empty list that 
+    // that will be filled using HMI
+    recipe.setSkillRequirements(new ArrayList<>());
 
-        // Setting Recipe subSystemId
+    recipe.setOptimized(true);
+    recipe.setValid(true);
+
+    // Setting Recipe subSystemId
 //        recipe.setEquipmentId(subSystem.getUniqueId());
-        List<String> equipmentIds = new LinkedList<>();
-        equipmentIds.add(equipment.getUniqueId());
-        recipe.setEquipmentIds(equipmentIds);
+    List<String> equipmentIds = new LinkedList<>();
+    equipmentIds.add(equipment.getUniqueId());
+    recipe.setEquipmentIds(equipmentIds);
 
-        recipe.setKpiSettings(getKPISettingFromSkill(skill));
+    recipe.setKpiSettings(getKPISettingFromSkill(skill));
 
-        recipe.setParameterSettings(getParameterSettingsFromSkill(skill));
-        //recipe.setParameterSettings(new ArrayList());
-        //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
-        //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
-        //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
-        
- 
-        return recipe;
-    }
+    recipe.setParameterSettings(getParameterSettingsFromSkill(skill));
+    //recipe.setParameterSettings(new ArrayList());
+    //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
+    //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
+    //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
+
+    return recipe;
+  }
 
   public List<KPISetting> getKPISettingFromSkill(Skill skill)
   {
@@ -445,56 +446,57 @@ public class RecipeController extends Base
             + "_"
             + new Random().nextInt(10000);
   }
-  
-    /**
-     * Service for triggering a specific Recipe. Returns a status message
-     * depending on the outcome.
-     *
-     * @return status
-     *
-     * @param uniqueId the unique id of the recipe
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-      @Path("/{recipeId}/trigger")
-    public String recipeTriggering(@PathParam("recipeId") String recipeId) {
 
-        DACManager DACinstance = DACManager.getInstance();
-        List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-        for (int i = 0; i < deviceAdaptersNames.size(); i++) {
-            ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
-            for (int j = 0; j < recipesFromDeviceAdapter.size(); j++) {
-                if (recipesFromDeviceAdapter.get(i).getUniqueId().equals(recipeId)) {
-                    
-                    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(deviceAdaptersNames.get(i));
-                    
-                    //CHECK IF THE DA is on rampup?
-                    if (da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP)) {
+  /**
+   * Service for triggering a specific Recipe. Returns a status message depending on the outcome.
+   *
+   * @param recipeId
+   * @return status
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{recipeId}/trigger")
+  public String recipeTriggering(@PathParam("recipeId") String recipeId)
+  {
+    DACManager DACinstance = DACManager.getInstance();
+    List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+    for (String da_name : deviceAdaptersNames)
+    {
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
+      for (Recipe recipe : recipesFromDeviceAdapter)
+      {
+        if (recipe.getUniqueId().equals(recipeId))
+        {
+          //CHECK IF THE DA is on rampup?
+          if (da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP))
+          {
+            String invokeObjectID = recipe.getInvokeObjectID();
+            String invokeMethodID = recipe.getInvokeMethodID();
+            DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
 
-                        String invokeObjectID = recipesFromDeviceAdapter.get(i).getInvokeObjectID();
-                        String invokeMethodID = recipesFromDeviceAdapter.get(i).getInvokeMethodID();
-                        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-                        boolean result = false;
+            //EXECUTE THE RECIPE
+            logger.debug("[EXECUTE] recipeID: " + recipeId);
+            NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
+            NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
 
-                        //EXECUTE THE RECIPE
-                        logger.debug("[EXECUTE] recipeID: " + recipeId);
-                        NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
-                        NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
+            boolean result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, "HMItest", "HMItest");
 
-                        result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, "HMItest", "HMItest");
-
-                        if (result) { //status code of the call
-                            return "Success";
-                        } else {
-                            return "Couldn't Execute";
-                        }
-                    }else{
-                        return "Adapter is not on RampUp stage!";
-                    }
-                }
+            if (result)
+            { //status code of the call
+              return "Success";
+            } else
+            {
+              return "Couldn't Execute";
             }
+          } else
+          {
+            return "Adapter is not on RampUp stage!";
+          }
         }
-        return "Recipe not found";
+      }
     }
-    
+    return "Recipe not found";
+  }
+
 }

@@ -31,6 +31,6 @@ public class MSBConstants {
     public static final String STAGE_PRODUCTION_TO_RAMP_UP = "Production_to_rampup";
     public static final String STAGE_PRODUCTION_TO_PREPROD = "Production_to_preproduction";
 
-    public static Boolean MSB_OPTIMIZER = true;
+    public static Boolean MSB_OPTIMIZER = false;
 
 }

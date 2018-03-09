@@ -287,7 +287,9 @@ public abstract class DeviceAdapter
         subSystem.setState(ReadDeviceAdapterState.get(1));
         subSystem.setStatePath(ReadDeviceAdapterState.get(0));
       }
-
+      
+      subSystem.setStage(MSBConstants.STAGE_RAMP_UP);
+      
       //set number of resources/semaphores
       NodeId resourceNumber = new NodeId(2, "Resources");
       String resources = Functions.readOPCNodeToString(client, resourceNumber);
