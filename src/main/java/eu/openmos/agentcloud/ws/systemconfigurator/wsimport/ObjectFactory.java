@@ -497,11 +497,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ChangeSubSystemStatus }
+     * Create an instance of {@link ChangeSubSystemStage }
      * 
      */
-    public ChangeSubSystemStatus createChangeSubSystemStatus() {
-        return new ChangeSubSystemStatus();
+    public ChangeSubSystemStage createChangeSubSystemStatus() {
+        return new ChangeSubSystemStage();
     }
 
     /**
@@ -561,11 +561,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ChangeSystemStatus }
+     * Create an instance of {@link ChangeSystemStage }
      * 
      */
-    public ChangeSystemStatus createChangeSystemStatus() {
-        return new ChangeSystemStatus();
+    public ChangeSystemStage createChangeSystemStatus() {
+        return new ChangeSystemStage();
     }
 
     /**
@@ -1101,12 +1101,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ChangeSubSystemStatus }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ChangeSubSystemStage }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "changeSubSystemStatus")
-    public JAXBElement<ChangeSubSystemStatus> createChangeSubSystemStatus(ChangeSubSystemStatus value) {
-        return new JAXBElement<ChangeSubSystemStatus>(_ChangeSubSystemStatus_QNAME, ChangeSubSystemStatus.class, null, value);
+    public JAXBElement<ChangeSubSystemStage> createChangeSubSystemStatus(ChangeSubSystemStage value) {
+        return new JAXBElement<ChangeSubSystemStage>(_ChangeSubSystemStatus_QNAME, ChangeSubSystemStage.class, null, value);
     }
 
     /**
@@ -1119,12 +1119,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ChangeSystemStatus }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ChangeSystemStage }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "changeSystemStatus")
-    public JAXBElement<ChangeSystemStatus> createChangeSystemStatus(ChangeSystemStatus value) {
-        return new JAXBElement<ChangeSystemStatus>(_ChangeSystemStatus_QNAME, ChangeSystemStatus.class, null, value);
+    public JAXBElement<ChangeSystemStage> createChangeSystemStatus(ChangeSystemStage value) {
+        return new JAXBElement<ChangeSystemStage>(_ChangeSystemStatus_QNAME, ChangeSystemStage.class, null, value);
     }
 
     /**
