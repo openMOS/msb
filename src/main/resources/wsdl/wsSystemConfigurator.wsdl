@@ -3,10 +3,10 @@
 <xs:schema elementFormDefault="unqualified" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 <xs:element name="acceptNewOrderInstance" type="tns:acceptNewOrderInstance" />
 <xs:element name="acceptNewOrderInstanceResponse" type="tns:acceptNewOrderInstanceResponse" />
-<xs:element name="changeSubSystemStatus" type="tns:changeSubSystemStatus" />
-<xs:element name="changeSubSystemStatusResponse" type="tns:changeSubSystemStatusResponse" />
-<xs:element name="changeSystemStatus" type="tns:changeSystemStatus" />
-<xs:element name="changeSystemStatusResponse" type="tns:changeSystemStatusResponse" />
+<xs:element name="changeSubSystemStage" type="tns:changeSubSystemStage" />
+<xs:element name="changeSubSystemStageResponse" type="tns:changeSubSystemStageResponse" />
+<xs:element name="changeSystemStage" type="tns:changeSystemStage" />
+<xs:element name="changeSystemStageResponse" type="tns:changeSystemStageResponse" />
 <xs:element name="createNewRecipe" type="tns:createNewRecipe" />
 <xs:element name="createNewRecipeResponse" type="tns:createNewRecipeResponse" />
 <xs:element name="createNewResourceAgent" type="tns:createNewResourceAgent" />
@@ -169,6 +169,7 @@
 <xs:element minOccurs="0" name="parameter" type="tns:parameter" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="value" type="xs:string" />
+<xs:element minOccurs="0" name="valuePath" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -201,6 +202,16 @@
 <xs:element minOccurs="0" name="code" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="operationName" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="changeSystemStage">
+<xs:sequence>
+<xs:element minOccurs="0" name="newStage" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="changeSystemStageResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="updateExecutionTables">
@@ -799,6 +810,17 @@
 </xs:extension>
 </xs:complexContent>
 </xs:complexType>
+<xs:complexType name="changeSubSystemStage">
+<xs:sequence>
+<xs:element minOccurs="0" name="subSystemId" type="xs:string" />
+<xs:element minOccurs="0" name="newStage" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="changeSubSystemStageResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
 <xs:complexType name="acceptNewOrderInstance">
 <xs:sequence>
 <xs:element minOccurs="0" name="newOrder" type="tns:orderInstance" />
@@ -809,33 +831,12 @@
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
 </xs:complexType>
-<xs:complexType name="changeSubSystemStatus">
-<xs:sequence>
-<xs:element minOccurs="0" name="subSystemId" type="xs:string" />
-<xs:element minOccurs="0" name="newState" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="changeSubSystemStatusResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
 <xs:complexType name="putRecipes">
 <xs:sequence>
 <xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" type="tns:recipe" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="putRecipesResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="changeSystemStatus">
-<xs:sequence>
-<xs:element minOccurs="0" name="newState" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="changeSystemStatusResponse">
 <xs:sequence>
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
@@ -971,6 +972,10 @@
     <wsdl:part element="tns:getPhysicalAdjustments" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="changeSubSystemStage">
+    <wsdl:part element="tns:changeSubSystemStage" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="updateExecutionTablesResponse">
     <wsdl:part element="tns:updateExecutionTablesResponse" name="parameters">
     </wsdl:part>
@@ -985,10 +990,6 @@
   </wsdl:message>
   <wsdl:message name="getRecipeExecutionDataResponse">
     <wsdl:part element="tns:getRecipeExecutionDataResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="changeSubSystemStatusResponse">
-    <wsdl:part element="tns:changeSubSystemStatusResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="putRecipes">
@@ -1043,6 +1044,10 @@
     <wsdl:part element="tns:getSkillResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="changeSystemStage">
+    <wsdl:part element="tns:changeSystemStage" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="updateExecutionTables">
     <wsdl:part element="tns:updateExecutionTables" name="parameters">
     </wsdl:part>
@@ -1057,6 +1062,10 @@
   </wsdl:message>
   <wsdl:message name="getEquipmentAssessments">
     <wsdl:part element="tns:getEquipmentAssessments" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="changeSubSystemStageResponse">
+    <wsdl:part element="tns:changeSubSystemStageResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="putRecipesResponse">
@@ -1107,6 +1116,10 @@
     <wsdl:part element="tns:getExecutionTableBySubSystemIdResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="changeSystemStageResponse">
+    <wsdl:part element="tns:changeSystemStageResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getProduct">
     <wsdl:part element="tns:getProduct" name="parameters">
     </wsdl:part>
@@ -1129,18 +1142,6 @@
   </wsdl:message>
   <wsdl:message name="createNewSkillResponse">
     <wsdl:part element="tns:createNewSkillResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="changeSubSystemStatus">
-    <wsdl:part element="tns:changeSubSystemStatus" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="changeSystemStatus">
-    <wsdl:part element="tns:changeSystemStatus" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="changeSystemStatusResponse">
-    <wsdl:part element="tns:changeSystemStatusResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getRecipesBySubSystemId">
@@ -1186,6 +1187,12 @@
       <wsdl:input message="tns:newRecipeExecutionData" name="newRecipeExecutionData">
     </wsdl:input>
       <wsdl:output message="tns:newRecipeExecutionDataResponse" name="newRecipeExecutionDataResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="changeSystemStage">
+      <wsdl:input message="tns:changeSystemStage" name="changeSystemStage">
+    </wsdl:input>
+      <wsdl:output message="tns:changeSystemStageResponse" name="changeSystemStageResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="updateExecutionTables">
@@ -1296,28 +1303,22 @@
       <wsdl:output message="tns:getPhysicalAdjustmentsResponse" name="getPhysicalAdjustmentsResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="changeSubSystemStage">
+      <wsdl:input message="tns:changeSubSystemStage" name="changeSubSystemStage">
+    </wsdl:input>
+      <wsdl:output message="tns:changeSubSystemStageResponse" name="changeSubSystemStageResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="acceptNewOrderInstance">
       <wsdl:input message="tns:acceptNewOrderInstance" name="acceptNewOrderInstance">
     </wsdl:input>
       <wsdl:output message="tns:acceptNewOrderInstanceResponse" name="acceptNewOrderInstanceResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="changeSubSystemStatus">
-      <wsdl:input message="tns:changeSubSystemStatus" name="changeSubSystemStatus">
-    </wsdl:input>
-      <wsdl:output message="tns:changeSubSystemStatusResponse" name="changeSubSystemStatusResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="putRecipes">
       <wsdl:input message="tns:putRecipes" name="putRecipes">
     </wsdl:input>
       <wsdl:output message="tns:putRecipesResponse" name="putRecipesResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="changeSystemStatus">
-      <wsdl:input message="tns:changeSystemStatus" name="changeSystemStatus">
-    </wsdl:input>
-      <wsdl:output message="tns:changeSystemStatusResponse" name="changeSystemStatusResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="createNewResourceAgent">
@@ -1386,6 +1387,15 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="newRecipeExecutionDataResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="changeSystemStage">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="changeSystemStage">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="changeSystemStageResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -1551,6 +1561,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="changeSubSystemStage">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="changeSubSystemStage">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="changeSubSystemStageResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="acceptNewOrderInstance">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="acceptNewOrderInstance">
@@ -1560,30 +1579,12 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="changeSubSystemStatus">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="changeSubSystemStatus">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="changeSubSystemStatusResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="putRecipes">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="putRecipes">
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="putRecipesResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="changeSystemStatus">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="changeSystemStatus">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="changeSystemStatusResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

@@ -67,6 +67,20 @@ public interface SystemConfigurator {
 
     /**
      * 
+     * @param newStage
+     * @return
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     */
+    @WebMethod
+    @WebResult(name = "serviceCallStatus", targetNamespace = "")
+    @RequestWrapper(localName = "changeSystemStage", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSystemStage")
+    @ResponseWrapper(localName = "changeSystemStageResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSystemStageResponse")
+    public ServiceCallStatus changeSystemStage(
+        @WebParam(name = "newStage", targetNamespace = "")
+        String newStage);
+
+    /**
+     * 
      * @param executionTables
      * @return
      *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
@@ -304,6 +318,23 @@ public interface SystemConfigurator {
 
     /**
      * 
+     * @param newStage
+     * @param subSystemId
+     * @return
+     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
+     */
+    @WebMethod
+    @WebResult(name = "serviceCallStatus", targetNamespace = "")
+    @RequestWrapper(localName = "changeSubSystemStage", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSubSystemStage")
+    @ResponseWrapper(localName = "changeSubSystemStageResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSubSystemStageResponse")
+    public ServiceCallStatus changeSubSystemStage(
+        @WebParam(name = "subSystemId", targetNamespace = "")
+        String subSystemId,
+        @WebParam(name = "newStage", targetNamespace = "")
+        String newStage);
+
+    /**
+     * 
      * @param newOrder
      * @return
      *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
@@ -318,23 +349,6 @@ public interface SystemConfigurator {
 
     /**
      * 
-     * @param subSystemId
-     * @param newState
-     * @return
-     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
-     */
-    @WebMethod
-    @WebResult(name = "serviceCallStatus", targetNamespace = "")
-    @RequestWrapper(localName = "changeSubSystemStatus", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSubSystemStatus")
-    @ResponseWrapper(localName = "changeSubSystemStatusResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSubSystemStatusResponse")
-    public ServiceCallStatus changeSubSystemStatus(
-        @WebParam(name = "subSystemId", targetNamespace = "")
-        String subSystemId,
-        @WebParam(name = "newState", targetNamespace = "")
-        String newState);
-
-    /**
-     * 
      * @param recipes
      * @return
      *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
@@ -346,20 +360,6 @@ public interface SystemConfigurator {
     public ServiceCallStatus putRecipes(
         @WebParam(name = "recipes", targetNamespace = "")
         List<Recipe> recipes);
-
-    /**
-     * 
-     * @param newState
-     * @return
-     *     returns eu.openmos.agentcloud.utilities.ServiceCallStatus
-     */
-    @WebMethod
-    @WebResult(name = "serviceCallStatus", targetNamespace = "")
-    @RequestWrapper(localName = "changeSystemStatus", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSystemStatus")
-    @ResponseWrapper(localName = "changeSystemStatusResponse", targetNamespace = "http://cloudinterface.agentcloud.openmos.eu/", className = "eu.openmos.agentcloud.ws.systemconfigurator.wsimport.ChangeSystemStatusResponse")
-    public ServiceCallStatus changeSystemStatus(
-        @WebParam(name = "newState", targetNamespace = "")
-        String newState);
 
     /**
      * 
