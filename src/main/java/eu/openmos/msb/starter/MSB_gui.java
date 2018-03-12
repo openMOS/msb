@@ -1689,7 +1689,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         Thread.currentThread().interrupt();
       }
       
-      MSBVar.setSystemStage(MSBConstants.STAGE_RAMP_UP);
+      MSBVar.setSystemStage(MSBConstants.STAGE_PRODUCTION);
       
     } catch (Exception ex)
     {

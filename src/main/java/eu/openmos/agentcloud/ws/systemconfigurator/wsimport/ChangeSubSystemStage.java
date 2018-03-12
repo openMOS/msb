@@ -7,17 +7,17 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for changeSubSystemStatus complex type.
+ * <p>Java class for changeSubSystemStage complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="changeSubSystemStatus">
+ * &lt;complexType name="changeSubSystemStage">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="subSystemId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="newState" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="newStage" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -27,9 +27,9 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "changeSubSystemStatus", propOrder = {
+@XmlType(name = "changeSubSystemStage", propOrder = {
     "subSystemId",
-    "newState"
+    "newStage"
 })
 public class ChangeSubSystemStage {
 
@@ -61,7 +61,7 @@ public class ChangeSubSystemStage {
     }
 
     /**
-     * Gets the value of the newState property.
+     * Gets the value of the newStage property.
      * 
      * @return
      *     possible object is
@@ -73,7 +73,7 @@ public class ChangeSubSystemStage {
     }
 
     /**
-     * Sets the value of the newState property.
+     * Sets the value of the newStage property.
      * 
      * @param value
      *     allowed object is

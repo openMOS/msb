@@ -288,7 +288,7 @@ public abstract class DeviceAdapter
         subSystem.setStatePath(ReadDeviceAdapterState.get(0));
       }
       
-      subSystem.setStage(MSBConstants.STAGE_RAMP_UP);
+      subSystem.setStage(MSBConstants.STAGE_PRODUCTION);
       
       //set number of resources/semaphores
       NodeId resourceNumber = new NodeId(2, "Resources");

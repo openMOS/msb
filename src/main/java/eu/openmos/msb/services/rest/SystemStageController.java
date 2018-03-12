@@ -1,5 +1,6 @@
 package eu.openmos.msb.services.rest;
 
+import eu.openmos.msb.datastructures.MSBVar;
 import eu.openmos.msb.services.rest.data.SystemStage;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,7 +29,7 @@ public class SystemStageController extends Base
     
     // TODO
 
-    return new SystemStage("PRODUCTION");
+    return new SystemStage(MSBVar.getSystemStage());
   }
 
   @POST
@@ -39,6 +40,7 @@ public class SystemStageController extends Base
     logger.debug("set system stage - new stage = " + newStage);
     
     // TODO
+    MSBVar.setSystemStage(newStage);
     
     return new SystemStage(newStage);
   }
