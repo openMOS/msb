@@ -46,67 +46,50 @@ public class SubSystemController extends Base {
       
         logger.debug("subsystems getList");
         List<SubSystem> ls = new LinkedList<>();
-        logger.debug("subsystems getList 1");
+        //logger.debug("subsystems getList 1");
 
 //        ls = aml5.getMasmecSubSystems();
         //ls = MasmecModel.getInstance().getSubSystems();
         DACManager aux = DACManager.getInstance();
-        logger.debug("subsystems getList 2");
+        //logger.debug("subsystems getList 2");
         
         List<String> deviceAdapters = aux.getDeviceAdaptersNames();
-        logger.debug("subsystems getList 2.5: " + deviceAdapters );
+        //logger.debug("subsystems getList 2.5: " + deviceAdapters );
         
         for (String adapterName : deviceAdapters)
         {
             if (adapterName.contains("MSB") || adapterName.contains("fortiss"))
                 continue;
-          logger.debug("subsystems getList 3: " + adapterName);
+          //logger.debug("subsystems getList 3: " + adapterName);
           DeviceAdapter adapter = aux.getDeviceAdapterbyName(adapterName);
-            logger.debug("subsystems getList 4 ");
+          //logger.debug("subsystems getList 4 ");
           // VaG - 28/09/2017
           // begin
           if (adapter != null)
           {
-            logger.debug("subsystems getList 5 - adapter is not null ");
+            //logger.debug("subsystems getList 5 - adapter is not null ");
             SubSystem ss = adapter.getSubSystem();
             if (ss != null)
             {
-                logger.debug("subsystems getList 6 - subsystem is not null ");
-                logger.debug("subsystems getList 7 - subsystem name: " + ss.getName());
+                //logger.debug("subsystems getList 6 - subsystem is not null ");
+                //logger.debug("subsystems getList 7 - subsystem name: " + ss.getName());
                 // assume the name is populated
                 if (ss.getUniqueId() == null || ss.getUniqueId().length() == 0)
                   ss.setUniqueId(ss.getName());
-                logger.debug("subsystems getList 8");
+                //logger.debug("subsystems getList 8");
                 if (ss.getDescription() == null || ss.getDescription().length() == 0)
                   ss.setDescription(ss.getName());
-                logger.debug("subsystems getList 9");
+                //logger.debug("subsystems getList 9");
                 ss.setRegistered(new Date());
-                logger.debug("subsystems getList 10");
+                //logger.debug("subsystems getList 10");
                 ls.add(ss);
-                logger.debug("subsystems getList 11");
+                //logger.debug("subsystems getList 11");
                   // end
             }
           }
         }
-//        for (int i = 0; i < 5; i++)
-//        {
-//            SubSystem subsystem1 = SubSystemTest.getTestObject();
-//            if (i%2 == 0)
-//            {
-//                subsystem1.setName("WORKSTATION_" + i);
-//                subsystem1.setUniqueId("WORKSTATION_" + i);
-//                subsystem1.setType(Constants.DF_RESOURCE);
-//            }
-//            else
-//            {
-//                subsystem1.setName("TRANSPORT_" + i);
-//                subsystem1.setUniqueId("TRANSPORT_" + i);
-//                subsystem1.setType(Constants.DF_TRANSPORT);
-//            }
-//                
-//            ls.add(subsystem1);
-//        }
-        logger.debug("susbsytem list from MSB: ");
+        /*
+        //logger.debug("susbsytem list from MSB: ");
         if (ls == null)
             logger.debug("susbsytem list from MSB: ls is null");
         if (ls.size() == 0)
@@ -114,7 +97,8 @@ public class SubSystemController extends Base {
         if (ls.size() != 0)
             logger.debug("susbsytem list from MSB: ls size is " + ls.size());            
         // logger.debug("susbsytem list from MSB: " + ls);
-         
+        */
+        
         PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
         perfMeasure.getHMISubsystemUpdateTimers().add(HMIsubsystemUpdateWatch.getTime());
         HMIsubsystemUpdateWatch.stop();

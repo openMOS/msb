@@ -7,16 +7,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for changeSystemStage complex type.
+ * <p>Java class for changeSystemStatus complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="changeSystemStage">
+ * &lt;complexType name="changeSystemStatus">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="newStage" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="newState" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -26,15 +26,15 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "changeSystemStage", propOrder = {
-    "newStage"
+@XmlType(name = "changeSystemStatus", propOrder = {
+    "newState"
 })
 public class ChangeSystemStage {
 
     protected String newStage;
 
     /**
-     * Gets the value of the newStage property.
+     * Gets the value of the newState property.
      * 
      * @return
      *     possible object is
@@ -46,7 +46,7 @@ public class ChangeSystemStage {
     }
 
     /**
-     * Sets the value of the newStage property.
+     * Sets the value of the newState property.
      * 
      * @param value
      *     allowed object is

@@ -513,6 +513,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ChangeSubSystemStage }
+     * 
+     */
+    public ChangeSubSystemStage createChangeSubSystemStatus() {
+        return new ChangeSubSystemStage();
+    }
+
+    /**
      * Create an instance of {@link CreateNewSkillResponse }
      * 
      */
@@ -574,6 +582,22 @@ public class ObjectFactory {
      */
     public CreateNewRecipeResponse createCreateNewRecipeResponse() {
         return new CreateNewRecipeResponse();
+    }
+
+    /**
+     * Create an instance of {@link ChangeSystemStage }
+     * 
+     */
+    public ChangeSystemStage createChangeSystemStatus() {
+        return new ChangeSystemStage();
+    }
+
+    /**
+     * Create an instance of {@link ChangeSystemStatusResponse }
+     * 
+     */
+    public ChangeSystemStatusResponse createChangeSystemStatusResponse() {
+        return new ChangeSystemStatusResponse();
     }
 
     /**
@@ -1128,12 +1152,39 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ChangeSubSystemStage }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "changeSubSystemStatus")
+    public JAXBElement<ChangeSubSystemStage> createChangeSubSystemStatus(ChangeSubSystemStage value) {
+        return new JAXBElement<ChangeSubSystemStage>(_ChangeSubSystemStatus_QNAME, ChangeSubSystemStage.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CreateNewSkillResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "createNewSkillResponse")
     public JAXBElement<CreateNewSkillResponse> createCreateNewSkillResponse(CreateNewSkillResponse value) {
         return new JAXBElement<CreateNewSkillResponse>(_CreateNewSkillResponse_QNAME, CreateNewSkillResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ChangeSystemStage }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "changeSystemStatus")
+    public JAXBElement<ChangeSystemStage> createChangeSystemStatus(ChangeSystemStage value) {
+        return new JAXBElement<ChangeSystemStage>(_ChangeSystemStatus_QNAME, ChangeSystemStage.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ChangeSystemStatusResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "changeSystemStatusResponse")
+    public JAXBElement<ChangeSystemStatusResponse> createChangeSystemStatusResponse(ChangeSystemStatusResponse value) {
+        return new JAXBElement<ChangeSystemStatusResponse>(_ChangeSystemStatusResponse_QNAME, ChangeSystemStatusResponse.class, null, value);
     }
 
     /**
