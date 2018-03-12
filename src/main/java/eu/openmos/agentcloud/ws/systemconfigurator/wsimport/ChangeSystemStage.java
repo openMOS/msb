@@ -1,6 +1,7 @@
 
 package eu.openmos.agentcloud.ws.systemconfigurator.wsimport;
 
+import eu.openmos.msb.datastructures.MSBVar;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -31,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class ChangeSystemStage {
 
-    protected String newStage;
+    //protected String newStage;
 
     /**
      * Gets the value of the newStage property.
@@ -42,7 +43,7 @@ public class ChangeSystemStage {
      *     
      */
     public String getNewStage() {
-        return newStage;
+        return MSBVar.getSystemStage();
     }
 
     /**
@@ -54,7 +55,8 @@ public class ChangeSystemStage {
      *     
      */
     public void setNewStage(String value) {
-        this.newStage = value;
+      MSBVar.setSystemStage(value);
+      //this.newStage = value;
     }
 
 }
