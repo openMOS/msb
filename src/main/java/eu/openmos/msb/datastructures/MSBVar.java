@@ -8,8 +8,6 @@ package eu.openmos.msb.datastructures;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
-import eu.openmos.model.FinishedProductInfo;
-import java.util.Date;
 import javax.xml.ws.BindingProvider;
 
 /**
@@ -41,7 +39,7 @@ public class MSBVar
           BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
           bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
 
-          //systemConfigurator.;
+          systemConfigurator.changeSystemStage(systemStage);
         } catch (Exception ex)
         {
           System.out.println("Error trying to connect to cloud!: " + ex.getMessage());

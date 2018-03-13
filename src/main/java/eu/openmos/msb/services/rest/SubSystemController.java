@@ -2,6 +2,9 @@ package eu.openmos.msb.services.rest;
 
 //import _masmec.aml5;
 //import _masmec.MasmecModel;
+import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.model.*;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
@@ -17,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
 
@@ -44,7 +48,7 @@ public class SubSystemController extends Base {
       
       HMIsubsystemUpdateWatch.start();
       
-        logger.debug("subsystems getList");
+        //logger.debug("subsystems getList");
         List<SubSystem> ls = new LinkedList<>();
         //logger.debug("subsystems getList 1");
 
@@ -121,14 +125,14 @@ public class SubSystemController extends Base {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{subsystemId}")
     public SubSystem getDetail(@PathParam("subsystemId") String subsystemId) {
-        logger.debug("subsystem - getDetail - subsystemId = " + subsystemId);
+        //logger.debug("subsystem - getDetail - subsystemId = " + subsystemId);
         for (SubSystem subsystem : getList()) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
-                logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
+                //logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem;
             }
         }
-        logger.debug("subsystem - not found " + subsystemId + " - returning null");
+        //logger.debug("subsystem - not found " + subsystemId + " - returning null");
         return null; // TBV
     }
 
@@ -144,16 +148,16 @@ public class SubSystemController extends Base {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{subsystemId}/recipes")
     public List<Recipe> getRecipesList(@PathParam("subsystemId") String subsystemId) {
-        logger.debug("subsystem - getRecipesList - subsystemId = " + subsystemId);
-        logger.debug("subsystem getRecipesList - of the subsystem = " + subsystemId);
+        //logger.debug("subsystem - getRecipesList - subsystemId = " + subsystemId);
+        //logger.debug("subsystem getRecipesList - of the subsystem = " + subsystemId);
 //        return RecipeTest.getTestList();
         for (SubSystem subsystem : getList()) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
-                logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
+                //logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getRecipes();
             }
         }
-        logger.debug("subsystem - not found " + subsystemId + " - returning null");
+        //logger.debug("subsystem - not found " + subsystemId + " - returning null");
         return null; // TBV
     }
 
@@ -227,16 +231,16 @@ public class SubSystemController extends Base {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{subsystemId}/modules")
     public List<Module> getModulesList(@PathParam("subsystemId") String subsystemId) {
-        logger.debug("subsystem - getEquipmentsList - subsystemId = " + subsystemId);
-        logger.debug("subsystem getEquipmentsList - of the subsystem = " + subsystemId);
+        //logger.debug("subsystem - getEquipmentsList - subsystemId = " + subsystemId);
+        //logger.debug("subsystem getEquipmentsList - of the subsystem = " + subsystemId);
 //        return ModuleTest.getTestList(subsystemId);
         for (SubSystem subsystem : getList()) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
-                logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
+                //logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getInternalModules();
             }
         }
-        logger.debug("subsystem - not found " + subsystemId + " - returning null");
+        //logger.debug("subsystem - not found " + subsystemId + " - returning null");
         return null; // TBV
     }
 
@@ -252,16 +256,16 @@ public class SubSystemController extends Base {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{subsystemId}/skills")
     public List<Skill> getSkillsList(@PathParam("subsystemId") String subsystemId) {
-        logger.debug("subsystem - getSkillsList - subsystemId = " + subsystemId);
-        logger.debug("subsystem getSkillsList - of the subsystem = " + subsystemId);
+        //logger.debug("subsystem - getSkillsList - subsystemId = " + subsystemId);
+        //logger.debug("subsystem getSkillsList - of the subsystem = " + subsystemId);
 //        return SkillTest.getTestList();
         for (SubSystem subsystem : getList()) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
-                logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
+                //logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getSkills();
             }
         }
-        logger.debug("subsystem - not found " + subsystemId + " - returning null");
+        //logger.debug("subsystem - not found " + subsystemId + " - returning null");
         return null; // TBV
     }
 
@@ -298,14 +302,14 @@ public class SubSystemController extends Base {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{subsystemId}/executionTable")
     public ExecutionTable getExecutionTable(@PathParam("subsystemId") String subsystemId) {
-        logger.debug("execution table getDetail of subsystem  = " + subsystemId);
+        //logger.debug("execution table getDetail of subsystem  = " + subsystemId);
         for (SubSystem subsystem : getList()) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
-                logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
+                //logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                 return subsystem.getExecutionTable();
             }
         }
-        logger.debug("subsystem - not found " + subsystemId + " - returning null");
+        //logger.debug("subsystem - not found " + subsystemId + " - returning null");
         return null; // TBV
     }
     
@@ -323,34 +327,62 @@ public class SubSystemController extends Base {
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{subsystemId}/stage")
    public SubSystemStage getSubSystemStage(@PathParam("subsystemId") String subsystemId) {
-       logger.debug("subsystem - getSubSystemStage - subsystemId = " + subsystemId);
+       //logger.debug("subsystem - getSubSystemStage - subsystemId = " + subsystemId);
        for (SubSystem subsystem : getList()) {
            if (subsystem.getUniqueId().equals(subsystemId)) {
-               logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
+               //logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
                return new SubSystemStage(subsystem.getUniqueId(), subsystem.getStage());
            }
        }
-       logger.debug("subsystem - not found " + subsystemId + " - returning null");
+       //logger.debug("subsystem - not found " + subsystemId + " - returning null");
        return null; // TBV
    }
    
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{subsystemId}/stage")
-   public SubSystemStage updateSubSystemStage(@PathParam("subsystemId") String subsystemId,
-           SubSystemStage newSubSystemStage) {
-       logger.debug("subsystem - updateSubSystemStage - subsystemId = " + subsystemId + " - newstage = " + newSubSystemStage.getStage());
-       for (SubSystem subsystem : getList()) {
-           if (subsystem.getUniqueId().equals(subsystemId)) {
-               logger.debug("subsystem - found " + subsystemId + " - " + subsystem.toString());
-               subsystem.setStage(newSubSystemStage.getStage());
-               return new SubSystemStage(subsystem.getUniqueId(), subsystem.getStage());
-           }
-       }
-       logger.debug("subsystem - not found " + subsystemId + " - returning null");
-       return null; // TBV
-   }
-    
-    
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{subsystemId}/stage")
+  public SubSystemStage updateSubSystemStage(@PathParam("subsystemId") String subsystemId,
+          SubSystemStage newSubSystemStage)
+  {
+    //logger.debug("subsystem - updateSubSystemStage - subsystemId = " + subsystemId + " - newstage = " + newSubSystemStage.getStage());
+    for (SubSystem subsystem : getList())
+    {
+      if (subsystem.getUniqueId().equals(subsystemId))
+      {
+        //logger.debug("subsystem - found " + subsystemId + " - " + subsystem.toString());
+        subsystem.setStage(newSubSystemStage.getStage());
+
+        try
+        {
+          String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+          boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+          if (withAGENTCloud)
+          {
+            try
+            {
+              SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+              SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+              String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+              BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+              bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+
+              systemConfigurator.changeSubSystemStage(subsystemId, newSubSystemStage.getStage());
+            } catch (Exception ex)
+            {
+              System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+            }
+          }
+        } catch (Exception ex)
+        {
+
+        }
+
+        return new SubSystemStage(subsystem.getUniqueId(), subsystem.getStage());
+      }
+    }
+    logger.debug("subsystem - not found " + subsystemId + " - returning null");
+    return null; // TBV
+  }
+
 }

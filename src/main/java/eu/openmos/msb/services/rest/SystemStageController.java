@@ -25,7 +25,7 @@ public class SystemStageController extends Base
   @Produces(MediaType.APPLICATION_JSON)
   public SystemStage getSystemStage()
   {
-    logger.debug("get system stage");
+    //logger.debug("get system stage");
     
     // TODO
 
