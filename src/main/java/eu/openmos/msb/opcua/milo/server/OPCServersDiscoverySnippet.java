@@ -433,6 +433,23 @@ public class OPCServersDiscoverySnippet extends Thread
             System.out.println("\nCouldn't register recipe: " + auxRecipe.getName() + "\n");
           }
         }
+        for (Module mod : da.getListOfModules())
+        {
+          for (Recipe auxRecipe : mod.getRecipes())
+          {
+            if (da.getSubSystem().getName() != null && auxRecipe.getSkill() != null && auxRecipe.getSkill().getName() != null)
+            {
+
+              dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
+                      "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
+
+            } else
+            {
+              System.out.println("\nCouldn't register recipe: " + auxRecipe.getName() + "\n");
+            }
+          }
+        }
+        
         MSB_gui.fillRecipesTable();
       }
 
