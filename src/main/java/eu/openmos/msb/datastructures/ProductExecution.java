@@ -474,7 +474,7 @@ public class ProductExecution implements Runnable
           logger.info("[EXECUTE] recipeID: " + recipeID);
           NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
           NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
-          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, prodInst.getUniqueId(), prodInst.getProductId());
+          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, prodInst.getUniqueId(), prodInst.getProductId(), true);
 
           return result;
         }
