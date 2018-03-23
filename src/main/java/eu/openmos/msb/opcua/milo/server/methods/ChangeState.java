@@ -61,11 +61,9 @@ public class ChangeState
           @UaInputArgument(
                   name = "productType_id",
                   description = "Product type ID") String productType_id,
-          /*
           @UaInputArgument(
                   name = "checkNextRecipe",
                   description = "Check next Recipe if true") boolean checkNextRecipe,
-          */
           @UaOutputArgument(
                   name = "Ackowledge",
                   description = "Acknowledge 1-OK 0-NOK") AnnotationBasedInvocationHandler.Out<Integer> result)
@@ -74,7 +72,8 @@ public class ChangeState
     changeStateAndNextRecipeTimer.start();
 
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
-    logger.info("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id + " productID: " + productInstance_id + " recipeID:" + recipe_id);
+    logger.info("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id + 
+            " productInstID: " + productInstance_id + " recipeID:" + recipe_id + " productTypeID: " + productType_id + " checkNextRecipe: " + checkNextRecipe);
 
     String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
     
@@ -93,7 +92,7 @@ public class ChangeState
       };
       threadKPI.start();
       
-      /*
+      
       if (checkNextRecipe)
       {
         Thread threadCheck = new Thread()
@@ -106,7 +105,7 @@ public class ChangeState
         };
         threadCheck.start();
       }
-      */
+      
       
       result.set(1);
       logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
@@ -148,7 +147,7 @@ public class ChangeState
       threadKPI.start();
 
       //start checker depending on the adapterStage
-      //if (checkNextRecipe /* && !da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP) */)
+      if (checkNextRecipe /* && !da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP) */)
       {
         Thread threadCheck = new Thread()
         {
@@ -169,7 +168,7 @@ public class ChangeState
 
   private void ChangeStateChecker_Modules(String recipe_id, String productInst_id, String module_id, String productType_id)
   {
-    String nextRecipeID = checkNextRecipe(recipe_id, productInst_id, productType_id); //returns the next recipe to execute
+    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id); //returns the next recipe to execute
     logger.info("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID);
     
     DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(module_id);
@@ -306,7 +305,7 @@ public class ChangeState
   
   private void ChangeStateChecker(String recipe_id, String productInst_id, String da_id, String productType_id)
   {
-    String nextRecipeID = checkNextRecipe(recipe_id, productInst_id, productType_id); //returns the next recipe to execute
+    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id); //returns the next recipe to execute
     logger.info("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID);
     
     if (!nextRecipeID.isEmpty() && !nextRecipeID.equals("last"))
@@ -568,7 +567,7 @@ public class ChangeState
    * @param recipeID
    * @return
    */
-  private String checkNextRecipe(String recipeID, String productInst_id, String productType_id)
+  private String getNextValidRecipe(String recipeID, String productInst_id, String productType_id)
   {
     //get deviceAdapter that does the required recipe
     String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
