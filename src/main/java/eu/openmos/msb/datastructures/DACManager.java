@@ -4,10 +4,14 @@ import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
+import eu.openmos.model.ExecutionTable;
+import eu.openmos.model.ExecutionTable_DA;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.SubSystem;
+import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
+import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -17,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.ws.BindingProvider;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  *
@@ -126,6 +131,16 @@ public class DACManager
     }
     return null;
   }
+  
+  public DeviceAdapter getDeviceAdapterbyAML_ID(String da_aml_id)
+  {
+    int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByAML_ID(da_aml_id);
+    if (id != -1 && deviceAdapters.containsKey(id))
+    {
+      return deviceAdapters.get(id);
+    }
+    return null;
+  }
 
   /**
    * @brief @param deviceAdapterName
@@ -219,7 +234,7 @@ public class DACManager
     int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      deviceAdapters.get(id).getSubSystem().getInternalModules().add(device);
+      deviceAdapters.get(id).getSubSystem().getModules().add(device);
     }
   }
 
@@ -379,5 +394,20 @@ public class DACManager
       return "OK - No AgentPlatform";
   }
   
+  public static void updateExecutionTable(String da_id, ExecutionTable execTable)
+  {
+    DACManager dac = getInstance();
+    DeviceAdapter da = dac.getDeviceAdapterbyAML_ID(da_id);    
+    DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da.getClient();
+    MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
+    
+    ExecutionTable_DA execTable_da = ExecutionTable_DA.createExecutionTable_DA(execTable);
+    String execTableSerialized = Functions.ClassToString(execTable_da);
+    NodeId objectID = Functions.convertStringToNodeId(execTable_da.getChangeExecutionTableObjectID());
+    NodeId methodID = Functions.convertStringToNodeId(execTable_da.getChangeExecutionTableMethodID());
+    
+    boolean updateExecTable = client.updateRecipe(client.getClientObject(), objectID, methodID, execTableSerialized);
+    
+  }
   
 }

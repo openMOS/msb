@@ -237,7 +237,7 @@ public class SubSystemController extends Base {
         for (SubSystem subsystem : getList()) {
             if (subsystem.getUniqueId().equals(subsystemId)) {
                 //logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
-                return subsystem.getInternalModules();
+                return subsystem.getModules();
             }
         }
         //logger.debug("subsystem - not found " + subsystemId + " - returning null");

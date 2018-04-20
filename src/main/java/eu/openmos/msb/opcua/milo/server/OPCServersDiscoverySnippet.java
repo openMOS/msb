@@ -264,7 +264,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
                   System.out.println("Starting DA Parser **********************");
 
-                  boolean ok = da.parseDNToObjects(client, node, nSkills);
+                  boolean ok = da.parseDNToObjects(client, node, nSkills, true);
 
                   System.out.println("***** End namespace browsing ***** \n\n");
 

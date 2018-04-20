@@ -581,7 +581,79 @@ public class DatabaseInteraction
 
     return id;
   }
+  
+  public int getDeviceAdapterDB_ID_ByAML_ID(String da_aml_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
 
+    int id = -1;
+    String sql = "SELECT id FROM DeviceAdapter WHERE aml_id = '" + da_aml_id + "'";
+
+    try (Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql))
+    {
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        //System.out.println("No data");
+      } else
+      {
+        while (rs.next())
+        {
+          id = rs.getInt("id");
+          //System.out.println("Found divce with id:  " + id);
+          break;
+        }
+      }
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return id;
+  }
+
+  public List<String> getModules_ID_ByDA_DB_ID(String da_db_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+
+    List<String> ids = new ArrayList<>();
+    String sql = "SELECT Modules.aml_id FROM Modules WHERE da_id = '" + da_db_id + "'";
+
+    try (Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql))
+    {
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        //System.out.println("No data");
+      } else
+      {
+        while (rs.next())
+        {
+          ids.add(rs.getString("aml_id"));
+          //System.out.println("Found divce with id:  " + id);
+          break;
+        }
+      }
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return ids;
+  }
+  
   public String getDeviceAdapterNameByDB_ID(String deviceID)
   {
     StopWatch DBqueryTimer = new StopWatch();
@@ -1519,6 +1591,55 @@ public class DatabaseInteraction
     return null;
   }
 
+  public String getDA_DB_IDbyAML_ID(String da_aml_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+    try
+    {
+      //System.out.println("*DB query* gtting DAID from RecipeID: " + recipe_id);
+      ArrayList<String> result = new ArrayList<>();
+
+      Statement stmt = conn.createStatement();
+      ResultSet query = stmt.executeQuery("SELECT DeviceAdapter.id FROM DeviceAdapter WHERE DeviceAdapter.aml_id = '" + da_aml_id + "'");
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        //System.out.println("No data");
+      } else
+      {
+        while (query.next())
+        {
+          result.add(query.getString(1));
+        }
+      }
+      stmt.close();
+
+      //stmt.close();
+      //String res= query.getString("da_id");
+      if (result.size() > 0)
+      {
+
+        Long time = DBqueryTimer.getTime();
+        perfMeasure.getDatabaseQueryTimers().add(time);
+        DBqueryTimer.stop();
+
+        return result.get(0);
+      }
+
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return null;
+  }
+  
   public String getSkillReqIDbyRecipeID(String recipe_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
@@ -1702,6 +1823,23 @@ public class DatabaseInteraction
     return -1;
   }
 
+  public int removeModuleByID(String module_id)
+  {
+    try
+    {
+      Statement stmt = conn.createStatement();
+      int query = stmt.executeUpdate("DELETE FROM Modules WHERE id = '" + module_id + "'");
+      stmt.close();
+
+      return query;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return -1;
+  }
+  
   public boolean associateRecipeToSR(String sr_id, List<String> recipes_id)
   {
     StopWatch DBqueryTimer = new StopWatch();

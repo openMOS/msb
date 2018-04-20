@@ -188,6 +188,7 @@ public class RecipeController extends Base
             recipes.get(j).setValid(recipe.isValid());
 
             DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter.getClient();
+            
             //client.getClient().InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
             ret = true;
             logger.info("Sending new execution table to DA: " + deviceAdaptersNames.get(i));
@@ -200,7 +201,9 @@ public class RecipeController extends Base
         if (ret)
         {
           Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
-          MSBClientSubscription client = (MSBClientSubscription) deviceAdapter.getClient();
+          DeviceAdapterOPC da_opc = (DeviceAdapterOPC) deviceAdapter.getClient();
+          MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
+          
           String RecipeSerialized = Functions.ClassToString(recipe_DA);
           NodeId objectID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeObjectID());
           NodeId methodID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeMethodID());

@@ -1,6 +1,7 @@
 package eu.openmos.msb.opcua.milo.server.methods;
 
 import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
@@ -57,8 +58,9 @@ public class UpdateDevice
       if (auxDA != null)
       {
         da = auxDA;
+        validateModules_in_DB(da);
         validateRecipes_in_DB(da);
-        //MODULES
+        
       } else
       {
         System.out.println("ERROR rebrownsing DA: " + da.getSubSystem().getName());
@@ -113,7 +115,7 @@ public class UpdateDevice
 
       System.out.println("Starting DA Parser **********************");
 
-      boolean ok = da.parseDNToObjects(client, node, nSkills);
+      boolean ok = da.parseDNToObjects(client, node, nSkills, false);
 
       if (ok)
       {
@@ -135,15 +137,22 @@ public class UpdateDevice
   {
     //RECIPES
     List<Recipe> auxRecipesDB = DatabaseInteraction.getInstance().getRecipesByDAName(da.getSubSystem().getName());
-
     List<Integer> indexFound = new ArrayList<>();
+    
+    List<Recipe> tempRepList = da.getListOfRecipes();
+    for (Module auxMod : da.getListOfModules())
+    {
+      tempRepList.addAll(auxMod.getRecipes());
+    }
+
     for (int i = 0; i < auxRecipesDB.size(); i++)
     {
       Recipe recipeDB = auxRecipesDB.get(i);
+      
       boolean notFound = true;
-      for (int j = 0; j < da.getSubSystem().getRecipes().size(); j++)
+      for (int j = 0; j < tempRepList.size(); j++)
       {
-        Recipe recipe = da.getSubSystem().getRecipes().get(j);
+        Recipe recipe = tempRepList.get(j);
         if (recipe.getUniqueId().equals(recipeDB.getUniqueId()))
         {
           notFound = false;
@@ -157,32 +166,34 @@ public class UpdateDevice
       }
     }
 
-    for (int i = 0; i < da.getSubSystem().getRecipes().size(); i++)
+    for (int i = 0; i < tempRepList.size(); i++)
     {
       if (!indexFound.contains(i))
       {
-        Recipe recipe = da.getSubSystem().getRecipes().get(i);
+        Recipe recipe = tempRepList.get(i);
         DACManager.getInstance().registerRecipe(da.getSubSystem().getName(), recipe.getUniqueId(), recipe.getSkill().getName(),
                 "true", recipe.getName(), recipe.getInvokeObjectID(), recipe.getInvokeMethodID());
       }
     }
 
   }
-  /*
+  
   private void validateModules_in_DB(DeviceAdapter da)
   {
     //RECIPES
-    List<Module> auxModulesDB = DatabaseInteraction.getInstance().get(da.getSubSystem().getName());
+    String da_id_db = DatabaseInteraction.getInstance().getDA_DB_IDbyAML_ID(da.getSubSystem().getUniqueId());
+    List<String> auxModulesDB_ID = DatabaseInteraction.getInstance().getModules_ID_ByDA_DB_ID(da_id_db);
 
     List<Integer> indexFound = new ArrayList<>();
-    for (int i = 0; i < auxModulesDB.size(); i++)
+    for (int i = 0; i < auxModulesDB_ID.size(); i++)
     {
-      Module moduleDB = auxModulesDB.get(i);
+      String moduleDB_ID = auxModulesDB_ID.get(i);
       boolean notFound = true;
-      for (int j = 0; j < da.getSubSystem().getRecipes().size(); j++)
+      
+      for (int j = 0; j < da.getSubSystem().getModules().size(); j++)
       {
-        Recipe recipe = da.getSubSystem().getRecipes().get(j);
-        if (recipe.getUniqueId().equals(moduleDB.getUniqueId()))
+        Module module = da.getSubSystem().getModules().get(j);
+        if (module.getUniqueId().equals(moduleDB_ID))
         {
           notFound = false;
           indexFound.add(j);
@@ -190,20 +201,20 @@ public class UpdateDevice
       }
       if (notFound)
       {
-        DatabaseInteraction.getInstance().removeRecipeById(moduleDB.getUniqueId());
+        DatabaseInteraction.getInstance().removeModuleByID(moduleDB_ID);
       }
     }
 
-    for (int i = 0; i < da.getSubSystem().getRecipes().size(); i++)
+    for (int i = 0; i < da.getSubSystem().getModules().size(); i++)
     {
       if (!indexFound.contains(i))
       {
-        Recipe recipe = da.getSubSystem().getRecipes().get(i);
-        DACManager.getInstance().registerRecipe(da.getSubSystem().getName(), recipe.getUniqueId(), recipe.getSkill().getName(),
-                "true", recipe.getName(), recipe.getInvokeObjectID(), recipe.getInvokeMethodID());
+        Module module = da.getSubSystem().getModules().get(i);
+        DACManager.getInstance().registerModule(da.getSubSystem().getName(), module.getName(), 
+                module.getUniqueId(), module.getStatus(), module.getAddress());
       }
     }
 
   }
-   */
+   
 }
