@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
  * @author Pedro Lima Monteiro <pedro.monteiro@uninova.pt>
  * @author Luis Ribeiro
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
+ * @author Renato Martins <renato.martins@introsys.eu.eu>
  */
 @XmlRootElement(name = "recipe")
 @XmlAccessorType(XmlAccessType.FIELD)

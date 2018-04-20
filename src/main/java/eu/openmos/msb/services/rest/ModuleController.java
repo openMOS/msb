@@ -41,7 +41,7 @@ public class ModuleController extends Base {
         SubSystem subsystem = (new SubSystemController()).getDetail(subSystemId);
         if (subsystem != null) {
             logger.debug("subsystem - found " + subSystemId);
-            moduleToReturn = searchForModule(subsystem.getInternalModules(), 
+            moduleToReturn = searchForModule(subsystem.getModules(), 
                     helper.getModulesIds().toArray(new String[helper.getModulesIds().size()]), 
                     0);
         }

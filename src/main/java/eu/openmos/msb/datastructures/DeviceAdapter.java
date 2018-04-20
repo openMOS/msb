@@ -136,7 +136,7 @@ public abstract class DeviceAdapter
    */
   public List<Module> getListOfModules()
   {
-    return this.subSystem.getInternalModules();
+    return this.subSystem.getModules();
   }
 
   /**
@@ -145,7 +145,7 @@ public abstract class DeviceAdapter
    */
   public void addEquipmentModule(Module module)
   {
-    this.subSystem.getInternalModules().add(module);
+    this.subSystem.getModules().add(module);
   }
 
   /**
@@ -249,9 +249,10 @@ public abstract class DeviceAdapter
    * @param client
    * @param deviceDescriptionNode
    * @param skillsDescriptionNode
+   * @param checkResources
    * @return
    */
-  public boolean parseDNToObjects(OpcUaClient client, Element deviceDescriptionNode, Element skillsDescriptionNode)
+  public boolean parseDNToObjects(OpcUaClient client, Element deviceDescriptionNode, Element skillsDescriptionNode, boolean checkResources)
   {
     try
     {
@@ -288,18 +289,23 @@ public abstract class DeviceAdapter
         subSystem.setStatePath(ReadDeviceAdapterState.get(0));
       }
       
+      //
       subSystem.setStage(MSBConstants.STAGE_PRODUCTION);
       
-      //set number of resources/semaphores
-      NodeId resourceNumber = new NodeId(2, "Resources");
-      String resources = Functions.readOPCNodeToString(client, resourceNumber);
-      if (resources.equals(""))
-        PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
-      else
-        PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(Integer.parseInt(resources)));
-              
-      System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
-      
+      if (checkResources)
+      {
+        //set number of resources/semaphores
+        NodeId resourceNumber = new NodeId(2, "Resources");
+        String resources = Functions.readOPCNodeToString(client, resourceNumber);
+        if (resources.equals(""))
+        {
+          PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
+        } else
+        {
+          PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(Integer.parseInt(resources)));
+        }
+        System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
+      }
       return true;
     } catch (XPathExpressionException ex)
     {
