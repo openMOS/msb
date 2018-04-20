@@ -53,11 +53,11 @@ public class ChangeState
                   name = "DA_ID",
                   description = "ID of the device adapter") String da_id,
           @UaInputArgument(
-                  name = "ProductInstance_ID",
-                  description = "Product instance ID") String productInstance_id,
-          @UaInputArgument(
                   name = "recipe_id",
                   description = "current Recipe ID") String recipe_id,
+          @UaInputArgument(
+                  name = "ProductInstance_ID",
+                  description = "Product instance ID") String productInstance_id,          
           @UaInputArgument(
                   name = "productType_id",
                   description = "Product type ID") String productType_id,
@@ -82,7 +82,7 @@ public class ChangeState
       //da does not exists, check modules?
       //da_id can be module_id
       //read recipe KPIs
-      
+      logger.info("Module changeState");
       Thread threadKPI = new Thread()
       {
         public synchronized void run()
@@ -158,6 +158,11 @@ public class ChangeState
           }
         };
         threadCheck.start();
+      }
+      //MARTELO
+      else
+      {
+        finishProduct(da_id, productInstance_id);
       }
       //********************************************************************************************
       result.set(1);
@@ -906,4 +911,61 @@ public class ChangeState
     }
   }
 
+  // *** MARTELO *** 
+  private void finishProduct(String da_id, String productInst_id)
+  {
+    try
+    {
+      Thread.sleep(5000); 
+    }
+    catch(Exception ex)
+    {
+      
+    }
+    ProductInstance prodInst = PECManager.getInstance().getProductsDoing().remove(productInst_id);
+
+    MSB_gui.addToTableExecutedOrders(prodInst.getOrderId(), prodInst.getProductId(), prodInst.getUniqueId());
+    MSB_gui.removeFromTableCurrentOrder(prodInst.getUniqueId());
+
+    PECManager.getInstance().getExecutionMap().get(da_id).release();
+    String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
+    DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
+    MSB_gui.updateTableAdaptersSemaphore(
+            String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()),
+            da_test.getSubSystem().getName());
+
+    //****** SUPER MARTELO ************
+    DeviceAdapter da_agv = DACManager.getInstance().getDeviceAdapterbyName("AGV");
+    PECManager.getInstance().getExecutionMap().get(da_agv.getSubSystem().getUniqueId()).release();
+    MSB_gui.updateTableAdaptersSemaphore(
+            String.valueOf(PECManager.getInstance().getExecutionMap().get(da_agv.getSubSystem().getUniqueId()).availablePermits()),
+            da_agv.getSubSystem().getName());
+    //*******************
+    
+    Long prodTime = new Date().getTime() - prodInst.getStartedProductionTime().getTime();
+    PerformanceMasurement.getInstance().getProdInstanceTime().add(prodTime);
+        
+    String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+    boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+    if (withAGENTCloud)
+    {
+      try
+      {
+        SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+        SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+        BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+        FinishedProductInfo fpi = new FinishedProductInfo();
+        fpi.setProductInstanceId(productInst_id);
+        fpi.setFinishedTime(new Date());
+        fpi.setRegistered(prodInst.getStartedProductionTime());
+        systemConfigurator.finishedProduct(fpi);
+      } catch (Exception ex)
+      {
+        System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+      }
+    }
+  }
+  
 }

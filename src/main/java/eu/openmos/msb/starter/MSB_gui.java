@@ -1944,7 +1944,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       OrderLine ol = new OrderLine();
       ol.setOrderId(orderUID);
       ol.setProductId(prod.getUniqueId());
-      ol.setQuantity(5);
+      ol.setQuantity(15);
       ol.setUniqueId(UUID.randomUUID().toString());
       line.add(ol);
     }
