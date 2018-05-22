@@ -159,11 +159,13 @@ public class ChangeState
         };
         threadCheck.start();
       }
+      /*
       //MARTELO
       else
       {
         finishProduct(da_id, productInstance_id);
       }
+      */
       //********************************************************************************************
       result.set(1);
       logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
@@ -642,7 +644,7 @@ public class ChangeState
                   String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(da_db_ID);
                   DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyName(da_name);
                   
-                  //MARTELO  add modules recipe list to global list temporary
+                  //MARTELO add modules recipe list to global list temporary
                   List<Recipe> tempRepList = auxDA.getListOfRecipes();
                   for(Module auxMod : auxDA.getListOfModules())
                   {

@@ -33,6 +33,7 @@ public class PECManager
   private final List<ProductInstance> productsToDo;
   private final HashMap<String, ProductInstance> productsDoing;
   private final HashMap<String, Semaphore> executionMap;
+  private final HashMap<String, Semaphore> interruptMap; //catch execution problems and avoid inop states e.g. rebrowse DA during execution
   private final Semaphore addNewInstance;
 
   private static boolean state;
@@ -48,6 +49,7 @@ public class PECManager
     productsToDo = new ArrayList<>();
     productsDoing = new HashMap<>();
     executionMap = new HashMap<>();
+    interruptMap = new HashMap<>();
     addNewInstance = new Semaphore(1);
   }
 
