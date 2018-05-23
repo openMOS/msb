@@ -8,7 +8,9 @@ import eu.openmos.model.ExecutionTableRow;
 import eu.openmos.model.FinishedProductInfo;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Module;
+import eu.openmos.model.OrderInstance;
 import eu.openmos.model.ProductInstance;
+import eu.openmos.model.ProductInstanceStatus;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.RecipeExecutionData;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
@@ -26,6 +28,7 @@ import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
@@ -57,7 +60,7 @@ public class ChangeState
                   description = "current Recipe ID") String recipe_id,
           @UaInputArgument(
                   name = "ProductInstance_ID",
-                  description = "Product instance ID") String productInstance_id,          
+                  description = "Product instance ID") String productInstance_id,
           @UaInputArgument(
                   name = "productType_id",
                   description = "Product type ID") String productType_id,
@@ -72,16 +75,183 @@ public class ChangeState
     changeStateAndNextRecipeTimer.start();
 
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
-    logger.info("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id + 
-            " productInstID: " + productInstance_id + " recipeID:" + recipe_id + " productTypeID: " + productType_id + " checkNextRecipe: " + checkNextRecipe);
+    logger.info("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id
+            + " productInstID: " + productInstance_id + " recipeID:" + recipe_id
+            + " productTypeID: " + productType_id + " checkNextRecipe: " + checkNextRecipe);
 
     String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-    
-    if(da_name.equals(""))
+
+    if (MSBConstants.MSB_MODE_PASSIVE)
     {
+      passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id);
+
+      result.set(1);
+        logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
+        return;
+        
+    } else
+    {
+      if (da_name.equals(""))
+      {
+        //da does not exists, check modules?
+        //da_id can be module_id
+        //read recipe KPIs
+        logger.info("Module changeState");
+        Thread threadKPI = new Thread()
+        {
+          public synchronized void run()
+          {
+            readKPIs_Module(da_id, recipe_id, productInstance_id);
+          }
+        };
+        threadKPI.start();
+
+        if (checkNextRecipe)
+        {
+          Thread threadCheck = new Thread()
+          {
+            public synchronized void run()
+            {
+              logger.info("[ChangeState] Starting ChangeStateChecker!");
+              ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
+            }
+          };
+          threadCheck.start();
+        }
+
+        result.set(1);
+        logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
+        return;
+      } else
+      {
+        //da exists
+        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+        //add adapter states strings to properties
+        NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+
+        if (statePath.isNotNull())
+        {
+          String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+          da.getSubSystem().setState(state);
+
+          if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
+          {
+            logger.info("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
+          }
+        } else
+        {
+          logger.error("Error reading ADAPTER STATE!");
+        }
+        MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
+
+        //read recipe KPIs
+        Thread threadKPI = new Thread()
+        {
+          public synchronized void run()
+          {
+            readKPIs_DA(da_id, recipe_id, productInstance_id);
+          }
+        };
+        threadKPI.start();
+
+        //start checker depending on the adapterStage
+        if (checkNextRecipe /* && !da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP) */)
+        {
+          Thread threadCheck = new Thread()
+          {
+            public synchronized void run()
+            {
+              logger.info("[ChangeState] Starting ChangeStateChecker!");
+              ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
+            }
+          };
+          threadCheck.start();
+        }
+        /*
+      //MARTELO mass production
+      else
+      {
+        finishProduct(da_id, productInstance_id);
+      }
+         */
+        //********************************************************************************************
+        result.set(1);
+        logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
+        return;
+      }
+    }
+  }
+
+  private void passiveMode(String productInstance_id, String productType_id, String da_name, String da_id, String recipe_id)
+  {
+    //check if prodInst_ID is on the list
+    if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
+    {
+      OrderInstance oi = new OrderInstance();
+      List<ProductInstance> piList = new ArrayList<>();
+      //create instance and agent
+      ProductInstance pi = new ProductInstance(productInstance_id, productType_id, "no_name", "no_description",
+              "no_order_id", null, false, null, ProductInstanceStatus.PRODUCING,
+              null, new Date());
+
+      piList.add(pi);
+
+      oi.setUniqueId(UUID.randomUUID().toString());
+      oi.setName("no_name_order");
+      oi.setDescription("no_description_order");
+      oi.setPriority(1);
+      oi.setProductInstances(piList);
+      oi.setRegistered(new Date());
+
+      PECManager.getInstance().getProductsDoing().put(productInstance_id, pi);
+
+      MSB_gui.addToTableCurrentOrders(oi.getUniqueId(), productType_id, productInstance_id);
+      
+      String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+      if (withAGENTCloud)
+      {
+        try
+        {
+          //send oi to cloud
+          SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+          SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+          String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+          logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");
+          BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+
+          ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrderInstance(oi);
+          logger.info("Order Instance sent to the Agent Cloud with code: " + orderStatus.getCode());
+          logger.info("Order Instance status: " + orderStatus.getDescription());
+          //***
+          //check order status
+          if (orderStatus.getCode().equals(""))
+          {
+            ServiceCallStatus piStartStatus = systemConfigurator.startedProduct(pi);
+
+          }
+        } catch (Exception ex)
+        {
+          System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+        }
+      }
+      //read KPIs
+      //check if last recipe
+
+    }
+    
+    //modules
+    if (da_name.equals(""))
+    {
+      //da_id is module_id
       //da does not exists, check modules?
       //da_id can be module_id
       //read recipe KPIs
+      DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);
+      MSB_gui.updateDATableCurrentOrderLastDA(recipe_id, CurrentDA.getSubSystem().getName() + "(A)");
+      
       logger.info("Module changeState");
       Thread threadKPI = new Thread()
       {
@@ -91,88 +261,78 @@ public class ChangeState
         }
       };
       threadKPI.start();
-      
-      
-      if (checkNextRecipe)
-      {
-        Thread threadCheck = new Thread()
-        {
-          public synchronized void run()
-          {
-            logger.info("[ChangeState] Starting ChangeStateChecker!");
-            ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
-          }
-        };
-        threadCheck.start();
-      }
-      
-      
-      result.set(1);
-      logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
-      return;
     }
     else
     {
-      //da exists
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
-      //add adapter states strings to properties
-      NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
-      DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-      
-      if (statePath.isNotNull())
-      {
-        String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-        da.getSubSystem().setState(state);
-
-        if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
-        {
-          //System.out.println("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
-          logger.info("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
-        }
-      } else
-      {
-        //System.out.println("Error reading ADAPTER STATE!");
-        logger.error("Error reading ADAPTER STATE!");
-      }
-      MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
-
+      MSB_gui.updateDATableCurrentOrderLastDA(recipe_id, da_name);
       //read recipe KPIs
-      Thread threadKPI = new Thread()
-      {
-        public synchronized void run()
-        {
-          readKPIs_DA(da_id, recipe_id, productInstance_id);
-        }
-      };
-      threadKPI.start();
-
-      //start checker depending on the adapterStage
-      if (checkNextRecipe /* && !da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP) */)
-      {
-        Thread threadCheck = new Thread()
+        Thread threadKPI = new Thread()
         {
           public synchronized void run()
           {
-            logger.info("[ChangeState] Starting ChangeStateChecker!");
-            ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
+            readKPIs_DA(da_id, recipe_id, productInstance_id);
           }
         };
-        threadCheck.start();
-      }
-      /*
-      //MARTELO
-      else
-      {
-        finishProduct(da_id, productInstance_id);
-      }
-      */
-      //********************************************************************************************
-      result.set(1);
-      logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
-      return;
+        threadKPI.start();
     }
+    
+    Thread threadLastRecipe = new Thread()
+    {
+      public synchronized void run()
+      {
+        logger.info("[ChangeState] Starting ChangeStateChecker!");
+        //ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
+
+        if (isLastRecipe(recipe_id, productInstance_id, productType_id))
+        {
+          dealWithLastRecipe(productInstance_id);
+        }
+      }
+    };
+    threadLastRecipe.start();
+
+
   }
 
+  private void dealWithLastRecipe(String productInstance_id)
+  {
+    ProductInstance prodInst = PECManager.getInstance().getProductsDoing().remove(productInstance_id);
+
+    if (prodInst != null)
+    {
+      MSB_gui.addToTableExecutedOrders(prodInst.getOrderId(), prodInst.getProductId(), prodInst.getUniqueId());
+      MSB_gui.removeFromTableCurrentOrder(prodInst.getUniqueId());
+
+      //System.out.println("[ChangeState] This Recipe is the last one for product instance ID: " + productInst_id);
+      logger.info("[ChangeState] This Recipe is the last one for product instance ID: " + productInstance_id);
+
+      Long prodTime = new Date().getTime() - prodInst.getStartedProductionTime().getTime();
+      PerformanceMasurement.getInstance().getProdInstanceTime().add(prodTime);
+
+      String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
+      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
+      if (withAGENTCloud)
+      {
+        try
+        {
+          SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+          SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+          String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+          BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+          FinishedProductInfo fpi = new FinishedProductInfo();
+          fpi.setProductInstanceId(productInstance_id);
+          fpi.setFinishedTime(new Date());
+          fpi.setRegistered(prodInst.getStartedProductionTime());
+          systemConfigurator.finishedProduct(fpi);
+        } catch (Exception ex)
+        {
+          System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+        }
+      }
+    }
+  }
+  
   private void ChangeStateChecker_Modules(String recipe_id, String productInst_id, String module_id, String productType_id)
   {
     String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id); //returns the next recipe to execute
@@ -914,7 +1074,7 @@ public class ChangeState
   }
 
   // *** MARTELO *** 
-  private void finishProduct(String da_id, String productInst_id)
+  private void finishProduct_MARTELO(String da_id, String productInst_id)
   {
     try
     {
@@ -970,4 +1130,68 @@ public class ChangeState
     }
   }
   
+  private boolean isLastRecipe(String recipeID, String productInst_id, String productType_id)
+  {
+    //get deviceAdapter that does the required recipe
+    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
+    logger.info("[checkNextRecipe] DA id from checkNextRecipe: " + Daid);
+
+    if (Daid != null)
+    {
+      //get DA name
+      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+      logger.info("[checkNextRecipe]DA name of finished recipe : " + DA_name);
+      //get DA object from it's name
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+      if (da == null)
+      {
+        logger.warn("The DA is null!");
+      } else
+      {
+        String prodID = productInst_id;
+        for (int i = 0; i < 2; i++)
+        {
+          for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
+          {
+            if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+            {
+              //get the nextRecipe on its executionTables
+              String auxNextRecipeNode = execRow.getNextRecipeIdPath();
+
+              if (auxNextRecipeNode == null)
+              {
+                //is last recipe
+                logger.info("[checkNextRecipe] returning - last");
+                return true;
+              }
+
+              NodeId nextRecipeNode = Functions.convertStringToNodeId(auxNextRecipeNode);
+              DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+              String nextRecipeID = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), nextRecipeNode);
+
+              if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))
+              {
+                logger.info("[checkNextRecipe] returning - last");
+                return true;
+              } else
+              {
+                if (nextRecipeID.isEmpty())
+                {
+                  logger.info("[checkNextRecipe] returning - 'empty'");
+                  return true;
+                }
+              }
+            }
+          }
+          //no prodInst found in execTable, search for productType now
+          prodID = productType_id;
+        }
+      }
+    } else
+    {
+      logger.error("There are no Adapters that can perform the required recipe: " + recipeID);
+    }
+
+    return false;
+  }
 }
