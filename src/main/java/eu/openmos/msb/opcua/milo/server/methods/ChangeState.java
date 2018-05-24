@@ -190,14 +190,15 @@ public class ChangeState
     {
       OrderInstance oi = new OrderInstance();
       List<ProductInstance> piList = new ArrayList<>();
+      oi.setUniqueId(UUID.randomUUID().toString());
       //create instance and agent
       ProductInstance pi = new ProductInstance(productInstance_id, productType_id, "no_name", "no_description",
-              "no_order_id", null, false, null, ProductInstanceStatus.PRODUCING,
+              oi.getUniqueId(), null, false, null, ProductInstanceStatus.PRODUCING,
               new Date(), new Date());
 
       piList.add(pi);
 
-      oi.setUniqueId(UUID.randomUUID().toString());
+      
       oi.setName("no_name_order");
       oi.setDescription("no_description_order");
       oi.setPriority(1);
@@ -275,7 +276,7 @@ public class ChangeState
         threadKPI.start();
     }
     
-    if (thisShitWorks)//martelo
+    //if (thisShitWorks)//martelo
     {
       Thread threadLastRecipe = new Thread()
       {
@@ -285,7 +286,8 @@ public class ChangeState
           //ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
 
           //true = martelo
-          if (true/*isLastRecipe(recipe_id, productInstance_id, productType_id) */)
+          //if (true)
+          if (isLastRecipe(recipe_id, productInstance_id, productType_id))
           {
             dealWithLastRecipe(productInstance_id);
           }
