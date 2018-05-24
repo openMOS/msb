@@ -33,5 +33,5 @@ public class MSBConstants {
 
     public static Boolean MSB_OPTIMIZER = true;
 
-    public static Boolean MSB_MODE_PASSIVE = false;
+    public static Boolean MSB_MODE_PASSIVE = true;
 }

@@ -193,7 +193,7 @@ public class ChangeState
       //create instance and agent
       ProductInstance pi = new ProductInstance(productInstance_id, productType_id, "no_name", "no_description",
               "no_order_id", null, false, null, ProductInstanceStatus.PRODUCING,
-              null, new Date());
+              new Date(), new Date());
 
       piList.add(pi);
 
@@ -227,7 +227,7 @@ public class ChangeState
           logger.info("Order Instance status: " + orderStatus.getDescription());
           //***
           //check order status
-          if (orderStatus.getCode().equals(""))
+          if (orderStatus.getCode().equals("success.openmos.agentcloud.cloudinterface.systemconfigurator"))
           {
             ServiceCallStatus piStartStatus = systemConfigurator.startedProduct(pi);
 
@@ -237,11 +237,9 @@ public class ChangeState
           System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
         }
       }
-      //read KPIs
-      //check if last recipe
-
     }
     
+    boolean thisShitWorks = false;
     //modules
     if (da_name.equals(""))
     {
@@ -250,7 +248,7 @@ public class ChangeState
       //da_id can be module_id
       //read recipe KPIs
       DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);
-      MSB_gui.updateDATableCurrentOrderLastDA(recipe_id, CurrentDA.getSubSystem().getName() + "(A)");
+      MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, CurrentDA.getSubSystem().getName() + "(A)");
       
       logger.info("Module changeState");
       Thread threadKPI = new Thread()
@@ -264,7 +262,8 @@ public class ChangeState
     }
     else
     {
-      MSB_gui.updateDATableCurrentOrderLastDA(recipe_id, da_name);
+      thisShitWorks = true;
+      MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
       //read recipe KPIs
         Thread threadKPI = new Thread()
         {
@@ -276,21 +275,24 @@ public class ChangeState
         threadKPI.start();
     }
     
-    Thread threadLastRecipe = new Thread()
+    if (thisShitWorks)//martelo
     {
-      public synchronized void run()
+      Thread threadLastRecipe = new Thread()
       {
-        logger.info("[ChangeState] Starting ChangeStateChecker!");
-        //ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
-
-        if (isLastRecipe(recipe_id, productInstance_id, productType_id))
+        public synchronized void run()
         {
-          dealWithLastRecipe(productInstance_id);
-        }
-      }
-    };
-    threadLastRecipe.start();
+          logger.info("[ChangeState] Starting ChangeStateChecker!");
+          //ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
 
+          //true = martelo
+          if (true/*isLastRecipe(recipe_id, productInstance_id, productType_id) */)
+          {
+            dealWithLastRecipe(productInstance_id);
+          }
+        }
+      };
+      threadLastRecipe.start();
+    }
 
   }
 
