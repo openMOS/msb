@@ -240,7 +240,6 @@ public class ChangeState
       }
     }
     
-    boolean thisShitWorks = false;
     //modules
     if (da_name.equals(""))
     {
@@ -263,7 +262,6 @@ public class ChangeState
     }
     else
     {
-      thisShitWorks = true;
       MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
       //read recipe KPIs
         Thread threadKPI = new Thread()
@@ -276,20 +274,19 @@ public class ChangeState
         threadKPI.start();
     }
     
-    //if (thisShitWorks)//martelo
+    //if (!da_name.equals("")) //martelo
     {
       Thread threadLastRecipe = new Thread()
       {
         public synchronized void run()
         {
           logger.info("[ChangeState] Starting ChangeStateChecker!");
-          //ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
 
-          //true = martelo
-          //if (true)
+          //if (true) //martelo
+          //if (isLastRecipe_withoutProd(recipe_id)) //check if its last recipe if there is no productType
           if (isLastRecipe(recipe_id, productInstance_id, productType_id))
           {
-            dealWithLastRecipe(productInstance_id);
+            finishProduct(productInstance_id);
           }
         }
       };
@@ -298,7 +295,7 @@ public class ChangeState
 
   }
 
-  private void dealWithLastRecipe(String productInstance_id)
+  private void finishProduct(String productInstance_id)
   {
     ProductInstance prodInst = PECManager.getInstance().getProductsDoing().remove(productInstance_id);
 
@@ -1189,6 +1186,65 @@ public class ChangeState
           }
           //no prodInst found in execTable, search for productType now
           prodID = productType_id;
+        }
+      }
+    } else
+    {
+      logger.error("There are no Adapters that can perform the required recipe: " + recipeID);
+    }
+
+    return false;
+  }
+  
+  private boolean isLastRecipe_withoutProd(String recipeID)
+  {
+    //get deviceAdapter that does the required recipe
+    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
+    logger.info("[checkNextRecipe] DA id from checkNextRecipe: " + Daid);
+
+    if (Daid != null)
+    {
+      //get DA name
+      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+      logger.info("[checkNextRecipe]DA name of finished recipe : " + DA_name);
+      //get DA object from it's name
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+      if (da == null)
+      {
+        logger.warn("The DA is null!");
+      } else
+      {
+        for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
+        {
+          if (execRow.getRecipeId().equals(recipeID))
+          {
+            //get the nextRecipe on its executionTables
+            String auxNextRecipeNode = execRow.getNextRecipeIdPath();
+
+            if (auxNextRecipeNode == null)
+            {
+              //is last recipe
+              logger.info("[checkNextRecipe] returning - last");
+              return true;
+            }
+
+            NodeId nextRecipeNode = Functions.convertStringToNodeId(auxNextRecipeNode);
+            DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+            String nextRecipeID = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), nextRecipeNode);
+
+            if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))
+            {
+              logger.info("[checkNextRecipe] returning - last");
+              return true;
+            } else
+            {
+              if (nextRecipeID.isEmpty())
+              {
+                logger.info("[checkNextRecipe] returning - 'empty'");
+                return true;
+              }
+            }
+          }
         }
       }
     } else
