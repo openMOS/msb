@@ -172,7 +172,7 @@ public class ChangeState
       //MARTELO mass production
       else
       {
-        finishProduct(da_id, productInstance_id);
+        finishProduct_MARTELO(da_id, productInstance_id);
       }
          */
         //********************************************************************************************
