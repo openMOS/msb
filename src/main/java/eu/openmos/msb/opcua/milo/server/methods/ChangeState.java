@@ -283,8 +283,8 @@ public class ChangeState
           logger.info("[ChangeState] Starting ChangeStateChecker!");
 
           //if (true) //martelo
-          //if (isLastRecipe_withoutProd(recipe_id)) //check if its last recipe if there is no productType
-          if (isLastRecipe(recipe_id, productInstance_id, productType_id))
+          if (isLastRecipe_withoutProd(recipe_id)) //check if its last recipe if there is no productType
+          //if (isLastRecipe(recipe_id, productInstance_id, productType_id))
           {
             finishProduct(productInstance_id);
           }

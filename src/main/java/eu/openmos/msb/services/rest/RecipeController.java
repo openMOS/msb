@@ -64,50 +64,26 @@ public class RecipeController extends Base
     if (helper.hasSubModules())
     {
       Module module = (new ModuleController()).getDetail(helper.getModulesPath());
-      return this.getRecipeFromList(module.getRecipes(), helper.getRecipeId());
+      Recipe recipe = this.getRecipeFromList(module.getRecipes(), helper.getRecipeId());
+      
+      DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(module.getUniqueId());
+      DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
+      NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
+      recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
+      
+      return recipe;
     } else
     {
       SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
-      return this.getRecipeFromList(subSystem.getRecipes(), helper.getRecipeId());
+      Recipe recipe = this.getRecipeFromList(subSystem.getRecipes(), helper.getRecipeId());
+      
+      DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystem.getUniqueId());
+      NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
+      DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
+      recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
+      return recipe;
     }
 
-    /*
-        String[] ids = recipeId.split(Base.PARAMSEPARATOR);
-        String subSystemId = "";
-        String realRecipeId = "";
-
-        if (ids != null) {
-            realRecipeId = ids[ids.length - 1].split(Base.PARAMVALUESEPARATOR)[1];
-            subSystemId = ids[0].split(Base.PARAMVALUESEPARATOR)[1];
-            logger.debug("REAL ID : " + realRecipeId);
-            
-            if (ids.length == 2) {
-                for (SubSystem ss : new SubSystemController().getList()) {
-                    if (ss.getUniqueId().equals(subSystemId)) {
-                        for (Recipe rec : ss.getRecipes()) {
-                            if (rec.getUniqueId().equalsIgnoreCase(realRecipeId)) {
-                                return rec;
-                            }
-                        }
-                    }
-                }
-            } else {
-                String modulePath = recipeId.substring(0, recipeId.lastIndexOf(Base.PARAMSEPARATOR + Base.RECIPEMARKERPREFIX));
-                if (modulePath.contains(Base.SKILLMARKERPREFIX)) {
-                    modulePath = modulePath.substring(0, modulePath.indexOf(Base.PARAMSEPARATOR + Base.SKILLMARKERPREFIX));
-                }
-                logger.debug("Recipe Controller GET MODULE: " + modulePath);
-                
-                for (Recipe rec : new ModuleController().getModuleRecipes(modulePath)) {
-                    if (rec.getUniqueId().equals(realRecipeId)) {
-                        return rec;
-                    }
-                }
-            }
-        }
-
-        logger.debug("Error getting recipe");
-        return null;*/
   }
 
   private Recipe getRecipeFromList(List<Recipe> recipes, String recipeId)

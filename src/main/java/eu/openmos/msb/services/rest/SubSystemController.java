@@ -8,7 +8,9 @@ import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_S
 import eu.openmos.model.*;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
+import eu.openmos.msb.utilities.Functions;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +25,7 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  *
@@ -86,6 +89,12 @@ public class SubSystemController extends Base {
                 //logger.debug("subsystems getList 9");
                 ss.setRegistered(new Date());
                 //logger.debug("subsystems getList 10");
+                
+                DeviceAdapterOPC test = (DeviceAdapterOPC)adapter;
+                if (ss.getStatePath() != null && ss.getStatePath() != "" ){
+                    NodeId node = Functions.convertStringToNodeId(ss.getStatePath());
+                    ss.setState(Functions.readOPCNodeToString(test.getClient().getClientObject(), node));
+                }
                 ls.add(ss);
                 //logger.debug("subsystems getList 11");
                   // end
