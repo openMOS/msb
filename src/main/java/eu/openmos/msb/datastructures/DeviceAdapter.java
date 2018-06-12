@@ -242,10 +242,6 @@ public abstract class DeviceAdapter {
             subSystem.setInternalModules(ReadModules(deviceDescriptionDoc));
             subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc));
 
-            /*for (Module module : subSystem.getInternalModules()) //PF noncompliant
-      {
-          subSystem.getRecipes().addAll(module.getRecipes());
-      }*/
             //Introsys DEMO: associate DAid to the recipe
             List<Recipe> recipes = subSystem.getRecipes();
             List<String> equipmentIds = new LinkedList<>();
@@ -328,7 +324,9 @@ public abstract class DeviceAdapter {
                         NodeList recipes = n2.getChildNodes();
                         for (int k = 0; k < recipes.getLength(); k++) {
                             //if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE && recipes.item(k).getNodeName().endsWith("_Recipe")) {
-                            if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE && recipes.item(k).getNodeName().contains("SC")) {
+                            if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE && 
+                                    (!recipes.item(k).getNodeName().contains("Path") || !recipes.item(k).getNodeName().contains("Type") || 
+                                    !recipes.item(k).getNodeName().contains("ID") || !recipes.item(k).getNodeName().contains("RecipeColumn"))) {
                                 Node nID = recipes.item(k);
                                 NodeList nIDChild = nID.getChildNodes();
                                 for (int x = 0; x < nIDChild.getLength(); x++) {
@@ -429,7 +427,8 @@ public abstract class DeviceAdapter {
 
     private List<Recipe> ReadRecipes(org.w3c.dom.Document xmlDocument) throws XPathExpressionException {
         //String query = "//DeviceAdapter/*/*/*[contains(name(),'_Recipe')]";
-        String query = "//DeviceAdapter/*/*/*[contains(name(),'SC')]";
+        //String query = "//DeviceAdapter/*/*/*[contains(name(),'SC')]";
+        String query = "//DeviceAdapter/*/*/*[Skill][InvokeSkill]";
 
         XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
@@ -712,8 +711,8 @@ public abstract class DeviceAdapter {
                             System.out.println("moduleDescription " + module.getDescription());
                         }
                     }
-                } //else if(n2.getNodeName().toLowerCase().endsWith("_recipe"))
-                else if (n2.getNodeName().toLowerCase().startsWith("sc")) {
+                }
+                else if(isRecipeNode(n2)){
                     Recipe recipe = new Recipe();
                     boolean searchForSkill = true;
                     List<SkillRequirement> SRs = new ArrayList<>();
@@ -724,8 +723,8 @@ public abstract class DeviceAdapter {
                     for (int q = 0; q < recipeChilds.getLength(); q++) {
                         Node nRecipe = recipeChilds.item(q);
                         if ("Path".equals(nRecipe.getNodeName())) {
-                            String auxTest = nRecipe.getAttributes().getNamedItem("ns").getNodeValue();
-                            recipe.setInvokeObjectID(auxTest + ":" + nRecipe.getTextContent());
+                            String ns = nRecipe.getAttributes().getNamedItem("ns").getNodeValue();
+                            recipe.setInvokeObjectID(ns + ":" + nRecipe.getTextContent());
 
                             String[] temp = nRecipe.getTextContent().split("/");
                             recipe.setName(temp[temp.length - 1]);
@@ -756,7 +755,8 @@ public abstract class DeviceAdapter {
                                 System.out.println("isto é um SR: " + nRecipe.getNodeName());
                                 NodeList SkillReqs = nRecipe.getChildNodes();
                                 SkillRequirement auxSkillReq = new SkillRequirement();
-                                auxSkillReq.setDescription(nRecipe.getTextContent());
+                                //auxSkillReq.setDescription(nRecipe.getTextContent());
+                                auxSkillReq.setDescription("some description");
                                 for (int z = 0; z < SkillReqs.getLength(); z++) {
                                     Node skillReq = SkillReqs.item(z);
                                     if (skillReq.getNodeName().equals("ID")) {
@@ -924,14 +924,14 @@ public abstract class DeviceAdapter {
                             }
                         }
                     }
-                    recipe.setParameterSettings(paraSettings);
-                    recipe.setKpiSettings(KPIsettings);
-                    recipe.setSkillRequirements(SRs);
+                    //if (recipe.getInvokeMethodID() != null && !"".equals(recipe.getInvokeMethodID())) 
+                    {
+                        recipe.setParameterSettings(paraSettings);
+                        recipe.setKpiSettings(KPIsettings);
+                        recipe.setSkillRequirements(SRs);
 
-                    /*List<String> equipmentIds = new LinkedList<>();
-      equipmentIds.add(module.getUniqueId());
-      recipe.setEquipmentIds(equipmentIds); //Introsys DEMO*/
-                    recipeList.add(recipe);
+                        recipeList.add(recipe);
+                    }
                 }
             }
             module.setRecipes(recipeList);
@@ -1198,6 +1198,27 @@ public abstract class DeviceAdapter {
         return results;
     }
 
+    private static boolean isRecipeNode(Node node){
+        boolean skillFound = false;
+        boolean invokeSkillFound = false;
+        NodeList recipeChilds = node.getChildNodes();
+        
+        for(int i = 0; i < recipeChilds.getLength(); i++) {
+            Node auxNode = recipeChilds.item(i);
+            if (auxNode.getNodeName().toUpperCase().equals("SKILL"))
+                skillFound = true;
+            else if (auxNode.getNodeName().toUpperCase().equals("INVOKESKILL"))
+                invokeSkillFound = true; 
+            
+            if (skillFound && invokeSkillFound)
+                {
+                    System.out.println("/n***** /n RECIPE FOUND -- " + node.getNodeName() + " /n ***** /n");
+                    return true;
+                }
+        }
+        return false;
+    }
+    
     public void initVertx() {
         try {
             String myIP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
@@ -1221,4 +1242,5 @@ public abstract class DeviceAdapter {
      * @return
      */
     public abstract Object getClient();
+    
 }

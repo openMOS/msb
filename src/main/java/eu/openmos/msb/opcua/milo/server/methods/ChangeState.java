@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
@@ -48,7 +49,8 @@ public class ChangeState
 {
   private final Logger logger = LoggerFactory.getLogger(getClass());
   StopWatch changeStateAndNextRecipeTimer = new StopWatch();
-
+  static Semaphore testSemaphore = new Semaphore(1);
+  
   @UaMethod
   public void invoke(
           AnnotationBasedInvocationHandler.InvocationContext context,
@@ -83,8 +85,23 @@ public class ChangeState
 
     if (MSBConstants.MSB_MODE_PASSIVE)
     {
-      passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id);
-
+      Thread threadPassive = new Thread()
+        {
+          public synchronized void run()
+          {
+              try {
+                  testSemaphore.acquire();
+                  logger.debug("Doing passive stuff!");
+                  passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id);
+                  testSemaphore.release();
+              } catch (InterruptedException ex) {
+                  java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
+              }
+            
+          }
+        };
+        threadPassive.start();
+      
       result.set(1);
         logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
         return;
@@ -190,17 +207,17 @@ public class ChangeState
     {
       OrderInstance oi = new OrderInstance();
       List<ProductInstance> piList = new ArrayList<>();
-      oi.setUniqueId(UUID.randomUUID().toString());
+      oi.setUniqueId(productInstance_id);
       //create instance and agent
-      ProductInstance pi = new ProductInstance(productInstance_id, productType_id, "no_name", "no_description",
+      ProductInstance pi = new ProductInstance(productInstance_id, productType_id, productType_id, "no_description",
               oi.getUniqueId(), null, false, null, ProductInstanceStatus.PRODUCING,
               new Date(), new Date());
 
       piList.add(pi);
 
       
-      oi.setName("no_name_order");
-      oi.setDescription("no_description_order");
+      oi.setName(productInstance_id + "_name");
+      oi.setDescription(productInstance_id + "_description");
       oi.setPriority(1);
       oi.setProductInstances(piList);
       oi.setRegistered(new Date());
@@ -248,7 +265,8 @@ public class ChangeState
       //da_id can be module_id
       //read recipe KPIs
       DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);
-      MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, CurrentDA.getSubSystem().getName() + "(A)");
+      if (CurrentDA != null)
+        MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, CurrentDA.getSubSystem().getName() + "(A)");
       
       logger.info("Module changeState");
       Thread threadKPI = new Thread()
@@ -943,7 +961,7 @@ public class ChangeState
             DeviceAdapterOPC client = (DeviceAdapterOPC) CurrentDA;
             String kpiValue = Functions.readOPCNodeToString(client.getClient().getClientObject(), kpiPath);
             kpi.setValue(kpiValue);
-            logger.info("[KPI] DA: " + CurrentDA.getSubSystem().getName() + " | KPI_Name: " + kpi.getName() + " | KPI_Value: " + kpi.getValue());
+            logger.info("[KPI] DA: " + CurrentDA.getSubSystem().getName() +  "| RECIPE.NAME - " + recipe.getName() + " | KPI_Name: " + kpi.getName() + " | KPI_Value: " + kpi.getValue());
           }
 
           //IF THE AC is activated, send the KPIs upwards
@@ -1018,7 +1036,7 @@ public class ChangeState
                 DeviceAdapterOPC client = (DeviceAdapterOPC) CurrentDA;
                 String kpiValue = Functions.readOPCNodeToString(client.getClient().getClientObject(), kpiPath);
                 kpi.setValue(kpiValue);
-                logger.info("[KPI] DA: " + CurrentDA.getSubSystem().getName() + " | KPI_Name: " + kpi.getName() + " | KPI_Value: " + kpi.getValue());
+                logger.info("[KPI] DA: " + CurrentDA.getSubSystem().getName() + "| RECIPE.NAME - " + recipe.getName() + " | KPI_Name: " + kpi.getName() + " | KPI_Value: " + kpi.getValue());
               }
 
               //IF THE AC is activated, send the KPIs upwards
@@ -1200,13 +1218,13 @@ public class ChangeState
   {
     //get deviceAdapter that does the required recipe
     String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
-    logger.info("[checkNextRecipe] DA id from checkNextRecipe: " + Daid);
+    logger.info("[isLastRecipe_withoutProd] DA id from checkNextRecipe: " + Daid);
 
     if (Daid != null)
     {
       //get DA name
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
-      logger.info("[checkNextRecipe]DA name of finished recipe : " + DA_name);
+      logger.info("[isLastRecipe_withoutProd]DA name of finished recipe : " + DA_name);
       //get DA object from it's name
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
       if (da == null)
@@ -1216,7 +1234,7 @@ public class ChangeState
       {
         for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
         {
-          if (execRow.getRecipeId().equals(recipeID))
+          if (execRow.getRecipeId() != null && execRow.getRecipeId().equals(recipeID))
           {
             //get the nextRecipe on its executionTables
             String auxNextRecipeNode = execRow.getNextRecipeIdPath();
@@ -1224,7 +1242,7 @@ public class ChangeState
             if (auxNextRecipeNode == null)
             {
               //is last recipe
-              logger.info("[checkNextRecipe] returning - last");
+              logger.info("[isLastRecipe_withoutProd] returning - last");
               return true;
             }
 
@@ -1234,13 +1252,13 @@ public class ChangeState
 
             if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))
             {
-              logger.info("[checkNextRecipe] returning - last");
+              logger.info("[isLastRecipe_withoutProd] returning - last");
               return true;
             } else
             {
               if (nextRecipeID.isEmpty())
               {
-                logger.info("[checkNextRecipe] returning - 'empty'");
+                logger.info("[isLastRecipe_withoutProd] returning - 'empty'");
                 return true;
               }
             }

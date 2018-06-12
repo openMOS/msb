@@ -413,7 +413,9 @@ public class OPCServersDiscoverySnippet extends Thread
           //if skill does not exist yet
           if (!dacManager.skillExists(auxSkill.getUniqueId()))
           {
-            dacManager.registerSkill(da.getSubSystem().getName(), auxSkill.getUniqueId(), auxSkill.getName(), auxSkill.getDescription());
+            boolean aux = dacManager.registerSkill(da.getSubSystem().getName(), auxSkill.getUniqueId(), auxSkill.getName(), auxSkill.getDescription());
+            if (!aux)
+                System.out.println("WTF");
           }
         }
       }
@@ -440,9 +442,8 @@ public class OPCServersDiscoverySnippet extends Thread
             if (da.getSubSystem().getName() != null && auxRecipe.getSkill() != null && auxRecipe.getSkill().getName() != null)
             {
 
-              dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
+              boolean aux = dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
                       "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
-
             } else
             {
               System.out.println("\nCouldn't register recipe: " + auxRecipe.getName() + "\n");
@@ -510,4 +511,5 @@ public class OPCServersDiscoverySnippet extends Thread
     }
     return null;
   }
+  
 }

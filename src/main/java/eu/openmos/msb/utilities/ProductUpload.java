@@ -128,6 +128,8 @@ public class ProductUpload {
             logger.trace("Root element of the doc is " + doc.getDocumentElement().getNodeName());
 
             productsList = loadProducts(doc);
+            if (productsList.isEmpty())
+                productsList = loadProducts2(doc);
             logger.trace("FINAL PRODUCTS LIST\n" + productsList);
 
         } catch (SAXParseException err) {
@@ -173,6 +175,37 @@ public class ProductUpload {
         return productsList;
     }
 
+    private static List<Product> loadProducts2(Document document) throws XPathExpressionException, Exception {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPathExpression expr;
+
+        expr = xpath.compile(
+                "/CAEXFile/"
+                + "InstanceHierarchy/"
+                + "InternalElement/"
+                + "InternalElement[@RefBaseSystemUnitPath='openMOSSystemUnitClassLib/Part/Assembly']"
+        );
+        NodeList products = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+        int productsCount = products.getLength();
+        logger.trace("Total no of products -> " + productsCount);
+        List<Product> productsList = new LinkedList<>();
+        for (int l = 0; l < productsCount; l++) {
+            Node internalelElement = products.item(l);
+//            Node internalelElement = subsystems.item(l).getParentNode();            
+            String xmlInString = NodeToStringConverter.convert(internalelElement, true, true);
+
+            logger.trace("PRODUCT\n" + xmlInString);
+
+            Product p = getAMLProduct(internalelElement);
+            logger.trace("FINAL PRODUCT " + l + "\n" + p);
+            productsList.add(p);
+        }
+        logger.trace("FINAL PRODUCTS LIST\n" + productsList);
+
+        return productsList;
+    }
+
+    
     private static String getLinkID_RefA(Node internalLinkLine) {
         String recipeID = getNodeAttributeValue(internalLinkLine, "RefPartnerSideA").split(":")[0];
         return recipeID;
