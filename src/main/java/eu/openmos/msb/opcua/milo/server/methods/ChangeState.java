@@ -28,7 +28,6 @@ import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import javax.xml.ws.BindingProvider;
@@ -49,7 +48,7 @@ public class ChangeState
 {
   private final Logger logger = LoggerFactory.getLogger(getClass());
   StopWatch changeStateAndNextRecipeTimer = new StopWatch();
-  static Semaphore testSemaphore = new Semaphore(1);
+  static Semaphore semaphore_passive = new Semaphore(1);
   
   @UaMethod
   public void invoke(
@@ -90,10 +89,10 @@ public class ChangeState
           public synchronized void run()
           {
               try {
-                  testSemaphore.acquire();
+                  semaphore_passive.acquire();
                   logger.debug("Doing passive stuff!");
                   passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id);
-                  testSemaphore.release();
+                  semaphore_passive.release();
               } catch (InterruptedException ex) {
                   java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
               }
@@ -1272,4 +1271,5 @@ public class ChangeState
 
     return false;
   }
+  
 }

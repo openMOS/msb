@@ -161,7 +161,6 @@ public class OPCServersDiscoverySnippet extends Thread
   }
 
   /**
-   * @brief TODO fabio
    * @param serverApp
    * @param applicationUri
    * @return
@@ -198,7 +197,7 @@ public class OPCServersDiscoverySnippet extends Thread
                 continue;
               }
 
-              System.out.println("\n\n Registered the " + daName + "\n\n");
+              logger.info("\n\n Registered the " + daName + "\n\n");
 
               da = dacManager.addDeviceAdapter(daName, EProtocol.OPC, "", ""); //add to DB
               if (da == null)
@@ -229,19 +228,18 @@ public class OPCServersDiscoverySnippet extends Thread
                   namespaceParsingTimer.reset();
                   namespaceParsingTimer.start();
 
-                  System.out.println("\n");
-                  System.out.println("***** Starting namespace browsing ***** \n");
+                  logger.info("\n***** Starting namespace browsing ***** \n");
 
                   Element node = new Element("DeviceAdapter");
                   Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
                   ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
 
-                  System.out.println("Browse instance Hierarchy started");
+                  logger.info("Browse instance Hierarchy started");
 
                   NodeId InstaceHierarchyNode = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
                   if (InstaceHierarchyNode != null)
                   {
-                    System.out.println("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
+                    logger.info("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
                     node.addContent(msbClient.browseNode(client,
                             InstaceHierarchyNode,
                             Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
@@ -262,11 +260,11 @@ public class OPCServersDiscoverySnippet extends Thread
                   xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + daName + ".xml", false));
                   xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + daName + ".xml", false));
 
-                  System.out.println("Starting DA Parser **********************");
+                  logger.info("Starting DA Parser **********************");
 
                   boolean ok = da.parseDNToObjects(client, node, nSkills, true);
 
-                  System.out.println("***** End namespace browsing ***** \n\n");
+                  logger.info("***** End namespace browsing ***** \n\n");
 
                   if (ok)
                   {
@@ -285,7 +283,7 @@ public class OPCServersDiscoverySnippet extends Thread
                 }
                 if (client == null)
                 {
-                  System.out.println("Client = null?");
+                  logger.info("Client = null?");
                 }
               }
               // Update the GUI with the new devices discovered 
@@ -294,8 +292,8 @@ public class OPCServersDiscoverySnippet extends Thread
           } // end of second "for" for Discovery Endpoints
         } catch (InterruptedException | ExecutionException e)
         {
-          this.logger.error("Cannot discover Endpoints from URL {} : {}", da_url, e.getMessage());
-          System.out.println("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + da_url + ": " + e.getMessage());
+          logger.warn("Cannot discover Endpoints from URL {} : {}", da_url, e.getMessage());
+          logger.warn("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + da_url + ": " + e.getMessage());
 
           if (e.getCause().getMessage().contains("Connection refused"))
           {
@@ -313,7 +311,7 @@ public class OPCServersDiscoverySnippet extends Thread
       } // end of first "for" for Discovery Urls
     } else
     {
-      System.out.println("No suitable discoveryUrl available: using the current Url");
+      logger.warn("No suitable discoveryUrl available: using the current Url");
     }
     return null;
   }
@@ -356,18 +354,18 @@ public class OPCServersDiscoverySnippet extends Thread
           ServiceCallStatus agentStatus = systemConfigurator.removeAgent(ss.getUniqueId());
           // end
 
-          System.out.println("\n\n Removing Resource or Transport Agent: " + agentStatus + "\n\n");
+          logger.info("\n\n Removing Resource or Transport Agent: " + agentStatus + "\n\n");
           String resCode = agentStatus.getCode();
 
-          System.out.println("Successfully removed Agent with UID: " + ss.getUniqueId() + "with status: " + resCode);
+          logger.info("Successfully removed Agent with UID: " + ss.getUniqueId() + "with status: " + resCode);
         } catch (Exception ex)
         {
-          System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+          logger.info("Error trying to connect to cloud!: " + ex.getMessage());
         }
       }
       if (DACManager.getInstance().deleteDeviceAdapter(serverName)) //if da removed from the system
       {
-        System.out.println("DownServer successfully deleted from DB!");
+        logger.info("DownServer successfully deleted from DB!");
         notify_channel.on_endpoint_dissapeared(serverName);
 
         //end
@@ -376,13 +374,13 @@ public class OPCServersDiscoverySnippet extends Thread
       {
         String error = "Unable to remove  " + serverName + " from DB!";
         notify_channel.on_notify_error(error);
-        System.out.println(error);
+        logger.error(error);
         return -1;
       }
 
     } else
     {
-      System.out.println("DA: " + serverName + " is null. Doens't exist on the system!");
+      logger.error("DA: " + serverName + " is null. Doesn't exist on the system!");
       return -1;
     }
 
@@ -401,7 +399,14 @@ public class OPCServersDiscoverySnippet extends Thread
       {
         for (Module auxModule : da.getListOfModules())
         {
-          dacManager.registerModule(da.getSubSystem().getName(), auxModule.getName(), auxModule.getUniqueId(), auxModule.getStatus(), auxModule.getAddress());
+          boolean res = dacManager.registerModule(da.getSubSystem().getName(), auxModule.getName(), auxModule.getUniqueId(), auxModule.getStatus(), auxModule.getAddress());
+          if (res)
+            {
+              logger.info("Module registed | Name: " + auxModule.getName() + " | ID: " + auxModule.getUniqueId());
+            } else
+            {
+              logger.info("Module not registed | Name: " + auxModule.getName() + " | ID: " + auxModule.getUniqueId());
+            }
         }
         MSB_gui.fillModulesTable();
       }
@@ -413,9 +418,14 @@ public class OPCServersDiscoverySnippet extends Thread
           //if skill does not exist yet
           if (!dacManager.skillExists(auxSkill.getUniqueId()))
           {
-            boolean aux = dacManager.registerSkill(da.getSubSystem().getName(), auxSkill.getUniqueId(), auxSkill.getName(), auxSkill.getDescription());
-            if (!aux)
-                System.out.println("WTF");
+            boolean res = dacManager.registerSkill(da.getSubSystem().getName(), auxSkill.getUniqueId(), auxSkill.getName(), auxSkill.getDescription());
+            if (res)
+            {
+              logger.info("Skill registed | Name: " + auxSkill.getName() + " | ID: " + auxSkill.getUniqueId());
+            } else
+            {
+              logger.info("Skill not registed | Name: " + auxSkill.getName() + " | ID: " + auxSkill.getUniqueId());
+            }
           }
         }
       }
@@ -426,13 +436,18 @@ public class OPCServersDiscoverySnippet extends Thread
         {
           if (da.getSubSystem().getName() != null && auxRecipe.getSkill() != null && auxRecipe.getSkill().getName() != null)
           {
-
-            dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
+            boolean res = dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
                     "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
-
+            if (res)
+            {
+              logger.info("Recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
+            } else
+            {
+              logger.info("Recipe not registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
+            }
           } else
           {
-            System.out.println("\nCouldn't register recipe: " + auxRecipe.getName() + "\n");
+            logger.error("\nCouldn't register recipe: " + auxRecipe.getName() + "\n");
           }
         }
         for (Module mod : da.getListOfModules())
@@ -442,15 +457,22 @@ public class OPCServersDiscoverySnippet extends Thread
             if (da.getSubSystem().getName() != null && auxRecipe.getSkill() != null && auxRecipe.getSkill().getName() != null)
             {
 
-              boolean aux = dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
+              boolean res = dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
                       "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
+              if (res)
+              {
+                logger.info("Module recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
+              } else
+              {
+                logger.info("Module recipe not registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
+              }
             } else
             {
-              System.out.println("\nCouldn't register recipe: " + auxRecipe.getName() + "\n");
+              logger.error("\nCouldn't register module recipe: " + auxRecipe.getName() + "\n");
             }
           }
         }
-        
+
         MSB_gui.fillRecipesTable();
       }
 
@@ -459,7 +481,7 @@ public class OPCServersDiscoverySnippet extends Thread
       return DACManager.daAgentCreation(da);
     } catch (Exception ex)
     {
-      System.out.println("Errors in workStationRegistration - " + ex.getMessage());
+      logger.error("Errors in workStationRegistration - " + ex.getMessage());
     }
     return null;
   }
@@ -511,5 +533,5 @@ public class OPCServersDiscoverySnippet extends Thread
     }
     return null;
   }
-  
+
 }
