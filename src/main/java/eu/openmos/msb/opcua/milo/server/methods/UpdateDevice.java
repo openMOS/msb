@@ -49,9 +49,16 @@ public class UpdateDevice
   {
     try
     {
+      logger.debug("Update Device invoked! '{}'", context.getObjectNode().getBrowseName().getName());
       //rebrowse namespace of targert DA
-      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+      String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
+      
+      DeviceAdapter da;
+      
+      if (da_name.equals(""))
+        da = DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);  
+      else
+        da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
 
       DeviceAdapter auxDA = rebrowseNamespace(da);
 
@@ -81,7 +88,7 @@ public class UpdateDevice
     OpcUaClient client = msbClient.getClientObject();
 
     System.out.println("\n");
-    System.out.println("***** Starting namespace browsing ***** \n");
+    System.out.println("***** Starting namespace re-browsing ***** \n");
 
     try
     {
@@ -158,11 +165,13 @@ public class UpdateDevice
           notFound = false;
           indexFound.add(j);
           //update recipe fields?
+          break;
         }
       }
       if (notFound)
       {
-        DatabaseInteraction.getInstance().removeRecipeById(recipeDB.getUniqueId());
+        int aux = DatabaseInteraction.getInstance().removeRecipeById(recipeDB.getUniqueId());
+        logger.info("" + aux);
       }
     }
 
@@ -182,26 +191,27 @@ public class UpdateDevice
   {
     //RECIPES
     String da_id_db = DatabaseInteraction.getInstance().getDA_DB_IDbyAML_ID(da.getSubSystem().getUniqueId());
-    List<String> auxModulesDB_ID = DatabaseInteraction.getInstance().getModules_ID_ByDA_DB_ID(da_id_db);
+    List<String> auxModulesAML_DB_ID = DatabaseInteraction.getInstance().getModulesAML_ID_ByDA_DB_ID(da_id_db);
 
     List<Integer> indexFound = new ArrayList<>();
-    for (int i = 0; i < auxModulesDB_ID.size(); i++)
+    for (int i = 0; i < auxModulesAML_DB_ID.size(); i++)
     {
-      String moduleDB_ID = auxModulesDB_ID.get(i);
+      String moduleAML_DB_ID = auxModulesAML_DB_ID.get(i);
       boolean notFound = true;
       
       for (int j = 0; j < da.getSubSystem().getModules().size(); j++)
       {
         Module module = da.getSubSystem().getModules().get(j);
-        if (module.getUniqueId().equals(moduleDB_ID))
+        if (module.getUniqueId().equals(moduleAML_DB_ID))
         {
           notFound = false;
           indexFound.add(j);
+          break;
         }
       }
       if (notFound)
       {
-        DatabaseInteraction.getInstance().removeModuleByID(moduleDB_ID);
+        DatabaseInteraction.getInstance().removeModuleByID(moduleAML_DB_ID);
       }
     }
 

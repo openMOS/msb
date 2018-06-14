@@ -213,7 +213,6 @@ public class ChangeState
               new Date(), new Date());
 
       piList.add(pi);
-
       
       oi.setName(productInstance_id + "_name");
       oi.setDescription(productInstance_id + "_description");
