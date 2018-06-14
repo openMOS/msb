@@ -197,7 +197,6 @@ public class ChangeState
               new Date(), new Date());
 
       piList.add(pi);
-
       
       oi.setName("no_name_order");
       oi.setDescription("no_description_order");

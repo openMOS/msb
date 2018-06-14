@@ -618,7 +618,7 @@ public class DatabaseInteraction
     return id;
   }
 
-  public List<String> getModules_ID_ByDA_DB_ID(String da_db_id)
+  public List<String> getModulesAML_ID_ByDA_DB_ID(String da_db_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
@@ -1143,7 +1143,7 @@ public class DatabaseInteraction
     try
     {
       Statement stmt = conn.createStatement();
-      int query = stmt.executeUpdate("DELETE FROM Recipe WHERE id = '" + recipe_id + "'");
+      int query = stmt.executeUpdate("DELETE FROM Recipe WHERE aml_id = '" + recipe_id + "'");
       stmt.close();
 
       return query;
@@ -1828,7 +1828,7 @@ public class DatabaseInteraction
     try
     {
       Statement stmt = conn.createStatement();
-      int query = stmt.executeUpdate("DELETE FROM Modules WHERE id = '" + module_id + "'");
+      int query = stmt.executeUpdate("DELETE FROM Modules WHERE aml_id = '" + module_id + "'");
       stmt.close();
 
       return query;
