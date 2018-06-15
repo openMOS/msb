@@ -50,6 +50,9 @@ public class ChangeState
   StopWatch changeStateAndNextRecipeTimer = new StopWatch();
   static Semaphore semaphore_passive = new Semaphore(1);
   
+  static int STATION_1_ID = 0;
+  static int STATION_5_ID = 0;
+  
   @UaMethod
   public void invoke(
           AnnotationBasedInvocationHandler.InvocationContext context,
@@ -91,7 +94,8 @@ public class ChangeState
               try {
                   semaphore_passive.acquire();
                   logger.debug("Doing passive stuff!");
-                  passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id);
+                  //passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id);
+                  passiveMode_VDMA_MARTELO(productInstance_id, productType_id, da_name, da_id, recipe_id, STATION_1_ID, STATION_5_ID);
                   semaphore_passive.release();
               } catch (InterruptedException ex) {
                   java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
@@ -201,6 +205,7 @@ public class ChangeState
 
   private void passiveMode(String productInstance_id, String productType_id, String da_name, String da_id, String recipe_id)
   {
+    
     //check if prodInst_ID is on the list
     if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
     {
@@ -308,6 +313,123 @@ public class ChangeState
 
   }
 
+  private void passiveMode_VDMA_MARTELO(String productInstance_id, String productType_id, String da_name, String da_id, String recipe_id, int station1, int station5)
+  {
+    productInstance_id = check_prod_ID_VDMA_MARTELO(da_name, da_id, recipe_id, station1, station5);
+    //check if prodInst_ID is on the list
+    if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
+    {
+      OrderInstance oi = new OrderInstance();
+      List<ProductInstance> piList = new ArrayList<>();
+      oi.setUniqueId(productInstance_id);
+      //create instance and agent
+      ProductInstance pi = new ProductInstance(productInstance_id, productType_id, productType_id, "no_description",
+              oi.getUniqueId(), null, false, null, ProductInstanceStatus.PRODUCING,
+              new Date(), new Date());
+
+      piList.add(pi);
+
+      oi.setName(productInstance_id + "_name");
+      oi.setDescription(productInstance_id + "_description");
+      oi.setPriority(1);
+      oi.setProductInstances(piList);
+      oi.setRegistered(new Date());
+
+      PECManager.getInstance().getProductsDoing().put(productInstance_id, pi);
+
+      MSB_gui.addToTableCurrentOrders(oi.getUniqueId(), productType_id, productInstance_id);
+
+      if (MSBConstants.USING_CLOUD)
+      {
+        try
+        {
+          //send oi to cloud
+          SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+          SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+          logger.info("Agent Cloud Cloudinterface address = [" + MSBConstants.CLOUD_ENDPOINT + "]");
+          BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, MSBConstants.CLOUD_ENDPOINT);
+
+          ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrderInstance(oi);
+          logger.info("Order Instance sent to the Agent Cloud with code: " + orderStatus.getCode());
+          logger.info("Order Instance status: " + orderStatus.getDescription());
+          //***
+          //check order status
+          if (orderStatus.getCode().equals("success.openmos.agentcloud.cloudinterface.systemconfigurator"))
+          {
+            ServiceCallStatus piStartStatus = systemConfigurator.startedProduct(pi);
+
+          }
+        } catch (Exception ex)
+        {
+          System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+        }
+      }
+    }
+
+    //modules
+    if (da_name.equals(""))
+    {
+      //da_id is module_id
+      //da does not exists, check modules?
+      //da_id can be module_id
+      //read recipe KPIs
+      DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);
+      if (CurrentDA != null)
+      {
+        MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, CurrentDA.getSubSystem().getName() + "(A)");
+      }
+      logger.info("Module changeState");
+      readKPIs_Module(da_id, recipe_id, productInstance_id);
+
+    } else
+    {
+      MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
+      //read recipe KPIs
+      readKPIs_DA(da_id, recipe_id, productInstance_id);
+    }
+
+    //if (!da_name.equals("")) //martelo
+    {
+      //if (true) //martelo
+      if (isLastRecipe_withoutProd(recipe_id)) //check if its last recipe if there is no productType
+      //if (isLastRecipe(recipe_id, productInstance_id, productType_id))
+      {
+        finishProduct(productInstance_id);
+      }
+    }
+
+  }
+
+  private String check_prod_ID_VDMA_MARTELO(String da_name, String da_id, String recipe_id, int station1, int station5)
+  { 
+    DeviceAdapter da = null;
+    
+    if (da_name.equals(""))
+      da = DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);
+    else
+      da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+    
+    if (da != null)
+    {
+      if (da.getSubSystem().getName().toUpperCase().equals("VDMA_STATION1"))
+      {
+        station1++;
+        return String.valueOf(station1);
+      }
+      else if (da.getSubSystem().getName().toUpperCase().equals("VDMA_STATION5"))
+      {
+        if (station1 > 3)
+        {
+          station5++;
+          return String.valueOf(station5);
+        }
+      }
+    }
+
+    return "-999";
+  }
+  
   private void finishProduct(String productInstance_id)
   {
     ProductInstance prodInst = PECManager.getInstance().getProductsDoing().remove(productInstance_id);
