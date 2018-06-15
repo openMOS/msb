@@ -54,7 +54,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RegisteredServer;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-import eu.openmos.agentcloud.config.ConfigurationLoader;
+import eu.openmos.msb.datastructures.MSBConstants;
+import static eu.openmos.msb.datastructures.MSBConstants.LDS_ENDPOINT;
 import eu.openmos.msb.opcua.milo.client.X509IdentityProvider;
 
 /**
@@ -92,7 +93,7 @@ public class OPCServer
 
     server.startup().get();
 
-    server.register(ConfigurationLoader.getMandatoryProperty("openmos.msb.discovery.service"));
+    server.register(LDS_ENDPOINT);
 
     final CompletableFuture<Void> future = new CompletableFuture<>();
 
@@ -356,13 +357,9 @@ public class OPCServer
             .filter(e -> e.getSecurityMode().toString().compareTo(securityMode) == 0)
             .findFirst()
             .orElseThrow(() -> new Exception("no desired endpoints returned"));
-
-    // openmos.msb.opcua.key.path=C:\\NetBeansProjects\\msb
-//    X509IdentityProvider x509IdentityProvider = new X509IdentityProvider("C:\\NetBeansProjects\\msb\\openssl_crt.der",
-//            "C:\\NetBeansProjects\\msb\\herong.key");
-    String OPCUA_KEY_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.key.path");    
-    X509IdentityProvider x509IdentityProvider = new X509IdentityProvider(OPCUA_KEY_PATH + "\\openssl_crt.der",
-            OPCUA_KEY_PATH + "\\herong.key");
+  
+    X509IdentityProvider x509IdentityProvider = new X509IdentityProvider(MSBConstants.CERTS_PATH + "\\openssl_crt.der",
+            MSBConstants.CERTS_PATH + "\\herong.key");
 
     X509Certificate cert = x509IdentityProvider.getCertificate();
     KeyPair keyPair = new KeyPair(cert.getPublicKey(), x509IdentityProvider.getPrivateKey());

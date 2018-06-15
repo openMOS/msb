@@ -35,9 +35,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 @Path("/api/v1/subsystems")
 public class SubSystemController extends Base {
 
-    private final Logger logger = Logger.getLogger(SubSystemController.class.getName());
-    private final StopWatch HMIsubsystemUpdateWatch = new StopWatch();
-
+  private final Logger logger = Logger.getLogger(SubSystemController.class.getName());
+  private final StopWatch HMIsubsystemUpdateWatch = new StopWatch();
+  private static final String CLOUD_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+  private static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
     /**
      * Returns the list of workstations and transports, e.g. resource and
      * transport agents. Fills the system overview page (slide 5 of 34)
@@ -364,17 +365,14 @@ public class SubSystemController extends Base {
 
         try
         {
-          String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-          boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
-          if (withAGENTCloud)
+          if (USING_CLOUD)
           {
             try
             {
               SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
               SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-              String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
               BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-              bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+              bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUD_ENDPOINT);
 
               systemConfigurator.changeSubSystemStage(subsystemId, newSubSystemStage.getStage());
             } catch (Exception ex)

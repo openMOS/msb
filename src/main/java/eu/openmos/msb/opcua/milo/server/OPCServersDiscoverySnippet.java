@@ -20,6 +20,9 @@ import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
+import eu.openmos.msb.datastructures.MSBConstants;
+import static eu.openmos.msb.datastructures.MSBConstants.PROJECT_PATH;
+import static eu.openmos.msb.datastructures.MSBConstants.XML_PATH;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
@@ -256,7 +259,6 @@ public class OPCServersDiscoverySnippet extends Thread
                   XMLOutputter xmlOutput = new XMLOutputter();
                   xmlOutput.setFormat(Format.getPrettyFormat());
 
-                  String XML_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");
                   xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + daName + ".xml", false));
                   xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + daName + ".xml", false));
 
@@ -328,19 +330,14 @@ public class OPCServersDiscoverySnippet extends Thread
 
     if (da != null) //check if the da exists on the system
     {
-      //remove agent stuff
-      String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-      boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
-
-      if (withAGENTCloud) //check if the agentcloud is active
+      if (MSBConstants.USING_CLOUD) //check if the agentcloud is active
       {
         try
         {
           SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
           SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-          String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
           BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, MSBConstants.CLOUD_ENDPOINT);
 
           SubSystem ss = da.getSubSystem();
 

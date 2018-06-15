@@ -7,6 +7,8 @@ import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
+import static eu.openmos.msb.datastructures.MSBConstants.PROJECT_PATH;
+import static eu.openmos.msb.datastructures.MSBConstants.XML_PATH;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import static eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet.browseInstaceHierarchyNode;
 import java.io.FileWriter;
@@ -116,7 +118,6 @@ public class UpdateDevice
       XMLOutputter xmlOutput = new XMLOutputter();
       xmlOutput.setFormat(Format.getPrettyFormat());
 
-      String XML_PATH = ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");
       xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
       xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
 

@@ -5,6 +5,8 @@
  */
 package eu.openmos.msb.datastructures;
 
+import eu.openmos.agentcloud.config.ConfigurationLoader;
+
 /**
  *
  * @author Introsys
@@ -31,6 +33,16 @@ public class MSBConstants {
     public static final String STAGE_PRODUCTION_TO_RAMP_UP = "Production_to_rampup";
     public static final String STAGE_PRODUCTION_TO_PREPROD = "Production_to_preproduction";
 
+    public static final String PROJECT_PATH = System.getProperty("user.dir");
+    public static final String CLOUD_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+    public static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
+    public static final String XML_PATH = PROJECT_PATH + ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");
+    public static final String CERTS_PATH = PROJECT_PATH + ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.key.path");
+    public static final String DB_SQL_PATH = PROJECT_PATH + ConfigurationLoader.getMandatoryProperty("openmos.msb.database.creation.file.path.string");
+    public static final String DB_MEMORY_CONNECTION = "jdbc:sqlite:" + PROJECT_PATH + ConfigurationLoader.getMandatoryProperty("openmos.msb.database.connection.string");
+    public static final String DATABASE_DRIVER_CLASS = ConfigurationLoader.getMandatoryProperty("openmos.msb.database.driver.class");
+    public static final String LDS_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.msb.discovery.service");
+    
     public static Boolean MSB_OPTIMIZER = true;
 
     public static Boolean MSB_MODE_PASSIVE = true;

@@ -8,6 +8,9 @@ package eu.openmos.msb.database.interaction;
 import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
+import static eu.openmos.msb.datastructures.MSBConstants.DATABASE_DRIVER_CLASS;
+import static eu.openmos.msb.datastructures.MSBConstants.DB_MEMORY_CONNECTION;
+import static eu.openmos.msb.datastructures.MSBConstants.DB_SQL_PATH;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,10 +42,6 @@ public class DatabaseInteraction
 
   private static final Object lock = new Object();
   private static volatile DatabaseInteraction instance;
-  //private final String DBINMEMORY = "jdbc:sqlite::memory:";
-  // private final String DBINMEMORY = "jdbc:sqlite:C:/NetBeansProjects/msb/database/testing/test.db";
-  private final String DBSQLPATH = "openmos.msb.database.creation.file.path.string";
-  private final String DB_CONNECTION_PARAMETER = "openmos.msb.database.connection.string";
   private Connection conn = null;
   private PreparedStatement ps = null;
   private final Set<String> trueSet = new HashSet<>(Arrays.asList("1", "true", "True"));
@@ -88,20 +87,16 @@ public class DatabaseInteraction
   {
     boolean dbCreated = false;
     try
-    {
-      // Class.forName("org.sqlite.JDBC");        
-      String DATABASE_DRIVER_CLASS = ConfigurationLoader.getMandatoryProperty("openmos.msb.database.driver.class");
+    {     
       Class.forName(DATABASE_DRIVER_CLASS);
 
-      // openmos.msb.database.connection.string
-      String DBINMEMORY = ConfigurationLoader.getMandatoryProperty("openmos.msb.database.connection.string");
-      conn = DriverManager.getConnection(DBINMEMORY);
+      conn = DriverManager.getConnection(DB_MEMORY_CONNECTION);
 
       StringBuilder sb = new StringBuilder();
       try
       {
-        System.out.println("caminho da bd  " + ConfigurationLoader.getMandatoryProperty(DBSQLPATH));
-        FileReader file = new FileReader(new File(ConfigurationLoader.getMandatoryProperty(DBSQLPATH)));
+        System.out.println("caminho da bd  " + DB_SQL_PATH);
+        FileReader file = new FileReader(new File(DB_SQL_PATH));
         try (BufferedReader fileReader = new BufferedReader(file))
         {
           String command = new String();

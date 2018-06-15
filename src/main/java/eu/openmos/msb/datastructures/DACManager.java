@@ -340,17 +340,14 @@ public class DACManager
   
   public static String daAgentCreation(DeviceAdapter da)
   {
-    String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-    boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
-    if (withAGENTCloud)
+    if (MSBConstants.USING_CLOUD)
     {
       try
       {
         SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
         SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
         BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, MSBConstants.CLOUD_ENDPOINT);
 
         SubSystem ss = da.getSubSystem();
 

@@ -40,7 +40,9 @@ public class OrderController
 
   private final Logger logger = Logger.getLogger(OrderController.class.getName());
   private final StopWatch OrderWatch = new StopWatch();
-
+  private static final String CLOUD_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
+  private static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
+    
   /**
    * Returns the list of orders. There's no slide requesting this method, it's only for testing purpose.
    *
@@ -136,21 +138,16 @@ public class OrderController
     }
 
     //Forward the order from HMI to AC
-    String USE_CLOUD_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud");
-    boolean withAGENTCloud = new Boolean(USE_CLOUD_VALUE).booleanValue();
-
-    if (withAGENTCloud)
+    if (USING_CLOUD)
     { //check if the agentcloud is active
       try
       {
         SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
         SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
-
-        String CLOUDINTERFACE_WS_VALUE = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-        logger.info("Agent Cloud Cloudinterface address = [" + CLOUDINTERFACE_WS_VALUE + "]");
+        logger.info("Agent Cloud Cloudinterface address = [" + CLOUD_ENDPOINT + "]");
 
         BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUDINTERFACE_WS_VALUE);
+        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUD_ENDPOINT);
              
         ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrderInstance(oi);
         logger.info("Order Instance sent to the Agent Cloud with code: " + orderStatus.getCode());
