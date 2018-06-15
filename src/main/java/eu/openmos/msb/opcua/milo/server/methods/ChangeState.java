@@ -456,7 +456,7 @@ public class ChangeState
             SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
             SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
             BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
-            bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, MSBConstants.USING_CLOUD);
+            bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, MSBConstants.CLOUD_ENDPOINT);
             FinishedProductInfo fpi = new FinishedProductInfo();
             fpi.setProductInstanceId(productInst_id);
             fpi.setFinishedTime(new Date());
