@@ -95,7 +95,7 @@ public class ChangeState
                   semaphore_passive.acquire();
                   logger.debug("Doing passive stuff!");
                   //passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id);
-                  passiveMode_VDMA_MARTELO(productInstance_id, productType_id, da_name, da_id, recipe_id, STATION_1_ID, STATION_5_ID);
+                  passiveMode_VDMA_MARTELO(productInstance_id, productType_id, da_name, da_id, recipe_id);
                   semaphore_passive.release();
               } catch (InterruptedException ex) {
                   java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
@@ -313,9 +313,9 @@ public class ChangeState
 
   }
 
-  private void passiveMode_VDMA_MARTELO(String productInstance_id, String productType_id, String da_name, String da_id, String recipe_id, int station1, int station5)
+  private void passiveMode_VDMA_MARTELO(String productInstance_id, String productType_id, String da_name, String da_id, String recipe_id)
   {
-    productInstance_id = check_prod_ID_VDMA_MARTELO(da_name, da_id, recipe_id, station1, station5);
+    productInstance_id = check_prod_ID_VDMA_MARTELO(da_name, da_id);
     //check if prodInst_ID is on the list
     if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
     {
@@ -401,7 +401,7 @@ public class ChangeState
 
   }
 
-  private String check_prod_ID_VDMA_MARTELO(String da_name, String da_id, String recipe_id, int station1, int station5)
+  private String check_prod_ID_VDMA_MARTELO(String da_name, String da_id)
   { 
     DeviceAdapter da = null;
     
@@ -414,15 +414,15 @@ public class ChangeState
     {
       if (da.getSubSystem().getName().toUpperCase().equals("VDMA_STATION1"))
       {
-        station1++;
-        return String.valueOf(station1);
+        STATION_1_ID++;
+        return String.valueOf(STATION_1_ID);
       }
       else if (da.getSubSystem().getName().toUpperCase().equals("VDMA_STATION5"))
       {
-        if (station1 > 3)
+        if (STATION_1_ID > 3)
         {
-          station5++;
-          return String.valueOf(station5);
+          STATION_5_ID++;
+          return String.valueOf(STATION_5_ID);
         }
       }
     }
