@@ -100,7 +100,6 @@ public class ChangeState
               } catch (InterruptedException ex) {
                   java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
               }
-            
           }
         };
         threadPassive.start();
