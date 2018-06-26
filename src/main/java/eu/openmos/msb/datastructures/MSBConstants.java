@@ -35,7 +35,6 @@ public class MSBConstants {
 
     public static final String PROJECT_PATH = System.getProperty("user.dir");
     public static final String CLOUD_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-    public static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
     public static final String XML_PATH = PROJECT_PATH + ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");
     public static final String CERTS_PATH = PROJECT_PATH + ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.key.path");
     public static final String DB_SQL_PATH = PROJECT_PATH + ConfigurationLoader.getMandatoryProperty("openmos.msb.database.creation.file.path.string");
@@ -43,8 +42,9 @@ public class MSBConstants {
     public static final String DATABASE_DRIVER_CLASS = ConfigurationLoader.getMandatoryProperty("openmos.msb.database.driver.class");
     public static final String LDS_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.msb.discovery.service");
     
-    public static Boolean MSB_OPTIMIZER = true;
-
-    public static Boolean MSB_MODE_PASSIVE = true;
+    public static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
+    public static Boolean MSB_OPTIMIZER = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.optimizer"));
+    public static Boolean MSB_MODE_PASSIVE = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.passive.mode"));
     
+    public static String MSB_IP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
 }

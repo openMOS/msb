@@ -1631,7 +1631,7 @@ public abstract class DeviceAdapter
   {
     try
     {
-      String myIP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
+      String myIP = MSBConstants.MSB_IP;
       VertxOptions options = new VertxOptions();
       options.setClustered(true).setClusterHost(myIP);
       Vertx.clusteredVertx(options, res
