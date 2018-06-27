@@ -646,7 +646,8 @@ public abstract class DeviceAdapter
                   for (int z = 0; z < auxNodeList.getLength(); z++)
                   {
                     Node kpiNode = auxNodeList.item(z);
-                    if (kpiNode.getNodeName().toLowerCase().contains("kpi"))
+                    //if (kpiNode.getNodeName().toLowerCase().contains("kpi"))
+                    if (isKPINode(kpiNode))
                     {
                       System.out.println("KPI NAME: " + kpiNode.getNodeName());
                       KPISetting auxKPISetting = new KPISetting();
@@ -1047,7 +1048,8 @@ public abstract class DeviceAdapter
                             for (int z = 0; z < auxNodeList.getLength(); z++)
                             {
                               Node kpiNode = auxNodeList.item(z);
-                              if (kpiNode.getNodeName().toLowerCase().contains("kpi"))
+                              //if (kpiNode.getNodeName().toLowerCase().contains("kpi"))
+                              if (isKPINode(kpiNode))
                               {
                                 System.out.println("KPI NAME: " + kpiNode.getNodeName());
                                 KPISetting auxKPISetting = new KPISetting();
@@ -1379,7 +1381,8 @@ public abstract class DeviceAdapter
                       NodeList childs = auxData.getChildNodes();
                       for (int z = 0; z < childs.getLength(); z++)
                       {
-                        if (childs.item(z).getNodeName().toLowerCase().contains("kpi"))
+                        //if (childs.item(z).getNodeName().toLowerCase().contains("kpi"))
+                        if (isKPINode(childs.item(z)))
                         {
                           NodeList pChilds = childs.item(z).getChildNodes();
                           KPI kpi = new KPI();
@@ -1511,7 +1514,7 @@ public abstract class DeviceAdapter
 
   private static String ReadDeviceAdapterID(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*/*/ID/Value";
+    String query = "//DeviceAdapter/*[AssemblySystem]/*/ID/Value";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -1623,6 +1626,28 @@ public abstract class DeviceAdapter
       if (skillFound && invokeSkillFound)
       {
         System.out.println("/n***** /n RECIPE FOUND -- " + node.getNodeName() + " /n ***** /n");
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean isKPINode(Node node)
+  {
+    boolean KPIFound = false;
+    NodeList recipeChilds = node.getChildNodes();
+
+    for (int i = 0; i < recipeChilds.getLength(); i++)
+    {
+      Node auxNode = recipeChilds.item(i);
+      if (auxNode.getNodeName().toUpperCase().equals("KPI"))
+      {
+        KPIFound = true;
+      }
+
+      if (KPIFound)
+      {
+        System.out.println("/n***** /n KPI FOUND -- " + node.getNodeName() + " /n ***** /n");
         return true;
       }
     }
