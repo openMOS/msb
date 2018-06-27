@@ -315,7 +315,7 @@ public class ChangeState
 
   private void passiveMode_VDMA_MARTELO(String productInstance_id, String productType_id, String da_name, String da_id, String recipe_id)
   {
-    productInstance_id = check_prod_ID_VDMA_MARTELO(da_name, da_id);
+    productInstance_id = check_prod_ID_VDMA_MARTELO(da_name, da_id, recipe_id);
     //check if prodInst_ID is on the list
     if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
     {
@@ -401,7 +401,7 @@ public class ChangeState
 
   }
 
-  private String check_prod_ID_VDMA_MARTELO(String da_name, String da_id)
+  private String check_prod_ID_VDMA_MARTELO(String da_name, String da_id, String recipe_id)
   { 
     DeviceAdapter da = null;
     
@@ -414,7 +414,8 @@ public class ChangeState
     {
       if (da.getSubSystem().getName().toUpperCase().equals("VDMA_STATION1"))
       {
-        STATION_1_ID++;
+         if (!recipe_id.equals("ac792724-c45d-4740-8929-f4003f975217"))
+            STATION_1_ID++;
         return String.valueOf(STATION_1_ID);
       }
       else if (da.getSubSystem().getName().toUpperCase().equals("VDMA_STATION5"))
