@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.DOMOutputter;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -45,6 +46,7 @@ public abstract class DeviceAdapter
 
   protected boolean hasAgent;
 
+  private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
   /*
    * device name || devices in the workstation and its data
    */
@@ -299,15 +301,15 @@ public abstract class DeviceAdapter
         {
           PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(Integer.parseInt(resources)));
         }
-        System.out.println("[SEMAPHORE] CREATED for " + subSystem.getName());
+        logger.debug("[SEMAPHORE] CREATED for " + subSystem.getName());
       }
       return true;
     } catch (XPathExpressionException ex)
     {
-      System.out.println("[ERROR] " + ex.getMessage());
+      logger.error("[ERROR] " + ex.getMessage());
     } catch (JDOMException ex)
     {
-      Logger.getLogger(DeviceAdapter.class.getName()).log(Level.SEVERE, null, ex);
+     logger.error(ex.getMessage());
     }
     return false;
   }
@@ -1631,7 +1633,7 @@ public abstract class DeviceAdapter
   {
     try
     {
-      String myIP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
+      String myIP = MSBConstants.MSB_IP;
       VertxOptions options = new VertxOptions();
       options.setClustered(true).setClusterHost(myIP);
       Vertx.clusteredVertx(options, res
