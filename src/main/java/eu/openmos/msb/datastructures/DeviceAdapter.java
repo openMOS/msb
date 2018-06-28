@@ -279,6 +279,8 @@ public abstract class DeviceAdapter
 
       subSystem.setType(ReadDeviceAdapterType(deviceDescriptionDoc));
 
+      //Recipe_SR_to_Skill_SR();
+      
       List<String> ReadDeviceAdapterState = ReadDeviceAdapterState(deviceDescriptionDoc);
       if (ReadDeviceAdapterState.size() == 2)
       {
@@ -316,7 +318,7 @@ public abstract class DeviceAdapter
 
   private static ExecutionTable ReadExecutionTable(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)][not(self::ExecutionTable)]"; //isto é o IDdo subsystem -> ExecutionTable ExecutionTable row 
+    String query = "//DeviceAdapter/*[AssemblySystem]/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)][not(self::ExecutionTable)]"; //isto é o IDdo subsystem -> ExecutionTable ExecutionTable row 
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -521,7 +523,7 @@ public abstract class DeviceAdapter
 
   private List<Recipe> ReadRecipes(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*/*/*[Skill][InvokeSkill]";
+    String query = "//DeviceAdapter/*[AssemblySystem]/*/*[Skill][InvokeSkill]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -550,9 +552,7 @@ public abstract class DeviceAdapter
           String[] temp = n2.getTextContent().split("/");
           recipe.setName(temp[temp.length - 1]);
           System.out.println("recipeName " + recipe.getName());
-        } else
-        {
-          if ("ID".equals(n2.getNodeName()))
+        } else if ("ID".equals(n2.getNodeName()))
           {
             for (int t = 0; t < n2.getChildNodes().getLength(); t++)
             {
@@ -587,7 +587,10 @@ public abstract class DeviceAdapter
                 System.out.println("isto é um SR: " + n2.getNodeName());
                 NodeList SkillReqs = n2.getChildNodes();
                 SkillRequirement auxSkillReq = new SkillRequirement();
+                auxSkillReq.setRecipeIDs(new ArrayList<>());
+                auxSkillReq.setName(n2.getNodeName());
                 auxSkillReq.setDescription(n2.getTextContent());
+                
                 for (int z = 0; z < SkillReqs.getLength(); z++)
                 {
                   Node skillReq = SkillReqs.item(z);
@@ -603,23 +606,26 @@ public abstract class DeviceAdapter
                         System.out.println("SR ID: " + auxSkillReq.getUniqueId());
                       }
                     }
-                  } else
-                  {
-                    if (skillReq.getNodeName().equals("name"))
+                  } else if (isRecipeNode(skillReq))
                     {
-                      NodeList auxNodeList = skillReq.getChildNodes();
-                      for (int index = 0; index < auxNodeList.getLength(); index++)
-                      {
-                        Node auxNode = auxNodeList.item(index);
-                        if (auxNode.getNodeName().equals("Value"))
-                        {
-                          auxSkillReq.setName(auxNode.getTextContent());
-                          System.out.println("SR Name: " + auxSkillReq.getName());
+                        String auxRecipeID;
+
+                        NodeList auxRecipeChilds = skillReq.getChildNodes();
+                        for (int index = 0; index < auxRecipeChilds.getLength(); index++) {
+                            Node nRecipe = auxRecipeChilds.item(index);
+
+                            if ("ID".equals(nRecipe.getNodeName())) {
+                                for (int t = 0; t < nRecipe.getChildNodes().getLength(); t++) {
+                                    Node IdChildNodes = nRecipe.getChildNodes().item(t);
+
+                                    if (IdChildNodes.getNodeName().equals("Value")) {
+                                        auxRecipeID = IdChildNodes.getTextContent();
+                                        auxSkillReq.getRecipeIDs().add(auxRecipeID);
+                                    }
+                                }
+                            }
                         }
-                      }
-                    } else
-                    {
-                      if (skillReq.getNodeName().equals("InvokeSkill"))
+                    } else if (skillReq.getNodeName().equals("InvokeSkill"))
                       {
                         NodeList auxNodeList = skillReq.getChildNodes();
                         for (int index = 0; index < auxNodeList.getLength(); index++)
@@ -633,8 +639,6 @@ public abstract class DeviceAdapter
                           }
                         }
                       }
-                    }
-                  }
                 }
                 SRs.add(auxSkillReq);
                 //KPIs
@@ -832,7 +836,7 @@ public abstract class DeviceAdapter
                                 if (n2.getNodeName().equals(skill.getName()))
                                 {
                                   recipe.setSkill(skill);
-
+                                  
                                   for (ParameterSetting paraSetting : paraSettings)
                                   {
                                     for (Parameter para : skill.getParameters())
@@ -867,12 +871,12 @@ public abstract class DeviceAdapter
               }
             }
           }
-        }
+        
       }
       recipe.setParameterSettings(paraSettings);
       recipe.setKpiSettings(KPIsettings);
       recipe.setSkillRequirements(SRs);
-
+recipe.getSkill().setSkillRequirements(SRs);
       recipeList.add(recipe);
     }
     return recipeList;
@@ -880,7 +884,7 @@ public abstract class DeviceAdapter
 
   private List<Module> ReadModules(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*/*/*[Module][Equipment][ID]";
+    String query = "//DeviceAdapter/*[AssemblySystem]/*/*[Module][Equipment][ID]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -1005,23 +1009,26 @@ public abstract class DeviceAdapter
                                   System.out.println("SR ID: " + auxSkillReq.getUniqueId());
                                 }
                               }
-                            } else
-                            {
-                              if (skillReq.getNodeName().equals("name"))
-                              {
-                                NodeList auxNodeList = skillReq.getChildNodes();
-                                for (int index = 0; index < auxNodeList.getLength(); index++)
-                                {
-                                  Node auxNode = auxNodeList.item(index);
-                                  if (auxNode.getNodeName().equals("Value"))
-                                  {
-                                    auxSkillReq.setName(auxNode.getTextContent());
-                                    System.out.println("SR Name: " + auxSkillReq.getName());
-                                  }
+                            } 
+                            else if (isRecipeNode(skillReq)) {
+                                String auxRecipeID;
+
+                                NodeList auxRecipeChilds = skillReq.getChildNodes();
+                                for (int index = 0; index < auxRecipeChilds.getLength(); index++) {
+                                    Node nAuxRecipe = auxRecipeChilds.item(index);
+
+                                    if ("ID".equals(nAuxRecipe.getNodeName())) {
+                                        for (int t = 0; t < nAuxRecipe.getChildNodes().getLength(); t++) {
+                                            Node IdChildNodes = nAuxRecipe.getChildNodes().item(t);
+
+                                            if (IdChildNodes.getNodeName().equals("Value")) {
+                                                auxRecipeID = IdChildNodes.getTextContent();
+                                                auxSkillReq.getRecipeIDs().add(auxRecipeID);
+                                            }
+                                        }
+                                    }
                                 }
-                              } else
-                              {
-                                if (skillReq.getNodeName().equals("InvokeSkill"))
+                    } else if (skillReq.getNodeName().equals("InvokeSkill"))
                                 {
                                   NodeList auxNodeList = skillReq.getChildNodes();
                                   for (int index = 0; index < auxNodeList.getLength(); index++)
@@ -1035,8 +1042,8 @@ public abstract class DeviceAdapter
                                     }
                                   }
                                 }
-                              }
-                            }
+                              
+                            
                           }
                           SRs.add(auxSkillReq);
                           //KPIs
@@ -1281,7 +1288,7 @@ public abstract class DeviceAdapter
         if (n2.getNodeType() == Node.ELEMENT_NODE && !n2.getNodeName().equals("Type") && !n2.getNodeName().equals("Path") && !n2.getNodeName().equals("Skill"))
         {
           Skill auxSkill = new Skill();
-          List<SkillRequirement> auxReq = new ArrayList<>();
+          List<SkillRequirement> auxReqList = new ArrayList<>();
           List<Parameter> auxPara = new ArrayList<>();
           List<KPI> auxKPI = new ArrayList<>();
           System.out.println("***SKILL NAME: " + n2.getNodeName());
@@ -1299,10 +1306,23 @@ public abstract class DeviceAdapter
                 System.out.println("***SR NAME: " + auxData.getNodeName());
                 SkillRequirement auxSR = new SkillRequirement();
                 auxSR.setName(auxData.getNodeName());
-                auxReq.add(auxSR);
-              } else
-              {
-                if (auxData.getNodeName().matches("ID"))
+                auxReqList.add(auxSR);
+                
+                //get SR data
+                NodeList SRchilds = auxData.getChildNodes();
+                  for (int z = 0; z < SRchilds.getLength(); z++) {
+                      if (SRchilds.item(z).getNodeName().matches("ID")) {
+                          NodeList IDchilds = SRchilds.item(z).getChildNodes();
+                          for (int q = 0; q < IDchilds.getLength(); q++) {
+                              if (IDchilds.item(q).getNodeName().matches("Value")) {
+                                  auxSR.setUniqueId(IDchilds.item(q).getTextContent());
+                                  System.out.println("SR TEM ID! :O " + IDchilds.item(q).getTextContent());
+                              }
+                          }
+                      }
+                  }
+
+              } else if (auxData.getNodeName().matches("ID"))
                 {
                   NodeList IDchilds = auxData.getChildNodes();
                   for (int z = 0; z < IDchilds.getLength(); z++)
@@ -1313,9 +1333,7 @@ public abstract class DeviceAdapter
                       System.out.println("Skill TEM ID! :O " + IDchilds.item(z).getTextContent());
                     }
                   }
-                } else
-                {
-                  if (auxData.getNodeName().toLowerCase().contains("parameterport"))
+                } else if (auxData.getNodeName().toLowerCase().contains("parameterport"))
                   {
                     NodeList childs = auxData.getChildNodes();
                     for (int z = 0; z < childs.getLength(); z++)
@@ -1374,9 +1392,7 @@ public abstract class DeviceAdapter
                         System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
                       }
                     }
-                  } else
-                  {
-                    if (auxData.getNodeName().toLowerCase().contains("informationport"))
+                  } else if (auxData.getNodeName().toLowerCase().contains("informationport"))
                     {
                       NodeList childs = auxData.getChildNodes();
                       for (int z = 0; z < childs.getLength(); z++)
@@ -1436,14 +1452,11 @@ public abstract class DeviceAdapter
                         }
                       }
                     }
-                  }
-                }
-              }
             }
           }
           auxSkill.setParameters(auxPara);
           auxSkill.setKpis(auxKPI);
-          auxSkill.setSkillRequirements(auxReq);
+          auxSkill.setSkillRequirements(auxReqList);
           if (auxSkill.getSkillRequirements() == null || auxSkill.getSkillRequirements().isEmpty())
           {
             auxSkill.setType(DatabaseConstants.SKILLTYPE_ATOMIC);
@@ -1487,7 +1500,7 @@ public abstract class DeviceAdapter
 
   private static String ReadManufacturer(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*/*/manufacturer/Type[contains(@namespace, 'manufacturer')]";
+    String query = "//DeviceAdapter/*[AssemblySystem]/*/manufacturer/Type[contains(@namespace, 'manufacturer')]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -1539,8 +1552,8 @@ public abstract class DeviceAdapter
 
   private static String ReadDeviceAdapterType(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query1 = "//DeviceAdapter/*/*/TransportSystem";
-    String query2 = "//DeviceAdapter/*/*/WorkStation";
+    String query1 = "//DeviceAdapter/*[AssemblySystem]/*/TransportSystem";
+    String query2 = "//DeviceAdapter/*[AssemblySystem]/*/WorkStation";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -1603,6 +1616,22 @@ public abstract class DeviceAdapter
     return results;
   }
 
+    private void Recipe_SR_to_Skill_SR() {
+        List<Recipe> auxRecipes = subSystem.getRecipes();
+        for (Module module : subSystem.getModules()) {
+            auxRecipes.addAll(module.getRecipes());
+        }
+            for (Skill skill : subSystem.getSkills()) {
+                for (Recipe recipe : auxRecipes) {
+                    if (recipe.getSkill().getUniqueId().equals(skill.getUniqueId())) {
+                        skill.setSkillRequirements(recipe.getSkillRequirements());
+                        break;
+                    }
+                }
+            }
+        
+    }
+  
   private static boolean isRecipeNode(Node node)
   {
     boolean skillFound = false;

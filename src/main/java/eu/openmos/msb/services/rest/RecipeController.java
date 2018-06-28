@@ -71,22 +71,25 @@ public class RecipeController extends Base
       Module module = (new ModuleController()).getDetail(helper.getModulesPath());
       Recipe recipe = this.getRecipeFromList(module.getRecipes(), helper.getRecipeId());
       
-      DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(module.getUniqueId());
-      DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
-      NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
-      recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
-      
+        if (recipe.getStatePath() != null) {
+            DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(module.getUniqueId());
+            DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
+            NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
+            recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
+        }
       return recipe;
     } else
     {
       SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
       Recipe recipe = this.getRecipeFromList(subSystem.getRecipes(), helper.getRecipeId());
       
-      DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystem.getUniqueId());
-      NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
-      DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
-      recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
-      return recipe;
+        if (recipe.getStatePath() != null) {
+            DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystem.getUniqueId());
+            NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
+            DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
+            recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
+        }
+        return recipe;
     }
 
   }

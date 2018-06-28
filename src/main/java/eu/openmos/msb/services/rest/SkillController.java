@@ -65,45 +65,6 @@ public class SkillController extends Base {
         }
         
         return null;
-
-        
-        /*
-        // moduleId can be in this form subsystem-module-module-module....
-        String[] ids = skillId.split(Base.PARAMSEPARATOR);
-
-        // ss-skill
-        // ss-modulo-skill
-        // ss-modulo-modulo-skill
-        String subSystemId, realSkillId;
-
-        if (ids != null) {
-            subSystemId = ids[0].split(Base.PARAMVALUESEPARATOR)[1];
-            realSkillId = ids[ids.length - 1].split(Base.PARAMVALUESEPARATOR)[1];
-            logger.debug("SK ID: " + realSkillId);
-            if (ids.length == 2) {
-                for (SubSystem subsystem : (new SubSystemController()).getList()) {
-                    if (subsystem.getUniqueId().equals(subSystemId)) {
-                        logger.debug("subsystem - found " + subSystemId);
-                        for (Skill sk : subsystem.getSkills()) {
-                            if (sk.getUniqueId().equalsIgnoreCase(realSkillId)) {
-                                logger.debug("skill found: " + sk);
-                                return sk;
-                            }
-                        }
-                    }
-                }
-
-            } else {
-                String modulePath = skillId.substring(0, skillId.lastIndexOf(Base.SKILLMARKERPREFIX) - 1);
-                for (Skill sk : new ModuleController().getSkillsList(modulePath)) {
-                    if (sk.getUniqueId().equals(realSkillId)) {
-                        return sk;
-                    }
-                }
-            }
-        }
-        return null;
-        */
     }
 
     /**
