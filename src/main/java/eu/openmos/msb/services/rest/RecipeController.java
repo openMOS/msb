@@ -48,9 +48,8 @@ public class RecipeController extends Base
   /**
    * Returns the recipe object given its unique identifier. Fills the skill recipe view page (slide 24 of 34).
    *
+   * @param recipePath
    * @return detail of recipe
-   *
-   * @param uniqueId the unique id of the recipe
    * @return recipe object, or null if not existing
    */
   @GET
@@ -104,6 +103,7 @@ public class RecipeController extends Base
   /**
    * Manages the recipe update operation. Fills.... dont know which slide.
    *
+   * @param recipeId
    * @return detail of recipe
    *
    * @param recipe the recipe object to update

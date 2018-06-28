@@ -260,7 +260,11 @@ public class ProductExecution implements Runnable
         if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
           nextRecipeID = execRow.getNextRecipeId();
+          if (nextRecipeID == null)
+              return true;
+          
           boolean recipeIdIsValid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
+             
           if (recipeIdIsValid)
           {
             String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
@@ -356,11 +360,12 @@ public class ProductExecution implements Runnable
             {
               logger.info("[SEMAPHORE][PS] ACQUIRED for " + da.getSubSystem().getName());
               DeviceAdapter da_next = getDAofNextRecipe(da, recipeID, prodInst);
-              MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
-
+                      
               //ONLY EXECUTE IF NEXT DA IS AVAILABLE
               if (da_next != null)
               {
+                MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
+
                 if (da.getSubSystem().getUniqueId().equals(da_next.getSubSystem().getUniqueId()))
                 {
                   logger.info("The first and second recipe are from the same adapter!");
@@ -386,10 +391,13 @@ public class ProductExecution implements Runnable
                 }
               } else
               {
+                //CHECK THIS AFTER FOR ONLY ONE RECIPE!!!!!!
+                  /*
                 PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
                 MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
 
                 logger.info("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
+                */
               }
             } else
             {
