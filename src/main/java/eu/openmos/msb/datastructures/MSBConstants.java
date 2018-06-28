@@ -34,6 +34,10 @@ public class MSBConstants
   public static final String STAGE_PRODUCTION_TO_RAMP_UP = "Production_to_rampup";
   public static final String STAGE_PRODUCTION_TO_PREPROD = "Production_to_preproduction";
 
+  public static final String STATE_PRODUCT_QUEUE = "Queued";
+  public static final String STATE_PRODUCT_PRODUCING = "Running";
+  public static final String STATE_PRODUCT_READY = "Ready";
+  
   public static final String PROJECT_PATH = System.getProperty("user.dir");
   public static final String CLOUD_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
   public static final String XML_PATH = PROJECT_PATH + ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");

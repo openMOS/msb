@@ -1,6 +1,5 @@
 package eu.openmos.msb.opcua.milo.server.methods;
 
-import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
@@ -71,6 +70,9 @@ public class ChangeState
           @UaInputArgument(
                   name = "checkNextRecipe",
                   description = "Check next Recipe if true") boolean checkNextRecipe,
+          @UaInputArgument(
+                  name = "newProductState",
+                  description = "New Product State") String newProductState,
           @UaOutputArgument(
                   name = "Ackowledge",
                   description = "Acknowledge 1-OK 0-NOK") AnnotationBasedInvocationHandler.Out<Integer> result)
@@ -81,7 +83,7 @@ public class ChangeState
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
     logger.info("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id
             + " productInstID: " + productInstance_id + " recipeID:" + recipe_id
-            + " productTypeID: " + productType_id + " checkNextRecipe: " + checkNextRecipe);
+            + " productTypeID: " + productType_id + " checkNextRecipe: " + checkNextRecipe + " newProductState: " + newProductState);
 
     String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
 
@@ -94,8 +96,8 @@ public class ChangeState
               try {
                   semaphore_passive.acquire();
                   logger.debug("Doing passive stuff!");
-                  //passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id);
-                  passiveMode_VDMA_MARTELO(productInstance_id, productType_id, da_name, da_id, recipe_id);
+                  passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id);
+                  //passiveMode_VDMA_MARTELO(productInstance_id, productType_id, da_name, da_id, recipe_id);
                   semaphore_passive.release();
               } catch (InterruptedException ex) {
                   java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
@@ -110,101 +112,98 @@ public class ChangeState
         
     } else
     {
-      if (da_name.equals(""))
-      {
-        //da does not exists, check modules?
-        //da_id can be module_id
-        //read recipe KPIs
-        logger.info("Module changeState");
-        Thread threadKPI = new Thread()
+        if (newProductState.equals(MSBConstants.STATE_PRODUCT_QUEUE)) 
         {
-          public synchronized void run()
-          {
-            readKPIs_Module(da_id, recipe_id, productInstance_id);
-          }
-        };
-        threadKPI.start();
-
-        if (checkNextRecipe)
-        {
-          Thread threadCheck = new Thread()
-          {
-            public synchronized void run()
-            {
-              logger.info("[ChangeState] Starting ChangeStateChecker!");
-              ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
-            }
-          };
-          threadCheck.start();
+            productIsOnQueue(productInstance_id);
         }
-
-        result.set(1);
-        logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
-        return;
-      } else
-      {
-        //da exists
-        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
-        //add adapter states strings to properties
-        NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
-        DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-
-        if (statePath.isNotNull())
+        else if (newProductState.equals(MSBConstants.STATE_PRODUCT_PRODUCING)) 
         {
-          String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-          da.getSubSystem().setState(state);
-
-          if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
-          {
-            logger.info("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
-          }
-        } else
-        {
-          logger.error("Error reading ADAPTER STATE!");
+            productIsExecuting(productInstance_id);
         }
-        MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
-
-        //read recipe KPIs
-        Thread threadKPI = new Thread()
+        
+        else if (newProductState.equals(MSBConstants.STATE_PRODUCT_PRODUCING))
         {
-          public synchronized void run()
-          {
-            readKPIs_DA(da_id, recipe_id, productInstance_id);
-          }
-        };
-        threadKPI.start();
+              //ACTIVE STATE
+              if (da_name.equals("")) {
+                  //da does not exists, check modules?
+                  //da_id can be module_id
+                  //read recipe KPIs
+                  logger.info("Module changeState");
+                  Thread threadKPI = new Thread() {
+                      public synchronized void run() {
+                          readKPIs_Module(da_id, recipe_id, productInstance_id);
+                      }
+                  };
+                  threadKPI.start();
 
-        //start checker depending on the adapterStage
-        if (checkNextRecipe /* && !da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP) */)
-        {
-          Thread threadCheck = new Thread()
-          {
-            public synchronized void run()
-            {
-              logger.info("[ChangeState] Starting ChangeStateChecker!");
-              ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
-            }
-          };
-          threadCheck.start();
-        }
-        /*
+                  if (checkNextRecipe) {
+                      Thread threadCheck = new Thread() {
+                          public synchronized void run() {
+                              logger.info("[ChangeState] Starting ChangeStateChecker!");
+                              ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
+                          }
+                      };
+                      threadCheck.start();
+                  }
+
+                  result.set(1);
+                  logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
+                  return;
+              } else {
+                  //da exists
+                  DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+                  //add adapter states strings to properties
+                  NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+                  DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+
+                  if (statePath.isNotNull()) {
+                      String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+                      da.getSubSystem().setState(state);
+
+                      if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR)) {
+                          logger.info("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
+                      }
+                  } else {
+                      logger.error("Error reading ADAPTER STATE!");
+                  }
+                  MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
+
+                  //read recipe KPIs
+                  Thread threadKPI = new Thread() {
+                      public synchronized void run() {
+                          readKPIs_DA(da_id, recipe_id, productInstance_id);
+                      }
+                  };
+                  threadKPI.start();
+
+                  //start checker depending on the adapterStage
+                  if (checkNextRecipe /* && !da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP) */) {
+                      Thread threadCheck = new Thread() {
+                          public synchronized void run() {
+                              logger.info("[ChangeState] Starting ChangeStateChecker!");
+                              ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
+                          }
+                      };
+                      threadCheck.start();
+                  }
+                  /*
       //MARTELO mass production
       else
       {
         finishProduct_MARTELO(da_id, productInstance_id);
       }
-         */
-        //********************************************************************************************
-        result.set(1);
-        logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
-        return;
+                   */
+                  //********************************************************************************************
+                  result.set(1);
+                  logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
+                  return;
+              }
+          }
       }
-    }
   }
 
   private void passiveMode(String productInstance_id, String productType_id, String da_name, String da_id, String recipe_id)
   {
-    
     //check if prodInst_ID is on the list
     if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
     {
@@ -1370,6 +1369,18 @@ public class ChangeState
     }
 
     return false;
+  }
+  
+  private void productIsOnQueue(String productInst_ID)
+  {
+      ProductInstance prodInst = PECManager.getInstance().getProductsDoing().get(productInst_ID);
+      prodInst.setState(ProductInstanceStatus.QUEUED);
+  }
+  
+  private void productIsExecuting(String productInst_ID)
+  {
+      ProductInstance prodInst = PECManager.getInstance().getProductsDoing().get(productInst_ID);
+      prodInst.setState(ProductInstanceStatus.PRODUCING);
   }
   
 }
