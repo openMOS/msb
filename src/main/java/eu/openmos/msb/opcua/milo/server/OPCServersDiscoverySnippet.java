@@ -297,7 +297,8 @@ public class OPCServersDiscoverySnippet extends Thread
           logger.warn("Cannot discover Endpoints from URL {} : {}", da_url, e.getMessage());
           logger.warn("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + da_url + ": " + e.getMessage());
 
-          if (e.getCause().getMessage().contains("Connection refused"))
+          if (e.getCause().getMessage().toLowerCase().contains("connection refused") || 
+                  e.getCause().getMessage().toLowerCase().contains("connection timed out"))
           {
             String daName = serverApp.getApplicationName().getText();
             if (dacManager.getDeviceAdapterbyName(daName) != null)

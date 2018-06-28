@@ -10,13 +10,18 @@ package eu.openmos.msb.services.rest;
 // import eu.openmos.agentcloud.data.recipe.ParameterSetting;
 // import eu.openmos.agentcloud.data.recipe.Recipe;
 // import eu.openmos.agentcloud.data.recipe.SkillRequirement;
+import eu.openmos.agentcloud.utilities.ServiceCallStatus;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
+import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.model.*;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.MSBConstants;
+import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
+import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +36,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
+import javax.xml.ws.BindingProvider;
 import org.apache.log4j.Logger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -76,10 +82,13 @@ public class RecipeController extends Base
       SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
       Recipe recipe = this.getRecipeFromList(subSystem.getRecipes(), helper.getRecipeId());
       
-      DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystem.getUniqueId());
-      NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
-      DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
-      recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
+      if(recipe.getStatePath() != null)
+      {
+        DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystem.getUniqueId());
+        NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
+        DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
+        recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
+      }
       return recipe;
     }
 
@@ -304,10 +313,8 @@ public class RecipeController extends Base
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/insertNewRecipe/{subSystemId}")
-  public Recipe startInsertNewRecipe(@PathParam("subSystemId") String subSystemId,
-          Skill skill)
+  public Recipe startInsertNewRecipe(@PathParam("subSystemId") String subSystemId)
   {
-
     logger.debug("Insert Skill for : " + subSystemId);
 
     Equipment equipment;
@@ -334,6 +341,20 @@ public class RecipeController extends Base
     // Setting Recipe uniqueID
     recipe.setUniqueId(this.generateId(recipe.getRegistered()));
 
+    String skillID = helper.getSkillId();
+    Skill skill = null;
+    
+    for (Skill auxSkill : equipment.getSkills())
+    {
+        if (skillID.equals(auxSkill.getUniqueId()))
+        {
+            skill = auxSkill; 
+        }
+    }
+    
+    if (skill == null)
+        return null;
+    
     // Setting recipe skill
     recipe.setSkill(skill);
 
@@ -344,8 +365,6 @@ public class RecipeController extends Base
     recipe.setOptimized(true);
     recipe.setValid(true);
 
-    // Setting Recipe subSystemId
-//        recipe.setEquipmentId(subSystem.getUniqueId());
     List<String> equipmentIds = new LinkedList<>();
     equipmentIds.add(equipment.getUniqueId());
     recipe.setEquipmentIds(equipmentIds);
@@ -353,10 +372,6 @@ public class RecipeController extends Base
     recipe.setKpiSettings(getKPISettingFromSkill(skill));
 
     recipe.setParameterSettings(getParameterSettingsFromSkill(skill));
-    //recipe.setParameterSettings(new ArrayList());
-    //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
-    //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
-    //recipe.getParameterSettings().add(ParameterSettingTest.getTestObject());
 
     return recipe;
   }
@@ -478,4 +493,115 @@ public class RecipeController extends Base
     return "Recipe not found";
   }
 
+  /**
+   * Service for triggering a specific Recipe. Returns a status message depending on the outcome.
+   *
+   * @param recipeId
+     * @param productInstanceId
+   * @return status
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{recipeId}/trigger/{productInstanceId}")
+  public String recipeTriggering(@PathParam("recipeId") String recipeId, @PathParam("productInstanceId") String productInstanceId)
+  {
+    DACManager DACinstance = DACManager.getInstance();
+    List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
+    for (String da_name : deviceAdaptersNames)
+    {
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
+      for (Recipe recipe : recipesFromDeviceAdapter)
+      {
+        if (recipe.getUniqueId().equals(recipeId))
+        {
+          //CHECK IF THE DA is on rampup?
+          if (da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP))
+          {
+            String invokeObjectID = recipe.getInvokeObjectID();
+            String invokeMethodID = recipe.getInvokeMethodID();
+            DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+
+              if (createSinglePI(productInstanceId)) {
+                  //EXECUTE THE RECIPE
+                  logger.debug("[EXECUTE] recipeID: " + recipeId);
+                  NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
+                  NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
+
+                  boolean result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, productInstanceId, "HMItest", false);
+
+                  if (result) { //status code of the call
+                      return "Success";
+                  } else {
+                      return "Couldn't Execute";
+                  }
+              }
+              else
+                  return "Couldn't Execute";
+          } else
+          {
+            return "Adapter is not on RampUp stage!";
+          }
+        }
+      }
+    }
+    return "Recipe not found";
+  }
+
+  private Boolean createSinglePI(String productInstance_id)
+  {
+      if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
+    {
+      OrderInstance oi = new OrderInstance();
+      List<ProductInstance> piList = new ArrayList<>();
+      oi.setUniqueId(productInstance_id);
+      //create instance and agent
+      ProductInstance pi = new ProductInstance(productInstance_id, "type", "name", "no_description",
+              oi.getUniqueId(), null, false, null, ProductInstanceStatus.PRODUCING,
+              new Date(), new Date());
+
+      piList.add(pi);
+      
+      oi.setName(productInstance_id + "_name");
+      oi.setDescription(productInstance_id + "_description");
+      oi.setPriority(1);
+      oi.setProductInstances(piList);
+      oi.setRegistered(new Date());
+
+      PECManager.getInstance().getProductsDoing().put(productInstance_id, pi);
+
+      MSB_gui.addToTableCurrentOrders(oi.getUniqueId(), "type", productInstance_id);
+      
+      if (MSBConstants.USING_CLOUD)
+      {
+        try
+        {
+          //send oi to cloud
+          SystemConfigurator_Service systemConfiguratorService = new SystemConfigurator_Service();
+          SystemConfigurator systemConfigurator = systemConfiguratorService.getSystemConfiguratorImplPort();
+          logger.info("Agent Cloud Cloudinterface address = [" + MSBConstants.CLOUD_ENDPOINT + "]");
+          BindingProvider bindingProvider = (BindingProvider) systemConfigurator;
+          bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, MSBConstants.CLOUD_ENDPOINT);
+
+          ServiceCallStatus orderStatus = systemConfigurator.acceptNewOrderInstance(oi);
+          logger.info("Order Instance sent to the Agent Cloud with code: " + orderStatus.getCode());
+          logger.info("Order Instance status: " + orderStatus.getDescription());
+          //***
+          //check order status
+          if (orderStatus.getCode().equals("success.openmos.agentcloud.cloudinterface.systemconfigurator"))
+          {
+            ServiceCallStatus piStartStatus = systemConfigurator.startedProduct(pi);
+
+          }
+        } catch (Exception ex)
+        {
+          System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+        }
+      }
+      return true;
+    }
+    else
+          return false;
+  }
+  
 }
