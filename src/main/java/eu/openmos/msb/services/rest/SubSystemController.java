@@ -11,6 +11,7 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.utilities.Functions;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -171,6 +172,35 @@ public class SubSystemController extends Base {
         return null; // TBV
     }
 
+    /**
+     * Returns the list of recipes associated to a workstation or a transport.
+     * Fills the skills recipe list (slide 22 of 34) This method is exposed via
+     * a "/subsystems/{subsystemId}/recipes" service call.
+     *
+     * @param subsystemId subsystem id, i.e. the agent unique identifier.
+     * @return list of recipe objects. List can be empty, cannot be null.
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{subsystemId}/fullRecipes")
+    public List<Recipe> getFullRecipesList(@PathParam("subsystemId") String subsystemId) {
+        //logger.debug("subsystem - getRecipesList - subsystemId = " + subsystemId);
+        //logger.debug("subsystem getRecipesList - of the subsystem = " + subsystemId);
+//        return RecipeTest.getTestList();
+        for (SubSystem subsystem : getList()) {
+            if (subsystem.getUniqueId().equals(subsystemId)) {
+                List<Recipe> recipeList = subsystem.getRecipes();
+                for (Module module : subsystem.getModules())
+                {
+                    recipeList.addAll(module.getRecipes());
+                }
+                return recipeList;
+            }
+        }
+        //logger.debug("subsystem - not found " + subsystemId + " - returning null");
+        return null; // TBV
+    }
+    
     /**
      * Allows to insert a new recipe associated to a workstation or a transport.
      * Returns the updated list of recipes associated to the same workstation or

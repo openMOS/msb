@@ -16,6 +16,7 @@ import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import eu.openmos.model.utilities.DatabaseConstants;
+import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.utilities.Functions;
 import io.vertx.core.VertxOptions;
 import java.util.LinkedList;
@@ -533,6 +534,7 @@ public abstract class DeviceAdapter
     for (int i = 0; i < nodeList.getLength(); i++)
     {
       Recipe recipe = new Recipe();
+      String recipeNamespace = "";
       boolean searchForSkill = true;
       List<SkillRequirement> SRs = new ArrayList<>();
       List<KPISetting> KPIsettings = new ArrayList<>();
@@ -548,9 +550,10 @@ public abstract class DeviceAdapter
           String auxTest = n2.getAttributes().getNamedItem("ns").getNodeValue();
           recipe.setInvokeObjectID(auxTest + ":" + n2.getTextContent());
           recipe.setChangeRecipeObjectID(auxTest + ":" + n2.getTextContent());
-
+          
           String[] temp = n2.getTextContent().split("/");
           recipe.setName(temp[temp.length - 1]);
+          recipeNamespace = temp[0] + "/" + temp[1];
           System.out.println("recipeName " + recipe.getName());
         } else if ("ID".equals(n2.getNodeName()))
           {
@@ -589,12 +592,23 @@ public abstract class DeviceAdapter
                 SkillRequirement auxSkillReq = new SkillRequirement();
                 auxSkillReq.setRecipeIDs(new ArrayList<>());
                 auxSkillReq.setName(n2.getNodeName());
-                auxSkillReq.setDescription(n2.getTextContent());
+                auxSkillReq.setDescription("some desc");
                 
                 for (int z = 0; z < SkillReqs.getLength(); z++)
                 {
                   Node skillReq = SkillReqs.item(z);
-                  if (skillReq.getNodeName().equals("ID"))
+                  
+                    if ("Path".equals(skillReq.getNodeName())) {
+                        
+                        String[] temp = skillReq.getTextContent().split("/");
+                        String testNameSpace = temp[0] + "/" + temp[1];
+                        if(!testNameSpace.equals(recipeNamespace)){
+                            auxSkillReq = null;
+                            break;
+                        }
+                            
+                    }
+                  else if (skillReq.getNodeName().equals("ID"))
                   {
                     NodeList auxNodeList = skillReq.getChildNodes();
                     for (int index = 0; index < auxNodeList.getLength(); index++)
@@ -640,7 +654,8 @@ public abstract class DeviceAdapter
                         }
                       }
                 }
-                SRs.add(auxSkillReq);
+                if (auxSkillReq != null)
+                    SRs.add(auxSkillReq);
                 //KPIs
               } else
               {
@@ -876,7 +891,8 @@ public abstract class DeviceAdapter
       recipe.setParameterSettings(paraSettings);
       recipe.setKpiSettings(KPIsettings);
       recipe.setSkillRequirements(SRs);
-recipe.getSkill().setSkillRequirements(SRs);
+    recipe.getSkill().setSkillRequirements(SRs);
+    AssociateRecipeToSR(recipe.getSkill());
       recipeList.add(recipe);
     }
     return recipeList;
@@ -943,7 +959,8 @@ recipe.getSkill().setSkillRequirements(SRs);
                 List<KPISetting> KPIsettings = new ArrayList<>();
                 List<ParameterSetting> paraSettings = new ArrayList<>();
                 NodeList recipeChilds = n2.getChildNodes();
-
+                String recipeNamespace = "";
+                
                 for (int q = 0; q < recipeChilds.getLength(); q++)
                 {
                   Node nRecipe = recipeChilds.item(q);
@@ -954,6 +971,7 @@ recipe.getSkill().setSkillRequirements(SRs);
 
                     String[] temp = nRecipe.getTextContent().split("/");
                     recipe.setName(temp[temp.length - 1]);
+                    recipeNamespace = temp[0] + "/" + temp[1];
                     System.out.println("recipeName " + recipe.getName());
                   } else
                   {
@@ -987,18 +1005,27 @@ recipe.getSkill().setSkillRequirements(SRs);
                         //SKRequirements
                       } else
                       {
-                        if (nRecipe.getNodeName().matches(("SR(\\d).*")))//SR+um digito pelo menos
-                        {
-                          System.out.println("isto é um SR: " + nRecipe.getNodeName());
-                          NodeList SkillReqs = nRecipe.getChildNodes();
-                          SkillRequirement auxSkillReq = new SkillRequirement();
-                          //auxSkillReq.setDescription(nRecipe.getTextContent());
-                          auxSkillReq.setDescription("some description");
-                          for (int z = 0; z < SkillReqs.getLength(); z++)
+                          if (nRecipe.getNodeName().matches(("SR(\\d).*")))//SR+um digito pelo menos
                           {
-                            Node skillReq = SkillReqs.item(z);
-                            if (skillReq.getNodeName().equals("ID"))
-                            {
+                              System.out.println("isto é um SR: " + nRecipe.getNodeName());
+                              NodeList SkillReqs = nRecipe.getChildNodes();
+                              SkillRequirement auxSkillReq = new SkillRequirement();
+                              //auxSkillReq.setDescription(nRecipe.getTextContent());
+                              auxSkillReq.setName(nRecipe.getNodeName());
+                              auxSkillReq.setDescription("some description");
+                              for (int z = 0; z < SkillReqs.getLength(); z++) {
+                                  Node skillReq = SkillReqs.item(z);
+
+                                  if ("Path".equals(skillReq.getNodeName())) {
+
+                                      String[] temp = skillReq.getTextContent().split("/");
+                                      String testNameSpace = temp[0] + "/" + temp[1];
+                                      if (!testNameSpace.equals(recipeNamespace)) {
+                                          auxSkillReq = null;
+                                          break;
+                                      }
+
+                                  } else if (skillReq.getNodeName().equals("ID")) {
                               NodeList auxNodeList = skillReq.getChildNodes();
                               for (int index = 0; index < auxNodeList.getLength(); index++)
                               {
@@ -1042,11 +1069,11 @@ recipe.getSkill().setSkillRequirements(SRs);
                                     }
                                   }
                                 }
-                              
-                            
                           }
-                          SRs.add(auxSkillReq);
-                          //KPIs
+                              if (auxSkillReq != null) {
+                                  SRs.add(auxSkillReq);
+                              }
+                              //KPIs
                         } else
                         {
                           if (nRecipe.getNodeName().endsWith("InformationPort"))
@@ -1253,7 +1280,8 @@ recipe.getSkill().setSkillRequirements(SRs);
                   recipe.setParameterSettings(paraSettings);
                   recipe.setKpiSettings(KPIsettings);
                   recipe.setSkillRequirements(SRs);
-
+                  recipe.getSkill().setSkillRequirements(SRs);
+                  AssociateRecipeToSR(recipe.getSkill());
                   recipeList.add(recipe);
                 }
               }
@@ -1616,20 +1644,12 @@ recipe.getSkill().setSkillRequirements(SRs);
     return results;
   }
 
-    private void Recipe_SR_to_Skill_SR() {
-        List<Recipe> auxRecipes = subSystem.getRecipes();
-        for (Module module : subSystem.getModules()) {
-            auxRecipes.addAll(module.getRecipes());
+    private void AssociateRecipeToSR(Skill skill) {
+        for (int j = 0; j < skill.getSkillRequirements().size(); j++) {
+            SkillRequirement auxSR = skill.getSkillRequirements().get(j);
+            if (auxSR.getRecipeIDs() != null)
+                DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
         }
-            for (Skill skill : subSystem.getSkills()) {
-                for (Recipe recipe : auxRecipes) {
-                    if (recipe.getSkill().getUniqueId().equals(skill.getUniqueId())) {
-                        skill.setSkillRequirements(recipe.getSkillRequirements());
-                        break;
-                    }
-                }
-            }
-        
     }
   
   private static boolean isRecipeNode(Node node)

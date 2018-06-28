@@ -70,8 +70,9 @@ public class SkillRequirement extends Base implements Serializable  {
      * @param uniqueId - Skill Requirement unique ID.
      * @param name - Skill Requirement name.
      * @param type - Skill Requirement type.
-     * @param classificationType - Skill Requirement classification type. REMOVED
-     * @param precedenceIds - list of skill reqs ids
+     * @param skillType
+     * @param precedents
+     * @param requiresPart
      * @param registeredTimestamp - Skill Requirement registration timestamp.
      */
     public SkillRequirement(
@@ -80,7 +81,6 @@ public class SkillRequirement extends Base implements Serializable  {
             String name, 
             String type,
             SkillType skillType,
-//            List<String> precedentIds,
             List<SkillReqPrecedent> precedents,
             Part requiresPart,
             Date registeredTimestamp
@@ -130,14 +130,6 @@ public class SkillRequirement extends Base implements Serializable  {
         this.type = type;
     }
 
-//    public List<String> getPrecedents() {
-//        return precedents;
-//    }
-//
-//    public void setPrecedents(List<String> precedents) {
-//        this.precedents = precedents;
-//    }
-
     public SkillType getSkillType() {
         return skillType;
     }
@@ -145,23 +137,6 @@ public class SkillRequirement extends Base implements Serializable  {
     public void setSkillType(SkillType skillType) {
         this.skillType = skillType;
     }
-/*
-    public List<SkillRequirement> getPrecedents() {
-        return precedents;
-    }
-
-    public void setPrecedents(List<SkillRequirement> precedents) {
-        this.precedents = precedents;
-    }
-*/
-/*
-    public List<String> getPrecedentIds() {
-        return precedentIds;
-    }
-    public void setPrecedentIds(List<String> precedentIds) {
-        this.precedentIds = precedentIds;
-    }
-*/
 
     public List<SkillReqPrecedent> getPrecedents() {
         return precedents;
@@ -193,7 +168,6 @@ public class SkillRequirement extends Base implements Serializable  {
         SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
         String stringRegisteredTimestamp = sdf.format(this.registered);
 
-//        List<String> skillRequirementIds = precedents.stream().map(skillRequirement -> skillRequirement.getName()).collect(Collectors.toList());        
         List<String> precedentIds = null;
         if (precedents != null)
             precedentIds = precedents.stream().map(precedent -> precedent.getUniqueId()).collect(Collectors.toList());        
@@ -215,28 +189,5 @@ public class SkillRequirement extends Base implements Serializable  {
                 .append(DatabaseConstants.REQUIRES_PART_ID, requiresPartId)
                 .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
     }
-//                .append("precedents", skillRequirementIds)
-    
-    /**
-     * Method that deserializes a BSON object.
-     * 
-     * @param bsonKPI - BSON to be deserialized.
-     * @return Deserialized object.
-     */
-//    public static SkillRequirement fromBSON(Document bsonRequirement)
-//    throws ParseException {
-//        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-//                       
-//        return new SkillRequirement(
-//            bsonRequirement.get("description").toString(),
-//            bsonRequirement.get("uniqueId").toString(),
-//            bsonRequirement.get("name").toString(),
-//            bsonRequirement.get("type").toString(),
-//                SkillType.
-//            (List<String>)bsonRequirement.get("precedents"),
-//            sdf.parse(bsonRequirement.get("registered").toString())                
-////            bsonRequirement.get("registered").toString()
-//        );
-//    }
 
 }
