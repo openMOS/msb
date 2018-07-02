@@ -121,7 +121,7 @@ public class ChangeState
             productIsExecuting(productInstance_id);
         }
         
-        else if (newProductState.equals(MSBConstants.STATE_PRODUCT_PRODUCING))
+        else if (newProductState.equals(MSBConstants.STATE_PRODUCT_READY))
         {
               //ACTIVE STATE
               if (da_name.equals("")) {
