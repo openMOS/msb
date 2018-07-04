@@ -1,6 +1,5 @@
 package eu.openmos.msb.datastructures;
 
-import eu.openmos.agentcloud.config.ConfigurationLoader;
 import java.util.ArrayList;
 import java.util.List;
 import io.vertx.core.Vertx;
@@ -22,8 +21,6 @@ import io.vertx.core.VertxOptions;
 import java.util.LinkedList;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -321,7 +318,7 @@ public abstract class DeviceAdapter
 
   private static ExecutionTable ReadExecutionTable(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query = "//DeviceAdapter/*[AssemblySystem]/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)][not(self::ExecutionTable)]"; //isto é o IDdo subsystem -> ExecutionTable ExecutionTable row 
+    String query = "//DeviceAdapter/*[AssemblySystem]/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)][not(self::ExecutionTable)]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query).evaluate(xmlDocument, XPathConstants.NODESET);
 
@@ -439,7 +436,6 @@ public abstract class DeviceAdapter
               if (nRtE.item(k).getNodeType() == Node.ELEMENT_NODE)
               {
                 Node nID = nRtE.item(k);
-                //if (nID.getNodeName().endsWith("Recipe")) { //MASMEC
                 if (nID.getNodeType() == Node.ELEMENT_NODE
                         && (!nID.getNodeName().contains("Path") || !nID.getNodeName().contains("Type")
                         || !nID.getNodeName().contains("ID") || !nID.getNodeName().contains("RecipeColumn")))
@@ -460,13 +456,10 @@ public abstract class DeviceAdapter
                           System.out.println("next recipe id: " + recipeid);
                           execRow.setNextRecipeId(IDchildNodes.item(id).getTextContent());
                         }
-                        else
+                        else if (IDchildNodes.item(id).getNodeName().equals("Path"))
                         {
-                          if (IDchildNodes.item(id).getNodeName().equals("Path"))
-                          {
-                            String ns = IDchildNodes.item(id).getAttributes().getNamedItem("ns").getNodeValue();
-                            execRow.setNextRecipeIdPath(ns + ":" + IDchildNodes.item(id).getTextContent()); //CHECK THIS
-                          }
+                          String ns = IDchildNodes.item(id).getAttributes().getNamedItem("ns").getNodeValue();
+                          execRow.setNextRecipeIdPath(ns + ":" + IDchildNodes.item(id).getTextContent()); //CHECK THIS
                         }
                       }
                     }
