@@ -118,8 +118,8 @@ public class UpdateDevice
       XMLOutputter xmlOutput = new XMLOutputter();
       xmlOutput.setFormat(Format.getPrettyFormat());
 
-      xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
-      xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
+      //xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
+      //xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
 
       System.out.println("Starting DA Parser **********************");
 
@@ -133,7 +133,7 @@ public class UpdateDevice
         return null;
       }
 
-    } catch (IOException | NumberFormatException ex)
+    } catch (Exception ex)
     {
 
     }
@@ -144,8 +144,8 @@ public class UpdateDevice
   private void validateRecipes_in_DB(DeviceAdapter da)
   {
     //RECIPES
-    List<Recipe> auxRecipesDB = DatabaseInteraction.getInstance().getRecipesByDAName(da.getSubSystem().getName());
-    List<Integer> indexFound = new ArrayList<>();
+    List<String> auxRecipesDB = DatabaseInteraction.getInstance().getRecipesIDByDAName(da.getSubSystem().getName());
+    List<String> idsFound = new ArrayList<>();
     
     List<Recipe> tempRepList = da.getListOfRecipes();
     for (Module auxMod : da.getListOfModules())
@@ -153,34 +153,30 @@ public class UpdateDevice
       tempRepList.addAll(auxMod.getRecipes());
     }
 
-    for (int i = 0; i < auxRecipesDB.size(); i++)
-    {
-      Recipe recipeDB = auxRecipesDB.get(i);
-      
+    for (String recipeID_DB : auxRecipesDB)
+    {      
       boolean notFound = true;
-      for (int j = 0; j < tempRepList.size(); j++)
+      for (Recipe recipe : tempRepList)
       {
-        Recipe recipe = tempRepList.get(j);
-        if (recipe.getUniqueId().equals(recipeDB.getUniqueId()))
+        if (recipe.getUniqueId().equals(recipeID_DB))
         {
           notFound = false;
-          indexFound.add(j);
+          idsFound.add(recipe.getUniqueId());
           //update recipe fields?
           break;
         }
       }
       if (notFound)
       {
-        int aux = DatabaseInteraction.getInstance().removeRecipeById(recipeDB.getUniqueId());
+        int aux = DatabaseInteraction.getInstance().removeRecipeById(recipeID_DB);
         logger.info("" + aux);
       }
     }
 
-    for (int i = 0; i < tempRepList.size(); i++)
+    for (Recipe recipe : tempRepList)
     {
-      if (!indexFound.contains(i))
+      if (!idsFound.contains(recipe.getUniqueId()))
       {
-        Recipe recipe = tempRepList.get(i);
         DACManager.getInstance().registerRecipe(da.getSubSystem().getName(), recipe.getUniqueId(), recipe.getSkill().getName(),
                 "true", recipe.getName(), recipe.getInvokeObjectID(), recipe.getInvokeMethodID());
       }
@@ -194,19 +190,17 @@ public class UpdateDevice
     String da_id_db = DatabaseInteraction.getInstance().getDA_DB_IDbyAML_ID(da.getSubSystem().getUniqueId());
     List<String> auxModulesAML_DB_ID = DatabaseInteraction.getInstance().getModulesAML_ID_ByDA_DB_ID(da_id_db);
 
-    List<Integer> indexFound = new ArrayList<>();
-    for (int i = 0; i < auxModulesAML_DB_ID.size(); i++)
+    List<String> idsFound = new ArrayList<>();
+    for (String moduleAML_DB_ID : auxModulesAML_DB_ID)
     {
-      String moduleAML_DB_ID = auxModulesAML_DB_ID.get(i);
       boolean notFound = true;
       
-      for (int j = 0; j < da.getSubSystem().getModules().size(); j++)
+      for (Module module : da.getSubSystem().getModules())
       {
-        Module module = da.getSubSystem().getModules().get(j);
         if (module.getUniqueId().equals(moduleAML_DB_ID))
         {
           notFound = false;
-          indexFound.add(j);
+          idsFound.add(module.getUniqueId());
           break;
         }
       }
@@ -216,11 +210,10 @@ public class UpdateDevice
       }
     }
 
-    for (int i = 0; i < da.getSubSystem().getModules().size(); i++)
+    for (Module module : da.getSubSystem().getModules())
     {
-      if (!indexFound.contains(i))
+      if (!idsFound.contains(module.getUniqueId()))
       {
-        Module module = da.getSubSystem().getModules().get(i);
         DACManager.getInstance().registerModule(da.getSubSystem().getName(), module.getName(), 
                 module.getUniqueId(), module.getStatus(), module.getAddress());
       }

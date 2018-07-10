@@ -138,45 +138,44 @@ public class RecipeController extends Base
     }
 
     //send the updated recipe to DA
-    String recipeUniqueId = recipe.getUniqueId();
-    List<String> deviceAdaptersNames = DACManager.getInstance().getDeviceAdaptersNames();
+    List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdaptersIDs();
     Boolean ret = null;
 
-    for (int i = 0; i < deviceAdaptersNames.size(); i++)
+    for (String da_id : deviceAdaptersID)
     {
-      DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(deviceAdaptersNames.get(i));
-      if (deviceAdapter != null)
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+      if (da != null)
       {
-        List<Recipe> recipes = deviceAdapter.getSubSystem().getRecipes();
-        for (int j = 0; j < recipes.size(); j++)
+        List<Recipe> recipes = da.getSubSystem().getRecipes();
+        for (Recipe auxRecipe : recipes)
         {
-          if (recipes.get(j).getUniqueId().equals(recipe.getUniqueId()))
+          if (auxRecipe.getUniqueId().equals(recipe.getUniqueId()))
           {
-            recipes.get(j).setDescription(recipe.getDescription());
-            recipes.get(j).setEquipmentIds(recipe.getEquipmentIds());
-            recipes.get(j).setExecutedBySkillControlPort(recipe.getExecutedBySkillControlPort());
-            recipes.get(j).setInvokeMethodID(recipe.getInvokeMethodID());
-            recipes.get(j).setInvokeObjectID(recipe.getInvokeObjectID());
-            recipes.get(j).setKpiSettings(recipe.getKpiSettings());
-            recipes.get(j).setLastOptimizationTime(recipe.getLastOptimizationTime());
-            recipes.get(j).setMsbProtocolEndpoint(recipe.getMsbProtocolEndpoint());
-            recipes.get(j).setName(recipe.getName());
-            recipes.get(j).setOptimized(recipe.isOptimized());
-            recipes.get(j).setParameterSettings(recipe.getParameterSettings());
-            recipes.get(j).setRegistered(recipe.getRegistered());
-            recipes.get(j).setSkill(recipe.getSkill());
-            recipes.get(j).setSkillRequirements(recipe.getSkillRequirements());
-            recipes.get(j).setState(recipe.getState());
-            recipes.get(j).setStatePath(recipe.getStatePath());
-            recipes.get(j).setUniqueAgentName(recipe.getUniqueAgentName());
-            recipes.get(j).setUniqueId(recipe.getUniqueId());
-            recipes.get(j).setValid(recipe.isValid());
+            auxRecipe.setDescription(recipe.getDescription());
+            auxRecipe.setEquipmentIds(recipe.getEquipmentIds());
+            auxRecipe.setExecutedBySkillControlPort(recipe.getExecutedBySkillControlPort());
+            auxRecipe.setInvokeMethodID(recipe.getInvokeMethodID());
+            auxRecipe.setInvokeObjectID(recipe.getInvokeObjectID());
+            auxRecipe.setKpiSettings(recipe.getKpiSettings());
+            auxRecipe.setLastOptimizationTime(recipe.getLastOptimizationTime());
+            auxRecipe.setMsbProtocolEndpoint(recipe.getMsbProtocolEndpoint());
+            auxRecipe.setName(recipe.getName());
+            auxRecipe.setOptimized(recipe.isOptimized());
+            auxRecipe.setParameterSettings(recipe.getParameterSettings());
+            auxRecipe.setRegistered(recipe.getRegistered());
+            auxRecipe.setSkill(recipe.getSkill());
+            auxRecipe.setSkillRequirements(recipe.getSkillRequirements());
+            auxRecipe.setState(recipe.getState());
+            auxRecipe.setStatePath(recipe.getStatePath());
+            auxRecipe.setUniqueAgentName(recipe.getUniqueAgentName());
+            auxRecipe.setUniqueId(recipe.getUniqueId());
+            auxRecipe.setValid(recipe.isValid());
 
-            DeviceAdapterOPC client = (DeviceAdapterOPC) deviceAdapter.getClient();
+            DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
             
             //client.getClient().InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
             ret = true;
-            logger.info("Sending new execution table to DA: " + deviceAdaptersNames.get(i));
+            logger.info("Sending new execution table to DA: " + da.getSubSystem().getName());
           } else
           {
 
@@ -186,7 +185,7 @@ public class RecipeController extends Base
         if (ret)
         {
           Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
-          DeviceAdapterOPC da_opc = (DeviceAdapterOPC) deviceAdapter.getClient();
+          DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da.getClient();
           MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
           
           String RecipeSerialized = Functions.ClassToString(recipe_DA);
@@ -227,15 +226,20 @@ public class RecipeController extends Base
     List<ParameterSetting> parameterSett = new LinkedList<>();
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-    for (int i = 0; i < deviceAdaptersNames.size(); i++)
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    
+    for (String da_id : deviceAdaptersID)
     {
-      ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
-      for (int j = 0; j < recipesFromDeviceAdapter.size(); j++)
+      DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
+      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
+      for (Module module : da.getSubSystem().getModules())
+        recipesFromDeviceAdapter.addAll(module.getRecipes());
+      
+      for (Recipe recipe : recipesFromDeviceAdapter)
       {
-        if (recipesFromDeviceAdapter.get(i).getUniqueId().equals(recipeId))
+        if (recipe.getUniqueId().equals(recipeId))
         {
-          return recipesFromDeviceAdapter.get(i).getParameterSettings();
+          return recipe.getParameterSettings();
         }
       }
     }
@@ -260,15 +264,20 @@ public class RecipeController extends Base
 
     List<SkillRequirement> skillReq = new LinkedList<>();
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-    for (int i = 0; i < deviceAdaptersNames.size(); i++)
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    
+    for (String da_id : deviceAdaptersID)
     {
-      ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
-      for (int j = 0; j < recipesFromDeviceAdapter.size(); j++)
+      DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
+      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
+      for (Module module : da.getSubSystem().getModules())
+        recipesFromDeviceAdapter.addAll(module.getRecipes());
+      
+      for (Recipe recipe : recipesFromDeviceAdapter)
       {
-        if (recipesFromDeviceAdapter.get(i).getUniqueId().equals(recipeId))
+        if (recipe.getUniqueId().equals(recipeId))
         {
-          return recipesFromDeviceAdapter.get(i).getSkillRequirements();
+          return recipe.getSkillRequirements();
         }
       }
     }
@@ -293,19 +302,23 @@ public class RecipeController extends Base
     List<KPISetting> kpiSett = new LinkedList<>();
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-    for (int i = 0; i < deviceAdaptersNames.size(); i++)
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    
+    for (String da_id : deviceAdaptersID)
     {
-      ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
-      for (int j = 0; j < recipesFromDeviceAdapter.size(); j++)
+      DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
+      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
+      for (Module module : da.getSubSystem().getModules())
+        recipesFromDeviceAdapter.addAll(module.getRecipes());
+      
+      for (Recipe recipe : recipesFromDeviceAdapter)
       {
-        if (recipesFromDeviceAdapter.get(i).getUniqueId().equals(recipeId))
+        if (recipe.getUniqueId().equals(recipeId))
         {
-          return recipesFromDeviceAdapter.get(i).getKpiSettings();
+          return recipe.getKpiSettings();
         }
       }
     }
-
     return kpiSett;
   }
 
@@ -513,12 +526,14 @@ public class RecipeController extends Base
   {
     logger.debug("start triggering!");
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-    for (String da_name : deviceAdaptersNames)
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    
+    for (String da_id : deviceAdaptersID)
     {
-      if (da_name.toUpperCase().contains("MSB"))
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+      if (da.getSubSystem().getName().toUpperCase().contains("MSB"))
         continue;
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+      
       List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
       for (Recipe recipe : recipesFromDeviceAdapter)
       {
@@ -568,10 +583,10 @@ public class RecipeController extends Base
   public String recipeTriggering(@PathParam("recipeId") String recipeId, @PathParam("productInstanceId") String productInstanceId)
   {
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-    for (String da_name : deviceAdaptersNames)
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    for (String da_id : deviceAdaptersID)
     {
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
       List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
       for (Recipe recipe : recipesFromDeviceAdapter)
       {

@@ -5,7 +5,6 @@
  */
 package eu.openmos.msb.datastructures;
 
-import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.model.ExecutionTableRow;

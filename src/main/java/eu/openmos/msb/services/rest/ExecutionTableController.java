@@ -33,290 +33,296 @@ import org.apache.log4j.Logger;
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
 @Path("/api/v1/executiontables")
-public class ExecutionTableController {
-    private final Logger logger = Logger.getLogger(ExecutionTableController.class.getName());
-    
-    /**
-     * Returns the full execution table given its unique identifier.
-     * Fills the execution table view page (slide 8 of 34). 
-     * 
-     * @return detail of execution table
-     * 
-     * @param uniqueId the unique id of the execution table
-     * @return executiontable object, or null if not existing
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}")
-    public ExecutionTable getDetail(@PathParam("executionTableId") String executionTableId) {
-        logger.debug("execution table getDetail - executionTableId = " + executionTableId);
-        
-      
-      DACManager DACinstance = DACManager.getInstance();
-      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+public class ExecutionTableController
+{
+
+  private final Logger logger = Logger.getLogger(ExecutionTableController.class.getName());
+
+  /**
+   * Returns the full execution table given its unique identifier. Fills the execution table view page (slide 8 of 34).
+   *
+   * @param executionTableId
+   * @return detail of execution table
+   *
+   * @param uniqueId the unique id of the execution table
+   * @return executiontable object, or null if not existing
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{executionTableId}")
+  public ExecutionTable getDetail(@PathParam("executionTableId") String executionTableId)
+  {
+    logger.debug("execution table getDetail - executionTableId = " + executionTableId);
+    DACManager DACinstance = DACManager.getInstance();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    for (String da_id : deviceAdaptersID)
+    {
+      DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyAML_ID(da_id);
+      if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
       {
-        DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyName(deviceAdaptersNames.get(i));
-        if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
-        {
-          return deviceAdapterbyName.getExecutionTable();
-        }
+        return deviceAdapterbyName.getExecutionTable();
       }
-        
-        return null;
-   }
+    }
+    return null;
+  }
 
+  /**
+   * Updates the whole execution table. Matches with the execution table update pages (slide 9 to 12 of 34).
+   *
+   * return updated execution table
+   *
+   * @param subSystemId the execution table to update
+   * @param executionTable
+   * @return executiontable updated object, or null if not existing
+   */
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{subSystemId}")
+  public ExecutionTable update(@PathParam("subSystemId") String subSystemId,
+          ExecutionTable executionTable)
+  {
 
-    /**
-     * Updates the whole execution table.
-     * Matches with the execution table update pages (slide 9 to 12 of 34). 
-     * 
-     * return updated execution table
-     * 
-     * @param subSystemId   the execution table to update
-     * @param executionTable 
-     * @return executiontable updated object, or null if not existing
-     */
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{subSystemId}")
-    public ExecutionTable update(@PathParam("subSystemId") String subSystemId, 
-            ExecutionTable executionTable) {        
+    logger.debug("execution table update - Update ExecutionTable from SubSystem: " + subSystemId);
 
-      logger.debug("execution table update - Update ExecutionTable from SubSystem: " + subSystemId);
-
-      if (MSBVar.getSystemStage().equals(MSBConstants.STAGE_RAMP_UP))
+    if (MSBVar.getSystemStage().equals(MSBConstants.STAGE_RAMP_UP))
+    {
+      SubSystem subSystem = getSubSystemById(subSystemId);
+      if (subSystem != null)
       {
-        SubSystem subSystem = getSubSystemById(subSystemId);
-        if (subSystem != null)
-        {
-          subSystem.setExecutionTable(executionTable);
-          logger.debug(subSystem != null ? "execution update - ExecutionTable successfully updated"
-                  : "execution table update - can not find subSystem with Id: " + subSystemId);
-          
-          //TODO send it to DA
-          
-          return subSystem != null ? subSystem.getExecutionTable() : executionTable;
-        }
-        else
-          return null;
+        subSystem.setExecutionTable(executionTable);
+        logger.debug(subSystem != null ? "execution update - ExecutionTable successfully updated"
+                : "execution table update - can not find subSystem with Id: " + subSystemId);
+
+        //TODO send it to DA
+        return subSystem != null ? subSystem.getExecutionTable() : executionTable;
       } else
       {
-        logger.debug("The system is not at Ramp Up Stage!");
         return null;
       }
-   }   
+    } else
+    {
+      logger.debug("The system is not at Ramp Up Stage!");
+      return null;
+    }
+  }
 
-    /**
-     * Insert the given row into the execution table.
-     * Matches with the execution table update pages (slide 9 to 12 of 34). 
-     * 
-     * return updated execution table
-     * 
-     * @param subSystemId   unique identifier of the execution table to update
-     * @param rowToInsert   the execution table row to insert in which position in which execution table
-     * @return executiontable updated object, or null if not existing
-     */
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{subSystemId}/newRow")
-    public ExecutionTable insertRow(@PathParam("subSystemId") String subSystemId, 
-            ExecutionTableRowHelper rowToInsert) {
-        
-        logger.debug("execution table insert - Insert new row in ExecutionTable from SubSystem: " + subSystemId);
-        SubSystem subSystem = getSubSystemById(subSystemId);
-        if(subSystem != null) {
-            if (subSystem.getExecutionTable().getRows() != null
-                    && subSystem.getExecutionTable().getRows().isEmpty()
-                    && rowToInsert.getRowPosition() > 0) {
-                
-                logger.debug("execution table insert - corretting new row position, setting to 0");
-                rowToInsert.setRowPosition(0);
-            }
-            
-            logger.debug("execution table insert - new row position: " + rowToInsert.getRowPosition());
-            
-            subSystem.getExecutionTable().getRows()
-                    .add(rowToInsert.getRowPosition(), rowToInsert.getRow());
-            
-            //TODO send the whole table to DA -> Lboro valentine's day discussions
-        }        
-        logger.debug(subSystem != null ? 
-                "execution table insert - new row insert successfully" :
-                "execution table insert - can not find subSystem with Id: " + subSystemId
-            );
-        return subSystem != null ? subSystem.getExecutionTable() : null;
-   }   
+  /**
+   * Insert the given row into the execution table. Matches with the execution table update pages (slide 9 to 12 of 34).
+   *
+   * return updated execution table
+   *
+   * @param subSystemId unique identifier of the execution table to update
+   * @param rowToInsert the execution table row to insert in which position in which execution table
+   * @return executiontable updated object, or null if not existing
+   */
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{subSystemId}/newRow")
+  public ExecutionTable insertRow(@PathParam("subSystemId") String subSystemId,
+          ExecutionTableRowHelper rowToInsert)
+  {
 
-    /**
-     * Returns list of rows of the given execution table.
-     * 
-     * @return list of execution table rows
-     * 
-     * @param uniqueId the unique id of the execution table
-     * @return list of executiontable rows object, or null if not existing
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}/rows")
-    public List<ExecutionTableRow> getRows(@PathParam("executionTableId") String executionTableId) {
-        logger.debug("execution table getRows - executionTableId = " + executionTableId);
-        
-       DACManager DACinstance = DACManager.getInstance();
-      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+    logger.debug("execution table insert - Insert new row in ExecutionTable from SubSystem: " + subSystemId);
+    SubSystem subSystem = getSubSystemById(subSystemId);
+    if (subSystem != null)
+    {
+      if (subSystem.getExecutionTable().getRows() != null
+              && subSystem.getExecutionTable().getRows().isEmpty()
+              && rowToInsert.getRowPosition() > 0)
       {
-        DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyName(deviceAdaptersNames.get(i));
-        if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
-        {
-          return deviceAdapterbyName.getExecutionTable().getRows();
-        }
+
+        logger.debug("execution table insert - corretting new row position, setting to 0");
+        rowToInsert.setRowPosition(0);
       }
-      
-        return null;
-   }
 
-    /**
-     * Returns selected row of the given execution table.
-     * 
-     * @return one execution table row
-     * 
-     * @param uniqueId the unique id of the execution table
-     * @param rowId the unique id of the execution table row
-     * @return selected executiontable row object, or null if not existing
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}/rows/{executionTableRowId}")
-    public ExecutionTableRow getRow(
-            @PathParam("executionTableId") String executionTableId,
-            @PathParam("executionTableRowId") String executionTableRowId) {
-        logger.debug("execution table getRow - executionTableId = " + executionTableId);
-        logger.debug("execution table getRow - executionTableRowId = " + executionTableRowId);
-        
-        
-      DACManager DACinstance = DACManager.getInstance();
-      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+      logger.debug("execution table insert - new row position: " + rowToInsert.getRowPosition());
+
+      subSystem.getExecutionTable().getRows()
+              .add(rowToInsert.getRowPosition(), rowToInsert.getRow());
+
+      //TODO send the whole table to DA -> Lboro valentine's day discussions
+    }
+    logger.debug(subSystem != null
+            ? "execution table insert - new row insert successfully"
+            : "execution table insert - can not find subSystem with Id: " + subSystemId
+    );
+    return subSystem != null ? subSystem.getExecutionTable() : null;
+  }
+
+  /**
+   * Returns list of rows of the given execution table.
+   *
+   * @return list of execution table rows
+   *
+   * @param uniqueId the unique id of the execution table
+   * @return list of executiontable rows object, or null if not existing
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{executionTableId}/rows")
+  public List<ExecutionTableRow> getRows(@PathParam("executionTableId") String executionTableId)
+  {
+    logger.debug("execution table getRows - executionTableId = " + executionTableId);
+
+    DACManager DACinstance = DACManager.getInstance();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    for (String da_id : deviceAdaptersID)
+    {
+      DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyAML_ID(da_id);
+      if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
       {
-        DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyName(deviceAdaptersNames.get(i));
-        if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
+        return deviceAdapterbyName.getExecutionTable().getRows();
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Returns selected row of the given execution table.
+   *
+   * @param executionTableId
+   * @param executionTableRowId
+   * @return one execution table row
+   * @return selected executiontable row object, or null if not existing
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{executionTableId}/rows/{executionTableRowId}")
+  public ExecutionTableRow getRow(
+          @PathParam("executionTableId") String executionTableId,
+          @PathParam("executionTableRowId") String executionTableRowId)
+  {
+    logger.debug("execution table getRow - executionTableId = " + executionTableId);
+    logger.debug("execution table getRow - executionTableRowId = " + executionTableRowId);
+
+    DACManager DACinstance = DACManager.getInstance();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    for (String da_id : deviceAdaptersID)
+    {
+      DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyAML_ID(da_id);
+      if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
+      {
+        List<ExecutionTableRow> rows = deviceAdapterbyName.getExecutionTable().getRows();
+        for (ExecutionTableRow row : rows)
         {
-          List<ExecutionTableRow> rows = deviceAdapterbyName.getExecutionTable().getRows();
-          for (int j = 0; j < rows.size(); j++)
+          if (row.getUniqueId().equals(executionTableRowId))
           {
-            if (rows.get(i).getUniqueId().equals(executionTableRowId))
-            {
-                return rows.get(i);
-            }
+            return row;
           }
         }
       }
-                
-       /* List<ExecutionTableRow> rows = ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1)).getRows();
+    }
+
+    /* List<ExecutionTableRow> rows = ExecutionTableTest.getTestObject(executionTableId, ThreadLocalRandom.current().nextInt(1, 10 + 1)).getRows();
         for (ExecutionTableRow row : rows)
             if (row.getUniqueId().equalsIgnoreCase(executionTableRowId))
                     return row;*/
+    return null;
+  }
 
-        return null;
-   }
+  /**
+   * Deletes selected row of the given execution table.
+   *
+   * return updated execution table
+   *
+   * param uniqueId unique id of the execution table
+   *
+   * @param executionTableRowId unique id of the execution table row to be deleted
+   * @return updated executiontable, or null if not existing
+   */
+  @DELETE
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{subSystemId}/rows/{executionTableRowId}")
+  public ExecutionTable deleteRow(@PathParam("subSystemId") String subSystemId,
+          @PathParam("executionTableRowId") String executionTableRowId)
+  {
 
-    /**
-     * Deletes selected row of the given execution table.
-     * 
-     * return updated execution table
-     * 
-     * param uniqueId  unique id of the execution table
-     * @param executionTableRowId  unique id of the execution table row to be deleted
-     * @return updated executiontable, or null if not existing
-     */
-    @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{subSystemId}/rows/{executionTableRowId}")
-    public ExecutionTable deleteRow(@PathParam("subSystemId") String subSystemId,
-            @PathParam("executionTableRowId") String executionTableRowId) {
-        
-        logger.debug("execution table delete row - delete row with Id: " 
-                + executionTableRowId + " , from executionTable of subSystem: " + subSystemId);
-        SubSystem subSystem = getSubSystemById(subSystemId);
-        if(subSystem != null) {
-            List<ExecutionTableRow> toRemove = new ArrayList<>();
-            for(ExecutionTableRow row : subSystem.getExecutionTable().getRows()){
-                if(row.getUniqueId().equalsIgnoreCase(executionTableRowId)){
-                    toRemove.add(row);
-                }
-            }
-            subSystem.getExecutionTable().getRows().removeAll(toRemove);
-            
-            //TODO send the whole table to DA -> Lboro valentine's day discussions
-            
-        }
-        logger.debug(subSystem != null ? 
-                "execution table delete row - Row successfully deleted from execution table" : 
-                "execution table delete row - can not find subSystem: " + subSystemId);
-        return subSystem != null ? subSystem.getExecutionTable() : null;
-   }
-
-    /**
-     * Updates selected row of the given execution table.
-     * 
-     * @return updated execution table
-     * 
-     * @param uniqueId  unique id of the execution table
-     * @param rowId  unique id of the execution table row to be updated
-     * @return updated executiontable, or null if not existing
-     */
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{executionTableId}/rows/{executionTableRowId}")
-    public ExecutionTable updateRow( //not used
-            @PathParam("executionTableId") String executionTableId,
-            @PathParam("executionTableRowId") String executionTableRowId,
-            ExecutionTableRow rowToUpdate) {
-        logger.debug("execution table updateRow - executionTableId = " + executionTableId);
-        logger.debug("execution table updateRow - executionTableRowId = " + executionTableRowId);
-        logger.debug("execution table updateRow - rowToUpdate = " + rowToUpdate);
-        
-        
-         DACManager DACinstance = DACManager.getInstance();
-      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+    logger.debug("execution table delete row - delete row with Id: "
+            + executionTableRowId + " , from executionTable of subSystem: " + subSystemId);
+    SubSystem subSystem = getSubSystemById(subSystemId);
+    if (subSystem != null)
+    {
+      List<ExecutionTableRow> toRemove = new ArrayList<>();
+      for (ExecutionTableRow row : subSystem.getExecutionTable().getRows())
       {
-        DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyName(deviceAdaptersNames.get(i));
-        if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
+        if (row.getUniqueId().equalsIgnoreCase(executionTableRowId))
         {
-          List<ExecutionTableRow> rows = deviceAdapterbyName.getExecutionTable().getRows();
-          for (int j = 0; j < rows.size(); j++)
+          toRemove.add(row);
+        }
+      }
+      subSystem.getExecutionTable().getRows().removeAll(toRemove);
+
+      //TODO send the whole table to DA -> Lboro valentine's day discussions
+    }
+    logger.debug(subSystem != null
+            ? "execution table delete row - Row successfully deleted from execution table"
+            : "execution table delete row - can not find subSystem: " + subSystemId);
+    return subSystem != null ? subSystem.getExecutionTable() : null;
+  }
+
+  /**
+   * Updates selected row of the given execution table.
+   *
+   * @param executionTableId
+   * @param rowToUpdate
+   * @param executionTableRowId
+   * @return updated execution table
+   * @return updated executiontable, or null if not existing
+   */
+  @PUT
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{executionTableId}/rows/{executionTableRowId}")
+  public ExecutionTable updateRow( //not used
+          @PathParam("executionTableId") String executionTableId,
+          @PathParam("executionTableRowId") String executionTableRowId,
+          ExecutionTableRow rowToUpdate)
+  {
+    logger.debug("execution table updateRow - executionTableId = " + executionTableId);
+    logger.debug("execution table updateRow - executionTableRowId = " + executionTableRowId);
+    logger.debug("execution table updateRow - rowToUpdate = " + rowToUpdate);
+
+    DACManager DACinstance = DACManager.getInstance();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    for (String da_id : deviceAdaptersID)
+    {
+      DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyAML_ID(da_id);
+      if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
+      {
+        List<ExecutionTableRow> rows = deviceAdapterbyName.getExecutionTable().getRows();
+        for (ExecutionTableRow row: rows)
+        {
+          if (row.getUniqueId().equals(executionTableRowId))
           {
-            if (rows.get(i).getUniqueId().equals(executionTableRowId))
-            {
-                rows.get(i).setNextRecipeId(rowToUpdate.getNextRecipeId());
-                rows.get(i).setNextRecipeIdPath(rowToUpdate.getNextRecipeIdPath());
-                rows.get(i).setPossibleRecipeChoices(rowToUpdate.getPossibleRecipeChoices());
-                rows.get(i).setProductId(rowToUpdate.getProductId());
-                rows.get(i).setRecipeId(rowToUpdate.getRecipeId());
-                rows.get(i).setRegistered(rowToUpdate.getRegistered());
-                rows.get(i).setUniqueId(rowToUpdate.getUniqueId());
-                
-                //TODO send the whole table to DA -> Lboro valentine's day discussions
-                
-                return deviceAdapterbyName.getExecutionTable();
-            }
+            row.setNextRecipeId(rowToUpdate.getNextRecipeId());
+            row.setNextRecipeIdPath(rowToUpdate.getNextRecipeIdPath());
+            row.setPossibleRecipeChoices(rowToUpdate.getPossibleRecipeChoices());
+            row.setProductId(rowToUpdate.getProductId());
+            row.setRecipeId(rowToUpdate.getRecipeId());
+            row.setRegistered(rowToUpdate.getRegistered());
+            row.setUniqueId(rowToUpdate.getUniqueId());
+
+            //TODO send the whole table to DA -> Lboro valentine's day discussions
+            return deviceAdapterbyName.getExecutionTable();
           }
         }
       }
-      
-        return null;
     }
-    
-    private SubSystem getSubSystemById(String subSystemId) {
-        for(SubSystem ss : (new SubSystemController()).getList()) {
-            if(ss.getUniqueId().equalsIgnoreCase(subSystemId)){
-                return ss;
-            }
-        }
-        return null;
+
+    return null;
+  }
+
+  private SubSystem getSubSystemById(String subSystemId)
+  {
+    for (SubSystem ss : (new SubSystemController()).getList())
+    {
+      if (ss.getUniqueId().equalsIgnoreCase(subSystemId))
+      {
+        return ss;
+      }
     }
+    return null;
+  }
 }

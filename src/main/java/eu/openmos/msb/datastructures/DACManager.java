@@ -272,20 +272,26 @@ public class DACManager
    * @param deviceAdapterName
    * @return
    */
-  public ArrayList<Recipe> getRecipesFromDeviceAdapter(String deviceAdapterName)
+  public ArrayList<String> getRecipesFromDeviceAdapter(String deviceAdapterName)
   {
-    return DatabaseInteraction.getInstance().getRecipesByDAName(deviceAdapterName);
+    return DatabaseInteraction.getInstance().getRecipesIDByDAName(deviceAdapterName);
   }
 
   /**
    *
    * @return
    */
+  /*
   public List<String> getDeviceAdaptersNames()
   {
-    return DatabaseInteraction.getInstance().getDeviceAdapters();
+    return DatabaseInteraction.getInstance().getDeviceAdapters_name();
   }
-
+*/
+  
+  public List<String> getDeviceAdaptersIDs(){
+    return DatabaseInteraction.getInstance().getDeviceAdapters_AML_ID();
+  }
+  
   /**
    *
    * @param deviceAdapterName

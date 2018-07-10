@@ -459,7 +459,7 @@ public class DatabaseInteraction
     return null;
   }
 
-  public ArrayList<String> getDeviceAdapters()
+  public ArrayList<String> getDeviceAdapters_name()
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
@@ -477,6 +477,8 @@ public class DatabaseInteraction
         {
           while (query.next())
           {
+            if (query.getString(1).equals("MSB Milo server"))
+              continue;
             myresult.add(query.getString(1));
           }
         }
@@ -501,6 +503,51 @@ public class DatabaseInteraction
     return null;
   }
 
+  public ArrayList<String> getDeviceAdapters_AML_ID()
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+    try
+    {
+      Statement stmt = conn.createStatement();
+      ArrayList<String> myresult = new ArrayList<>();
+      try (ResultSet query = stmt.executeQuery("SELECT aml_id FROM DeviceAdapter"))
+      {
+        if (!query.isBeforeFirst())
+        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+          //System.out.println("No data");
+        } else
+        {
+          while (query.next())
+          {
+            if (query.getString("aml_id") == null)
+              continue;
+            myresult.add(query.getString("aml_id"));
+          }
+        }
+      }
+      stmt.close();
+
+      Long time = DBqueryTimer.getTime();
+      perfMeasure.getDatabaseQueryTimers().add(time);
+      DBqueryTimer.stop();
+
+      return myresult;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return null;
+  }
+
+  
   /**
    *
    * @param name
@@ -634,7 +681,7 @@ public class DatabaseInteraction
         {
           ids.add(rs.getString("aml_id"));
           //System.out.println("Found divce with id:  " + id);
-          break;
+          //break;
         }
       }
     } catch (SQLException ex)
@@ -1268,13 +1315,13 @@ public class DatabaseInteraction
    * @param deviceAdapterName
    * @return
    */
-  public ArrayList<Recipe> getRecipesByDAName(String deviceAdapterName)
+  public ArrayList<String> getRecipesIDByDAName(String deviceAdapterName)
   {
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
 
-    ArrayList<Recipe> result = new ArrayList<>();
+    ArrayList<String> result = new ArrayList<>();
     try
     {
       try (Statement stmt = conn.createStatement())
@@ -1290,11 +1337,7 @@ public class DatabaseInteraction
         {
           while (rs.next())
           {
-            Recipe recipe = new Recipe();
-            recipe.setUniqueId(rs.getString(1));
-            recipe.setName(rs.getString(5));
-            recipe.setValid(trueSet.contains(rs.getString(4)));
-            result.add(recipe);
+            result.add(rs.getString("aml_id"));
           }
         }
       }

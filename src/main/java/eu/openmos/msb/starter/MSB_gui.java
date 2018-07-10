@@ -124,9 +124,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private StopWatch guiWatch;
   private static int priority = 1;
   private final StopWatch OrderWatch = new StopWatch();
-  
 
-  
   /**
    *
    * @throws Exception
@@ -1227,7 +1225,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
-      
+
   /**
    *
    * @param evt
@@ -1688,9 +1686,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         Thread.currentThread().interrupt();
       }
-      
+
       MSBVar.setSystemStage(MSBConstants.STAGE_PRODUCTION);
-      
+
     } catch (Exception ex)
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, "[StartMSBServerActionPerformed] Exception: " + ex);
@@ -1851,16 +1849,18 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       //setRecipesFromProducttoExecute
       pecManager.getOrderList().add(newOrder);
       pecManager.getOrderInstanceList().add(oi);
-      
+
       for (ProductInstance prodInst : oi.getProductInstances())
-        MSB_gui.addToTableSubmitedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority()); 
-      
+      {
+        MSB_gui.addToTableSubmitedOrder(oi.getUniqueId(), prodInst.getProductId(), prodInst.getUniqueId(), oi.getPriority());
+      }
+
       PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
       Long time = OrderWatch.getTime();
       perfMeasure.getOrderTillOrderInstanceCreationTimers().add(time);
       logger.info("Order Instance took " + time.toString() + "ms to be created from the received order");
       OrderWatch.stop();
-      
+
       //get first product instance and start doing stuff
       new Thread(new ProductExecution()).start();
     }//GEN-LAST:event_btnProductExecuteActionPerformed
@@ -1964,13 +1964,22 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {
     recipesTableModel.getDataVector().removeAllElements();
     DACManager dac = DACManager.getInstance(); //singleton to access hashmaps in other classes
-    List<String> da_names = dac.getDeviceAdaptersNames();
-    for (String daName : da_names)
+    List<String> da_ids = dac.getDeviceAdaptersIDs();
+
+    for (String da_id : da_ids)
     {
-      ArrayList<Recipe> list = dac.getRecipesFromDeviceAdapter(daName);
-      for (Recipe r : list)
+      DeviceAdapter da = dac.getDeviceAdapterbyAML_ID(da_id);
+      List<Recipe> recipesFromDeviceAdapter = da.getListOfRecipes();
+      for (Module module : da.getSubSystem().getModules())
       {
-        addToTableRecipes(r.getName(), r.isValid(), daName); //add each product from the list for each workstation
+        if (module != null)
+        {
+          recipesFromDeviceAdapter.addAll(module.getRecipes());
+        }
+      }
+      for (Recipe r : recipesFromDeviceAdapter)
+      {
+        addToTableRecipes(r.getName(), r.isValid(), da.getSubSystem().getName()); //add each product from the list for each workstation
       }
     }
     UpdateTableRowCount(); //update counter
@@ -2043,16 +2052,17 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {
     modulesTableModel.getDataVector().removeAllElements();
     DACManager instance = DACManager.getInstance();
-    List<String> adapters = instance.getDeviceAdaptersNames();
-    for (String adapter : adapters)
+    List<String> adapters = instance.getDeviceAdaptersIDs();
+    for (String da_id : adapters)
     {
-      List<Module> modules = instance.getModulesFromDeviceAdapter(adapter);
+      DeviceAdapter da = instance.getDeviceAdapterbyAML_ID(da_id);
+      List<Module> modules = da.getSubSystem().getModules();
       // VaG - 29/09/2017
       if (modules != null)
       {
         for (Equipment module : modules)
         {
-          addToTableModules(module.getName(), (module.getStatus().equals("1")), module.getUniqueId(), adapter);
+          addToTableModules(module.getName(), (module.getStatus().equals("1")), module.getUniqueId(), da.getSubSystem().getName());
         }
       }
     }
@@ -2079,11 +2089,11 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     opc_comms_log.append("Server successfully added to table. Name: " + serverName + "URL: " + serverUri + "\n");
     UpdateTableRowCount(); //update counter
   }
-  
+
   public static void updateTableAdaptersSemaphore(String somaphoreState, String serverName)
   {
-       String rowData;
-       int rowCount=adaptersTableModel.getRowCount();
+    String rowData;
+    int rowCount = adaptersTableModel.getRowCount();
     //Object[] rowData = new Object[adaptersTableModel.getRowCount()];
     for (int i = 0; i < adaptersTableModel.getRowCount(); i++)
     {
@@ -2108,7 +2118,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       recipeName, status, deviceAdapterName
     });
-    
+
     UpdateTableRowCount(); //update counter
   }
 
@@ -2134,7 +2144,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       System.out.println("Devices NA TABELA: " + rowData[i].toString());
     }
     opc_comms_log.append("Devices successfully added to table. Name: " + DeviceName + "\n");
-    
+
     UpdateTableRowCount(); //update counter
   }
 
@@ -2146,9 +2156,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     });
 
     System.out.println("Order added in table Submitted: " + prodInst_ID);
-    
+
     opc_comms_log.append("Order successfully added to table Submited " + prodInst_ID + "\n");
-    
+
     UpdateTableRowCount(); //update counter
   }
 
@@ -2162,7 +2172,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         break;
       }
     }
-    
+
     UpdateTableRowCount(); //update counter
   }
 
@@ -2174,12 +2184,12 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     });
 
     System.out.println("Order add to table Current " + prodInst_ID);
-    
+
     opc_comms_log.append("Order add to table Current: " + prodInst_ID + "\n");
-    
+
     UpdateTableRowCount(); //update counter
   }
-  
+
   public static void removeFromTableCurrentOrder(String prodInst_ID)
   {
     for (int i = 0; i < ordersTableCurrentModel.getRowCount(); i++)
@@ -2190,10 +2200,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         break;
       }
     }
-    
+
     UpdateTableRowCount(); //update counter
   }
-  
+
   public static void updateDATableCurrentOrderLastDA(String prodInst_ID, String da_name)
   {
     for (int i = 0; i < ordersTableCurrentModel.getRowCount(); i++)
@@ -2204,10 +2214,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         break;
       }
     }
-    
+
     UpdateTableRowCount(); //update counter
   }
-  
+
   public static void updateDATableCurrentOrderNextDA(String prodInst_ID, String da_name)
   {
     for (int i = 0; i < ordersTableCurrentModel.getRowCount(); i++)
@@ -2218,10 +2228,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         break;
       }
     }
-    
+
     UpdateTableRowCount(); //update counter
   }
-  
+
   public static void addToTableExecutedOrders(String OrderID, String ProductID, String prodInst_ID)
   {
     ordersTableExecutedModel.addRow(new Object[]
@@ -2232,10 +2242,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     System.out.println("Order added to Executed table: " + prodInst_ID);
 
     opc_comms_log.append("Order added to Executed table: " + prodInst_ID + "\n");
-    
+
     UpdateTableRowCount(); //update counter
   }
-  
+
   public static void removeFromTableExecutedOrder(String prodInst_ID)
   {
     for (int i = 0; i < ordersTableExecutedModel.getRowCount(); i++)
@@ -2246,10 +2256,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         break;
       }
     }
-    
+
     UpdateTableRowCount(); //update counter
   }
-  
+
   /**
    * @todo this is to use??????
    * @param serverName
@@ -2281,7 +2291,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       opc_comms_log.append("SERVER TO DELETE NOT FOUND from table: " + serverName + "\n");
     }
     comboServers.removeItem(serverName);
-    
+
     UpdateTableRowCount(); //update counter
   }
 
@@ -2316,7 +2326,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       opc_comms_log.append("RECIPE TO DELETE NOT FOUND from table: " + recipe + "\n");
     }
-    
+
     UpdateTableRowCount(); //update counter
   }
 
@@ -2527,7 +2537,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       }
     }
   }
-  
+
   private static void UpdateTableRowCount()
   {
     adaptersTableLabel.setText("Adapters Table (#" + adaptersTableModel.getRowCount() + ")");
@@ -2537,7 +2547,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     currentOrdersLabel.setText("Current Orders (#" + ordersTableCurrentModel.getRowCount() + ")");
     executedOrdersLabel.setText("Executed Orders (#" + ordersTableExecutedModel.getRowCount() + ")");
   }
-  
+
   /**
    * @param args the command line arguments
    */

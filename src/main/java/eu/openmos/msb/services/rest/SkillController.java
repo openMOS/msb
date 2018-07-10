@@ -8,6 +8,7 @@ package eu.openmos.msb.services.rest;
 // import eu.openmos.agentcloud.data.recipe.Equipment;
 import eu.openmos.model.*;
 import eu.openmos.msb.datastructures.DACManager;
+import eu.openmos.msb.datastructures.DeviceAdapter;
 // import eu.openmos.agentcloud.data.recipe.KPI;
 // import eu.openmos.agentcloud.data.recipe.Parameter;
 // import eu.openmos.agentcloud.data.recipe.Recipe;
@@ -28,77 +29,86 @@ import org.apache.log4j.Logger;
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
 @Path("/api/v1/skills")
-public class SkillController extends Base {
+public class SkillController extends Base
+{
 
-    private final Logger logger = Logger.getLogger(SkillController.class.getName());
+  private final Logger logger = Logger.getLogger(SkillController.class.getName());
 
-    /**
-     * Returns the skill object given its unique identifier. Fills the skill
-     * view page (slide 17 of 34).
-     *
-     * @return detail of skill
-     *
-     * @param skillId the unique id of the skill
-     * @return skill object, or null if not existing
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{skillId}")
-    public Skill getDetail(@PathParam("skillId") String skillPath) {
-        logger.debug("SkillController - getDetail - skillId = " + skillPath);
-        
-        PathHelper helper = new PathHelper(skillPath, logger);
-        Equipment equipment;
-        
-        if (helper.hasSubModules()) {
-            equipment = (new ModuleController()).getDetail(helper.getModulesPath());
-        } else {
-            equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
-        }
-        
-        if (equipment != null && equipment.getSkills() != null){
-            for (Skill skill : equipment.getSkills()) {
-                if (skill.getUniqueId().equalsIgnoreCase(helper.getSkillId())) {
-                    return skill;
-                }
-            }
-        }
-        
-        return null;
+  /**
+   * Returns the skill object given its unique identifier. Fills the skill view page (slide 17 of 34).
+   *
+   * @return detail of skill
+   *
+   * @param skillId the unique id of the skill
+   * @return skill object, or null if not existing
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path(value = "/{skillId}")
+  public Skill getDetail(@PathParam("skillId") String skillPath)
+  {
+    logger.debug("SkillController - getDetail - skillId = " + skillPath);
+
+    PathHelper helper = new PathHelper(skillPath, logger);
+    Equipment equipment;
+
+    if (helper.hasSubModules())
+    {
+      equipment = (new ModuleController()).getDetail(helper.getModulesPath());
+    } else
+    {
+      equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
     }
 
-    /**
-     * Returns the list of recipes associated to a skill. Fills the skills
-     * recipe list (slide 22 of 34) This method is exposed via a
-     * "/skills/{skillId}/recipes" service call.
-     *
-     * @param skillId skill id, i.e. the skill unique identifier.
-     * @return list of recipe objects. List can be empty, cannot be null.
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{skillId}/recipes")
-    public List<Recipe> getRecipesList(@PathParam("skillId") String skillPath) {
-        logger.debug("SkillController - getRecipesList - skillId = " + skillPath);
-              
-        PathHelper helper = new PathHelper(skillPath, logger);
-        
-        Skill skill = this.getDetail(skillPath);
-        
-        if (skill != null ) {
-            if (helper.hasSubModules()) {
-                logger.debug("Go for module");
-                Module module = (new ModuleController()).getDetail(helper.getModulesPath());
-                return this.getRecipesFromSkill(module.getRecipes(), skill);
-            } else {
-                logger.debug("Go for subSystem");
-                SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
-                return this.getRecipesFromSkill(subSystem.getRecipes(), skill);
-            }
+    if (equipment != null && equipment.getSkills() != null)
+    {
+      for (Skill skill : equipment.getSkills())
+      {
+        if (skill.getUniqueId().equalsIgnoreCase(helper.getSkillId()))
+        {
+          return skill;
         }
-        return null;
-        
-       /* String[] ids = skillId.split(Base.PARAMSEPARATOR);
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Returns the list of recipes associated to a skill. Fills the skills recipe list (slide 22 of 34) This method is
+   * exposed via a "/skills/{skillId}/recipes" service call.
+   *
+   * @param skillId skill id, i.e. the skill unique identifier.
+   * @return list of recipe objects. List can be empty, cannot be null.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{skillId}/recipes")
+  public List<Recipe> getRecipesList(@PathParam("skillId") String skillPath)
+  {
+    logger.debug("SkillController - getRecipesList - skillId = " + skillPath);
+
+    PathHelper helper = new PathHelper(skillPath, logger);
+
+    Skill skill = this.getDetail(skillPath);
+
+    if (skill != null)
+    {
+      if (helper.hasSubModules())
+      {
+        logger.debug("Go for module");
+        Module module = (new ModuleController()).getDetail(helper.getModulesPath());
+        return this.getRecipesFromSkill(module.getRecipes(), skill);
+      } else
+      {
+        logger.debug("Go for subSystem");
+        SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
+        return this.getRecipesFromSkill(subSystem.getRecipes(), skill);
+      }
+    }
+    return null;
+
+    /* String[] ids = skillId.split(Base.PARAMSEPARATOR);
 
         // ss-recip
         // ss-modulo-recipe
@@ -121,67 +131,75 @@ public class SkillController extends Base {
                 return new ModuleController().getDetail(modulePath).getRecipes();
             }
         }
-        return null;*/   
-    }
-    
-    
-    private List<Recipe> getRecipesFromSkill(List<Recipe> recipes, Skill skill) {
-        List<Recipe> recipeToReturn = new ArrayList<>();
-        for (Recipe recipe : recipes){
-            if (recipe.getSkill().getUniqueId().equalsIgnoreCase(skill.getUniqueId())) {
-                recipeToReturn.add(recipe);
-            }
-        }
-        logger.debug("Recipe from skill - Found " + recipeToReturn.size() + " for skill : " + skill.getUniqueId());
-        return recipeToReturn.isEmpty() ? null : recipeToReturn;
-    }
+        return null;*/
+  }
 
-    /**
-     * Returns the list of kpis associated to a skill. Fills the skill detail
-     * page (slide 19 of 34) This method is exposed via a
-     * "/skills/{skillId}/kpis" service call.
-     *
-     * @param skillId skill id, i.e. the skill unique identifier.
-     * @return list of kpi objects. List can be empty, cannot be null.
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{skillId}/kpis")
-    public List<KPI> getKPIsList(@PathParam("skillId") String skillId) {
-        logger.debug("cpad - getKPIsList - skillId = " + skillId);
-        logger.debug("cpad getKPIsList - of the skill = " + skillId);
-              
-      List<KPI> kpis = new LinkedList<>();
-      
-      DACManager DACinstance = DACManager.getInstance();
-      List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-      for (int i = 0; i < deviceAdaptersNames.size(); i++)
+  private List<Recipe> getRecipesFromSkill(List<Recipe> recipes, Skill skill)
+  {
+    List<Recipe> recipeToReturn = new ArrayList<>();
+    for (Recipe recipe : recipes)
+    {
+      if (recipe.getSkill().getUniqueId().equalsIgnoreCase(skill.getUniqueId()))
       {
-        ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
-        for (int j = 0; j < recipesFromDeviceAdapter.size(); j++)
-        {
-          if (recipesFromDeviceAdapter.get(i).getSkill().getUniqueId().equals(skillId))
-          {
-            return recipesFromDeviceAdapter.get(i).getSkill().getKpis();
-          }
-        }
+        recipeToReturn.add(recipe);
+      }
+    }
+    logger.debug("Recipe from skill - Found " + recipeToReturn.size() + " for skill : " + skill.getUniqueId());
+    return recipeToReturn.isEmpty() ? null : recipeToReturn;
+  }
+
+  /**
+   * Returns the list of kpis associated to a skill. Fills the skill detail page (slide 19 of 34) This method is exposed
+   * via a "/skills/{skillId}/kpis" service call.
+   *
+   * @param skillId skill id, i.e. the skill unique identifier.
+   * @return list of kpi objects. List can be empty, cannot be null.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{skillId}/kpis")
+  public List<KPI> getKPIsList(@PathParam("skillId") String skillId)
+  {
+    logger.debug("cpad - getKPIsList - skillId = " + skillId);
+    logger.debug("cpad getKPIsList - of the skill = " + skillId);
+
+    List<KPI> kpis = new LinkedList<>();
+
+    DACManager DACinstance = DACManager.getInstance();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+
+    for (String da_id : deviceAdaptersID)
+    {
+      DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
+      List<Skill> recipesFromDeviceAdapter = da.getSubSystem().getSkills();
+      for (Module module : da.getSubSystem().getModules())
+      {
+        recipesFromDeviceAdapter.addAll(module.getSkills());
       }
 
-      return kpis;
+      for (Skill skill : recipesFromDeviceAdapter)
+      {
+        if (skill.getUniqueId().equals(skillId))
+        {
+          return skill.getKpis();
+        }
+      }
     }
 
-    /**
-     * Returns the list of parameters associated to a skill. Fills the skill
-     * detail page (slide 18 of 34) This method is exposed via a
-     * "/skills/{skillId}/parameters" service call.
-     *
-     * @param skillId skill id, i.e. the skill unique identifier.
-     * @return list of parameter objects. List can be empty, cannot be null.
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{skillId}/parameters")
-   public List<Parameter> getParametersList(@PathParam("skillId") String skillId)
+    return kpis;
+  }
+
+  /**
+   * Returns the list of parameters associated to a skill. Fills the skill detail page (slide 18 of 34) This method is
+   * exposed via a "/skills/{skillId}/parameters" service call.
+   *
+   * @param skillId skill id, i.e. the skill unique identifier.
+   * @return list of parameter objects. List can be empty, cannot be null.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{skillId}/parameters")
+  public List<Parameter> getParametersList(@PathParam("skillId") String skillId)
   {
     logger.debug("cpad - getParametersList - skillId = " + skillId);
     logger.debug("cpad getParametersList - of the skill = " + skillId);
@@ -189,46 +207,49 @@ public class SkillController extends Base {
     List<Parameter> parameters = new LinkedList<>();
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersNames = DACinstance.getDeviceAdaptersNames();
-    for (int i = 0; i < deviceAdaptersNames.size(); i++)
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    
+    for (String da_id : deviceAdaptersID)
     {
-      ArrayList<Recipe> recipesFromDeviceAdapter = DACManager.getInstance().getRecipesFromDeviceAdapter(deviceAdaptersNames.get(i));
-      for (int j = 0; j < recipesFromDeviceAdapter.size(); j++)
+      DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
+      List<Skill> recipesFromDeviceAdapter = da.getSubSystem().getSkills();
+      for (Module module : da.getSubSystem().getModules())
       {
-        if (recipesFromDeviceAdapter.get(i).getSkill().getUniqueId().equals(skillId))
+        recipesFromDeviceAdapter.addAll(module.getSkills());
+      }
+
+      for (Skill skill : recipesFromDeviceAdapter)
+      {
+        if (skill.getUniqueId().equals(skillId))
         {
-          return recipesFromDeviceAdapter.get(i).getSkill().getParameters();
+          return skill.getParameters();
         }
       }
     }
-
     return parameters;
   }
 
-    /**
-     * Returns the list of equipments associated to a skill. Fills the skill
-     * detail page (missing slide should be next after 20 of 34) This method is
-     * exposed via a "/skills/{skillId}/equipments" service call.
-     *
-     * @param skillId skill id, i.e. the skill unique identifier.
-     * @return list of equipment objects. List can be empty, cannot be null.
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{skillId}/equipments")
-    public List<Module> getModuleList(@PathParam("skillId") String skillId) {
-        logger.debug("cpad - getModuleList - skillId = " + skillId);
-        logger.debug("cpad getModuleList - of the skill = " + skillId);
-        List<Module> modules = new LinkedList<>();
-      
-        return modules;
-    }
+  /**
+   * Returns the list of equipments associated to a skill. Fills the skill detail page (missing slide should be next
+   * after 20 of 34) This method is exposed via a "/skills/{skillId}/equipments" service call.
+   *
+   * @param skillId skill id, i.e. the skill unique identifier.
+   * @return list of equipment objects. List can be empty, cannot be null.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{skillId}/equipments")
+  public List<Module> getModuleList(@PathParam("skillId") String skillId)
+  {
+    logger.debug("cpad - getModuleList - skillId = " + skillId);
+    logger.debug("cpad getModuleList - of the skill = " + skillId);
+    List<Module> modules = new LinkedList<>();
+
+    return modules;
+  }
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
-
-
 /*
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -276,11 +297,8 @@ public class SkillController extends Base {
         return null;
 
     }
-*/
-
-
-
-/*
+ */
+ /*
 @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{skillId}/recipes")
@@ -346,8 +364,4 @@ public class SkillController extends Base {
             return null;
         }
     }
-*/
-
-    
-
-    
+ */

@@ -29,8 +29,7 @@ public class EventConfirmationImpl implements EventConfirmation
   @Override
   public boolean agentCreated(String agentId)
   {
-    DeviceAdapter deviceAdapter = null;
-    deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(agentId));
+    DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyAML_ID(agentId);
     if (deviceAdapter != null)
     {
       deviceAdapter.setHasAgent(true);
@@ -65,8 +64,7 @@ public class EventConfirmationImpl implements EventConfirmation
     logger.debug(getClass().getName() + " - agentNotCreated - begin - tracing for agentId [" + agentId + "]");
 
     // some stuff...
-    DeviceAdapter deviceAdapter = null;
-    deviceAdapter = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(agentId));
+    DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyAML_ID(agentId);
     if (deviceAdapter != null)
     {
       //deviceAdapter.setHasAgent(false);
@@ -197,13 +195,13 @@ public class EventConfirmationImpl implements EventConfirmation
     logger.info("CLOUD notified it started and is working properly.");
     
     //create agents for the DAs
-    List<String> daNames = DACManager.getInstance().getDeviceAdaptersNames();
+    List<String> daIDs = DACManager.getInstance().getDeviceAdaptersIDs();
     
-    for (String daName : daNames)
+    for (String da_id : daIDs)
     {
-      if (!daName.toUpperCase().contains("MSB"))
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+      if (!da.getSubSystem().getName().toUpperCase().contains("MSB"))
       {
-        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(daName);
         String daAgentCreation = DACManager.daAgentCreation(da);
         System.out.println("Agent creation for | " + da.getSubSystem().getName() + " | ended with: " + daAgentCreation);
         //da.initVertx();

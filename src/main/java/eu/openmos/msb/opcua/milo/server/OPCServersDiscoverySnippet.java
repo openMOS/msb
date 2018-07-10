@@ -135,9 +135,9 @@ public class OPCServersDiscoverySnippet extends Thread
       }
 
       //get da and check for server status
-      for (String name : DACManager.getInstance().getDeviceAdaptersNames())
+      for (String id : DACManager.getInstance().getDeviceAdaptersIDs())
       {
-        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(name);
+        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(id);
         String daName = da.getSubSystem().getName();
         boolean found = false;
         for (int i = 0; i < serverList.length; i++)
