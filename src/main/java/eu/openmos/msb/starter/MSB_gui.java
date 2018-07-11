@@ -2003,6 +2003,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       aux.getProductList().addAll(newProducts);
 
       //******************************************* SR links into the DB
+      /*
       for (int i = 0; i < newProducts.size(); i++)
       {
         Product auxProduct = newProducts.get(i);
@@ -2012,6 +2013,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
         }
       }
+      */
       //***********************************************************************************************************
 
       return newProducts;

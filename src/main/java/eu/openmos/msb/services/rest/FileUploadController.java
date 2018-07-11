@@ -62,6 +62,7 @@ public Response uploadPdfFile(  @FormDataParam("file") InputStream fileInputStre
     aux.getProductList().addAll(newProducts);
     
     //******************************************* SR links into the DB
+    /*
     for (int i = 0; i < newProducts.size(); i++)
     {
         Product auxProduct = newProducts.get(i);
@@ -71,13 +72,12 @@ public Response uploadPdfFile(  @FormDataParam("file") InputStream fileInputStre
             DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
         }
     }
+    */
     //***********************************************************************************************************
     
     //ADD to products Combobox on GUI
      MSB_gui.addToProductcb(newProducts);
    
-
-    
     return Response.ok("Data uploaded successfully !!").build();
 }    
 
