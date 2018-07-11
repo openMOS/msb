@@ -112,93 +112,93 @@ public class ChangeState
         
     } else
     {
-        if (newProductState.equals(MSBConstants.STATE_PRODUCT_QUEUE)) 
-        {
-            productIsOnQueue(productInstance_id);
-        }
-        else if (newProductState.equals(MSBConstants.STATE_PRODUCT_PRODUCING)) 
-        {
-            productIsExecuting(productInstance_id);
-        }
-        
-        else if (newProductState.equals(MSBConstants.STATE_PRODUCT_READY))
-        {
-              //ACTIVE STATE
-              if (da_name.equals("")) {
-                  //da does not exists, check modules?
-                  //da_id can be module_id
-                  //read recipe KPIs
-                  logger.info("Module changeState");
-                  Thread threadKPI = new Thread() {
-                      public synchronized void run() {
-                          readKPIs_Module(da_id, recipe_id, productInstance_id);
-                      }
-                  };
-                  threadKPI.start();
-
-                  if (checkNextRecipe) {
-                      Thread threadCheck = new Thread() {
-                          public synchronized void run() {
-                              logger.info("[ChangeState] Starting ChangeStateChecker!");
-                              ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
-                          }
-                      };
-                      threadCheck.start();
-                  }
-
-                  result.set(1);
-                  logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
-                  return;
-              } else {
-                  //da exists
-                  DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
-                  //add adapter states strings to properties
-                  NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
-                  DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
-
-                  if (statePath.isNotNull()) {
-                      String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
-                      da.getSubSystem().setState(state);
-
-                      if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR)) {
-                          logger.info("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
-                      }
-                  } else {
-                      logger.error("Error reading ADAPTER STATE!");
-                  }
-                  MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
-
-                  //read recipe KPIs
-                  Thread threadKPI = new Thread() {
-                      public synchronized void run() {
-                          readKPIs_DA(da_id, recipe_id, productInstance_id);
-                      }
-                  };
-                  threadKPI.start();
-
-                  //start checker depending on the adapterStage
-                  if (checkNextRecipe /* && !da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP) */) {
-                      Thread threadCheck = new Thread() {
-                          public synchronized void run() {
-                              logger.info("[ChangeState] Starting ChangeStateChecker!");
-                              ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
-                          }
-                      };
-                      threadCheck.start();
-                  }
-                  /*
-      //MARTELO mass production
-      else
+      switch (newProductState)
       {
-        finishProduct_MARTELO(da_id, productInstance_id);
-      }
-                   */
-                  //********************************************************************************************
-                  result.set(1);
-                  logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
-                  return;
+        case MSBConstants.STATE_PRODUCT_QUEUE:
+          productIsOnQueue(productInstance_id);
+          break;
+        case MSBConstants.STATE_PRODUCT_PRODUCING:
+          productIsExecuting(productInstance_id);
+          break;
+        case MSBConstants.STATE_PRODUCT_READY:
+          //ACTIVE STATE
+          if (da_name.equals("")) {
+            //da does not exists, check modules?
+            //da_id can be module_id
+            //read recipe KPIs
+            logger.info("Module changeState");
+            Thread threadKPI = new Thread() {
+              public synchronized void run() {
+                readKPIs_Module(da_id, recipe_id, productInstance_id);
               }
+            };
+            threadKPI.start();
+            
+            if (checkNextRecipe) {
+              Thread threadCheck = new Thread() {
+                public synchronized void run() {
+                  logger.info("[ChangeState] Starting ChangeStateChecker!");
+                  ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
+                }
+              };
+              threadCheck.start();
+            }
+            
+            result.set(1);
+            logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
+            return;
+          } else {
+            //da exists
+            DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+            //add adapter states strings to properties
+            NodeId statePath = Functions.convertStringToNodeId(da.getSubSystem().getStatePath());
+            DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
+            
+            if (statePath.isNotNull()) {
+              String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+              da.getSubSystem().setState(state);
+              
+              if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR)) {
+                logger.info("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
+              }
+            } else {
+              logger.error("Error reading ADAPTER STATE!");
+            }
+            MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name);
+            
+            //read recipe KPIs
+            Thread threadKPI = new Thread() {
+              public synchronized void run() {
+                readKPIs_DA(da_id, recipe_id, productInstance_id);
+              }
+            };
+            threadKPI.start();
+            
+            //start checker depending on the adapterStage
+            if (checkNextRecipe /* && !da.getSubSystem().getStage().equals(MSBConstants.STAGE_RAMP_UP) */) {
+              Thread threadCheck = new Thread() {
+                public synchronized void run() {
+                  logger.info("[ChangeState] Starting ChangeStateChecker!");
+                  ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
+                }
+              };
+              threadCheck.start();
+            }
+            /*
+            //MARTELO mass production
+            else
+            {
+            finishProduct_MARTELO(da_id, productInstance_id);
+            }
+            */
+            //********************************************************************************************
+            result.set(1);
+            logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
+            return;
           }
+        default:
+          break;
+      }
       }
   }
 
@@ -485,10 +485,9 @@ public class ChangeState
         String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(nextRecipeID);
         NodeId objNode = Functions.convertStringToNodeId(obj);
         
-        String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-        String DA_name_next = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
-        DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name_next);
-        logger.info("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + DA_name_next);
+        String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
+        DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyAML_ID(Daid_next);
+        logger.info("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + da_next.getSubSystem().getName());
         MSBClientSubscription client = (MSBClientSubscription) da_next.getClient();
 
         PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
@@ -517,13 +516,13 @@ public class ChangeState
                 logger.info("[SEMAPHORE] RELEASED1 " + da_name1);
                 PECManager.getInstance().getExecutionMap().get(da_id).release();
                 
-                DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
+                DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
                 MSB_gui.updateTableAdaptersSemaphore(
                         String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()), 
                         da_test.getSubSystem().getName());
               }
             }
-            MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, DA_name_next);
+            MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, da_next.getSubSystem().getName());
             break;
           } else
           {
@@ -562,7 +561,7 @@ public class ChangeState
         logger.info("[SEMAPHORE" + da_name1 + "] RELEASED1");
         PECManager.getInstance().getExecutionMap().get(da_id).release();
         
-        DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
+        DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
         MSB_gui.updateTableAdaptersSemaphore(
                 String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()),
                 da_test.getSubSystem().getName());
@@ -616,10 +615,9 @@ public class ChangeState
         String obj = DatabaseInteraction.getInstance().getRecipeObjectByID(nextRecipeID);
         NodeId objNode = Functions.convertStringToNodeId(obj);
         
-        String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-        String DA_name_next = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
-        DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name_next);
-        logger.info("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + DA_name_next);
+        String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
+        DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyAML_ID(Daid_next);
+        logger.info("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + da_next.getSubSystem().getName());
         MSBClientSubscription client = (MSBClientSubscription) da_next.getClient();
 
         PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
@@ -648,13 +646,13 @@ public class ChangeState
                 logger.info("[SEMAPHORE] RELEASED1 " + da_name1);
                 PECManager.getInstance().getExecutionMap().get(da_id).release();
                 
-                DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
+                DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
                 MSB_gui.updateTableAdaptersSemaphore(
                         String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()), 
                         da_test.getSubSystem().getName());
               }
             }
-            MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, DA_name_next);
+            MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, da_next.getSubSystem().getName());
             break;
           } else
           {
@@ -693,7 +691,7 @@ public class ChangeState
         logger.info("[SEMAPHORE" + da_name1 + "] RELEASED1");
         PECManager.getInstance().getExecutionMap().get(da_id).release();
         
-        DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyName(da_name1);
+        DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
         MSB_gui.updateTableAdaptersSemaphore(
                 String.valueOf(PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits()),
                 da_test.getSubSystem().getName());
@@ -738,12 +736,12 @@ public class ChangeState
   private int checkAdapterState(String da_id, String nextRecipeID, String productInst_id, String productType_id)
   {
     logger.info("[checkAdapterState] current da - " + da_id);
-    String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+    String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
     
     if (Daid_next != null)
     {
-      String DA_name_next = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
-      DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name_next);
+      DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyAML_ID(Daid_next);
+      
       logger.info("[checkAdapterState] checking da_next state - " + da_next.getSubSystem().getUniqueId());
       //add adapter states strings to properties
       do
@@ -814,11 +812,11 @@ public class ChangeState
           ret = 1;
         }
 
-        logger.info("the next recipe Adapter (" + DA_name_next + ") is ready for execution!");
+        logger.info("the next recipe Adapter (" + da_next.getSubSystem().getName() + ") is ready for execution!");
         return ret;
       } else
       {
-        logger.error("ERROR in DA " + DA_name_next);
+        logger.error("ERROR in DA " + da_next.getSubSystem().getName());
         return 0;
       }
     }
@@ -834,11 +832,10 @@ public class ChangeState
   private Boolean checkNextValidation(String nextRecipeID)
   {
     logger.info("[checkNextValidation] recipeID: " + nextRecipeID);
-    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+    String Daid = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
     if (Daid != null)
     {
-      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(Daid);
       for (int i = 0; i < da.getExecutionTable().getRows().size(); i++)
       {
         if (da.getExecutionTable().getRows().get(i).getRecipeId() == null ? nextRecipeID == null : da.getExecutionTable().getRows().get(i).getRecipeId().equals(nextRecipeID))
@@ -863,21 +860,19 @@ public class ChangeState
   private String getNextValidRecipe(String recipeID, String productInst_id, String productType_id)
   {
     //get deviceAdapter that does the required recipe
-    String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
+    String Daid = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipeID);
     logger.info("[checkNextRecipe] DA id from checkNextRecipe: " + Daid);
 
     if (Daid != null)
     {
-      //get DA name
-      String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
-      logger.info("[checkNextRecipe]DA name of finished recipe : " + DA_name);
       //get DA object from it's name
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(Daid);
       if (da == null)
       {
         logger.warn("The DA is null!");
       } else
       {
+        logger.info("[checkNextRecipe]DA name of finished recipe : " + da.getSubSystem().getName());
         String prodID = productInst_id;
         for (int i = 0; i < 2; i++)
         {
@@ -922,13 +917,12 @@ public class ChangeState
                 List<Recipe> recipes = new ArrayList<>();
                 for (String auxRecipeID : recipeID_for_SR)
                 {
-                  String da_db_ID = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(auxRecipeID);
-                  if (da_db_ID == null)
+                  String da_aml_ID = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(auxRecipeID);
+                  if (da_aml_ID == null)
                   {
                     continue;
                   }
-                  String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(da_db_ID);
-                  DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+                  DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_aml_ID);
                   
                   //MARTELO add modules recipe list to global list temporary
                   List<Recipe> tempRepList = auxDA.getListOfRecipes();
@@ -962,16 +956,14 @@ public class ChangeState
                   return nextRecipeID;
                 } else
                 {
-                  String auxDAFirst_id = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-                  String auxDAFirst_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(auxDAFirst_id);
-                  DeviceAdapter auxDAFirst = DACManager.getInstance().getDeviceAdapterbyName(auxDAFirst_name);
+                  String auxDAFirst_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
+                  DeviceAdapter auxDAFirst = DACManager.getInstance().getDeviceAdapterbyAML_ID(auxDAFirst_id);
                   
                   for (Recipe auxRecipe : recipes)
                   {
                     //check if DA is the same? only offer possibilities if next if a transport or same DA as first option
-                    String auxDA_id = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(auxRecipe.getUniqueId());
-                    String auxDA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(auxDA_id);
-                    DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyName(auxDA_name);
+                    String auxDA_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(auxRecipe.getUniqueId());
+                    DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(auxDA_id);
                     
                     if ((auxDA.getSubSystem().getType().equals(MSBConstants.DEVICE_ADAPTER_TYPE_TRANSPORT) 
                             || auxDA.getSubSystem().getUniqueId().equals(auxDAFirst.getSubSystem().getUniqueId()))
@@ -1020,7 +1012,7 @@ public class ChangeState
    */
   public static DeviceAdapter getDAofNextRecipe(DeviceAdapter da, String recipeID, String productInst_id, String productType_id)
   {
-    String nextRecipeID = "";
+    String nextRecipeID;
     String prodID = productInst_id;
     for (int i = 0; i < 2; i++)
     {
@@ -1032,8 +1024,7 @@ public class ChangeState
           String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
           if (Daid_next != null)
           {
-            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
-            DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+            DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyAML_ID(Daid_next);
             return da_next;
           }
           break;
@@ -1053,7 +1044,7 @@ public class ChangeState
    */
   private void readKPIs_DA(String da_id, String recipe_id, String productInst_ID)
   {
-    DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyName(DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id));
+    DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
     if (CurrentDA != null)
     {
       List<Recipe> auxRepList = CurrentDA.getListOfRecipes();

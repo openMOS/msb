@@ -1629,6 +1629,57 @@ public class DatabaseInteraction
     return null;
   }
 
+  public String getDA_AML_IDbyRecipeID(String recipe_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+    try
+    {
+      //System.out.println("*DB query* gtting DAID from RecipeID: " + recipe_id);
+      ArrayList<String> result = new ArrayList<>();
+
+      Statement stmt = conn.createStatement();
+      ResultSet query = stmt.executeQuery("SELECT DeviceAdapter.aml_id " + 
+                                          "FROM DeviceAdapter, Recipe " + 
+                                          "WHERE Recipe.aml_id = '" + recipe_id + "' AND Recipe.da_id = DeviceAdapter.id");
+      if (!query.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        //System.out.println("No data");
+      } else
+      {
+        while (query.next())
+        {
+          result.add(query.getString(1));
+        }
+      }
+      stmt.close();
+
+      //stmt.close();
+      //String res= query.getString("da_id");
+      if (result.size() > 0)
+      {
+
+        Long time = DBqueryTimer.getTime();
+        perfMeasure.getDatabaseQueryTimers().add(time);
+        DBqueryTimer.stop();
+
+        return result.get(0);
+      }
+
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return null;
+  }
+  
   public String getDA_DB_IDbyAML_ID(String da_aml_id)
   {
     StopWatch DBqueryTimer = new StopWatch();

@@ -5,16 +5,10 @@
  */
 package eu.openmos.msb.services.rest;
 
-// import eu.openmos.agentcloud.data.recipe.KPISetting;
-// import eu.openmos.agentcloud.data.recipe.Parameter;
-// import eu.openmos.agentcloud.data.recipe.ParameterSetting;
-// import eu.openmos.agentcloud.data.recipe.Recipe;
-// import eu.openmos.agentcloud.data.recipe.SkillRequirement;
 import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.model.*;
-import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
