@@ -29,8 +29,9 @@ public class EquipmentObservationRel2Row extends Base implements Serializable {
      * Observation row type.
      * Can be "functionality", "quality", "performance".
      * @see EquipmentObservationType 
+     * Refactoring from type to eorType (equipment observation row type)
      */
-    private String type;    
+    private String eorType;    
     /**
      * Observation row sub type.
      * Depends on the type. 
@@ -65,7 +66,7 @@ public class EquipmentObservationRel2Row extends Base implements Serializable {
         
         this.uniqueId = uniqueId;
         this.equipmentObservationId = equipmentObservationId;
-        this.type = type;
+        this.eorType = type;
         this.subtype = subtype;
         this.unit = unit;
         this.value = value;
@@ -79,12 +80,12 @@ public class EquipmentObservationRel2Row extends Base implements Serializable {
         this.uniqueId = uniqueId;
     }
 
-    public String getType() {
-        return type;
+    public String getEorType() {
+        return eorType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setEorType(String eorType) {
+        this.eorType = eorType;
     }
 
     public String getSubtype() {
@@ -130,7 +131,7 @@ public class EquipmentObservationRel2Row extends Base implements Serializable {
         doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
         doc.append(DatabaseConstants.EQUIPMENT_OBSERVATION_REL2_ID, equipmentObservationId);
         
-        doc.append(DatabaseConstants.TYPE, type);
+        doc.append(DatabaseConstants.TYPE, eorType);
         doc.append(DatabaseConstants.SUBTYPE, subtype);
         
         doc.append(DatabaseConstants.UNIT, unit);

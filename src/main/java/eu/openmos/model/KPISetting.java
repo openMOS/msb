@@ -39,8 +39,9 @@ public class KPISetting extends Base implements Serializable {
     private KPI kpi; 
     /**
      * KPI Setting value type.
+     * Refactoring from type to kpiSettingType
      */
-    private String type;
+    private String kpiSettingType;
     /**
      * KPI Setting value unit.
      */
@@ -83,7 +84,7 @@ public class KPISetting extends Base implements Serializable {
         this.uniqueId = id;
         this.name = name;
         
-        this.type = type;
+        this.kpiSettingType = type;
         this.unit = unit;
         this.value = value;
         
@@ -132,12 +133,12 @@ public class KPISetting extends Base implements Serializable {
         this.kpi = kpi;
     }
 
-    public String getType() {
-        return type;
+    public String getKpiSettingType() {
+        return kpiSettingType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setKpiSettingType(String kpiSettingType) {
+        this.kpiSettingType = kpiSettingType;
     }
 
     public String getUnit() {
@@ -175,7 +176,7 @@ public class KPISetting extends Base implements Serializable {
                 .append(DatabaseConstants.NAME, name)
                 .append(DatabaseConstants.DESCRIPTION, description)
                 .append(DatabaseConstants.KPI_ID, kpiId)
-                .append(DatabaseConstants.TYPE, type)
+                .append(DatabaseConstants.TYPE, kpiSettingType)
                 .append(DatabaseConstants.UNIT, unit)
                 .append(DatabaseConstants.VALUE, value)
                 .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);

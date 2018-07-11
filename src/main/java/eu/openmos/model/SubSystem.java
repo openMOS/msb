@@ -59,9 +59,10 @@ public class SubSystem extends Equipment implements Serializable {
      * TBV if we need it or not
      * 
      * TODO: check the value if "resource", "transport", "df_resource..." 
+     * Refactoring from type to ssType (sub system type)
      */
 //    @XmlElement(name = "type")    
-    private String type;
+    private String ssType;
     
     private String state;
     
@@ -143,7 +144,7 @@ public class SubSystem extends Equipment implements Serializable {
         this.recipes = recipes;
         this.physicalLocation = physicalLocation;
         this.logicalLocation = logicalLocation;
-        this.type = type;
+        this.ssType = type;
         
         this.internalModules = internalModules;
     }
@@ -180,12 +181,12 @@ public class SubSystem extends Equipment implements Serializable {
         this.logicalLocation = logicalLocation;
     }
 
-    public String getType() {
-        return type;
+    public String getSsType() {
+        return ssType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setSsType(String ssType) {
+        this.ssType = ssType;
     }
 
     public String getState() {
@@ -299,7 +300,7 @@ public class SubSystem extends Equipment implements Serializable {
         else
             doc.append(DatabaseConstants.LOGICAL_LOCATION, null);
         
-        doc.append(DatabaseConstants.TYPE, type);
+        doc.append(DatabaseConstants.TYPE, ssType);
         doc.append(DatabaseConstants.REGISTERED, new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION).format(this.registered));
 
         logger.trace("subsystem-toBSON - 7");
@@ -339,7 +340,7 @@ public String toString()
             builder.append(logicalLocation.toString()).append("\n");
         else
             builder.append("logicalLocation is null").append("\n");
-        builder.append(type).append("\n");
+        builder.append(ssType).append("\n");
         builder.append(registered).append("\n");
         
         return builder.toString();

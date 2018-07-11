@@ -29,8 +29,9 @@ public class ProcessAssessmentRow extends Base implements Serializable {
      * Assessment row type.
      * Can be "functionality", "quality", "performance".
      * @see ProcessAssessmentType 
+     * Refactoring from type to parType (process assessment row type)
      */
-    private String type;    
+    private String parType;    
         
     /**
      * Rating value.
@@ -51,7 +52,7 @@ public class ProcessAssessmentRow extends Base implements Serializable {
         
         this.uniqueId = uniqueId;
         this.processAssessmentId = processAssessmentId;
-        this.type = type;
+        this.parType = type;
         this.rating = rating;
     }
 
@@ -63,12 +64,12 @@ public class ProcessAssessmentRow extends Base implements Serializable {
         this.uniqueId = uniqueId;
     }
 
-    public String getType() {
-        return type;
+    public String getParType() {
+        return parType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setParType(String parType) {
+        this.parType = parType;
     }
 
     public Double getRating() {
@@ -98,7 +99,7 @@ public class ProcessAssessmentRow extends Base implements Serializable {
         doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
         doc.append(DatabaseConstants.PROCESS_ASSESSMENT_ID, processAssessmentId);
         
-        doc.append(DatabaseConstants.TYPE, type);
+        doc.append(DatabaseConstants.TYPE, parType);
 
         doc.append(DatabaseConstants.RATING, rating);
         

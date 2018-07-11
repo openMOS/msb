@@ -65,6 +65,8 @@
 <xs:element name="updateExecutionTableResponse" type="tns:updateExecutionTableResponse" />
 <xs:element name="updateExecutionTables" type="tns:updateExecutionTables" />
 <xs:element name="updateExecutionTablesResponse" type="tns:updateExecutionTablesResponse" />
+<xs:element name="updateProduct" type="tns:updateProduct" />
+<xs:element name="updateProductResponse" type="tns:updateProductResponse" />
 <xs:complexType name="getOrderInstance">
 <xs:sequence>
 <xs:element minOccurs="0" name="orderInstanceId" type="xs:string" />
@@ -133,9 +135,9 @@
 <xs:sequence>
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="kpi" type="tns:kpi" />
+<xs:element minOccurs="0" name="kpiSettingType" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="path" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="unit" type="xs:string" />
 <xs:element minOccurs="0" name="value" type="xs:string" />
@@ -150,8 +152,8 @@
 <xs:element minOccurs="0" name="defaultLowerBound" type="xs:string" />
 <xs:element minOccurs="0" name="defaultUpperBound" type="xs:string" />
 <xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="kpiType" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="unit" type="xs:string" />
 <xs:element minOccurs="0" name="value" type="xs:string" />
@@ -182,11 +184,11 @@
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="lowerBound" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="unit" type="xs:string" />
 <xs:element minOccurs="0" name="upperBound" type="xs:string" />
 <xs:element minOccurs="0" name="valueType" type="xs:string" />
+<xs:element minOccurs="0" name="pType" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -279,9 +281,9 @@
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
+<xs:element minOccurs="0" name="eorType" type="xs:string" />
 <xs:element minOccurs="0" name="equipmentObservationId" type="xs:string" />
 <xs:element minOccurs="0" name="subtype" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="unit" type="xs:string" />
 <xs:element minOccurs="0" name="value" type="xs:double" />
@@ -318,9 +320,9 @@
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
+<xs:element minOccurs="0" name="earType" type="xs:string" />
 <xs:element minOccurs="0" name="equipmentAssessmentId" type="xs:string" />
 <xs:element minOccurs="0" name="rating" type="xs:double" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
@@ -375,10 +377,10 @@
 <xs:element maxOccurs="unbounded" minOccurs="0" name="parameterPorts" nillable="true" type="tns:parameterPort" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="parameters" nillable="true" type="tns:parameter" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="recipeIds" nillable="true" type="xs:string" />
+<xs:element minOccurs="0" name="skType" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="skillRequirements" nillable="true" type="tns:skillRequirement" />
 <xs:element minOccurs="0" name="skillType" type="tns:skillType" />
 <xs:element minOccurs="0" name="subSystemId" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
@@ -398,7 +400,7 @@
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="direction" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="portType" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
@@ -432,7 +434,7 @@
 <xs:element maxOccurs="unbounded" minOccurs="0" name="recipeIDs" nillable="true" type="xs:string" />
 <xs:element minOccurs="0" name="requiresPart" type="tns:part" />
 <xs:element minOccurs="0" name="skillType" type="tns:skillType" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="srType" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
@@ -476,6 +478,16 @@
 <xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
 </xs:sequence>
 </xs:complexType>
+<xs:complexType name="updateProduct">
+<xs:sequence>
+<xs:element minOccurs="0" name="productInstance" type="tns:productInstance" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="updateProductResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="serviceCallStatus" type="tns:serviceCallStatus" />
+</xs:sequence>
+</xs:complexType>
 <xs:complexType name="getExecutionTableById">
 <xs:sequence>
 <xs:element minOccurs="0" name="executionTableId" type="xs:string" />
@@ -513,11 +525,11 @@
 <xs:element minOccurs="0" name="logicalLocation" type="tns:logicalLocation" />
 <xs:element minOccurs="0" name="physicalLocation" type="tns:physicalLocation" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" nillable="true" type="tns:recipe" />
+<xs:element minOccurs="0" name="ssType" type="xs:string" />
 <xs:element minOccurs="0" name="stage" type="xs:string" />
 <xs:element minOccurs="0" name="stagePath" type="xs:string" />
 <xs:element minOccurs="0" name="state" type="xs:string" />
 <xs:element minOccurs="0" name="statePath" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -560,6 +572,7 @@
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="equipmentIds" nillable="true" type="xs:string" />
 <xs:element minOccurs="0" name="executedBySkillControlPort" type="tns:controlPort" />
+<xs:element maxOccurs="unbounded" minOccurs="0" name="fulfilledSkillRequirements" nillable="true" type="tns:skillRequirement" />
 <xs:element minOccurs="0" name="invokeMethodID" type="xs:string" />
 <xs:element minOccurs="0" name="invokeObjectID" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="kpiSettings" nillable="true" type="tns:kpiSetting" />
@@ -587,7 +600,7 @@
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="lowerBound" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
+<xs:element minOccurs="0" name="papType" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="unit" type="xs:string" />
 <xs:element minOccurs="0" name="upperBound" type="xs:string" />
@@ -724,9 +737,9 @@
 <xs:complexContent>
 <xs:extension base="tns:base">
 <xs:sequence>
+<xs:element minOccurs="0" name="parType" type="xs:string" />
 <xs:element minOccurs="0" name="processAssessmentId" type="xs:string" />
 <xs:element minOccurs="0" name="rating" type="xs:double" />
-<xs:element minOccurs="0" name="type" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 </xs:sequence>
 </xs:extension>
@@ -944,6 +957,10 @@
     <wsdl:part element="tns:startedProduct" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="updateProduct">
+    <wsdl:part element="tns:updateProduct" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getOrderInstanceResponse">
     <wsdl:part element="tns:getOrderInstanceResponse" name="parameters">
     </wsdl:part>
@@ -1096,6 +1113,10 @@
     <wsdl:part element="tns:getSubSystems" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="updateProductResponse">
+    <wsdl:part element="tns:updateProductResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getFilteredRecipeExecutionData">
     <wsdl:part element="tns:getFilteredRecipeExecutionData" name="parameters">
     </wsdl:part>
@@ -1229,6 +1250,12 @@
       <wsdl:input message="tns:createNewSkill" name="createNewSkill">
     </wsdl:input>
       <wsdl:output message="tns:createNewSkillResponse" name="createNewSkillResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateProduct">
+      <wsdl:input message="tns:updateProduct" name="updateProduct">
+    </wsdl:input>
+      <wsdl:output message="tns:updateProductResponse" name="updateProductResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getExecutionTableById">
@@ -1372,21 +1399,21 @@
   </wsdl:portType>
   <wsdl:binding name="SystemConfiguratorSoapBinding" type="tns:SystemConfigurator">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="getOrderInstance">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="getOrderInstance">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="getOrderInstanceResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="newRecipeExecutionData">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="newRecipeExecutionData">
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="newRecipeExecutionDataResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getOrderInstance">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="getOrderInstance">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getOrderInstanceResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -1453,12 +1480,12 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="orderInstanceUpdate">
+    <wsdl:operation name="updateProduct">
       <soap:operation soapAction="" style="document" />
-      <wsdl:input name="orderInstanceUpdate">
+      <wsdl:input name="updateProduct">
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="orderInstanceUpdateResponse">
+      <wsdl:output name="updateProductResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -1468,6 +1495,15 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="getExecutionTableByIdResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="orderInstanceUpdate">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="orderInstanceUpdate">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="orderInstanceUpdateResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

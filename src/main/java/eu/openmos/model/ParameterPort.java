@@ -55,7 +55,7 @@ public class ParameterPort extends Port implements Serializable {
                 .append(DatabaseConstants.DESCRIPTION, description)
                 .append(DatabaseConstants.UNIQUE_ID, uniqueId)
                 .append(DatabaseConstants.NAME, name)
-                .append(DatabaseConstants.TYPE, type)
+                .append(DatabaseConstants.TYPE, portType)
                 .append(DatabaseConstants.DIRECTION, direction)
                 .append(DatabaseConstants.PARAMETER_IDS, parameterIds)
                 .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);

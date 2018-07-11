@@ -41,8 +41,9 @@ public class PhysicalAdjustmentParameter extends Base implements Serializable {
     private String lowerBound;
     /**
      * Parameter type.
+     * Refactoring from type to papType (physical adjustment parameter type)
      */
-    private String type;    
+    private String papType;    
     /**
      * Parameter unit.
      */
@@ -93,7 +94,7 @@ public class PhysicalAdjustmentParameter extends Base implements Serializable {
         this.name = name;
         this.unit = unit;
         
-        this.type = type;
+        this.papType = type;
         this.valueType = valueType;
     }
 
@@ -153,12 +154,12 @@ public class PhysicalAdjustmentParameter extends Base implements Serializable {
         this.unit = unit;
     }
 
-    public String getType() {
-        return type;
+    public String getPapType() {
+        return papType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setPapType(String papType) {
+        this.papType = papType;
     }
 
     public String getValueType() {

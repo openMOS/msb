@@ -40,10 +40,11 @@ public class SkillRequirement extends Base implements Serializable  {
      * MSB and WP4 alignment: this type is the same as skill type.
      * In the future, it could switch to a class definition, as PEDRO Ferreira recommends,
      * but..... for now we keep it as it is.
+     * Refactoring from type to srType (skill requirement type)
      */
     // private int type;    
   //@XmlElement(name = "type")    
-    private String type;
+    private String srType;
   private SkillType skillType;
 
     /**
@@ -90,7 +91,7 @@ public class SkillRequirement extends Base implements Serializable  {
         this.uniqueId = uniqueId;
         this.description = description;
         this.name = name;
-        this.type = type;
+        this.srType = type;
         this.skillType = skillType;
         
         // this.precedentIds = precedentIds;
@@ -122,12 +123,12 @@ public class SkillRequirement extends Base implements Serializable  {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getSrType() {
+        return srType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setSrType(String srType) {
+        this.srType = srType;
     }
 
     public SkillType getSkillType() {
@@ -183,7 +184,7 @@ public class SkillRequirement extends Base implements Serializable  {
         return new Document(DatabaseConstants.DESCRIPTION, description)
                 .append(DatabaseConstants.UNIQUE_ID, uniqueId)
                 .append(DatabaseConstants.NAME, name)
-                .append(DatabaseConstants.TYPE, type)
+                .append(DatabaseConstants.TYPE, srType)
                 .append(DatabaseConstants.SKILL_TYPE_ID, skillTypeId)
                 .append(DatabaseConstants.PRECEDENT_IDS, precedentIds)
                 .append(DatabaseConstants.REQUIRES_PART_ID, requiresPartId)

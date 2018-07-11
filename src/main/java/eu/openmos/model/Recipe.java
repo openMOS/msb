@@ -17,6 +17,8 @@ import org.apache.log4j.Logger;
  * @author Luis Ribeiro
  * @author Valerio Gentile <valerio.gentile@we-plus.eu>
  */
+//@XmlRootElement(name = "recipe")
+//@XmlAccessorType(XmlAccessType.FIELD)
 public class Recipe extends Base implements Serializable {    
     private static final Logger logger = Logger.getLogger(Recipe.class.getName());
     private static final long serialVersionUID = 6529685098267757025L;
@@ -24,18 +26,22 @@ public class Recipe extends Base implements Serializable {
     /**
      * Recipe ID.
      */
+    //@XmlElement(name = "amlId")
     private String uniqueId;
     /**
      * Recipe name.
      */
+    //@XmlElement(name = "name")
     private String name;
     /**
      * Recipe description.
-     */   
+     */
+    //@XmlElement(name = "description")    
     private String description;
     /**
      * Whether the recipe is valid or not.
      */
+    //@XmlElement(name = "valid")
     private boolean valid = false;
     /**
      * Recipe's parameter settings. These must match the skill's parameters.
@@ -44,7 +50,19 @@ public class Recipe extends Base implements Serializable {
     /**
      * The skills necessary to execute this recipe.
      */
+    //@XmlElement(name = "skillRequirements")
     private List<SkillRequirement> skillRequirements;
+    
+    // Added in elux meeting in Bari 2018 jun 29 because of HMI new recipe form changes!
+    private List<SkillRequirement> fulfilledSkillRequirements;
+
+    public List<SkillRequirement> getFulfilledSkillRequirements() {
+        return fulfilledSkillRequirements;
+    }
+
+    public void setFulfilledSkillRequirements(List<SkillRequirement> fulfilledSkillRequirements) {
+        this.fulfilledSkillRequirements = fulfilledSkillRequirements;
+    }
     /**
      * Recipe's KPI Settings. These must match the skill's KPIs.
      */

@@ -29,8 +29,9 @@ public class EquipmentAssessmentRow extends Base implements Serializable {
      * Assessment row type.
      * Can be "functionality", "quality", "performance".
      * @see EquipmentAssessmentType 
+     * Refactoring from type to earType (equipment assessment row type)
      */
-    private String type;    
+    private String earType;    
         
     /**
      * Rating value.
@@ -51,7 +52,7 @@ public class EquipmentAssessmentRow extends Base implements Serializable {
         
         this.uniqueId = uniqueId;
         this.equipmentAssessmentId = equipmentAssessmentId;
-        this.type = type;
+        this.earType = type;
         this.rating = rating;
     }
 
@@ -63,12 +64,12 @@ public class EquipmentAssessmentRow extends Base implements Serializable {
         this.uniqueId = uniqueId;
     }
 
-    public String getType() {
-        return type;
+    public String getEarType() {
+        return earType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setEarType(String earType) {
+        this.earType = earType;
     }
 
     public Double getRating() {
@@ -98,7 +99,7 @@ public class EquipmentAssessmentRow extends Base implements Serializable {
         doc.append(DatabaseConstants.UNIQUE_ID, uniqueId);
         doc.append(DatabaseConstants.EQUIPMENT_ASSESSMENT_ID, equipmentAssessmentId);
         
-        doc.append(DatabaseConstants.TYPE, type);
+        doc.append(DatabaseConstants.TYPE, earType);
 
         doc.append(DatabaseConstants.RATING, rating);
         

@@ -46,7 +46,10 @@ public class Skill extends Base implements Serializable {
      * MSB alignment: changed the field type from int to string according with Pedro Ferreira.
      */
 //    @Deprecated
-    private String type;
+    /**
+     * Field "type" renamed to "skType".
+     */
+    private String skType;
     private SkillType skillType;
     /**
      * KPIs the skill needs to respect.
@@ -154,7 +157,7 @@ public class Skill extends Base implements Serializable {
         this.parameters = parameters;
         this.parameterPorts = parameterPorts;
         
-        this.type = type;
+        this.skType = type;
         this.skillType = skillType;
         this.skillRequirements = skillRequirements;
         
@@ -206,12 +209,12 @@ public class Skill extends Base implements Serializable {
         this.parameters = parameters;
     }
 
-    public String getType() {
-        return type;
+    public String getSkType() {
+        return skType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setSkType(String skType) {
+        this.skType = skType;
     }
 
     public int getClassificationType() {
@@ -335,7 +338,7 @@ public class Skill extends Base implements Serializable {
         doc.append(DatabaseConstants.LABEL, label);
         doc.append(DatabaseConstants.PARAMETER_IDS, parameterIds);      
         doc.append(DatabaseConstants.PARAMETER_PORT_IDS, parameterPortIds);
-        doc.append(DatabaseConstants.TYPE, type);     
+        doc.append(DatabaseConstants.TYPE, skType);     
         doc.append(DatabaseConstants.SKILL_TYPE_ID, skillTypeId);     
         doc.append(DatabaseConstants.CLASSIFICATION_TYPE, classificationType);
         doc.append(DatabaseConstants.SKILL_REQUIREMENT_IDS, skillRequirementIds);           

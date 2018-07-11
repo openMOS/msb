@@ -27,8 +27,9 @@ public abstract class Port extends Base implements Serializable {
     protected String description;
     /**
      * Port type. It's a logical way of grouping different ports.
+     * Refactoring from type to portType
      */
-    protected String type;    
+    protected String portType;    
     /**
      * Port direction.
      */
@@ -56,7 +57,7 @@ public abstract class Port extends Base implements Serializable {
         this.uniqueId = uniqueId;
         this.name = name;
         this.description = description;        
-        this.type = type;
+        this.portType = type;
         this.direction = direction;
     }
 
@@ -84,12 +85,12 @@ public abstract class Port extends Base implements Serializable {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getPortType() {
+        return portType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setPortType(String portType) {
+        this.portType = portType;
     }
 
     public String getDirection() {

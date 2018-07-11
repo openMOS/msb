@@ -16,7 +16,9 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -73,6 +75,41 @@ public class SkillController extends Base
 
     return null;
   }
+
+/**
+     * Allows to trigger a skill via insertion of a temporary recipe.
+     *
+   * @param skillPath
+     * @param tmpRecipe the temporary recipe to be inserted only for skill triggering.
+     * @return atatus.
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{skillId}/trigger/{productInstanceId}")
+    public String skillTriggering(@PathParam("skillId") String skillPath, @PathParam("productInstanceId") String productInstanceId,
+            Recipe tmpRecipe) {
+        
+        logger.debug("skillTriggering: " + skillPath + " - " + productInstanceId + " - " + tmpRecipe);
+        
+        PathHelper helper = new PathHelper(skillPath, logger);
+        
+        if (helper.hasSubModules()){
+            Module module = (new ModuleController()).getDetail(helper.getModulesPath());
+            if (module != null) {
+                //module.getRecipes().add(newRecipe);
+                //return module.getRecipes();
+            }
+        } else {
+            SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
+            if (subSystem != null) {
+//                subSystem.getRecipes().add(newRecipe);
+//                return subSystem.getRecipes();
+            }
+        }
+        return "Success";
+       
+     }
 
   /**
    * Returns the list of recipes associated to a skill. Fills the skills recipe list (slide 22 of 34) This method is

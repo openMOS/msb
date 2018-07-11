@@ -21,7 +21,22 @@ public class DatabaseConstants {
     public final static String NAME = "name";
     public final static String DESCRIPTION = "description";
     public final static String OPTIMIZED = "optimized";
-    public final static String TYPE = "type";
+    
+    // No refactoring from type to specific field name
+    public final static String TYPE = "type";    
+//    public final static String SKTYPE = "skType";
+//    public final static String PORTTYPE = "portType";
+//    public final static String EARTYPE = "earType";
+//    public final static String EOTYPE = "eoType";
+//    public final static String EORTYPE = "eorType";
+//    public final static String KPITYPE = "kpiType";
+//    public final static String KPISETTINGTYPE = "kpiSettingType";
+//    public final static String PTYPE = "pType";
+//    public final static String PAPTYPE = "papType";
+//    public final static String PARTYPE = "parType";
+//    public final static String SRTYPE = "srType";
+//    public final static String SSTYPE = "ssType";
+    
     public final static String SUBTYPE = "subtype";
     public final static String DIRECTION = "direction";
     public final static String UNIT = "unit";

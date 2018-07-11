@@ -383,6 +383,9 @@ public class RecipeController extends Base
     recipe.setKpiSettings(getKPISettingFromSkill2(skill));
 
     recipe.setParameterSettings(getParameterSettingsFromSkill2(skill));
+    
+    // fulfilled skill reqs
+    recipe.setFulfilledSkillRequirements(new LinkedList<>());
 
     return recipe;
   }
@@ -404,7 +407,7 @@ public class RecipeController extends Base
                           generateId(new Date()),
                           "KPISetting Name",
                           kpi,
-                          kpi.getType(),
+                          kpi.getKpiType(),
                           kpi.getUnit(),
                           kpi.getValue(),
                           new Date()
@@ -432,7 +435,7 @@ public class RecipeController extends Base
                           generateId(new Date()),
                           "KPISetting Name",
                           kpi,
-                          kpi.getType(),
+                          kpi.getKpiType(),
                           kpi.getUnit(),
                           kpi.getValue(),
                           new Date()

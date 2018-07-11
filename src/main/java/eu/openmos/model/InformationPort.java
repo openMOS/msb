@@ -74,7 +74,7 @@ public class InformationPort extends Port implements Serializable {
                 .append(DatabaseConstants.DESCRIPTION, description)
                 .append(DatabaseConstants.UNIQUE_ID, uniqueId)
                 .append(DatabaseConstants.NAME, name)
-                .append(DatabaseConstants.TYPE, type)
+                .append(DatabaseConstants.TYPE, portType)
                 .append(DatabaseConstants.DIRECTION, direction)
                 .append(DatabaseConstants.KPI_IDS, kpiIds)
                 .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);

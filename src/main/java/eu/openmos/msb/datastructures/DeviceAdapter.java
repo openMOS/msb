@@ -275,7 +275,7 @@ public abstract class DeviceAdapter
         recipes.get(i).setEquipmentIds(equipmentIds);
       }
 
-      subSystem.setType(ReadDeviceAdapterType(deviceDescriptionDoc));
+      subSystem.setSsType(ReadDeviceAdapterType(deviceDescriptionDoc));
 
       //Recipe_SR_to_Skill_SR();
       List<String> ReadDeviceAdapterState = ReadDeviceAdapterState(deviceDescriptionDoc);
@@ -1444,11 +1444,11 @@ public abstract class DeviceAdapter
           auxSkill.setSkillRequirements(auxReqList);
           if (auxSkill.getSkillRequirements() == null || auxSkill.getSkillRequirements().isEmpty())
           {
-            auxSkill.setType(DatabaseConstants.SKILLTYPE_ATOMIC);
+            auxSkill.setSkType(DatabaseConstants.SKILLTYPE_ATOMIC);
           }
           else
           {
-            auxSkill.setType(DatabaseConstants.SKILLTYPE_COMPOSITE);
+            auxSkill.setSkType(DatabaseConstants.SKILLTYPE_COMPOSITE);
           }
 
           if (auxSkill.getUniqueId() == null)

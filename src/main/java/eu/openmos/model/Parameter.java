@@ -40,8 +40,9 @@ public class Parameter extends Base implements Serializable {
     private String lowerBound;
     /**
      * Parameter type.
+     * Refactoring from type to pType
      */
-    private String type;    
+    private String pType;    
     /**
      * Parameter unit.
      */
@@ -86,7 +87,7 @@ public class Parameter extends Base implements Serializable {
         this.name = name;
         this.unit = unit;
         
-        this.type = type;
+        this.pType = type;
         this.valueType = valueType;
     }
 
@@ -146,12 +147,12 @@ public class Parameter extends Base implements Serializable {
         this.unit = unit;
     }
 
-    public String getType() {
-        return type;
+    public String getpType() {
+        return pType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setpType(String pType) {
+        this.pType = pType;
     }
 
     public String getValueType() {

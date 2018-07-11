@@ -40,8 +40,9 @@ public class EquipmentObservation extends Base implements Serializable {
      * Observation main type.
      * Can be "functionality", "quality", "performance".
      * @see EquipmentObservationType 
+     * Refactoring from type to eoType (equipment observation type)
      */
-    private String type;    
+    private String eoType;    
     /**
      * Observation sub type.
      * Depends on the type. 
@@ -78,7 +79,7 @@ public class EquipmentObservation extends Base implements Serializable {
         this.description = description;
         this.equipmentId = equipmentId;
         this.equipmentType = equipmentType;
-        this.type = type;
+        this.eoType = type;
         this.subtype = subtype;
         this.unit = unit;
         this.value = value;
@@ -117,12 +118,12 @@ public class EquipmentObservation extends Base implements Serializable {
         this.equipmentId = equipmentId;
     }
 
-    public String getType() {
-        return type;
+    public String getEoType() {
+        return eoType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setEoType(String eoType) {
+        this.eoType = eoType;
     }
 
     public String getSubtype() {

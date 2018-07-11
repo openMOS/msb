@@ -965,7 +965,7 @@ public class ChangeState
                     String auxDA_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(auxRecipe.getUniqueId());
                     DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(auxDA_id);
                     
-                    if ((auxDA.getSubSystem().getType().equals(MSBConstants.DEVICE_ADAPTER_TYPE_TRANSPORT) 
+                    if ((auxDA.getSubSystem().getSsType().equals(MSBConstants.DEVICE_ADAPTER_TYPE_TRANSPORT) 
                             || auxDA.getSubSystem().getUniqueId().equals(auxDAFirst.getSubSystem().getUniqueId()))
                             && checkNextValidation(auxRecipe.getUniqueId()))
                     {

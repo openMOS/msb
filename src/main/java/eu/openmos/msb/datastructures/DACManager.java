@@ -366,7 +366,7 @@ public class DACManager
           ss.setRegistered(new Date());
         }
         ServiceCallStatus agentStatus;
-        if (ss.getType().equals("TransportSystem"))
+        if (ss.getSsType().equals("TransportSystem"))
         {
           agentStatus = systemConfigurator.createNewTransportAgent(ss);
           PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();

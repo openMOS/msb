@@ -30,6 +30,7 @@ public class ObjectFactory {
     private final static QName _OrderInstanceRemovalResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceRemovalResponse");
     private final static QName _GetEquipmentObservationRel2SResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getEquipmentObservationRel2sResponse");
     private final static QName _StartedProduct_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "startedProduct");
+    private final static QName _UpdateProduct_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "updateProduct");
     private final static QName _GetOrderInstanceResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getOrderInstanceResponse");
     private final static QName _GetRecipeExecutionData_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getRecipeExecutionData");
     private final static QName _NewProductDefinition_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "newProductDefinition");
@@ -68,6 +69,7 @@ public class ObjectFactory {
     private final static QName _GetExecutionTableById_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getExecutionTableById");
     private final static QName _OrderInstanceUpdate_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceUpdate");
     private final static QName _GetSubSystems_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getSubSystems");
+    private final static QName _UpdateProductResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "updateProductResponse");
     private final static QName _GetFilteredRecipeExecutionData_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "getFilteredRecipeExecutionData");
     private final static QName _OrderInstanceUpdateResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "orderInstanceUpdateResponse");
     private final static QName _NewProductDefinitionResponse_QNAME = new QName("http://cloudinterface.agentcloud.openmos.eu/", "newProductDefinitionResponse");
@@ -118,6 +120,14 @@ public class ObjectFactory {
      */
     public StartedProduct createStartedProduct() {
         return new StartedProduct();
+    }
+
+    /**
+     * Create an instance of {@link UpdateProduct }
+     * 
+     */
+    public UpdateProduct createUpdateProduct() {
+        return new UpdateProduct();
     }
 
     /**
@@ -473,6 +483,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link UpdateProductResponse }
+     * 
+     */
+    public UpdateProductResponse createUpdateProductResponse() {
+        return new UpdateProductResponse();
+    }
+
+    /**
      * Create an instance of {@link GetExecutionTableBySubSystemId }
      * 
      */
@@ -684,6 +702,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "startedProduct")
     public JAXBElement<StartedProduct> createStartedProduct(StartedProduct value) {
         return new JAXBElement<StartedProduct>(_StartedProduct_QNAME, StartedProduct.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateProduct }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "updateProduct")
+    public JAXBElement<UpdateProduct> createUpdateProduct(UpdateProduct value) {
+        return new JAXBElement<UpdateProduct>(_UpdateProduct_QNAME, UpdateProduct.class, null, value);
     }
 
     /**
@@ -1026,6 +1053,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "getSubSystems")
     public JAXBElement<GetSubSystems> createGetSubSystems(GetSubSystems value) {
         return new JAXBElement<GetSubSystems>(_GetSubSystems_QNAME, GetSubSystems.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateProductResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cloudinterface.agentcloud.openmos.eu/", name = "updateProductResponse")
+    public JAXBElement<UpdateProductResponse> createUpdateProductResponse(UpdateProductResponse value) {
+        return new JAXBElement<UpdateProductResponse>(_UpdateProductResponse_QNAME, UpdateProductResponse.class, null, value);
     }
 
     /**

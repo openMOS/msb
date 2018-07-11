@@ -33,8 +33,9 @@ public class KPI extends Base implements Serializable {
 
     /**
      * KPI type.
+     * Refactoring from type to kpiType
      */
-    private String type;
+    private String kpiType;
     /**
      * KPI unit.
      */
@@ -83,7 +84,7 @@ public class KPI extends Base implements Serializable {
         this.name = name;
         this.description = description;
 
-        this.type = type;
+        this.kpiType = type;
         this.unit = unit;
         this.value = currentValue;
         this.valueType = valueType;
@@ -140,12 +141,12 @@ public class KPI extends Base implements Serializable {
         this.unit = unit;
     }
 
-    public String getType() {
-        return type;
+    public String getKpiType() {
+        return kpiType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setKpiType(String kpiType) {
+        this.kpiType = kpiType;
     }
 
     public String getValueType() {
