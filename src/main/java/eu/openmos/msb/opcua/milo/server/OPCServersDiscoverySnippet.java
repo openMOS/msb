@@ -442,7 +442,7 @@ public class OPCServersDiscoverySnippet extends Thread
                     "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
             if (res)
             {
-              AssociateRecipeToSR(auxRecipe.getSkill());
+              dacManager.AssociateRecipeToSR(auxRecipe.getSkill());
               logger.info("Recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
             } else
             {
@@ -463,7 +463,7 @@ public class OPCServersDiscoverySnippet extends Thread
                       "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
               if (res)
               {
-                AssociateRecipeToSR(auxRecipe.getSkill());
+                dacManager.AssociateRecipeToSR(auxRecipe.getSkill());
                 logger.info("Module recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
               } else
               {
@@ -536,17 +536,6 @@ public class OPCServersDiscoverySnippet extends Thread
       }
     }
     return null;
-  }
-
-  private void AssociateRecipeToSR(Skill skill)
-  {
-    for (SkillRequirement sr : skill.getSkillRequirements())
-    {
-      if (sr.getRecipeIDs() != null)
-      {
-        DatabaseInteraction.getInstance().associateRecipeToSR(sr.getUniqueId(), sr.getRecipeIDs());
-      }
-    }
   }
 
 }

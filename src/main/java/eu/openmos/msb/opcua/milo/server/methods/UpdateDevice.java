@@ -55,13 +55,16 @@ public class UpdateDevice
       logger.debug("Update Device invoked! '{}'", context.getObjectNode().getBrowseName().getName());
       //rebrowse namespace of targert DA
       String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-      
+
       DeviceAdapter da;
-      
+
       if (da_name.equals(""))
-        da = DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);  
-      else
+      {
+        da = DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);
+      } else
+      {
         da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+      }
 
       DeviceAdapter auxDA = rebrowseNamespace(da);
 
@@ -70,11 +73,11 @@ public class UpdateDevice
         da = auxDA;
         validateModules_in_DB(da);
         validateRecipes_in_DB(da);
-        
+
         //update tables
         MSB_gui.fillModulesTable();
         MSB_gui.fillRecipesTable();
-        
+
       } else
       {
         System.out.println("ERROR rebrownsing DA: " + da.getSubSystem().getName());
@@ -96,8 +99,7 @@ public class UpdateDevice
     MSBClientSubscription msbClient = da_OPC.getClient();
     OpcUaClient client = msbClient.getClientObject();
 
-    System.out.println("\n");
-    System.out.println("***** Starting namespace re-browsing ***** \n");
+    logger.info("***** Starting namespace re-browsing ***** \n");
 
     try
     {
@@ -105,16 +107,19 @@ public class UpdateDevice
       Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
       ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
 
+      logger.info("Browse instance Hierarchy started");
       NodeId InstaceHierarchyNode = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
       if (InstaceHierarchyNode != null)
       {
-        System.out.println("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
+        logger.info("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
         node.addContent(msbClient.browseNode(client,
                 InstaceHierarchyNode,
                 Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
                 ignore));
       }
-
+      else
+        return null;
+      
       Element nSkills = new Element("Skills");
       nSkills.addContent(msbClient.browseNode(client,
               new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
@@ -127,11 +132,10 @@ public class UpdateDevice
 
       //xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
       //xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
-
-      System.out.println("Starting DA Parser **********************");
-
+      logger.info("Starting DA Parser **********************");
       boolean ok = da.parseDNToObjects(client, node, nSkills, false);
-
+      logger.info("***** End namespace browsing ***** \n\n");
+      
       if (ok)
       {
         return da;
@@ -140,11 +144,11 @@ public class UpdateDevice
         return null;
       }
 
-    } catch (Exception ex)
+    } catch (NumberFormatException ex)
     {
-
+      System.out.println("***** End namespace browsing with error ***** \n\n");
     }
-    System.out.println("***** End namespace browsing ***** \n\n");
+    
     return null;
   }
 
@@ -153,7 +157,7 @@ public class UpdateDevice
     //RECIPES
     List<String> auxRecipesDB = DatabaseInteraction.getInstance().getRecipesIDByDAName(da.getSubSystem().getName());
     List<String> idsFound = new ArrayList<>();
-    
+
     List<Recipe> tempRepList = new ArrayList<>(da.getListOfRecipes());
     for (Module auxMod : da.getListOfModules())
     {
@@ -161,7 +165,7 @@ public class UpdateDevice
     }
 
     for (String recipeID_DB : auxRecipesDB)
-    {      
+    {
       boolean notFound = true;
       for (Recipe recipe : tempRepList)
       {
@@ -188,10 +192,11 @@ public class UpdateDevice
         DACManager.getInstance().registerRecipe(da.getSubSystem().getName(), recipe.getUniqueId(), recipe.getSkill().getName(),
                 "true", recipe.getName(), recipe.getInvokeObjectID(), recipe.getInvokeMethodID());
       }
+      DACManager.getInstance().AssociateRecipeToSR(recipe.getSkill());
     }
 
   }
-  
+
   private void validateModules_in_DB(DeviceAdapter da)
   {
     //RECIPES
@@ -202,7 +207,7 @@ public class UpdateDevice
     for (String moduleAML_DB_ID : auxModulesAML_DB_ID)
     {
       boolean notFound = true;
-      
+
       for (Module module : da.getSubSystem().getModules())
       {
         if (module.getUniqueId().equals(moduleAML_DB_ID))
@@ -222,11 +227,11 @@ public class UpdateDevice
     {
       if (!idsFound.contains(module.getUniqueId()))
       {
-        DACManager.getInstance().registerModule(da.getSubSystem().getName(), module.getName(), 
+        DACManager.getInstance().registerModule(da.getSubSystem().getName(), module.getName(),
                 module.getUniqueId(), module.getStatus(), module.getAddress());
       }
     }
 
   }
-   
+
 }

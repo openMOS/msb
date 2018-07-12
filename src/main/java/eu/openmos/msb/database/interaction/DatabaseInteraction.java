@@ -5,9 +5,6 @@
  */
 package eu.openmos.msb.database.interaction;
 
-import eu.openmos.agentcloud.config.ConfigurationLoader;
-import eu.openmos.model.Module;
-import eu.openmos.model.Recipe;
 import static eu.openmos.msb.datastructures.MSBConstants.DATABASE_DRIVER_CLASS;
 import static eu.openmos.msb.datastructures.MSBConstants.DB_MEMORY_CONNECTION;
 import static eu.openmos.msb.datastructures.MSBConstants.DB_SQL_PATH;
@@ -1944,8 +1941,10 @@ public class DatabaseInteraction
       {
 
         if (recipe_exists_in_SR(recipe_id))
+        {
           continue;
-        
+        }
+
         Statement stmt = conn.createStatement();
         {
           String sql = "INSERT INTO SR"
@@ -2040,27 +2039,20 @@ public class DatabaseInteraction
     StopWatch DBqueryTimer = new StopWatch();
     PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
     DBqueryTimer.start();
-    Boolean result = false;
+
     try
     {
       Statement stmt = conn.createStatement();
-      try (ResultSet query = stmt.executeQuery("REMOVE FROM SR WHERE SR.r_id= '" + recipe_id + "'"))
-      {
-        if (!query.isBeforeFirst())
-        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
-          //System.out.println("No data");
-        } else
-        {
-          result = true;
-        }
-      }
+
+      int query = stmt.executeUpdate("DELETE FROM SR WHERE SR.r_id= '" + recipe_id + "'");
+
       stmt.close();
 
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-
-      return result;
+      
+      return query == 1;
     } catch (SQLException ex)
     {
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
@@ -2071,8 +2063,7 @@ public class DatabaseInteraction
     perfMeasure.getDatabaseQueryTimers().add(time);
     DBqueryTimer.stop();
 
-    return result;
+    return false;
   }
 
-  
 }

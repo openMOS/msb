@@ -9,6 +9,8 @@ import eu.openmos.model.ExecutionTable_DA;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
+import eu.openmos.model.Skill;
+import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.utilities.Functions;
@@ -473,4 +475,15 @@ public class DACManager
 
   }
 
+  public void AssociateRecipeToSR(Skill skill)
+  {
+    for (SkillRequirement sr : skill.getSkillRequirements())
+    {
+      if (sr.getRecipeIDs() != null)
+      {
+        DatabaseInteraction.getInstance().associateRecipeToSR(sr.getUniqueId(), sr.getRecipeIDs());
+      }
+    }
+  }
+  
 }
