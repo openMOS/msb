@@ -132,7 +132,7 @@ public class RecipeController extends Base
     }
 
     //send the updated recipe to DA
-    List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdapters_AML_IDs();
     Boolean ret = null;
 
     for (String da_id : deviceAdaptersID)
@@ -220,7 +220,7 @@ public class RecipeController extends Base
     List<ParameterSetting> parameterSett = new LinkedList<>();
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     
     for (String da_id : deviceAdaptersID)
     {
@@ -258,7 +258,7 @@ public class RecipeController extends Base
 
     List<SkillRequirement> skillReq = new LinkedList<>();
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     
     for (String da_id : deviceAdaptersID)
     {
@@ -296,7 +296,7 @@ public class RecipeController extends Base
     List<KPISetting> kpiSett = new LinkedList<>();
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     
     for (String da_id : deviceAdaptersID)
     {
@@ -523,7 +523,7 @@ public class RecipeController extends Base
   {
     logger.debug("start triggering!");
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     
     for (String da_id : deviceAdaptersID)
     {
@@ -580,7 +580,7 @@ public class RecipeController extends Base
   public String recipeTriggering(@PathParam("recipeId") String recipeId, @PathParam("productInstanceId") String productInstanceId)
   {
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);

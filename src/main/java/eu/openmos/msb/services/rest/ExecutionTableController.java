@@ -54,7 +54,7 @@ public class ExecutionTableController
   {
     logger.debug("execution table getDetail - executionTableId = " + executionTableId);
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyAML_ID(da_id);
@@ -167,7 +167,7 @@ public class ExecutionTableController
     logger.debug("execution table getRows - executionTableId = " + executionTableId);
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyAML_ID(da_id);
@@ -199,7 +199,7 @@ public class ExecutionTableController
     logger.debug("execution table getRow - executionTableRowId = " + executionTableRowId);
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyAML_ID(da_id);
@@ -285,7 +285,7 @@ public class ExecutionTableController
     logger.debug("execution table updateRow - rowToUpdate = " + rowToUpdate);
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter deviceAdapterbyName = DACinstance.getDeviceAdapterbyAML_ID(da_id);

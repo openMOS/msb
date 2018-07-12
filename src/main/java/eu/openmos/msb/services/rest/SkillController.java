@@ -203,7 +203,7 @@ public class SkillController extends Base
     List<KPI> kpis = new LinkedList<>();
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
 
     for (String da_id : deviceAdaptersID)
     {
@@ -244,7 +244,7 @@ public class SkillController extends Base
     List<Parameter> parameters = new LinkedList<>();
 
     DACManager DACinstance = DACManager.getInstance();
-    List<String> deviceAdaptersID = DACinstance.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     
     for (String da_id : deviceAdaptersID)
     {

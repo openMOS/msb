@@ -863,7 +863,7 @@ public abstract class DeviceAdapter
       recipe.setKpiSettings(KPIsettings);
       recipe.setSkillRequirements(SRs);
       recipe.getSkill().setSkillRequirements(SRs);
-      AssociateRecipeToSR(recipe.getSkill());
+      //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
       recipeList.add(recipe);
     }
     return recipeList;
@@ -1236,7 +1236,7 @@ public abstract class DeviceAdapter
             recipe.setKpiSettings(KPIsettings);
             recipe.setSkillRequirements(SRs);
             recipe.getSkill().setSkillRequirements(SRs);
-            AssociateRecipeToSR(recipe.getSkill());
+            //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
             recipeList.add(recipe);
           }
         }
@@ -1603,18 +1603,6 @@ public abstract class DeviceAdapter
 
     }
     return results;
-  }
-
-  private void AssociateRecipeToSR(Skill skill)
-  {
-    for (int j = 0; j < skill.getSkillRequirements().size(); j++)
-    {
-      SkillRequirement auxSR = skill.getSkillRequirements().get(j);
-      if (auxSR.getRecipeIDs() != null)
-      {
-        DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
-      }
-    }
   }
 
   private static boolean isRecipeNode(Node node)

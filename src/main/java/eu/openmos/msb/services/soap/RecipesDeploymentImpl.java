@@ -138,7 +138,7 @@ public class RecipesDeploymentImpl implements RecipesDeployment
     logger.debug("executionTable: " + executionTable);
 
     String execTableUniqueId = executionTable.getUniqueId();
-    List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdapters_AML_IDs();
     Boolean ret = false;
 
     for (String da_id : deviceAdaptersID)

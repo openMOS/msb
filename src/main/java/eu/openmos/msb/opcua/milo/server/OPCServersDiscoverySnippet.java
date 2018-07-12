@@ -7,6 +7,7 @@ import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_S
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
+import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import java.util.ArrayList;
@@ -135,14 +136,14 @@ public class OPCServersDiscoverySnippet extends Thread
       }
 
       //get da and check for server status
-      for (String id : DACManager.getInstance().getDeviceAdaptersIDs())
+      for (String id : DACManager.getInstance().getDeviceAdapters_AML_IDs())
       {
         DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(id);
         String daName = da.getSubSystem().getName();
         boolean found = false;
-        for (int i = 0; i < serverList.length; i++)
+        
+        for (ApplicationDescription server : serverList)
         {
-          ApplicationDescription server = serverList[i];
           if (daName.equals(server.getApplicationName().getText()))
           {
             found = true;
@@ -150,7 +151,7 @@ public class OPCServersDiscoverySnippet extends Thread
         }
         if (!found)
         {
-          DACManager.getInstance().deleteDAStuffByName(daName); //remove from DB?
+          DACManager.getInstance().delete_DA_Stuff(da.getSubSystem().getUniqueId()); //remove from DB?
           removeDownServer(daName);
         }
       }
@@ -262,7 +263,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
                   xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + daName + ".xml", false));
                   xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + daName + ".xml", false));
-                  */
+                   */
                   logger.info("Starting DA Parser **********************");
 
                   boolean ok = da.parseDNToObjects(client, node, nSkills, true);
@@ -273,7 +274,7 @@ public class OPCServersDiscoverySnippet extends Thread
                   {
                     workstationRegistration(da);
                     MSB_gui.updateTableAdaptersSemaphore(String.valueOf(
-                            PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), 
+                            PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()),
                             da.getSubSystem().getName());
                   } else
                   {
@@ -300,13 +301,13 @@ public class OPCServersDiscoverySnippet extends Thread
           logger.warn("Cannot discover Endpoints from URL {} : {}", da_url, e.getMessage());
           logger.warn("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + da_url + ": " + e.getMessage());
 
-          if (e.getCause().getMessage().toLowerCase().contains("connection refused") || 
-                  e.getCause().getMessage().toLowerCase().contains("connection timed out"))
+          if (e.getCause().getMessage().toLowerCase().contains("connection refused")
+                  || e.getCause().getMessage().toLowerCase().contains("connection timed out"))
           {
             String daName = serverApp.getApplicationName().getText();
             if (dacManager.getDeviceAdapterbyName(daName) != null)
             {
-              dacManager.deleteDAStuffByName(daName); //remove from DB?
+              dacManager.delete_DA_Stuff_by_name(daName); //remove from DB?
               removeDownServer(daName);
             }
           }
@@ -327,10 +328,10 @@ public class OPCServersDiscoverySnippet extends Thread
    * @param serverName
    * @return
    */
-  private int removeDownServer(String serverName)
+  private int removeDownServer(String da_name)
   {
     DeviceAdapter da = null;
-    da = DACManager.getInstance().getDeviceAdapterbyName(serverName);
+    da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
 
     if (da != null) //check if the da exists on the system
     {
@@ -364,16 +365,16 @@ public class OPCServersDiscoverySnippet extends Thread
           logger.info("Error trying to connect to cloud!: " + ex.getMessage());
         }
       }
-      if (DACManager.getInstance().deleteDeviceAdapter(serverName)) //if da removed from the system
+      if (DACManager.getInstance().deleteDeviceAdapter(da.getSubSystem().getName())) //if da removed from the system
       {
         logger.info("DownServer successfully deleted from DB!");
-        notify_channel.on_endpoint_dissapeared(serverName);
+        notify_channel.on_endpoint_dissapeared(da.getSubSystem().getName());
 
         //end
         return 1;
       } else
       {
-        String error = "Unable to remove  " + serverName + " from DB!";
+        String error = "Unable to remove  " + da.getSubSystem().getName() + " from DB!";
         notify_channel.on_notify_error(error);
         logger.error(error);
         return -1;
@@ -381,7 +382,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
     } else
     {
-      logger.error("DA: " + serverName + " is null. Doesn't exist on the system!");
+      logger.error("DA: " + da_name + " is null. Doesn't exist on the system!");
       return -1;
     }
 
@@ -402,12 +403,12 @@ public class OPCServersDiscoverySnippet extends Thread
         {
           boolean res = dacManager.registerModule(da.getSubSystem().getName(), auxModule.getName(), auxModule.getUniqueId(), auxModule.getStatus(), auxModule.getAddress());
           if (res)
-            {
-              logger.info("Module registed | Name: " + auxModule.getName() + " | ID: " + auxModule.getUniqueId());
-            } else
-            {
-              logger.info("Module not registed | Name: " + auxModule.getName() + " | ID: " + auxModule.getUniqueId());
-            }
+          {
+            logger.info("Module registed | Name: " + auxModule.getName() + " | ID: " + auxModule.getUniqueId());
+          } else
+          {
+            logger.info("Module not registed | Name: " + auxModule.getName() + " | ID: " + auxModule.getUniqueId());
+          }
         }
         MSB_gui.fillModulesTable();
       }
@@ -441,6 +442,7 @@ public class OPCServersDiscoverySnippet extends Thread
                     "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
             if (res)
             {
+              AssociateRecipeToSR(auxRecipe.getSkill());
               logger.info("Recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
             } else
             {
@@ -457,11 +459,11 @@ public class OPCServersDiscoverySnippet extends Thread
           {
             if (da.getSubSystem().getName() != null && auxRecipe.getSkill() != null && auxRecipe.getSkill().getName() != null)
             {
-
               boolean res = dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
                       "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
               if (res)
               {
+                AssociateRecipeToSR(auxRecipe.getSkill());
                 logger.info("Module recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
               } else
               {
@@ -498,14 +500,15 @@ public class OPCServersDiscoverySnippet extends Thread
     try
     {
       List<Node> nodes = client.getAddressSpace().browse(nodeToBrowse).get();
+      int max_lvl_search = 10;
       int count = 0;
-
-      while (count < 10)
+      
+      while (count < max_lvl_search)
       {
-        NodeId aux = getInst(nodes);
-        if (aux != null)
+        NodeId inst_hierarchy_node = getInst(nodes);
+        if (inst_hierarchy_node != null)
         {
-          return aux;
+          return inst_hierarchy_node;
         }
 
         List<Node> nodes1 = new ArrayList<>();
@@ -533,6 +536,17 @@ public class OPCServersDiscoverySnippet extends Thread
       }
     }
     return null;
+  }
+
+  private void AssociateRecipeToSR(Skill skill)
+  {
+    for (SkillRequirement sr : skill.getSkillRequirements())
+    {
+      if (sr.getRecipeIDs() != null)
+      {
+        DatabaseInteraction.getInstance().associateRecipeToSR(sr.getUniqueId(), sr.getRecipeIDs());
+      }
+    }
   }
 
 }

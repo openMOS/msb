@@ -1964,7 +1964,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {
     recipesTableModel.getDataVector().removeAllElements();
     DACManager dac = DACManager.getInstance(); //singleton to access hashmaps in other classes
-    List<String> da_ids = dac.getDeviceAdaptersIDs();
+    List<String> da_ids = dac.getDeviceAdapters_AML_IDs();
 
     for (String da_id : da_ids)
     {
@@ -2054,7 +2054,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {
     modulesTableModel.getDataVector().removeAllElements();
     DACManager instance = DACManager.getInstance();
-    List<String> adapters = instance.getDeviceAdaptersIDs();
+    List<String> adapters = instance.getDeviceAdapters_AML_IDs();
     for (String da_id : adapters)
     {
       DeviceAdapter da = instance.getDeviceAdapterbyAML_ID(da_id);

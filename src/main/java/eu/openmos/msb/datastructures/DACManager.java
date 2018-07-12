@@ -76,7 +76,7 @@ public class DACManager
    * @param device_protocol
    * @param short_info
    * @param long_info
-   * @return 
+   * @return
    */
   public DeviceAdapter addDeviceAdapter(String deviceAdapterName, EProtocol device_protocol, String short_info, String long_info)
   {
@@ -112,7 +112,7 @@ public class DACManager
       {
         client.setId(id);
         deviceAdapters.put(id, client);
-        
+
         return client;
       }
     } catch (UnsupportedOperationException ex)
@@ -131,7 +131,7 @@ public class DACManager
     }
     return null;
   }
-  
+
   public DeviceAdapter getDeviceAdapterbyAML_ID(String da_aml_id)
   {
     int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByAML_ID(da_aml_id);
@@ -152,10 +152,10 @@ public class DACManager
     try
     {
       int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
-      
+
       if (id != -1 && DatabaseInteraction.getInstance().removeDeviceAdapterByName(deviceAdapterName) && deviceAdapters.containsKey(id))
       {
-         
+
         deviceAdapters.remove(id);
         return true;
       }
@@ -166,13 +166,13 @@ public class DACManager
     return false;
   }
 
-  public boolean deleteDAStuffByName(String deviceAdapterName)
+  public boolean delete_DA_Stuff(String da_id)
   {
-    DatabaseInteraction.getInstance().removeRecipeByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName));
-    DatabaseInteraction.getInstance().removeModuleByDAId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName));
+    DatabaseInteraction.getInstance().removeRecipeByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByAML_ID(da_id));
+    DatabaseInteraction.getInstance().removeModuleByDAId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByAML_ID(da_id));
 
     //remove skills for a DA. from DAS table
-    DatabaseInteraction.getInstance().removeSkillByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName));
+    DatabaseInteraction.getInstance().removeSkillByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByAML_ID(da_id));
     //remove skills that don't have a DA associated
     ArrayList<String> availableSkillIDList = DatabaseInteraction.getInstance().getAvailableSkillIDList();
     ArrayList<String> DAassociatedSkillIDList = DatabaseInteraction.getInstance().getDAassociatedSkillIDList();
@@ -180,14 +180,14 @@ public class DACManager
     //check if all the available skills are associated with a da
     for (int i = 0; i < availableSkillIDList.size(); i++)
     {
-      String availableSkillID=availableSkillIDList.get(i);
+      String availableSkillID = availableSkillIDList.get(i);
       boolean exists = false;
       for (int j = 0; j < DAassociatedSkillIDList.size(); j++)
       {
         if (availableSkillID == null ? DAassociatedSkillIDList.get(j) == null : availableSkillID.equals(DAassociatedSkillIDList.get(j)))
         {
           exists = true;
-          System.out.println(availableSkillID+" Exists");
+          System.out.println(availableSkillID + " Exists");
         }
       }
       if (!exists)
@@ -195,9 +195,68 @@ public class DACManager
         int ret = DatabaseInteraction.getInstance().removeSkillByID(availableSkillIDList.get(i));
       }
     }
+
+    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+    List<Recipe> recipes = da.getSubSystem().getRecipes();
+
+    for (Module module : da.getSubSystem().getModules())
+    {
+      recipes.addAll(module.getRecipes());
+    }
+
+    for (Recipe recipe : recipes)
+    {
+      DatabaseInteraction.getInstance().remove_recipe_from_SR(recipe.getUniqueId());
+    }
+
     return true;
   }
-  
+
+  public boolean delete_DA_Stuff_by_name(String da_name)
+  {
+    DatabaseInteraction.getInstance().removeRecipeByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(da_name));
+    DatabaseInteraction.getInstance().removeModuleByDAId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(da_name));
+
+    //remove skills for a DA. from DAS table
+    DatabaseInteraction.getInstance().removeSkillByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(da_name));
+    //remove skills that don't have a DA associated
+    ArrayList<String> availableSkillIDList = DatabaseInteraction.getInstance().getAvailableSkillIDList();
+    ArrayList<String> DAassociatedSkillIDList = DatabaseInteraction.getInstance().getDAassociatedSkillIDList();
+
+    //check if all the available skills are associated with a da
+    for (int i = 0; i < availableSkillIDList.size(); i++)
+    {
+      String availableSkillID = availableSkillIDList.get(i);
+      boolean exists = false;
+      for (int j = 0; j < DAassociatedSkillIDList.size(); j++)
+      {
+        if (availableSkillID == null ? DAassociatedSkillIDList.get(j) == null : availableSkillID.equals(DAassociatedSkillIDList.get(j)))
+        {
+          exists = true;
+          System.out.println(availableSkillID + " Exists");
+        }
+      }
+      if (!exists)
+      {
+        int ret = DatabaseInteraction.getInstance().removeSkillByID(availableSkillIDList.get(i));
+      }
+    }
+
+    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
+    List<Recipe> recipes = da.getSubSystem().getRecipes();
+
+    for (Module module : da.getSubSystem().getModules())
+    {
+      recipes.addAll(module.getRecipes());
+    }
+
+    for (Recipe recipe : recipes)
+    {
+      DatabaseInteraction.getInstance().remove_recipe_from_SR(recipe.getUniqueId());
+    }
+
+    return true;
+  }
   
   /**
    * @param deviceAdapterName
@@ -213,7 +272,7 @@ public class DACManager
     }
     return null;
   }
-  
+
   public DeviceAdapter getDeviceAdapterFromModuleID(String module_id)
   {
     int id = DatabaseInteraction.getInstance().getDeviceAdapter_DB_ID_byModuleID(module_id);
@@ -286,12 +345,12 @@ public class DACManager
   {
     return DatabaseInteraction.getInstance().getDeviceAdapters_name();
   }
-*/
-  
-  public List<String> getDeviceAdaptersIDs(){
+   */
+  public List<String> getDeviceAdapters_AML_IDs()
+  {
     return DatabaseInteraction.getInstance().getDeviceAdapters_AML_ID();
   }
-  
+
   /**
    *
    * @param deviceAdapterName
@@ -299,8 +358,8 @@ public class DACManager
    * @param skillName
    * @param recipeValid
    * @param recipeName
-     * @param object_id
-     * @param method_id
+   * @param object_id
+   * @param method_id
    * @return
    */
   public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, String recipeValid, String recipeName, String object_id, String method_id)
@@ -337,13 +396,13 @@ public class DACManager
     DatabaseInteraction db = DatabaseInteraction.getInstance();
     return db.registerModule(da_Name, module_name, aml_id, status, address);
   }
-  
+
   public boolean skillExists(String aml_id)
   {
     DatabaseInteraction db = DatabaseInteraction.getInstance();
     return db.skillExists(aml_id);
   }
-  
+
   public static String daAgentCreation(DeviceAdapter da)
   {
     if (MSBConstants.USING_CLOUD)
@@ -392,25 +451,26 @@ public class DACManager
         System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
         return "KO";
       }
-    }
-    else //no AC
+    } else //no AC
+    {
       return "OK - No AgentPlatform";
+    }
   }
-  
+
   public static void updateExecutionTable(String da_id, ExecutionTable execTable)
   {
     DACManager dac = getInstance();
-    DeviceAdapter da = dac.getDeviceAdapterbyAML_ID(da_id);    
+    DeviceAdapter da = dac.getDeviceAdapterbyAML_ID(da_id);
     DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da.getClient();
     MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
-    
+
     ExecutionTable_DA execTable_da = ExecutionTable_DA.createExecutionTable_DA(execTable);
     String execTableSerialized = Functions.ClassToString(execTable_da);
     NodeId objectID = Functions.convertStringToNodeId(execTable_da.getChangeExecutionTableObjectID());
     NodeId methodID = Functions.convertStringToNodeId(execTable_da.getChangeExecutionTableMethodID());
-    
+
     boolean updateExecTable = client.updateRecipe(client.getClientObject(), objectID, methodID, execTableSerialized);
-    
+
   }
-  
+
 }

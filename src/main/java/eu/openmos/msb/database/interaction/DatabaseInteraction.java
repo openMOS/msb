@@ -87,7 +87,7 @@ public class DatabaseInteraction
   {
     boolean dbCreated = false;
     try
-    {     
+    {
       Class.forName(DATABASE_DRIVER_CLASS);
 
       conn = DriverManager.getConnection(DB_MEMORY_CONNECTION);
@@ -478,7 +478,9 @@ public class DatabaseInteraction
           while (query.next())
           {
             if (query.getString(1).equals("MSB Milo server"))
+            {
               continue;
+            }
             myresult.add(query.getString(1));
           }
         }
@@ -522,7 +524,9 @@ public class DatabaseInteraction
           while (query.next())
           {
             if (query.getString("aml_id") == null)
+            {
               continue;
+            }
             myresult.add(query.getString("aml_id"));
           }
         }
@@ -547,7 +551,6 @@ public class DatabaseInteraction
     return null;
   }
 
-  
   /**
    *
    * @param name
@@ -623,7 +626,7 @@ public class DatabaseInteraction
 
     return id;
   }
-  
+
   public int getDeviceAdapterDB_ID_ByAML_ID(String da_aml_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
@@ -695,7 +698,7 @@ public class DatabaseInteraction
 
     return ids;
   }
-  
+
   public String getDeviceAdapterNameByDB_ID(String deviceID)
   {
     StopWatch DBqueryTimer = new StopWatch();
@@ -804,7 +807,7 @@ public class DatabaseInteraction
 
     return id;
   }
-  
+
   /**
    *
    * @param skillName
@@ -1353,7 +1356,8 @@ public class DatabaseInteraction
 
     return result;
   }
-/*
+
+  /*
   public ArrayList<Recipe> getModulesByDAName(String deviceAdapterName)
   {
     StopWatch DBqueryTimer = new StopWatch();
@@ -1396,7 +1400,7 @@ public class DatabaseInteraction
 
     return result;
   }
-  */
+   */
   public ArrayList<String> getRecipesIDbySkillReqID(String sr_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
@@ -1640,9 +1644,9 @@ public class DatabaseInteraction
       ArrayList<String> result = new ArrayList<>();
 
       Statement stmt = conn.createStatement();
-      ResultSet query = stmt.executeQuery("SELECT DeviceAdapter.aml_id " + 
-                                          "FROM DeviceAdapter, Recipe " + 
-                                          "WHERE Recipe.aml_id = '" + recipe_id + "' AND Recipe.da_id = DeviceAdapter.id");
+      ResultSet query = stmt.executeQuery("SELECT DeviceAdapter.aml_id "
+              + "FROM DeviceAdapter, Recipe "
+              + "WHERE Recipe.aml_id = '" + recipe_id + "' AND Recipe.da_id = DeviceAdapter.id");
       if (!query.isBeforeFirst())
       {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
         //System.out.println("No data");
@@ -1679,7 +1683,7 @@ public class DatabaseInteraction
 
     return null;
   }
-  
+
   public String getDA_DB_IDbyAML_ID(String da_aml_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
@@ -1728,7 +1732,7 @@ public class DatabaseInteraction
 
     return null;
   }
-  
+
   public String getSkillReqIDbyRecipeID(String recipe_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
@@ -1740,7 +1744,6 @@ public class DatabaseInteraction
       Statement stmt = conn.createStatement();
       ResultSet query = stmt.executeQuery("SELECT SR.sr_id FROM SR WHERE SR.r_id = '" + recipe_id + "'");
 
-      
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
@@ -1758,7 +1761,7 @@ public class DatabaseInteraction
       System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
+
     return res;
   }
 
@@ -1928,7 +1931,7 @@ public class DatabaseInteraction
     }
     return -1;
   }
-  
+
   public boolean associateRecipeToSR(String sr_id, List<String> recipes_id)
   {
     StopWatch DBqueryTimer = new StopWatch();
@@ -1937,20 +1940,23 @@ public class DatabaseInteraction
 
     try
     {
-      for (int i = 0; i < recipes_id.size(); i++)
+      for (String recipe_id : recipes_id)
       {
-        String auxRecipe_id = recipes_id.get(i);
+
+        if (recipe_exists_in_SR(recipe_id))
+          continue;
+        
         Statement stmt = conn.createStatement();
         {
           String sql = "INSERT INTO SR"
                   + "(r_id, sr_id)"
                   + " VALUES ("
-                  + "'" + auxRecipe_id + "','" + sr_id + "')";
+                  + "'" + recipe_id + "','" + sr_id + "')";
           stmt.execute(sql);
           ResultSet r = stmt.getGeneratedKeys();
         }
         stmt.close();
-        System.out.println("REGISTER SR  " + auxRecipe_id + " " + sr_id);
+        System.out.println("REGISTER SR  " + recipe_id + " " + sr_id);
       }
 
       Long time = DBqueryTimer.getTime();
@@ -1989,4 +1995,84 @@ public class DatabaseInteraction
     return false;
   }
 
+  public Boolean recipe_exists_in_SR(String recipe_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+    Boolean result = false;
+    try
+    {
+      Statement stmt = conn.createStatement();
+
+      try (ResultSet query = stmt.executeQuery("SELECT SR.r_id FROM SR WHERE SR.r_id= '" + recipe_id + "'"))
+      {
+        if (!query.isBeforeFirst())
+        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+          //System.out.println("No data");
+        } else
+        {
+          result = true;
+        }
+      }
+      stmt.close();
+
+      Long time = DBqueryTimer.getTime();
+      perfMeasure.getDatabaseQueryTimers().add(time);
+      DBqueryTimer.stop();
+
+      return result;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return result;
+  }
+
+  public Boolean remove_recipe_from_SR(String recipe_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+    Boolean result = false;
+    try
+    {
+      Statement stmt = conn.createStatement();
+      try (ResultSet query = stmt.executeQuery("REMOVE FROM SR WHERE SR.r_id= '" + recipe_id + "'"))
+      {
+        if (!query.isBeforeFirst())
+        {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+          //System.out.println("No data");
+        } else
+        {
+          result = true;
+        }
+      }
+      stmt.close();
+
+      Long time = DBqueryTimer.getTime();
+      perfMeasure.getDatabaseQueryTimers().add(time);
+      DBqueryTimer.stop();
+
+      return result;
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return result;
+  }
+
+  
 }

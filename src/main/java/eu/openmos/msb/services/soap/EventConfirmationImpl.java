@@ -195,7 +195,7 @@ public class EventConfirmationImpl implements EventConfirmation
     logger.info("CLOUD notified it started and is working properly.");
     
     //create agents for the DAs
-    List<String> daIDs = DACManager.getInstance().getDeviceAdaptersIDs();
+    List<String> daIDs = DACManager.getInstance().getDeviceAdapters_AML_IDs();
     
     for (String da_id : daIDs)
     {

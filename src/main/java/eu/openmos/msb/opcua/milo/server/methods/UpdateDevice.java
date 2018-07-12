@@ -11,6 +11,7 @@ import static eu.openmos.msb.datastructures.MSBConstants.PROJECT_PATH;
 import static eu.openmos.msb.datastructures.MSBConstants.XML_PATH;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import static eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet.browseInstaceHierarchyNode;
+import eu.openmos.msb.starter.MSB_gui;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -70,15 +71,21 @@ public class UpdateDevice
         validateModules_in_DB(da);
         validateRecipes_in_DB(da);
         
+        //update tables
+        MSB_gui.fillModulesTable();
+        MSB_gui.fillRecipesTable();
+        
       } else
       {
         System.out.println("ERROR rebrownsing DA: " + da.getSubSystem().getName());
         //WHAT TO DO?
         //DA have corrupted data
       }
+      logger.debug("Update Device FINISHED!");
       result.set(1);
     } catch (Exception ex)
     {
+      logger.debug("Update Device ERROR! '{}'", ex.getMessage());
       result.set(0);
     }
   }
@@ -147,7 +154,7 @@ public class UpdateDevice
     List<String> auxRecipesDB = DatabaseInteraction.getInstance().getRecipesIDByDAName(da.getSubSystem().getName());
     List<String> idsFound = new ArrayList<>();
     
-    List<Recipe> tempRepList = da.getListOfRecipes();
+    List<Recipe> tempRepList = da.getSubSystem().getRecipes();
     for (Module auxMod : da.getListOfModules())
     {
       tempRepList.addAll(auxMod.getRecipes());
@@ -168,6 +175,7 @@ public class UpdateDevice
       }
       if (notFound)
       {
+        Boolean a = DatabaseInteraction.getInstance().remove_recipe_from_SR(recipeID_DB);
         int aux = DatabaseInteraction.getInstance().removeRecipeById(recipeID_DB);
         logger.info("" + aux);
       }

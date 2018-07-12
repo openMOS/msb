@@ -60,7 +60,7 @@ public class SubSystemController extends Base
     DACManager dac = DACManager.getInstance();
     //logger.debug("subsystems getList 2");
 
-    List<String> deviceAdaptersID = dac.getDeviceAdaptersIDs();
+    List<String> deviceAdaptersID = dac.getDeviceAdapters_AML_IDs();
     //logger.debug("subsystems getList 2.5: " + deviceAdapters );
 
     for (String da_id : deviceAdaptersID)
