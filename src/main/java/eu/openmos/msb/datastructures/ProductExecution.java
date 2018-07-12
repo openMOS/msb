@@ -8,6 +8,7 @@ package eu.openmos.msb.datastructures;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
 import eu.openmos.model.ExecutionTableRow;
+import eu.openmos.model.Module;
 import eu.openmos.model.OrderInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
@@ -413,7 +414,11 @@ public class ProductExecution implements Runnable
     {
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
-      for (Recipe recipe : da.getListOfRecipes())
+      List<Recipe> recipes = new ArrayList<>(da.getListOfRecipes());
+      for (Module module : da.getSubSystem().getModules())
+        recipes.addAll(module.getRecipes());
+      
+      for (Recipe recipe : recipes)
       {
         if (recipe.getUniqueId() == null ? recipeID == null : recipe.getUniqueId().equals(recipeID))
         {

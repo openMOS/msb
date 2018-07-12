@@ -64,26 +64,29 @@ public class RecipeController extends Base
     {
       Module module = (new ModuleController()).getDetail(helper.getModulesPath());
       Recipe recipe = this.getRecipeFromList(module.getRecipes(), helper.getRecipeId());
-      
-        if (recipe.getStatePath() != null) {
-            DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(module.getUniqueId());
-            DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
-            NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
-            recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
-        }
+
+      if (recipe.getStatePath() != null)
+      {
+        DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(module.getUniqueId());
+        DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
+        NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
+        recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
+      }
       return recipe;
-    } else
+    }
+    else
     {
       SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
       Recipe recipe = this.getRecipeFromList(subSystem.getRecipes(), helper.getRecipeId());
-      
-        if (recipe.getStatePath() != null) {
-            DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystem.getUniqueId());
-            NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
-            DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
-            recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
-        }
-        return recipe;
+
+      if (recipe.getStatePath() != null)
+      {
+        DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystem.getUniqueId());
+        NodeId node = Functions.convertStringToNodeId(recipe.getStatePath());
+        DeviceAdapterOPC da_opc = (DeviceAdapterOPC) CurrentDA;
+        recipe.setState(Functions.readOPCNodeToString(da_opc.getClient().getClientObject(), node));
+      }
+      return recipe;
     }
 
   }
@@ -166,11 +169,12 @@ public class RecipeController extends Base
             auxRecipe.setValid(recipe.isValid());
 
             DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
-            
+
             //client.getClient().InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
             ret = true;
             logger.info("Sending new execution table to DA: " + da.getSubSystem().getName());
-          } else
+          }
+          else
           {
 
           }
@@ -181,7 +185,7 @@ public class RecipeController extends Base
           Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
           DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da.getClient();
           MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
-          
+
           String RecipeSerialized = Functions.ClassToString(recipe_DA);
           NodeId objectID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeObjectID());
           NodeId methodID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeMethodID());
@@ -190,7 +194,8 @@ public class RecipeController extends Base
           if (updateRecipe)
           {
             return recipe;
-          } else
+          }
+          else
           {
             return null;
           }
@@ -203,8 +208,8 @@ public class RecipeController extends Base
   }
 
   /**
-   * Returns the list of parameter settings associated to a recipe. Fills the recipe detail page (slide 24 and 25 of 34)
-   * This method is exposed via a "/recipes/{recipeId}/parameterSettings" service call.
+   * Returns the list of parameter settings associated to a recipe. Fills the recipe detail page (slide 24 and 25 of 34) This method is exposed via a
+   * "/recipes/{recipeId}/parameterSettings" service call.
    *
    * @param recipeId recipe id, i.e. the recipe unique identifier.
    * @return list of parameter setting objects. List can be empty, cannot be null.
@@ -225,11 +230,13 @@ public class RecipeController extends Base
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
-      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
+      List<Recipe> recipes = new ArrayList<>(da.getSubSystem().getRecipes());
       for (Module module : da.getSubSystem().getModules())
-        recipesFromDeviceAdapter.addAll(module.getRecipes());
-      
-      for (Recipe recipe : recipesFromDeviceAdapter)
+      {
+        recipes.addAll(module.getRecipes());
+      }
+
+      for (Recipe recipe : recipes)
       {
         if (recipe.getUniqueId().equals(recipeId))
         {
@@ -242,8 +249,8 @@ public class RecipeController extends Base
   }
 
   /**
-   * Returns the list of skill requirements associated to a recipe. Fills the recipe detail page (slide 24 and 25 of 34)
-   * This method is exposed via a "/recipes/{recipeId}/skillRequirements" service call.
+   * Returns the list of skill requirements associated to a recipe. Fills the recipe detail page (slide 24 and 25 of 34) This method is exposed via a
+   * "/recipes/{recipeId}/skillRequirements" service call.
    *
    * @param recipeId recipe id, i.e. the recipe unique identifier.
    * @return list of skill requirement objects. List can be empty, cannot be null.
@@ -263,10 +270,12 @@ public class RecipeController extends Base
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
-      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
+      List<Recipe> recipesFromDeviceAdapter = new ArrayList<>(da.getSubSystem().getRecipes());
       for (Module module : da.getSubSystem().getModules())
+      {
         recipesFromDeviceAdapter.addAll(module.getRecipes());
-      
+      }
+
       for (Recipe recipe : recipesFromDeviceAdapter)
       {
         if (recipe.getUniqueId().equals(recipeId))
@@ -279,8 +288,8 @@ public class RecipeController extends Base
   }
 
   /**
-   * Returns the list of kpi settings associated to a recipe. Fills the recipe detail page (slide 24 and 25 of 34) This
-   * method is exposed via a "/recipes/{recipeId}/kpiSettings" service call.
+   * Returns the list of kpi settings associated to a recipe. Fills the recipe detail page (slide 24 and 25 of 34) This method is exposed via a
+   * "/recipes/{recipeId}/kpiSettings" service call.
    *
    * @param recipeId recipe id, i.e. the recipe unique identifier.
    * @return list of kpi setting objects. List can be empty, cannot be null.
@@ -301,10 +310,12 @@ public class RecipeController extends Base
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
-      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
+      List<Recipe> recipesFromDeviceAdapter = new ArrayList<>(da.getSubSystem().getRecipes());
       for (Module module : da.getSubSystem().getModules())
+      {
         recipesFromDeviceAdapter.addAll(module.getRecipes());
-      
+      }
+
       for (Recipe recipe : recipesFromDeviceAdapter)
       {
         if (recipe.getUniqueId().equals(recipeId))
@@ -351,7 +362,6 @@ public class RecipeController extends Base
 
     // Setting recipe skill
     //Skill skill = helper.getSkillId();
-    
     Skill skill = null;
     for (Skill auxSkill : equipment.getSkills())
     {
@@ -361,10 +371,12 @@ public class RecipeController extends Base
         break;
       }
     }
-    
+
     if (skill == null)
-        return null;
-    
+    {
+      return null;
+    }
+
     recipe.setSkill(skill);
 
     // Setting Recipe Skill Requirements with empty list that 
@@ -383,7 +395,7 @@ public class RecipeController extends Base
     recipe.setKpiSettings(getKPISettingFromSkill2(skill));
 
     recipe.setParameterSettings(getParameterSettingsFromSkill2(skill));
-    
+
     // fulfilled skill reqs
     recipe.setFulfilledSkillRequirements(new LinkedList<>());
 
@@ -427,22 +439,22 @@ public class RecipeController extends Base
     if (skill != null && skill.getKpis() != null)
     {
 
-        for (KPI kpi : skill.getKpis())
-        {
-          KPISetting kpiSetting
-                  = new KPISetting(
-                          "KPISetting From KPI: " + kpi.getName(),
-                          generateId(new Date()),
-                          "KPISetting Name",
-                          kpi,
-                          kpi.getKpiType(),
-                          kpi.getUnit(),
-                          kpi.getValue(),
-                          new Date()
-                  );
-          kpiSettings.add(kpiSetting);
-        }
-      
+      for (KPI kpi : skill.getKpis())
+      {
+        KPISetting kpiSetting
+                = new KPISetting(
+                        "KPISetting From KPI: " + kpi.getName(),
+                        generateId(new Date()),
+                        "KPISetting Name",
+                        kpi,
+                        kpi.getKpiType(),
+                        kpi.getUnit(),
+                        kpi.getValue(),
+                        new Date()
+                );
+        kpiSettings.add(kpiSetting);
+      }
+
     }
     logger.debug("Return " + kpiSettings.size() + " KPIs Settings");
     return kpiSettings;
@@ -484,20 +496,20 @@ public class RecipeController extends Base
     {
       //logger.debug("Found " + skill.getParameterPorts().size() + " ParamPort");
 
-        for (Parameter parameter : skill.getParameters())
-        {
-          ParameterSetting paramSett
-                  = new ParameterSetting(
-                          "ParamSetting from Param: " + parameter.getName(),
-                          generateId(new Date()),
-                          "ParamSetting NAME",
-                          "ParamSetting Value",
-                          parameter,
-                          new Date()
-                  );
-          parameterSettings.add(paramSett);
-        }
-      
+      for (Parameter parameter : skill.getParameters())
+      {
+        ParameterSetting paramSett
+                = new ParameterSetting(
+                        "ParamSetting from Param: " + parameter.getName(),
+                        generateId(new Date()),
+                        "ParamSetting NAME",
+                        "ParamSetting Value",
+                        parameter,
+                        new Date()
+                );
+        parameterSettings.add(paramSett);
+      }
+
     }
     logger.debug("Returning " + parameterSettings.size() + " PARAM SETTING");
     return parameterSettings;
@@ -529,10 +541,12 @@ public class RecipeController extends Base
     {
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
       if (da.getSubSystem().getName().toUpperCase().contains("MSB"))
+      {
         continue;
-      
-      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
-      for (Recipe recipe : recipesFromDeviceAdapter)
+      }
+
+      List<Recipe> recipes = new ArrayList<>(da.getSubSystem().getRecipes());
+      for (Recipe recipe : recipes)
       {
         if (recipe.getUniqueId().equals(recipeId))
         {
@@ -553,11 +567,13 @@ public class RecipeController extends Base
             if (result)
             { //status code of the call
               return "Success";
-            } else
+            }
+            else
             {
               return "Couldn't Execute";
             }
-          } else
+          }
+          else
           {
             return "Adapter is not on RampUp stage!";
           }
@@ -567,11 +583,11 @@ public class RecipeController extends Base
     return "Recipe not found";
   }
 
-    /**
+  /**
    * Service for triggering a specific Recipe. Returns a status message depending on the outcome.
    *
    * @param recipeId
-     * @param productInstanceId
+   * @param productInstanceId
    * @return status
    */
   @GET
@@ -584,7 +600,7 @@ public class RecipeController extends Base
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
-      List<Recipe> recipesFromDeviceAdapter = da.getSubSystem().getRecipes();
+      List<Recipe> recipesFromDeviceAdapter = new ArrayList<>(da.getSubSystem().getRecipes());
       for (Recipe recipe : recipesFromDeviceAdapter)
       {
         if (recipe.getUniqueId().equals(recipeId))
@@ -596,23 +612,30 @@ public class RecipeController extends Base
             String invokeMethodID = recipe.getInvokeMethodID();
             DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
 
-              if (createSinglePI(productInstanceId)) {
-                  //EXECUTE THE RECIPE
-                  logger.debug("[EXECUTE] recipeID: " + recipeId);
-                  NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
-                  NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
+            if (createSinglePI(productInstanceId))
+            {
+              //EXECUTE THE RECIPE
+              logger.debug("[EXECUTE] recipeID: " + recipeId);
+              NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
+              NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
 
-                  boolean result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, productInstanceId, "HMItest", false);
+              boolean result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, productInstanceId, "HMItest", false);
 
-                  if (result) { //status code of the call
-                      return "Success";
-                  } else {
-                      return "Couldn't Execute";
-                  }
+              if (result)
+              { //status code of the call
+                return "Success";
               }
               else
-                  return "Couldn't Execute";
-          } else
+              {
+                return "Couldn't Execute";
+              }
+            }
+            else
+            {
+              return "Couldn't Execute";
+            }
+          }
+          else
           {
             return "Adapter is not on RampUp stage!";
           }
@@ -624,7 +647,7 @@ public class RecipeController extends Base
 
   private Boolean createSinglePI(String productInstance_id)
   {
-      if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
+    if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
     {
       OrderInstance oi = new OrderInstance();
       List<ProductInstance> piList = new ArrayList<>();
@@ -635,7 +658,7 @@ public class RecipeController extends Base
               new Date(), new Date());
 
       piList.add(pi);
-      
+
       oi.setName(productInstance_id + "_name");
       oi.setDescription(productInstance_id + "_description");
       oi.setPriority(1);
@@ -645,7 +668,7 @@ public class RecipeController extends Base
       PECManager.getInstance().getProductsDoing().put(productInstance_id, pi);
 
       MSB_gui.addToTableCurrentOrders(oi.getUniqueId(), "type", productInstance_id);
-      
+
       if (MSBConstants.USING_CLOUD)
       {
         try
@@ -667,7 +690,8 @@ public class RecipeController extends Base
             ServiceCallStatus piStartStatus = systemConfigurator.startedProduct(pi);
 
           }
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
           System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
         }
@@ -675,7 +699,9 @@ public class RecipeController extends Base
       return true;
     }
     else
-          return false;
+    {
+      return false;
+    }
   }
-  
+
 }

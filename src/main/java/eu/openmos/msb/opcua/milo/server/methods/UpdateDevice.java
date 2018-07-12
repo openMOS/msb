@@ -154,7 +154,7 @@ public class UpdateDevice
     List<String> auxRecipesDB = DatabaseInteraction.getInstance().getRecipesIDByDAName(da.getSubSystem().getName());
     List<String> idsFound = new ArrayList<>();
     
-    List<Recipe> tempRepList = da.getSubSystem().getRecipes();
+    List<Recipe> tempRepList = new ArrayList<>(da.getListOfRecipes());
     for (Module auxMod : da.getListOfModules())
     {
       tempRepList.addAll(auxMod.getRecipes());

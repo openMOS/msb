@@ -57,7 +57,8 @@ public class SkillController extends Base
     if (helper.hasSubModules())
     {
       equipment = (new ModuleController()).getDetail(helper.getModulesPath());
-    } else
+    }
+    else
     {
       equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
     }
@@ -72,48 +73,53 @@ public class SkillController extends Base
         }
       }
     }
-
     return null;
   }
 
-/**
-     * Allows to trigger a skill via insertion of a temporary recipe.
-     *
+  /**
+   * Allows to trigger a skill via insertion of a temporary recipe.
+   *
    * @param skillPath
-     * @param tmpRecipe the temporary recipe to be inserted only for skill triggering.
-     * @return atatus.
-     */
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{skillId}/trigger/{productInstanceId}")
-    public String skillTriggering(@PathParam("skillId") String skillPath, @PathParam("productInstanceId") String productInstanceId,
-            Recipe tmpRecipe) {
-        
-        logger.debug("skillTriggering: " + skillPath + " - " + productInstanceId + " - " + tmpRecipe);
-        
-        PathHelper helper = new PathHelper(skillPath, logger);
-        
-        if (helper.hasSubModules()){
-            Module module = (new ModuleController()).getDetail(helper.getModulesPath());
-            if (module != null) {
-                //module.getRecipes().add(newRecipe);
-                //return module.getRecipes();
-            }
-        } else {
-            SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
-            if (subSystem != null) {
+   * @param productInstanceId
+   * @param tmpRecipe the temporary recipe to be inserted only for skill triggering.
+   * @return status.
+   */
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{skillId}/trigger/{productInstanceId}")
+  public String skillTriggering(@PathParam("skillId") String skillPath, @PathParam("productInstanceId") String productInstanceId,
+          Recipe tmpRecipe)
+  {
+    logger.debug("skillTriggering: " + skillPath + " - " + productInstanceId + " - " + tmpRecipe);
+
+    PathHelper helper = new PathHelper(skillPath, logger);
+
+    if (helper.hasSubModules())
+    {
+      Module module = (new ModuleController()).getDetail(helper.getModulesPath());
+      if (module != null)
+      {
+        //module.getRecipes().add(newRecipe);
+        //return module.getRecipes();
+      }
+    }
+    else
+    {
+      SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
+      if (subSystem != null)
+      {
 //                subSystem.getRecipes().add(newRecipe);
 //                return subSystem.getRecipes();
-            }
-        }
-        return "Success";
-       
-     }
+      }
+    }
+    return "Success";
+
+  }
 
   /**
-   * Returns the list of recipes associated to a skill. Fills the skills recipe list (slide 22 of 34) This method is
-   * exposed via a "/skills/{skillId}/recipes" service call.
+   * Returns the list of recipes associated to a skill. Fills the skills recipe list (slide 22 of 34) This method is exposed via a "/skills/{skillId}/recipes"
+   * service call.
    *
    * @param skillId skill id, i.e. the skill unique identifier.
    * @return list of recipe objects. List can be empty, cannot be null.
@@ -136,7 +142,8 @@ public class SkillController extends Base
         logger.debug("Go for module");
         Module module = (new ModuleController()).getDetail(helper.getModulesPath());
         return this.getRecipesFromSkill(module.getRecipes(), skill);
-      } else
+      }
+      else
       {
         logger.debug("Go for subSystem");
         SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
@@ -144,31 +151,6 @@ public class SkillController extends Base
       }
     }
     return null;
-
-    /* String[] ids = skillId.split(Base.PARAMSEPARATOR);
-
-        // ss-recip
-        // ss-modulo-recipe
-        // ss-modulo-modulo-recipe
-        String subSystemId, realRecipeId;
-
-        if (ids != null) {
-            subSystemId = ids[0].split(Base.PARAMVALUESEPARATOR)[1];
-            realRecipeId = ids[ids.length - 1].split(Base.PARAMVALUESEPARATOR)[1];
-            logger.debug("SK ID: " + realRecipeId);
-            if (ids.length == 2) {
-                for (SubSystem subsystem : (new SubSystemController()).getList()) {
-                    if (subsystem.getUniqueId().equals(subSystemId)) {
-                        logger.debug("subsystem - found " + subSystemId);
-                        return subsystem.getRecipes();
-                    }
-                }
-            } else {
-                String modulePath = skillId.substring(0, skillId.lastIndexOf(Base.SKILLMARKERPREFIX) - 1);
-                return new ModuleController().getDetail(modulePath).getRecipes();
-            }
-        }
-        return null;*/
   }
 
   private List<Recipe> getRecipesFromSkill(List<Recipe> recipes, Skill skill)
@@ -186,8 +168,8 @@ public class SkillController extends Base
   }
 
   /**
-   * Returns the list of kpis associated to a skill. Fills the skill detail page (slide 19 of 34) This method is exposed
-   * via a "/skills/{skillId}/kpis" service call.
+   * Returns the list of kpis associated to a skill. Fills the skill detail page (slide 19 of 34) This method is exposed via a "/skills/{skillId}/kpis" service
+   * call.
    *
    * @param skillId skill id, i.e. the skill unique identifier.
    * @return list of kpi objects. List can be empty, cannot be null.
@@ -227,8 +209,8 @@ public class SkillController extends Base
   }
 
   /**
-   * Returns the list of parameters associated to a skill. Fills the skill detail page (slide 18 of 34) This method is
-   * exposed via a "/skills/{skillId}/parameters" service call.
+   * Returns the list of parameters associated to a skill. Fills the skill detail page (slide 18 of 34) This method is exposed via a
+   * "/skills/{skillId}/parameters" service call.
    *
    * @param skillId skill id, i.e. the skill unique identifier.
    * @return list of parameter objects. List can be empty, cannot be null.
@@ -267,8 +249,8 @@ public class SkillController extends Base
   }
 
   /**
-   * Returns the list of equipments associated to a skill. Fills the skill detail page (missing slide should be next
-   * after 20 of 34) This method is exposed via a "/skills/{skillId}/equipments" service call.
+   * Returns the list of equipments associated to a skill. Fills the skill detail page (missing slide should be next after 20 of 34) This method is exposed via
+   * a "/skills/{skillId}/equipments" service call.
    *
    * @param skillId skill id, i.e. the skill unique identifier.
    * @return list of equipment objects. List can be empty, cannot be null.
