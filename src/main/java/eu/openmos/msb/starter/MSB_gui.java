@@ -1444,13 +1444,13 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         List<Recipe> listOfRecipes = da.getListOfRecipes();
         DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
 
-        for (int i = 0; i < listOfRecipes.size(); i++)
+        for (Recipe recipe : listOfRecipes)
         {
-          if (listOfRecipes.get(i).getName().contains(textToSend.getText()))
+          if (recipe.getName().contains(textToSend.getText()))
           {
             System.out.println("Found Recipe!");
-            NodeId methodNode = Functions.convertStringToNodeId(listOfRecipes.get(i).getInvokeMethodID());
-            NodeId objNode = Functions.convertStringToNodeId(listOfRecipes.get(i).getInvokeObjectID());
+            NodeId methodNode = Functions.convertStringToNodeId(recipe.getInvokeMethodID());
+            NodeId objNode = Functions.convertStringToNodeId(recipe.getInvokeObjectID());
             boolean ret = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objNode, methodNode, deviceName, deviceName, false);
             System.out.println("Method call retuned: " + ret);
           } else
@@ -1969,15 +1969,12 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     for (String da_id : da_ids)
     {
       DeviceAdapter da = dac.getDeviceAdapterbyAML_ID(da_id);
-      List<Recipe> recipesFromDeviceAdapter = da.getListOfRecipes();
+      List<Recipe> recipes = new ArrayList<>(da.getListOfRecipes());
       for (Module module : da.getSubSystem().getModules())
       {
-        if (module != null)
-        {
-          recipesFromDeviceAdapter.addAll(module.getRecipes());
-        }
+          recipes.addAll(module.getRecipes());
       }
-      for (Recipe r : recipesFromDeviceAdapter)
+      for (Recipe r : recipes)
       {
         addToTableRecipes(r.getName(), r.isValid(), da.getSubSystem().getName()); //add each product from the list for each workstation
       }

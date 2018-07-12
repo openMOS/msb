@@ -270,9 +270,9 @@ public abstract class DeviceAdapter
       List<Recipe> recipes = subSystem.getRecipes();
       List<String> equipmentIds = new LinkedList<>();
       equipmentIds.add(subSystem.getUniqueId());
-      for (int i = 0; i < recipes.size(); i++)
+      for (Recipe recipe : recipes)
       {
-        recipes.get(i).setEquipmentIds(equipmentIds);
+        recipe.setEquipmentIds(equipmentIds);
       }
 
       subSystem.setSsType(ReadDeviceAdapterType(deviceDescriptionDoc));

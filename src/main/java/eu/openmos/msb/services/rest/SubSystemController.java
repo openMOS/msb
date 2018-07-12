@@ -181,10 +181,10 @@ public class SubSystemController extends Base
     {
       if (subsystem.getUniqueId().equals(subsystemId))
       {
-        List<Recipe> recipeList = subsystem.getRecipes();
+        List<Recipe> recipeList = new ArrayList<>(subsystem.getRecipes());
         for (Module module : subsystem.getModules())
         {
-          recipeList.addAll(module.getRecipes());
+          recipeList.addAll(new ArrayList<>(module.getRecipes()));
         }
         return recipeList;
       }
