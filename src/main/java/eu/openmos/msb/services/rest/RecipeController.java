@@ -651,7 +651,7 @@ public class RecipeController extends Base
     {
       OrderInstance oi = new OrderInstance();
       List<ProductInstance> piList = new ArrayList<>();
-      oi.setUniqueId(productInstance_id);
+      oi.setUniqueId(productInstance_id + "id");
       //create instance and agent
       ProductInstance pi = new ProductInstance(productInstance_id, "type", "name", "no_description",
               oi.getUniqueId(), null, false, null, ProductInstanceStatus.PRODUCING,
