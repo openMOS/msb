@@ -29,8 +29,9 @@ import org.xml.sax.SAXException;
  */
 public class Functions
 {
+
   /**
-   * 
+   *
    * @param toConvert
    * @return NodeId class
    */
@@ -41,13 +42,14 @@ public class Functions
       int ns = Integer.parseInt(toConvert.split(":")[0]);
       String identifier = toConvert.substring(toConvert.indexOf(":") + 1);
       return new NodeId(ns, identifier);
-    } catch (NumberFormatException ex)
+    }
+    catch (NumberFormatException ex)
     {
-        System.out.println("ERROR convertStringToNodeId: " + ex.getMessage());
+      System.out.println("ERROR convertStringToNodeId: " + ex.getMessage());
       return null;
     }
   }
-  
+
   public static String readOPCNodeToString(OpcUaClient client, NodeId node)
   {
     String res = "";
@@ -55,20 +57,21 @@ public class Functions
     {
       res = client.readValue(0, TimestampsToReturn.Neither, node).get().getValue().getValue().toString();
       return res;
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       //System.out.println("ERROR reading node: " + ex.getMessage());
       return "";
     }
   }
-  
-    public static void writeNode(OpcUaClient client, NodeId node, String value)
-    {
-        Variant v = new Variant(value);
-        DataValue dv = new DataValue(v, null, null);
-        client.writeValue(node, dv);
-    }
-  
+
+  public static void writeNode(OpcUaClient client, NodeId node, String value)
+  {
+    Variant v = new Variant(value);
+    DataValue dv = new DataValue(v, null, null);
+    client.writeValue(node, dv);
+  }
+
   public static String ClassToString(Object classToParse)
   {
     try
@@ -81,7 +84,8 @@ public class Functions
       jaxbMArshaller.marshal(classToParse, sw); //print to String
       String classString = sw.toString();
       return classString;
-    } catch (JAXBException ex)
+    }
+    catch (JAXBException ex)
     {
       System.out.println("Error ClassToString: " + ex.getMessage());
     }
@@ -105,11 +109,12 @@ public class Functions
       classToParse = (Object) unmar.unmarshal(doc);
 
       return classToParse;
-    } catch (IOException | JAXBException | ParserConfigurationException | SAXException ex)
+    }
+    catch (IOException | JAXBException | ParserConfigurationException | SAXException ex)
     {
       System.out.println("Error parsing stringToClass: " + ex.getMessage());
     }
     return null;
   }
-  
+
 }

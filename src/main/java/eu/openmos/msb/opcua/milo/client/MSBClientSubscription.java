@@ -380,7 +380,7 @@ public class MSBClientSubscription implements IClient
    * @param input
    * @return
    */
-  public CompletableFuture<String> SendRecipetoDevice(OpcUaClient client, String input)
+  public CompletableFuture<String> SendRecipeToDevice(OpcUaClient client, String input)
   {
     NodeId objectId = NodeId.parse("ns=2;s=OPC_Device");
     NodeId methodId = NodeId.parse("ns=2;s=OPC_Device/SendRecipes");
@@ -523,13 +523,6 @@ public class MSBClientSubscription implements IClient
         {
           continue;
         }
-        /*
-        String attributeName = rd.getNodeId().getIdentifier().toString();
-        if (attributeName.contains("openMOSRoleClassLib"))
-        {
-          continue;
-        }
-        */
 
         Element node = new Element(referenceName.replaceAll(":", "").replaceAll(" ", "_").replaceAll(",","").replaceAll("\\(", "_").replaceAll("\\)", "").replaceAll("Area/Geometry_Parameter", "Area_Geometry_Parameter"));
 
@@ -543,11 +536,6 @@ public class MSBClientSubscription implements IClient
         nodePath.setText(rd.getNodeId().getIdentifier().toString());
         node.addContent(nodePath);
 
-//        // if we need the Reference Type
-//        Element nodeReferenceType = new Element("ReferenceType");
-//        nodeReferenceType.setAttribute("ns", rd.getNodeId().getNamespaceIndex().toString());
-//        nodeReferenceType.setText(rd.getNodeId().getIdentifier().toString());
-//        node.addContent(nodeReferenceType);
         try
         {
           Element nodeValue = new Element("Value");
@@ -558,7 +546,11 @@ public class MSBClientSubscription implements IClient
               // read the value from the variable exposed in the OPC-UA Server
               VariableNode vNode = client.getAddressSpace().createVariableNode(NodeId);
               DataValue value = vNode.readValue().get();
-              nodeValue.setText(value.getValue().getValue().toString());
+              Variant aux = value.getValue();
+              Object aux1 = aux.getValue();
+              if (aux1 != null)
+                nodeValue.setText(aux1.toString());
+              
             } catch (InterruptedException | ExecutionException ex)
             {
               java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
@@ -568,6 +560,8 @@ public class MSBClientSubscription implements IClient
           node.addContent(nodeValue);
         } catch (Exception ex)
         {
+          int ui = 0;
+          logger.error(ex.getMessage());
           // this is empty on purpose, since every time a variable does not have a value an exception is thrown
           // TODO - handle this in another way, maybe or let the oompa loopas do there work and forget about this
         }

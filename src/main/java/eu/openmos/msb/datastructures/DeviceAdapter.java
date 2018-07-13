@@ -15,7 +15,6 @@ import eu.openmos.model.Skill;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import eu.openmos.model.utilities.DatabaseConstants;
-import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.utilities.Functions;
 import io.vertx.core.VertxOptions;
 import java.util.LinkedList;
