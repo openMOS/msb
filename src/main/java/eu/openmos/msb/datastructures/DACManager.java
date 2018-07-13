@@ -41,7 +41,8 @@ public class DACManager
   // [af-silva] TODO valdiate
   // para aceder as classes especificas (DeviceAdapterOPC e DeviceAdapterDDS) fazer cast
   private final Map<Integer, DeviceAdapter> deviceAdapters;
-
+  public Map<String, Thread> threadMap = new HashMap<>();
+  
   /**
    * @brief constructor
    */
@@ -176,17 +177,16 @@ public class DACManager
     //remove skills for a DA. from DAS table
     DatabaseInteraction.getInstance().removeSkillByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByAML_ID(da_id));
     //remove skills that don't have a DA associated
-    ArrayList<String> availableSkillIDList = DatabaseInteraction.getInstance().getAvailableSkillIDList();
-    ArrayList<String> DAassociatedSkillIDList = DatabaseInteraction.getInstance().getDAassociatedSkillIDList();
+    List<String> availableSkillIDList = DatabaseInteraction.getInstance().getAvailableSkillIDList();
+    List<String> DAassociatedSkillIDList = DatabaseInteraction.getInstance().getDAassociatedSkillIDList();
 
     //check if all the available skills are associated with a da
-    for (int i = 0; i < availableSkillIDList.size(); i++)
+    for (String availableSkillID : availableSkillIDList)
     {
-      String availableSkillID = availableSkillIDList.get(i);
       boolean exists = false;
-      for (int j = 0; j < DAassociatedSkillIDList.size(); j++)
+      for (String DAassociatedSkillID : DAassociatedSkillIDList)
       {
-        if (availableSkillID == null ? DAassociatedSkillIDList.get(j) == null : availableSkillID.equals(DAassociatedSkillIDList.get(j)))
+        if (availableSkillID == null ? DAassociatedSkillID == null : availableSkillID.equals(DAassociatedSkillID))
         {
           exists = true;
           System.out.println(availableSkillID + " Exists");
@@ -194,12 +194,12 @@ public class DACManager
       }
       if (!exists)
       {
-        int ret = DatabaseInteraction.getInstance().removeSkillByID(availableSkillIDList.get(i));
+        int ret = DatabaseInteraction.getInstance().removeSkillByID(availableSkillID);
       }
     }
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
-    List<Recipe> recipes = da.getSubSystem().getRecipes();
+    List<Recipe> recipes = new ArrayList<>(da.getSubSystem().getRecipes());
 
     for (Module module : da.getSubSystem().getModules())
     {
@@ -222,17 +222,16 @@ public class DACManager
     //remove skills for a DA. from DAS table
     DatabaseInteraction.getInstance().removeSkillByDaId(DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(da_name));
     //remove skills that don't have a DA associated
-    ArrayList<String> availableSkillIDList = DatabaseInteraction.getInstance().getAvailableSkillIDList();
-    ArrayList<String> DAassociatedSkillIDList = DatabaseInteraction.getInstance().getDAassociatedSkillIDList();
+    List<String> availableSkillIDList = DatabaseInteraction.getInstance().getAvailableSkillIDList();
+    List<String> DAassociatedSkillIDList = DatabaseInteraction.getInstance().getDAassociatedSkillIDList();
 
     //check if all the available skills are associated with a da
-    for (int i = 0; i < availableSkillIDList.size(); i++)
+    for (String availableSkillID : availableSkillIDList)
     {
-      String availableSkillID = availableSkillIDList.get(i);
       boolean exists = false;
-      for (int j = 0; j < DAassociatedSkillIDList.size(); j++)
+      for (String DAassociatedSkillID : DAassociatedSkillIDList)
       {
-        if (availableSkillID == null ? DAassociatedSkillIDList.get(j) == null : availableSkillID.equals(DAassociatedSkillIDList.get(j)))
+        if (availableSkillID == null ? DAassociatedSkillID == null : availableSkillID.equals(DAassociatedSkillID))
         {
           exists = true;
           System.out.println(availableSkillID + " Exists");
@@ -240,12 +239,12 @@ public class DACManager
       }
       if (!exists)
       {
-        int ret = DatabaseInteraction.getInstance().removeSkillByID(availableSkillIDList.get(i));
+        int ret = DatabaseInteraction.getInstance().removeSkillByID(availableSkillID);
       }
     }
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
-    List<Recipe> recipes = da.getSubSystem().getRecipes();
+    List<Recipe> recipes = new ArrayList<>(da.getSubSystem().getRecipes());
 
     for (Module module : da.getSubSystem().getModules())
     {
@@ -259,7 +258,7 @@ public class DACManager
 
     return true;
   }
-  
+
   /**
    * @param deviceAdapterName
    * @brief WORKSTATIONName vs DEVICE data MAPS
@@ -485,5 +484,5 @@ public class DACManager
       }
     }
   }
-  
+
 }

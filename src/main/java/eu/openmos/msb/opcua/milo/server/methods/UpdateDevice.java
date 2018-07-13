@@ -7,18 +7,17 @@ import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
-import static eu.openmos.msb.datastructures.MSBConstants.PROJECT_PATH;
-import static eu.openmos.msb.datastructures.MSBConstants.XML_PATH;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import static eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet.browseInstaceHierarchyNode;
 import eu.openmos.msb.starter.MSB_gui;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
@@ -54,36 +53,85 @@ public class UpdateDevice
     {
       logger.debug("Update Device invoked! '{}'", context.getObjectNode().getBrowseName().getName());
       //rebrowse namespace of targert DA
-      String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-
-      DeviceAdapter da;
-
-      if (da_name.equals(""))
+      Thread threadUpdateDevice = new Thread()
       {
-        da = DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);
-      } else
-      {
-        da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
-      }
+        @Override
+        public synchronized void run()
+        {
+          int count = 0;
+          DeviceAdapter da = null;
+          while (da == null && count < 30)
+          {
+            try
+            {
+              da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+              
+              if (da == null)
+                Thread.sleep(1000);
+              count++;
+            } catch (InterruptedException ex)
+            {
+              java.util.logging.Logger.getLogger(UpdateDevice.class.getName()).log(Level.SEVERE, null, ex);
+            }
+          }
 
-      DeviceAdapter auxDA = rebrowseNamespace(da);
+          Thread threadRebrowseNamespace = DACManager.getInstance().threadMap.get(da_id);
+          try
+          {
+            if (threadRebrowseNamespace != null)
+            {
+              threadRebrowseNamespace.interrupt();
+              threadRebrowseNamespace.stop();
+              logger.debug("UpdateDevice INTERRUPTED! - " + threadRebrowseNamespace.getState().toString());
+              logger.debug("" + threadRebrowseNamespace.getName());
+            }
+          } catch (Exception ex)
+          {
 
-      if (auxDA != null)
-      {
-        da = auxDA;
-        validateModules_in_DB(da);
-        validateRecipes_in_DB(da);
+          }
+          
+          final DeviceAdapter test_da = da;
+          threadRebrowseNamespace = new Thread()
+          {
+            @Override
+            public synchronized void run()
+            {
+              
+              DeviceAdapter auxDA = rebrowseNamespace(test_da);
 
-        //update tables
-        MSB_gui.fillModulesTable();
-        MSB_gui.fillRecipesTable();
+              if (auxDA != null)
+              {
+                try
+                {
+                  DatabaseInteraction.write_stuff.acquire();
+                  validateModules_in_DB(test_da);
+                  validateRecipes_in_DB(test_da);
+                  DatabaseInteraction.write_stuff.release();
 
-      } else
-      {
-        System.out.println("ERROR rebrownsing DA: " + da.getSubSystem().getName());
-        //WHAT TO DO?
-        //DA have corrupted data
-      }
+                  //update tables
+                  MSB_gui.fillModulesTable();
+                  MSB_gui.fillRecipesTable();
+                } catch (InterruptedException ex)
+                {
+                  java.util.logging.Logger.getLogger(UpdateDevice.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+              } else
+              {
+                logger.error("ERROR rebrownsing DA: " + da_id);
+                //WHAT TO DO?
+                //DA have corrupted data
+              }
+              DACManager.getInstance().threadMap.remove(da_id);
+            }
+          };
+          DACManager.getInstance().threadMap.put(da_id, threadRebrowseNamespace);
+
+          logger.debug("" + threadRebrowseNamespace.getName());
+          threadRebrowseNamespace.start();
+        }
+      };
+      threadUpdateDevice.start();
       logger.debug("Update Device FINISHED!");
       result.set(1);
     } catch (Exception ex)
@@ -91,6 +139,7 @@ public class UpdateDevice
       logger.debug("Update Device ERROR! '{}'", ex.getMessage());
       result.set(0);
     }
+
   }
 
   private DeviceAdapter rebrowseNamespace(DeviceAdapter da)
@@ -116,10 +165,11 @@ public class UpdateDevice
                 InstaceHierarchyNode,
                 Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
                 ignore));
-      }
-      else
+      } else
+      {
         return null;
-      
+      }
+
       Element nSkills = new Element("Skills");
       nSkills.addContent(msbClient.browseNode(client,
               new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
@@ -135,7 +185,7 @@ public class UpdateDevice
       logger.info("Starting DA Parser **********************");
       boolean ok = da.parseDNToObjects(client, node, nSkills, false);
       logger.info("***** End namespace browsing ***** \n\n");
-      
+
       if (ok)
       {
         return da;
@@ -148,7 +198,7 @@ public class UpdateDevice
     {
       System.out.println("***** End namespace browsing with error ***** \n\n");
     }
-    
+
     return null;
   }
 

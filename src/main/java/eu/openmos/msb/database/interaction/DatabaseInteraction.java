@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.time.StopWatch;
@@ -43,7 +44,9 @@ public class DatabaseInteraction
   private PreparedStatement ps = null;
   private final Set<String> trueSet = new HashSet<>(Arrays.asList("1", "true", "True"));
   //private final StopWatch DBqueryTimer = new StopWatch();
-
+  
+  public static Semaphore write_stuff = new Semaphore(1);
+  
   /**
    * @brief private constructor from the singleton implementation
    */
@@ -859,10 +862,8 @@ public class DatabaseInteraction
    */
   public boolean registerSkill(String device_name, String aml_id, String skill_name, String description)
   {
-
-    int device_id;
+    int device_id = getDeviceAdapterDB_ID_ByName(device_name);
     int skill_id;
-    device_id = getDeviceAdapterDB_ID_ByName(device_name);
     if (device_id == -1)
     {
       return false;
@@ -870,23 +871,31 @@ public class DatabaseInteraction
 
     try
     {
+      skill_id = getSkill(aml_id);
       Statement stmt = conn.createStatement();
       {
-        String sql = "INSERT INTO Skill"
-                + "(aml_id, name, description)"
-                + " VALUES ("
-                + "'" + aml_id + "','" + skill_name + "','" + description + "')";
-        stmt.execute(sql);
-        ResultSet r = stmt.getGeneratedKeys();
-        skill_id = r.getInt(1);
+        if (skill_id == -1)
+        {
+          String sql = "INSERT INTO Skill"
+                  + "(aml_id, name, description)"
+                  + " VALUES ("
+                  + "'" + aml_id + "','" + skill_name + "','" + description + "')";
+          stmt.execute(sql);
+          ResultSet r = stmt.getGeneratedKeys();
+          skill_id = r.getInt(1);
+        }
       }
       {
-        String sql = "INSERT INTO DAS"
-                + "(sk_id, da_id)"
-                + " VALUES ("
-                + "'" + skill_id + "','" + device_id + "')";
-        stmt.execute(sql);
+        if (skill_id != -1)
+        {
+          String sql = "INSERT INTO DAS"
+                  + "(sk_id, da_id)"
+                  + " VALUES ("
+                  + "'" + skill_id + "','" + device_id + "')";
+          stmt.execute(sql);
+        }
       }
+
       stmt.close();
       System.out.println("REGISTER SKILL  " + skill_name + " " + device_name + " " + aml_id + " " + description);
       return true;
@@ -896,6 +905,42 @@ public class DatabaseInteraction
       Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
     }
     return false;
+  }
+
+  public int getSkill(String skill_id)
+  {
+    StopWatch DBqueryTimer = new StopWatch();
+    PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+    DBqueryTimer.start();
+
+    int id = -1;
+    String sql = "SELECT Skill.id FROM Skill WHERE Skill.aml_id = '" + skill_id + "'";
+
+    try (Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql))
+    {
+      if (!rs.isBeforeFirst())
+      {     //returns false if the cursor is not before the first record or if there are no rows in the ResultSet
+        //System.out.println("No data");
+      } else
+      {
+        while (rs.next())
+        {
+          id = rs.getInt("id");
+          System.out.println("Found skill with id:  " + id);
+          break;
+        }
+      }
+    } catch (SQLException ex)
+    {
+      System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+      Logger.getLogger(DatabaseInteraction.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    Long time = DBqueryTimer.getTime();
+    perfMeasure.getDatabaseQueryTimers().add(time);
+    DBqueryTimer.stop();
+
+    return id;
   }
 
   /**
@@ -2051,7 +2096,7 @@ public class DatabaseInteraction
       Long time = DBqueryTimer.getTime();
       perfMeasure.getDatabaseQueryTimers().add(time);
       DBqueryTimer.stop();
-      
+
       return query == 1;
     } catch (SQLException ex)
     {

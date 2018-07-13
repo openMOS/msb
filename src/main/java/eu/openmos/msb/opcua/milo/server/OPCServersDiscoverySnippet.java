@@ -7,7 +7,6 @@ import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_S
 import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Skill;
-import eu.openmos.model.SkillRequirement;
 import eu.openmos.model.SubSystem;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import java.util.ArrayList;
@@ -22,15 +21,10 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
 import eu.openmos.msb.datastructures.MSBConstants;
-import static eu.openmos.msb.datastructures.MSBConstants.PROJECT_PATH;
-import static eu.openmos.msb.datastructures.MSBConstants.XML_PATH;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
-import static eu.openmos.msb.starter.MSB_gui.addToTableAdapters;
-import eu.openmos.msb.utilities.Functions;
-import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
@@ -45,8 +39,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jdom2.Element;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
 /**
  *
@@ -60,7 +52,6 @@ public class OPCServersDiscoverySnippet extends Thread
   private final IOPCNotifyGUI notify_channel;
   private final Logger logger = LoggerFactory.getLogger(getClass());
   private final String MSB_OPCUA_SERVER_ADDRESS;
-  private final StopWatch namespaceParsingTimer = new StopWatch();
 
   /**
    * @param _msb_address
@@ -116,12 +107,8 @@ public class OPCServersDiscoverySnippet extends Thread
         return false;
       }
 
-      for (int i = 0; i < serverList.length; i++)
+      for (ApplicationDescription server : serverList)
       {
-        ApplicationDescription server = serverList[i];
-
-        //System.out.println("getApplicationUri output " + server.getApplicationUri());
-        //System.out.println("getDiscoveryUrls output " + server.getDiscoveryUrls()[0]);
         try
         {
           //discover endpoints only from servers. not from discovery
@@ -141,7 +128,7 @@ public class OPCServersDiscoverySnippet extends Thread
         DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(id);
         String daName = da.getSubSystem().getName();
         boolean found = false;
-        
+
         for (ApplicationDescription server : serverList)
         {
           if (daName.equals(server.getApplicationName().getText()))
@@ -217,79 +204,21 @@ public class OPCServersDiscoverySnippet extends Thread
               ApplicationDescription[] serverList = UaTcpStackClient.findServers(da_url).get();
               if (serverList[0].getApplicationType() != ApplicationType.DiscoveryServer)
               {
-
-                DeviceAdapterOPC opc = (DeviceAdapterOPC) dacManager.getDeviceAdapterbyName(daName);
-                MSBClientSubscription msbClient = opc.getClient();
-                msbClient.startConnection(da_url);
-                OpcUaClient client = msbClient.getClientObject();
-
-                da.getClient();
-
                 // add subscribet for the ServerStatus of the device adatper
                 // Iterate over all values, using the keySet method.
                 if (daName != null && !daName.contains("MSB") && !daName.contains("discovery"))
                 {
-                  namespaceParsingTimer.reset();
-                  namespaceParsingTimer.start();
-
-                  logger.info("\n***** Starting namespace browsing ***** \n");
-
-                  Element node = new Element("DeviceAdapter");
-                  Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-                  ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
-
-                  logger.info("Browse instance Hierarchy started");
-
-                  NodeId InstaceHierarchyNode = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
-                  if (InstaceHierarchyNode != null)
+                  final DeviceAdapter aux_da = da;
+                  final String aux_url = da_url;
+                  Thread threadDiscoverEndpoints = new Thread()
                   {
-                    logger.info("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
-                    node.addContent(msbClient.browseNode(client,
-                            InstaceHierarchyNode,
-                            Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
-                            ignore));
-                  }
-
-                  Element nSkills = new Element("Skills");
-                  nSkills.addContent(msbClient.browseNode(client,
-                          new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
-                          Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level.skills")),
-                          ignore));
-
-                  // print to file the XML structure extracted from the browsing process   
-                  /*
-                  XMLOutputter xmlOutput = new XMLOutputter();
-                  xmlOutput.setFormat(Format.getPrettyFormat());
-
-                  xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + daName + ".xml", false));
-                  xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + daName + ".xml", false));
-                   */
-                  logger.info("Starting DA Parser **********************");
-
-                  boolean ok = da.parseDNToObjects(client, node, nSkills, true);
-
-                  logger.info("***** End namespace browsing ***** \n\n");
-
-                  if (ok)
-                  {
-                    workstationRegistration(da);
-                    MSB_gui.updateTableAdaptersSemaphore(String.valueOf(
-                            PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()),
-                            da.getSubSystem().getName());
-                  } else
-                  {
-                    System.out.println("parseDNToObjects FAILED!");
-                  }
-
-                  PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-                  Long time = namespaceParsingTimer.getTime();
-                  perfMeasure.getNameSpaceParsingTimers().add(time);
-                  logger.info("Namespace Parsing took " + time.toString() + "ms to be executed");
-                  namespaceParsingTimer.stop();
-                }
-                if (client == null)
-                {
-                  logger.info("Client = null?");
+                    @Override
+                    public synchronized void run()
+                    {
+                      read_parse_opcua_namespace(aux_da, aux_url);
+                    }
+                  };
+                  threadDiscoverEndpoints.start();   
                 }
               }
               // Update the GUI with the new devices discovered 
@@ -418,7 +347,7 @@ public class OPCServersDiscoverySnippet extends Thread
         for (Skill auxSkill : da.getListOfSkills())
         {
           //if skill does not exist yet
-          if (!dacManager.skillExists(auxSkill.getUniqueId()))
+          //if (!dacManager.skillExists(auxSkill.getUniqueId()))
           {
             boolean res = dacManager.registerSkill(da.getSubSystem().getName(), auxSkill.getUniqueId(), auxSkill.getName(), auxSkill.getDescription());
             if (res)
@@ -502,7 +431,7 @@ public class OPCServersDiscoverySnippet extends Thread
       List<Node> nodes = client.getAddressSpace().browse(nodeToBrowse).get();
       int max_lvl_search = 10;
       int count = 0;
-      
+
       while (count < max_lvl_search)
       {
         NodeId inst_hierarchy_node = getInst(nodes);
@@ -536,6 +465,87 @@ public class OPCServersDiscoverySnippet extends Thread
       }
     }
     return null;
+  }
+
+  private void read_parse_opcua_namespace(DeviceAdapter da, String da_url)
+  {
+    try
+    {
+      StopWatch namespaceParsingTimer = new StopWatch();
+      namespaceParsingTimer.reset();
+      namespaceParsingTimer.start();
+
+      DeviceAdapterOPC opc = (DeviceAdapterOPC) da;
+      MSBClientSubscription msbClient = opc.getClient();
+      msbClient.startConnection(da_url);
+      OpcUaClient client = msbClient.getClientObject();
+
+      logger.info("\n***** Starting namespace browsing ***** \n");
+
+      Element node = new Element("DeviceAdapter");
+      Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+      ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
+
+      logger.info("Browse instance Hierarchy started");
+
+      NodeId InstaceHierarchyNode = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
+      if (InstaceHierarchyNode != null)
+      {
+        logger.info("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
+        node.addContent(msbClient.browseNode(client,
+                InstaceHierarchyNode,
+                Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
+                ignore));
+      }
+
+      Element nSkills = new Element("Skills");
+      nSkills.addContent(msbClient.browseNode(client,
+              new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
+              Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level.skills")),
+              ignore));
+
+      // print to file the XML structure extracted from the browsing process
+      /*
+      XMLOutputter xmlOutput = new XMLOutputter();
+      xmlOutput.setFormat(Format.getPrettyFormat());
+      
+      xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + daName + ".xml", false));
+      xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + daName + ".xml", false));
+       */
+      logger.info("Starting DA Parser **********************");
+
+      boolean ok = da.parseDNToObjects(client, node, nSkills, true);
+
+      logger.info("***** End namespace browsing ***** \n\n");
+
+      if (ok)
+      {
+        DatabaseInteraction.write_stuff.acquire();
+        workstationRegistration(da);
+        DatabaseInteraction.write_stuff.release();
+        
+        MSB_gui.updateTableAdaptersSemaphore(String.valueOf(
+                PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()),
+                da.getSubSystem().getName());
+      } else
+      {
+        System.out.println("parseDNToObjects FAILED!");
+      }
+
+      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+      Long time = namespaceParsingTimer.getTime();
+      perfMeasure.getNameSpaceParsingTimers().add(time);
+      logger.info("Namespace Parsing took " + time.toString() + "ms to be executed");
+      namespaceParsingTimer.stop();
+
+      if (client == null)
+      {
+        logger.info("Client = null?");
+      }
+    } catch (Exception ex)
+    {
+      java.util.logging.Logger.getLogger(OPCServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
 }

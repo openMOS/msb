@@ -974,6 +974,7 @@ public abstract class DeviceAdapter
               System.out.println("isto é um SR: " + nRecipe.getNodeName());
               NodeList SkillReqs = nRecipe.getChildNodes();
               SkillRequirement auxSkillReq = new SkillRequirement();
+              auxSkillReq.setRecipeIDs(new ArrayList<>());
               //auxSkillReq.setDescription(nRecipe.getTextContent());
               auxSkillReq.setName(nRecipe.getNodeName());
               auxSkillReq.setDescription("some description");
