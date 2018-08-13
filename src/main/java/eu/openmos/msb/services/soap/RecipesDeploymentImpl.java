@@ -92,7 +92,7 @@ public class RecipesDeploymentImpl implements RecipesDeployment
             String RecipeSerialized = Functions.ClassToString(recipe_DA);
             NodeId objectID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeObjectID());
             NodeId methodID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeMethodID());
-            boolean updateRecipe = client.updateRecipe(client.getClientObject(), objectID, methodID, RecipeSerialized);
+            boolean updateRecipe = client.InvokeUpdate(client.getClientObject(), objectID, methodID, RecipeSerialized);
             if (updateRecipe)
             {
               count++;

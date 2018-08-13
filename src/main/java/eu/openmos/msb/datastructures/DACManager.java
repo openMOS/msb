@@ -470,7 +470,7 @@ public class DACManager
     NodeId objectID = Functions.convertStringToNodeId(execTable_da.getChangeExecutionTableObjectID());
     NodeId methodID = Functions.convertStringToNodeId(execTable_da.getChangeExecutionTableMethodID());
 
-    boolean updateExecTable = client.updateRecipe(client.getClientObject(), objectID, methodID, execTableSerialized);
+    boolean updateExecTable = client.InvokeUpdate(client.getClientObject(), objectID, methodID, execTableSerialized);
 
   }
 

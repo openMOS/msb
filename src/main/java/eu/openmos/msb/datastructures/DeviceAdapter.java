@@ -265,6 +265,10 @@ public abstract class DeviceAdapter
       subSystem.setInternalModules(ReadModules(deviceDescriptionDoc));
       subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc));
 
+      String da_objectID = ReadObjectIDFromDeviceAdapter(deviceDescriptionDoc);
+      subSystem.setAddRecipeObjectID(da_objectID);
+      subSystem.setAddRecipeMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "changeSkillRecipe"));
+      
       //Introsys DEMO: associate DAid to the recipe
       List<Recipe> recipes = subSystem.getRecipes();
       List<String> equipmentIds = new LinkedList<>();
@@ -892,6 +896,10 @@ public abstract class DeviceAdapter
           String[] temp = n2.getTextContent().split("/");
           module.setName(temp[temp.length - 1]);
           System.out.println("moduleName " + module.getName());
+
+          String ns = n2.getAttributes().getNamedItem("ns").getNodeValue();
+          module.setAddRecipeObjectID(ns + ":" + n2.getTextContent());
+
         }
         else if (n2.getNodeName().equals("ID"))
         {
@@ -1049,8 +1057,8 @@ public abstract class DeviceAdapter
               {
                 SRs.add(auxSkillReq);
               }
-              //KPIs
             }
+            //KPIs
             else if (nRecipe.getNodeName().endsWith("InformationPort"))
             {
               NodeList auxNodeList = nRecipe.getChildNodes();
@@ -1238,6 +1246,19 @@ public abstract class DeviceAdapter
             recipe.getSkill().setSkillRequirements(SRs);
             //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
             recipeList.add(recipe);
+          }
+        }
+        else if (n2.getNodeName().equals("changeSkillRecipe"))
+        {
+          NodeList auxNodeList = n2.getChildNodes();
+          for (int z = 0; z < auxNodeList.getLength(); z++)
+          {
+            Node auxNode = auxNodeList.item(z);
+            if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
+            {
+              String auxTest = auxNode.getAttributes().getNamedItem("ns").getNodeValue();
+              module.setAddRecipeMethodID(auxTest + ":" + auxNode.getTextContent());
+            }
           }
         }
       }
@@ -1569,7 +1590,7 @@ public abstract class DeviceAdapter
 
   private static List<String> ReadDeviceAdapterState(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query1 = "//DeviceAdapter/*/*/DeviceAdapterState";
+    String query1 = "//DeviceAdapter/*[AssemblySystem]/*/DeviceAdapterState";
     List<String> results = new ArrayList<>();
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
@@ -1605,6 +1626,50 @@ public abstract class DeviceAdapter
     return results;
   }
 
+  private String ReadMethodIDFromDeviceAdapter(org.w3c.dom.Document xmlDocument, String method_name) throws XPathExpressionException
+  {
+    String query1 = "//DeviceAdapter/*[AssemblySystem]/*[SubSystem][Equipment]/" + method_name;
+    XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+    NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
+
+    System.out.println("State elements num: " + nodeList.getLength());
+    
+    NodeList childNodeList = nodeList.item(0).getChildNodes();
+    for (int i = 0; i < childNodeList.getLength(); i++)
+    {
+      Node auxNode = childNodeList.item(i);
+      if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
+      {
+        String auxTest = auxNode.getAttributes().getNamedItem("ns").getNodeValue();
+        return auxTest + ":" + auxNode.getTextContent();
+      }
+    }
+    
+    return "";
+  }
+  
+  private String ReadObjectIDFromDeviceAdapter(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  {
+    String query1 = "//DeviceAdapter/*[AssemblySystem]/*[SubSystem][Equipment]/";
+    XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+    NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
+
+    System.out.println("State elements num: " + nodeList.getLength());
+    
+    NodeList childNodeList = nodeList.item(0).getChildNodes();
+    for (int i = 0; i < childNodeList.getLength(); i++)
+    {
+      Node auxNode = childNodeList.item(i);
+      if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
+      {
+        String auxTest = auxNode.getAttributes().getNamedItem("ns").getNodeValue();
+        return auxTest + ":" + auxNode.getTextContent();
+      }
+    }
+    
+    return "";
+  }
+  
   private static boolean isRecipeNode(Node node)
   {
     boolean skillFound = false;

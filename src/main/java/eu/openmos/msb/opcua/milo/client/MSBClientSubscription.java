@@ -304,7 +304,7 @@ public class MSBClientSubscription implements IClient
     return false;
   }
   
-  public boolean updateRecipe(OpcUaClient client, NodeId objectId, NodeId methodId, String recipeString)
+  public boolean InvokeUpdate(OpcUaClient client, NodeId objectId, NodeId methodId, String class_as_string)
   {
     PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
     recipeUpdateWatch.reset();
@@ -313,7 +313,7 @@ public class MSBClientSubscription implements IClient
     CallMethodRequest request = new CallMethodRequest(
             objectId, methodId, new Variant[]
             {
-              new Variant(recipeString)
+              new Variant(class_as_string)
             });
 
     try

@@ -32,6 +32,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
 import javax.xml.ws.BindingProvider;
 import org.apache.log4j.Logger;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
@@ -123,7 +124,7 @@ public class RecipeController extends Base
   {
     Recipe recipeToUpdate = this.getDetail(recipeId);
     logger.debug("To UPDATE ID: " + recipeToUpdate.getUniqueId());
-    logger.debug("New RECIPE ID: " + recipe.getUniqueId());
+    //logger.debug("New RECIPE ID: " + recipe.getUniqueId());
 
     recipeToUpdate.setSkillRequirements(recipe.getSkillRequirements());
     recipeToUpdate.setKpiSettings(recipe.getKpiSettings());
@@ -144,10 +145,14 @@ public class RecipeController extends Base
       if (da != null)
       {
         List<Recipe> recipes = da.getSubSystem().getRecipes();
+        for(Module module : da.getSubSystem().getModules())
+          recipes.addAll(module.getRecipes());
+        
         for (Recipe auxRecipe : recipes)
         {
-          if (auxRecipe.getUniqueId().equals(recipe.getUniqueId()))
+          if (auxRecipe.getUniqueId().equals(recipeId))
           {
+            /*
             auxRecipe.setDescription(recipe.getDescription());
             auxRecipe.setEquipmentIds(recipe.getEquipmentIds());
             auxRecipe.setExecutedBySkillControlPort(recipe.getExecutedBySkillControlPort());
@@ -167,16 +172,18 @@ public class RecipeController extends Base
             auxRecipe.setUniqueAgentName(recipe.getUniqueAgentName());
             auxRecipe.setUniqueId(recipe.getUniqueId());
             auxRecipe.setValid(recipe.isValid());
-
+            */
+            String string_recipe = Functions.ClassToString(recipe);
+            
             DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
-
-            //client.getClient().InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
-            ret = true;
+            OpcUaClient opcua_client = client.getClient().getClientObject();
+            
+            NodeId object_id = Functions.convertStringToNodeId(recipeToUpdate.getChangeRecipeMethodID());
+            NodeId method_id = Functions.convertStringToNodeId(recipeToUpdate.getChangeRecipeObjectID());
+            
+            ret = client.getClient().InvokeUpdate(opcua_client, object_id,method_id, string_recipe);
+            
             logger.info("Sending new execution table to DA: " + da.getSubSystem().getName());
-          }
-          else
-          {
-
           }
         }
 
@@ -189,7 +196,7 @@ public class RecipeController extends Base
           String RecipeSerialized = Functions.ClassToString(recipe_DA);
           NodeId objectID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeObjectID());
           NodeId methodID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeMethodID());
-          boolean updateRecipe = client.updateRecipe(client.getClientObject(), objectID, methodID, RecipeSerialized);
+          boolean updateRecipe = client.InvokeUpdate(client.getClientObject(), objectID, methodID, RecipeSerialized);
 
           if (updateRecipe)
           {

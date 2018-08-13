@@ -9,6 +9,9 @@ package eu.openmos.msb.services.rest;
 import eu.openmos.model.*;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.DeviceAdapterOPC;
+import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
+import eu.openmos.msb.utilities.Functions;
 // import eu.openmos.agentcloud.data.recipe.KPI;
 // import eu.openmos.agentcloud.data.recipe.Parameter;
 // import eu.openmos.agentcloud.data.recipe.Recipe;
@@ -24,6 +27,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  *
@@ -35,14 +40,12 @@ public class SkillController extends Base
 {
 
   private final Logger logger = Logger.getLogger(SkillController.class.getName());
-
+  
   /**
    * Returns the skill object given its unique identifier. Fills the skill view page (slide 17 of 34).
    *
+   * @param skillPath
    * @return detail of skill
-   *
-   * @param skillId the unique id of the skill
-   * @return skill object, or null if not existing
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -95,11 +98,39 @@ public class SkillController extends Base
 
     PathHelper helper = new PathHelper(skillPath, logger);
 
+    Boolean ret = null;
+    List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdapters_AML_IDs();
+        
     if (helper.hasSubModules())
     {
       Module module = (new ModuleController()).getDetail(helper.getModulesPath());
       if (module != null)
-      {
+      {   
+        for (String da_id : deviceAdaptersID)
+        {
+          DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+          if (da != null)
+          {
+            for (Module auxModule : da.getSubSystem().getModules())
+            {
+              if (auxModule.getUniqueId().equals(module.getUniqueId()))
+              {
+                String string_recipe = Functions.ClassToString(tmpRecipe);
+
+                DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+                OpcUaClient opcua_client = client.getClient().getClientObject();
+
+                NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeObjectID());
+                NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeMethodID());
+
+                ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+
+                logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
+              }
+            }
+
+          }
+        }
         //module.getRecipes().add(newRecipe);
         //return module.getRecipes();
       }
@@ -109,6 +140,27 @@ public class SkillController extends Base
       SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
       if (subSystem != null)
       {
+        for (String da_id : deviceAdaptersID)
+        {
+          DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+          if (da != null)
+          {
+              if (da.getSubSystem().getUniqueId().equals(subSystem.getUniqueId()))
+              {
+                String string_recipe = Functions.ClassToString(tmpRecipe);
+
+                DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+                OpcUaClient opcua_client = client.getClient().getClientObject();
+
+                NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeObjectID());
+                NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeMethodID());
+
+                ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+
+                logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
+              }
+          }
+        }
 //                subSystem.getRecipes().add(newRecipe);
 //                return subSystem.getRecipes();
       }
@@ -121,7 +173,7 @@ public class SkillController extends Base
    * Returns the list of recipes associated to a skill. Fills the skills recipe list (slide 22 of 34) This method is exposed via a "/skills/{skillId}/recipes"
    * service call.
    *
-   * @param skillId skill id, i.e. the skill unique identifier.
+   * @param skillPath
    * @return list of recipe objects. List can be empty, cannot be null.
    */
   @GET
@@ -227,7 +279,7 @@ public class SkillController extends Base
 
     DACManager DACinstance = DACManager.getInstance();
     List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
-    
+
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
@@ -267,120 +319,3 @@ public class SkillController extends Base
     return modules;
   }
 }
-
-////////////////////////////////////////////////////////////////////////////////
-/*
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = "/{skillId}")
-    public Skill getDetail_OLD(@PathParam("skillId") String skillId) {
-        logger.debug("skill getDetail - skillId = " + skillId);
-
-        // moduleId can be in this form subsystem-module-module-module....
-        String[] n = skillId.split(SkillController.PARAMSEPARATOR);
-        if (n.length < 2) {
-            // TODO url has some problems 
-        }
-
-        logger.debug("n di 0 = " + n[0]);
-        logger.debug("n di 1 = " + n[1]);
-        String[] nn = n[0].split(SkillController.PARAMVALUESEPARATOR);
-        logger.debug("nn length " + nn.length);
-        for (int z = 0; z < nn.length; z++) {
-            logger.debug("nn di " + z + " = " + nn[z]);
-        }
-
-        String subSystemId = nn[1];
-
-        String[] oo = n[1].split(SkillController.PARAMVALUESEPARATOR);
-        logger.debug("oo length " + oo.length);
-        for (int z = 0; z < nn.length; z++) {
-            logger.debug("oo di " + z + " = " + oo[z]);
-        }
-
-        String realSkillId = oo[1];
-
-        for (SubSystem subsystem : (new SubSystemController()).getList()) {
-//            if (subsystem.getName().equals(n[0])) {
-            if (subsystem.getUniqueId().equals(subSystemId)) {
-                logger.debug("subsystem - found " + subSystemId);
-
-                for (Skill sk : subsystem.getSkills()) {
-                    if (sk.getUniqueId().equalsIgnoreCase(realSkillId)) {
-                        logger.debug("skill found: " + sk);
-                        return sk;
-                    }
-                }
-            }
-        }
-        return null;
-
-    }
- */
- /*
-@GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{skillId}/recipes")
-    public List<Recipe> getRecipesList_OLD(@PathParam("skillId") String skillId) {
-        logger.debug("SkillController - getRecipesList - skillId = " + skillId);
-        
-        // moduleId can be in this form subsystem-module-module-module....
-        String[] n = skillId.split(SkillController.PARAMSEPARATOR);
-        if (n.length < 2) {
-            // TODO url has some problems 
-        }
-
-        logger.debug("n di 0 = " + n[0]);
-        logger.debug("n di 1 = " + n[1]);
-        String[] nn = n[0].split(SkillController.PARAMVALUESEPARATOR);
-        logger.debug("nn length " + nn.length);
-        for (int z = 0; z < nn.length; z++) {
-            logger.debug("nn di " + z + " = " + nn[z]);
-        }
-
-        String subSystemId = nn[1];
-
-        String[] oo = n[1].split(SkillController.PARAMVALUESEPARATOR);
-        logger.debug("oo length " + oo.length);
-        for (int z = 0; z < nn.length; z++) {
-            logger.debug("oo di " + z + " = " + oo[z]);
-        }
-
-        String realSkillId = oo[1];
-        for (SubSystem subsystem : (new SubSystemController()).getList()) {
-//            if (subsystem.getName().equals(n[0])) {
-            if (subsystem.getName().equals(subSystemId)) {
-                logger.debug("subsystem - found " + subSystemId);
-
-                for (Skill sk : subsystem.getSkills())
-                {
-                    if (sk.getUniqueId().equalsIgnoreCase(realSkillId))
-                    {
-                        logger.debug("skill found: " + sk);
-                        return sk.getRecipeIds();
-                    }
-                }
-            }
-        }         
-        List<Recipe> lrToReturn = new LinkedList<>();
-        for (SubSystem subsystem : (new SubSystemController()).getList()) {
-//            if (subsystem.getName().equals(n[0])) {
-            if (subsystem.getUniqueId().equals(subSystemId)) {
-                logger.debug("subsystem - found " + subSystemId);
-
-                for (Recipe r : subsystem.getRecipes()) {
-                    if (r.getSkill() != null && r.getSkill().getUniqueId().equalsIgnoreCase(realSkillId)) {
-                        logger.debug("recipe found: " + r);
-                        lrToReturn.add(r);
-                    }
-                }
-            }
-        }
-
-        if (lrToReturn.size() != 0) {
-            return lrToReturn;
-        } else {
-            return null;
-        }
-    }
- */

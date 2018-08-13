@@ -21,10 +21,12 @@ import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.EProtocol;
 import eu.openmos.msb.datastructures.MSBConstants;
+import static eu.openmos.msb.datastructures.MSBConstants.XML_PATH;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
+import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
@@ -39,6 +41,8 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 /**
  *
@@ -505,13 +509,13 @@ public class OPCServersDiscoverySnippet extends Thread
               ignore));
 
       // print to file the XML structure extracted from the browsing process
-      /*
+      
       XMLOutputter xmlOutput = new XMLOutputter();
       xmlOutput.setFormat(Format.getPrettyFormat());
       
-      xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + daName + ".xml", false));
-      xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + daName + ".xml", false));
-       */
+      xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
+      xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
+      
       logger.info("Starting DA Parser **********************");
 
       boolean ok = da.parseDNToObjects(client, node, nSkills, true);
