@@ -52,5 +52,8 @@ public class MSBConstants
   public static final Boolean MSB_MODE_PASSIVE = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.passive.mode"));
 
   public static final String MSB_IP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
-
+  
+  public static final String QUEUE_TYPE_EXECUTE = "EXECUTE";
+  
+  
 }

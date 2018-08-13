@@ -1942,13 +1942,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
   {//GEN-HEADEREND:event_jButton2ActionPerformed
-    Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-    Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
-    logger.debug(" *** THREAD STUFF *** ");
-    for (Thread aux : threadArray)
-    {
-      logger.debug("THREAD - " + aux.getName());
-    }
+    List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
+    
+    
   }//GEN-LAST:event_jButton2ActionPerformed
 
   public static Order fillOrder(Product prod)
