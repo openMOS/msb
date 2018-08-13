@@ -10,6 +10,8 @@ import eu.openmos.model.*;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
+import eu.openmos.msb.datastructures.MSBConstants;
+import eu.openmos.msb.datastructures.QueuedAction;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.utilities.Functions;
 // import eu.openmos.agentcloud.data.recipe.KPI;
@@ -40,7 +42,7 @@ public class SkillController extends Base
 {
 
   private final Logger logger = Logger.getLogger(SkillController.class.getName());
-  
+
   /**
    * Returns the skill object given its unique identifier. Fills the skill view page (slide 17 of 34).
    *
@@ -100,12 +102,12 @@ public class SkillController extends Base
 
     Boolean ret = null;
     List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdapters_AML_IDs();
-        
+
     if (helper.hasSubModules())
     {
       Module module = (new ModuleController()).getDetail(helper.getModulesPath());
       if (module != null)
-      {   
+      {
         for (String da_id : deviceAdaptersID)
         {
           DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
@@ -120,19 +122,24 @@ public class SkillController extends Base
                 DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
                 OpcUaClient opcua_client = client.getClient().getClientObject();
 
-                NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeObjectID());
-                NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeMethodID());
+                NodeId update_object_id = Functions.convertStringToNodeId(auxModule.getAddRecipeObjectID());
+                NodeId update_method_id = Functions.convertStringToNodeId(auxModule.getAddRecipeMethodID());
 
-                ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+                ret = client.getClient().InvokeUpdate(opcua_client, update_object_id, update_method_id, string_recipe);
 
                 logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
+
+                QueuedAction qa = new QueuedAction();
+                qa.setDa_id(da_id);
+                qa.setActionType(MSBConstants.QUEUE_TYPE_EXECUTE);
+                qa.setRecipe_id(tmpRecipe.getUniqueId());
+                qa.setProduct_instance_id(productInstanceId);
+                qa.setProduct_type_id("");
+                DACManager.getInstance().QueuedActionMap.put(da_id, qa);
               }
             }
-
           }
         }
-        //module.getRecipes().add(newRecipe);
-        //return module.getRecipes();
       }
     }
     else
@@ -145,28 +152,33 @@ public class SkillController extends Base
           DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
           if (da != null)
           {
-              if (da.getSubSystem().getUniqueId().equals(subSystem.getUniqueId()))
-              {
-                String string_recipe = Functions.ClassToString(tmpRecipe);
+            if (da.getSubSystem().getUniqueId().equals(subSystem.getUniqueId()))
+            {
+              String string_recipe = Functions.ClassToString(tmpRecipe);
 
-                DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
-                OpcUaClient opcua_client = client.getClient().getClientObject();
+              DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+              OpcUaClient opcua_client = client.getClient().getClientObject();
 
-                NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeObjectID());
-                NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeMethodID());
+              NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeObjectID());
+              NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeMethodID());
 
-                ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+              ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
 
-                logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
-              }
+              logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
+
+              QueuedAction qa = new QueuedAction();
+              qa.setDa_id(da_id);
+              qa.setActionType(MSBConstants.QUEUE_TYPE_EXECUTE);
+              qa.setRecipe_id(tmpRecipe.getUniqueId());
+              qa.setProduct_instance_id(productInstanceId);
+              qa.setProduct_type_id("");
+              DACManager.getInstance().QueuedActionMap.put(da_id, qa);
+            }
           }
         }
-//                subSystem.getRecipes().add(newRecipe);
-//                return subSystem.getRecipes();
       }
     }
     return "Success";
-
   }
 
   /**

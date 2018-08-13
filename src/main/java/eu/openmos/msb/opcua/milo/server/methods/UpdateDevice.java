@@ -7,6 +7,7 @@ import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
+import eu.openmos.msb.datastructures.QueuedAction;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import static eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet.browseInstaceHierarchyNode;
 import eu.openmos.msb.starter.MSB_gui;
@@ -75,7 +76,7 @@ public class UpdateDevice
             }
           }
 
-          Thread threadRebrowseNamespace = DACManager.getInstance().threadMap.get(da_id);
+          Thread threadRebrowseNamespace = DACManager.getInstance().update_device_threadMap.get(da_id);
           try
           {
             if (threadRebrowseNamespace != null)
@@ -111,6 +112,12 @@ public class UpdateDevice
                   //update tables
                   MSB_gui.fillModulesTable();
                   MSB_gui.fillRecipesTable();
+                  
+                  QueuedAction qa = DACManager.getInstance().QueuedActionMap.get(da_id);
+                  if (qa != null)
+                  {
+                    DACManager.getInstance().VerifyQueuedActions(test_da, qa);
+                  }
                 } catch (InterruptedException ex)
                 {
                   java.util.logging.Logger.getLogger(UpdateDevice.class.getName()).log(Level.SEVERE, null, ex);
@@ -122,10 +129,10 @@ public class UpdateDevice
                 //WHAT TO DO?
                 //DA have corrupted data
               }
-              DACManager.getInstance().threadMap.remove(da_id);
+              DACManager.getInstance().update_device_threadMap.remove(da_id);
             }
           };
-          DACManager.getInstance().threadMap.put(da_id, threadRebrowseNamespace);
+          DACManager.getInstance().update_device_threadMap.put(da_id, threadRebrowseNamespace);
 
           logger.debug("" + threadRebrowseNamespace.getName());
           threadRebrowseNamespace.start();

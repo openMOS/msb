@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.ws.BindingProvider;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
@@ -41,8 +42,10 @@ public class DACManager
   // [af-silva] TODO valdiate
   // para aceder as classes especificas (DeviceAdapterOPC e DeviceAdapterDDS) fazer cast
   private final Map<Integer, DeviceAdapter> deviceAdapters;
-  public Map<String, Thread> threadMap = new HashMap<>();
+  public Map<String, Thread> update_device_threadMap = new HashMap<>();
+  public Map<String, QueuedAction> QueuedActionMap = new HashMap<>();
   
+
   /**
    * @brief constructor
    */
@@ -118,7 +121,8 @@ public class DACManager
 
         return client;
       }
-    } catch (UnsupportedOperationException ex)
+    }
+    catch (UnsupportedOperationException ex)
     {
       System.out.println("[ERROR] at addDeviceAdapter" + ex.getMessage());
     }
@@ -162,7 +166,8 @@ public class DACManager
         deviceAdapters.remove(id);
         return true;
       }
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       System.out.println("[Error] at deleteDeviceAdapter" + ex);
     }
@@ -372,7 +377,8 @@ public class DACManager
     if (da_id != -1 && sk_id != -1)
     {
       return db.registerRecipe(aml_id, da_id, sk_id, valid, recipeName, object_id, method_id);
-    } else
+    }
+    else
     {
       return false;
     }
@@ -432,7 +438,8 @@ public class DACManager
           PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
           perfMeasure.getAgentCreationTimers().put(ss.getUniqueId(), new Date().getTime());
           System.out.println("\n\n Creating Transport Agent... \n\n");
-        } else
+        }
+        else
         {
           agentStatus = systemConfigurator.createNewResourceAgent(ss);
           PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
@@ -443,16 +450,19 @@ public class DACManager
         if (agentStatus != null)
         {
           return agentStatus.getCode(); //OK? ou KO?
-        } else
+        }
+        else
         {
           return "KO";
         }
-      } catch (Exception ex)
+      }
+      catch (Exception ex)
       {
         System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
         return "KO";
       }
-    } else //no AC
+    }
+    else //no AC
     {
       return "OK - No AgentPlatform";
     }
@@ -483,6 +493,33 @@ public class DACManager
         DatabaseInteraction.getInstance().associateRecipeToSR(sr.getUniqueId(), sr.getRecipeIDs());
       }
     }
+  }
+
+  public void VerifyQueuedActions(DeviceAdapter da, QueuedAction action)
+  {
+    if (action.getaActionType().equals(MSBConstants.QUEUE_TYPE_EXECUTE))
+    {
+      List<Recipe> recipes = new ArrayList<>(da.getSubSystem().getRecipes());
+      for (Module module : da.getSubSystem().getModules())
+      {
+        recipes.addAll(module.getRecipes());
+      }
+
+      for (Recipe recipe : recipes)
+      {
+        if (recipe.getUniqueId().equals(action.getRecipe_id()))
+        {
+          DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+          OpcUaClient opcua_client = client.getClient().getClientObject();
+
+          NodeId invoke_object_id = Functions.convertStringToNodeId(recipe.getInvokeObjectID());
+          NodeId invoke_method_id = Functions.convertStringToNodeId(recipe.getInvokeMethodID());
+          client.getClient().InvokeDeviceSkill(opcua_client, invoke_object_id, invoke_method_id,
+                  action.getProduct_instance_id(), action.getProduct_type_id(), false);
+        }
+      }
+    }
+    
   }
 
 }
