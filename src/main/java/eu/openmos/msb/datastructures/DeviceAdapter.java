@@ -1650,7 +1650,7 @@ public abstract class DeviceAdapter
   
   private String ReadObjectIDFromDeviceAdapter(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
-    String query1 = "//DeviceAdapter/*[AssemblySystem]/*[SubSystem][Equipment]/";
+    String query1 = "//DeviceAdapter/*[AssemblySystem]/*[SubSystem][Equipment]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
     NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
 
