@@ -472,7 +472,7 @@ public class DACManager
   {
     DACManager dac = getInstance();
     DeviceAdapter da = dac.getDeviceAdapterbyAML_ID(da_id);
-    DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da.getClient();
+    DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da;
     MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
 
     ExecutionTable_DA execTable_da = ExecutionTable_DA.createExecutionTable_DA(execTable);
@@ -509,7 +509,7 @@ public class DACManager
       {
         if (recipe.getUniqueId().equals(action.getRecipe_id()))
         {
-          DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+          DeviceAdapterOPC client = (DeviceAdapterOPC) da;
           OpcUaClient opcua_client = client.getClient().getClientObject();
 
           NodeId invoke_object_id = Functions.convertStringToNodeId(recipe.getInvokeObjectID());

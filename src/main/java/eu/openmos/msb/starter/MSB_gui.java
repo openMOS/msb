@@ -48,6 +48,7 @@ import eu.openmos.model.PartInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
+import eu.openmos.model.Recipe_DA;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DeviceAdapter;
@@ -57,6 +58,7 @@ import eu.openmos.msb.datastructures.MSBVar;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.datastructures.ProductExecution;
+import eu.openmos.msb.datastructures.QueuedAction;
 import eu.openmos.msb.dds.DDSErrorHandler;
 import eu.openmos.msb.services.rest.CORSFilter;
 import eu.openmos.msb.services.rest.ExecutionTableController;
@@ -93,6 +95,7 @@ import javax.ws.rs.ProcessingException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.apache.commons.lang3.time.StopWatch;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 
 /**
  * *********************************************************************************************************************
@@ -1943,8 +1946,31 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
   {//GEN-HEADEREND:event_jButton2ActionPerformed
     List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
+
+    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
+    Recipe recipe = da.getSubSystem().getRecipes().get(0);
+    recipe.setUniqueId(UUID.randomUUID().toString());
     
+    String string_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(recipe));
+
+    DeviceAdapterOPC client = (DeviceAdapterOPC) da;
+    OpcUaClient opcua_client = client.getClient().getClientObject();
+
+    NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeObjectID());
+    NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeMethodID());
+
+    boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+
     
+    logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
+
+    QueuedAction qa = new QueuedAction();
+    qa.setDa_id(da_ids.get(0));
+    qa.setActionType(MSBConstants.QUEUE_TYPE_EXECUTE);
+    qa.setRecipe_id(recipe.getUniqueId());
+    qa.setProduct_instance_id("random stuff");
+    qa.setProduct_type_id("");
+    DACManager.getInstance().QueuedActionMap.put(da_ids.get(0), qa);
   }//GEN-LAST:event_jButton2ActionPerformed
 
   public static Order fillOrder(Product prod)

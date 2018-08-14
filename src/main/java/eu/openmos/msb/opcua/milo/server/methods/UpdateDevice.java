@@ -66,9 +66,11 @@ public class UpdateDevice
             try
             {
               da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
-              
+
               if (da == null)
+              {
                 Thread.sleep(1000);
+              }
               count++;
             } catch (InterruptedException ex)
             {
@@ -90,14 +92,14 @@ public class UpdateDevice
           {
 
           }
-          
+
           final DeviceAdapter test_da = da;
           threadRebrowseNamespace = new Thread()
           {
             @Override
             public synchronized void run()
             {
-              
+
               DeviceAdapter auxDA = rebrowseNamespace(test_da);
 
               if (auxDA != null)
@@ -112,7 +114,7 @@ public class UpdateDevice
                   //update tables
                   MSB_gui.fillModulesTable();
                   MSB_gui.fillRecipesTable();
-                  
+
                   QueuedAction qa = DACManager.getInstance().QueuedActionMap.get(da_id);
                   if (qa != null)
                   {

@@ -175,7 +175,7 @@ public class RecipeController extends Base
             */
             String string_recipe = Functions.ClassToString(recipe);
             
-            DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+            DeviceAdapterOPC client = (DeviceAdapterOPC) da;
             OpcUaClient opcua_client = client.getClient().getClientObject();
             
             NodeId object_id = Functions.convertStringToNodeId(recipeToUpdate.getChangeRecipeMethodID());
@@ -190,7 +190,7 @@ public class RecipeController extends Base
         if (ret)
         {
           Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
-          DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da.getClient();
+          DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da;
           MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
 
           String RecipeSerialized = Functions.ClassToString(recipe_DA);

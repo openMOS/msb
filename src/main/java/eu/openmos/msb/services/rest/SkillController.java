@@ -119,7 +119,7 @@ public class SkillController extends Base
               {
                 String string_recipe = Functions.ClassToString(tmpRecipe);
 
-                DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+                DeviceAdapterOPC client = (DeviceAdapterOPC) da;
                 OpcUaClient opcua_client = client.getClient().getClientObject();
 
                 NodeId update_object_id = Functions.convertStringToNodeId(auxModule.getAddRecipeObjectID());
@@ -156,7 +156,7 @@ public class SkillController extends Base
             {
               String string_recipe = Functions.ClassToString(tmpRecipe);
 
-              DeviceAdapterOPC client = (DeviceAdapterOPC) da.getClient();
+              DeviceAdapterOPC client = (DeviceAdapterOPC) da;
               OpcUaClient opcua_client = client.getClient().getClientObject();
 
               NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeObjectID());
