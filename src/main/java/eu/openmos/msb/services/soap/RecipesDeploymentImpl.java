@@ -85,13 +85,13 @@ public class RecipesDeploymentImpl implements RecipesDeployment
         if (ssc != null && !ssc.getSystemStage().equals("PRODUCTION"))
         {
           int count = 0;
-          for (int i = 0; i < recipes.size(); i++)
+          for (Recipe recipe: recipes)
           {
-            Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipes.get(i));
+            Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
             MSBClientSubscription client = (MSBClientSubscription) da.getClient();
             String RecipeSerialized = Functions.ClassToString(recipe_DA);
-            NodeId objectID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeObjectID());
-            NodeId methodID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeMethodID());
+            NodeId objectID = Functions.convertStringToNodeId(recipe.getChangeRecipeObjectID());
+            NodeId methodID = Functions.convertStringToNodeId(recipe.getChangeRecipeMethodID());
             boolean updateRecipe = client.InvokeUpdate(client.getClientObject(), objectID, methodID, RecipeSerialized);
             if (updateRecipe)
             {

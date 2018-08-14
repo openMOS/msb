@@ -17,178 +17,206 @@ import org.bson.Document;
  */
 //@XmlRootElement(name = "skillRequirement")
 //@XmlAccessorType(XmlAccessType.FIELD)
-public class SkillRequirement extends Base implements Serializable  {
-    private static final Logger logger = Logger.getLogger(SkillRequirement.class.getName());
-    private static final long serialVersionUID = 6529685098267757028L;
-    
-    /**
-     * Skill Requirement ID.
-     */
-    private String uniqueId;
-    /**
-     * Skill Requirement name.
-     */
-  //@XmlElement(name = "name")    
-    private String name;
-    /**
-     * Skill Requirement description.
-     */
-    private String description;
+public class SkillRequirement extends Base implements Serializable
+{
 
-    /**
-     * Skill Requirement type.
-     * MSB and WP4 alignment: this type is the same as skill type.
-     * In the future, it could switch to a class definition, as PEDRO Ferreira recommends,
-     * but..... for now we keep it as it is.
-     * Refactoring from type to srType (skill requirement type)
-     */
-    // private int type;    
+  private static final Logger logger = Logger.getLogger(SkillRequirement.class.getName());
+  private static final long serialVersionUID = 6529685098267757028L;
+
+  /**
+   * Skill Requirement ID.
+   */
+  private String uniqueId;
+  /**
+   * Skill Requirement name.
+   */
+  //@XmlElement(name = "name")    
+  private String name;
+  /**
+   * Skill Requirement description.
+   */
+  private String description;
+
+  /**
+   * Skill Requirement type. MSB and WP4 alignment: this type is the same as skill type. In the future, it could switch to a class definition, as PEDRO Ferreira
+   * recommends, but..... for now we keep it as it is. Refactoring from type to srType (skill requirement type)
+   */
+  // private int type;    
   //@XmlElement(name = "type")    
-    private String srType;
+  private String srType;
   private SkillType skillType;
 
-    /**
-     * List of skill requirement ids that need to be fullfilled before this skillreq can be triggered.
-     * On the HMI there will be the chance for the user to select to next recipe according
-     * to this precedences list.
-     */
+  /**
+   * List of skill requirement ids that need to be fullfilled before this skillreq can be triggered. On the HMI there will be the chance for the user to select
+   * to next recipe according to this precedences list.
+   */
 //    private List<String> precedentIds;
-    private List<SkillReqPrecedent> precedents;
-    
-    private Part requiresPart;
-    
-    
-    private List<String> recipeIDs;
-    /**
-     * Default constructor, for reflection
-     */
-    public SkillRequirement() {super();}
-    
-    /**
-     * Parameterized constructor.
-     * 
-     * @param description - Skill Requirement description.
-     * @param uniqueId - Skill Requirement unique ID.
-     * @param name - Skill Requirement name.
-     * @param type - Skill Requirement type.
-     * @param skillType
-     * @param precedents
-     * @param requiresPart
-     * @param registeredTimestamp - Skill Requirement registration timestamp.
-     */
-    public SkillRequirement(
-            String description, 
-            String uniqueId, 
-            String name, 
-            String type,
-            SkillType skillType,
-            List<SkillReqPrecedent> precedents,
-            Part requiresPart,
-            Date registeredTimestamp
-    ) {
-        super(registeredTimestamp);
-        
-        this.uniqueId = uniqueId;
-        this.description = description;
-        this.name = name;
-        this.srType = type;
-        this.skillType = skillType;
-        
-        // this.precedentIds = precedentIds;
-        this.precedents = precedents;        
-        this.requiresPart = requiresPart;
+  private List<SkillReqPrecedent> precedents;
+
+  private Part requiresPart;
+
+  private List<String> recipeIDs;
+
+  /**
+   * Default constructor, for reflection
+   */
+  public SkillRequirement()
+  {
+    super();
+  }
+
+  /**
+   * Parameterized constructor.
+   *
+   * @param description - Skill Requirement description.
+   * @param uniqueId - Skill Requirement unique ID.
+   * @param name - Skill Requirement name.
+   * @param type - Skill Requirement type.
+   * @param skillType
+   * @param precedents
+   * @param requiresPart
+   * @param registeredTimestamp - Skill Requirement registration timestamp.
+   */
+  public SkillRequirement(
+          String description,
+          String uniqueId,
+          String name,
+          String type,
+          SkillType skillType,
+          List<SkillReqPrecedent> precedents,
+          Part requiresPart,
+          Date registeredTimestamp
+  )
+  {
+    super(registeredTimestamp);
+
+    this.uniqueId = uniqueId;
+    this.description = description;
+    this.name = name;
+    this.srType = type;
+    this.skillType = skillType;
+
+    // this.precedentIds = precedentIds;
+    this.precedents = precedents;
+    this.requiresPart = requiresPart;
+  }
+
+  public String getDescription()
+  {
+    return description;
+  }
+
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
+
+  public String getUniqueId()
+  {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId)
+  {
+    this.uniqueId = uniqueId;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public void setName(String name)
+  {
+    this.name = name;
+  }
+
+  public String getSrType()
+  {
+    return srType;
+  }
+
+  public void setSrType(String srType)
+  {
+    this.srType = srType;
+  }
+
+  public SkillType getSkillType()
+  {
+    return skillType;
+  }
+
+  public void setSkillType(SkillType skillType)
+  {
+    this.skillType = skillType;
+  }
+
+  public List<SkillReqPrecedent> getPrecedents()
+  {
+    return precedents;
+  }
+
+  public void setPrecedents(List<SkillReqPrecedent> precedents)
+  {
+    this.precedents = precedents;
+  }
+
+  public Part getRequiresPart()
+  {
+    return requiresPart;
+  }
+
+  public void setRequiresPart(Part requiresPart)
+  {
+    this.requiresPart = requiresPart;
+  }
+
+  public List<String> getRecipeIDs()
+  {
+    return recipeIDs;
+  }
+
+  public void setRecipeIDs(List<String> recipeIDs)
+  {
+    this.recipeIDs = recipeIDs;
+  }
+
+  /**
+   * Method serializes the object into a BSON document.
+   *
+   * @return BSON Document format of the object.
+   */
+  public Document toBSON()
+  {
+    SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
+    String stringRegisteredTimestamp = sdf.format(this.registered);
+
+    List<String> precedentIds = null;
+    if (precedents != null)
+    {
+      precedentIds = precedents.stream().map(precedent -> precedent.getUniqueId()).collect(Collectors.toList());
     }
 
-    public String getDescription() {
-        return description;
+    String skillTypeId = null;
+    if (skillType != null)
+    {
+      skillTypeId = skillType.getUniqueId();
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    String requiresPartId = null;
+    if (requiresPart != null)
+    {
+      requiresPartId = requiresPart.getUniqueId();
     }
 
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSrType() {
-        return srType;
-    }
-
-    public void setSrType(String srType) {
-        this.srType = srType;
-    }
-
-    public SkillType getSkillType() {
-        return skillType;
-    }
-
-    public void setSkillType(SkillType skillType) {
-        this.skillType = skillType;
-    }
-
-    public List<SkillReqPrecedent> getPrecedents() {
-        return precedents;
-    }
-    public void setPrecedents(List<SkillReqPrecedent> precedents) {
-        this.precedents = precedents;
-    }
-    
-    public Part getRequiresPart() {
-        return requiresPart;
-    }
-
-    public void setRequiresPart(Part requiresPart) {
-        this.requiresPart = requiresPart;
-    }
-    
-     public List<String> getRecipeIDs() {
-        return recipeIDs;
-    }
-    public void setRecipeIDs(List<String> recipeIDs) {
-        this.recipeIDs = recipeIDs;
-    }
-    /**
-     * Method serializes the object into a BSON document.
-     * 
-     * @return BSON Document format of the object. 
-     */
-    public Document toBSON() {
-        SimpleDateFormat sdf = new SimpleDateFormat(SerializationConstants.DATE_REPRESENTATION);
-        String stringRegisteredTimestamp = sdf.format(this.registered);
-
-        List<String> precedentIds = null;
-        if (precedents != null)
-            precedentIds = precedents.stream().map(precedent -> precedent.getUniqueId()).collect(Collectors.toList());        
-
-        String skillTypeId = null;
-        if (skillType != null)
-            skillTypeId = skillType.getUniqueId();
-        
-        String requiresPartId = null;
-        if (requiresPart != null)
-            requiresPartId = requiresPart.getUniqueId();
-        
-        return new Document(DatabaseConstants.DESCRIPTION, description)
-                .append(DatabaseConstants.UNIQUE_ID, uniqueId)
-                .append(DatabaseConstants.NAME, name)
-                .append(DatabaseConstants.TYPE, srType)
-                .append(DatabaseConstants.SKILL_TYPE_ID, skillTypeId)
-                .append(DatabaseConstants.PRECEDENT_IDS, precedentIds)
-                .append(DatabaseConstants.REQUIRES_PART_ID, requiresPartId)
-                .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
-    }
+    return new Document(DatabaseConstants.DESCRIPTION, description)
+            .append(DatabaseConstants.UNIQUE_ID, uniqueId)
+            .append(DatabaseConstants.NAME, name)
+            .append(DatabaseConstants.TYPE, srType)
+            .append(DatabaseConstants.SKILL_TYPE_ID, skillTypeId)
+            .append(DatabaseConstants.PRECEDENT_IDS, precedentIds)
+            .append(DatabaseConstants.REQUIRES_PART_ID, requiresPartId)
+            .append(DatabaseConstants.REGISTERED, stringRegisteredTimestamp);
+  }
 
 }
