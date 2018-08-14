@@ -20,7 +20,7 @@ public class Recipe_DA extends Base implements Serializable
   /**
    * Recipe ID.
    */
-  @XmlElement(name = "amlId")
+  @XmlElement(name = "uniqueId")
   private String uniqueId;
   /**
    * Recipe name.
@@ -51,7 +51,7 @@ public class Recipe_DA extends Base implements Serializable
   /**
    * Pointer to the skill.
    */
-  @XmlElement(name = "skill")
+  @XmlElement(name = "skill_id")
   private String skill_id;
 
   /**

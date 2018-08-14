@@ -1948,7 +1948,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
-    Recipe recipe = da.getSubSystem().getRecipes().get(0);
+    Module module = da.getSubSystem().getModules().get(0);
+    Recipe recipe= module.getRecipes().get(0);
     recipe.setUniqueId(UUID.randomUUID().toString());
     
     String string_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(recipe));
