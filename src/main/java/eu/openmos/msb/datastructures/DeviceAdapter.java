@@ -266,9 +266,9 @@ public abstract class DeviceAdapter
       subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc));
 
       String da_objectID = ReadObjectIDFromDeviceAdapter(deviceDescriptionDoc);
-      subSystem.setAddRecipeObjectID(da_objectID);
-      subSystem.setAddRecipeMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "changeSkillRecipe"));
-      
+      subSystem.setChangeRecipeObjectID(da_objectID);
+      subSystem.setChangeRecipeMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "changeSkillRecipe"));
+
       //Introsys DEMO: associate DAid to the recipe
       List<Recipe> recipes = subSystem.getRecipes();
       List<String> equipmentIds = new LinkedList<>();
@@ -278,6 +278,8 @@ public abstract class DeviceAdapter
         recipe.setEquipmentIds(equipmentIds);
       }
 
+      fill_FulfilledSkillRequirements_for_all_recipes();
+      
       subSystem.setSsType(ReadDeviceAdapterType(deviceDescriptionDoc));
 
       //Recipe_SR_to_Skill_SR();
@@ -288,7 +290,6 @@ public abstract class DeviceAdapter
         subSystem.setStatePath(ReadDeviceAdapterState.get(0));
       }
 
-      //
       subSystem.setStage(MSBConstants.STAGE_PRODUCTION);
 
       if (checkResources)
@@ -534,9 +535,8 @@ public abstract class DeviceAdapter
         Node n2 = recipeChilds.item(j);
         if (n2.getNodeName().equals("Path"))
         {
-          String auxTest = n2.getAttributes().getNamedItem("ns").getNodeValue();
-          recipe.setInvokeObjectID(auxTest + ":" + n2.getTextContent());
-          recipe.setChangeRecipeObjectID(auxTest + ":" + n2.getTextContent());
+          String ns = n2.getAttributes().getNamedItem("ns").getNodeValue();
+          recipe.setInvokeObjectID(ns + ":" + n2.getTextContent());
 
           String[] temp = n2.getTextContent().split("/");
           recipe.setName(temp[temp.length - 1]);
@@ -804,26 +804,6 @@ public abstract class DeviceAdapter
             }
           }
         }
-        else if (n2.getNodeName().equals("ChangeSkill"))
-        {
-          NodeList auxNodeList = n2.getChildNodes();
-          for (int z = 0; z < auxNodeList.getLength(); z++)
-          {
-            Node auxNode = auxNodeList.item(z);
-            if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
-            {
-              int ns = Integer.parseInt(auxNode.getAttributes().getNamedItem("ns").getNodeValue());
-              recipe.setChangeRecipeMethodID(ns + ":" + auxNode.getTextContent()); //CHECK THIS!
-            }
-            else
-            {
-              if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Value"))
-              {
-                recipe.setState(auxNode.getTextContent());
-              }
-            }
-          }
-        }
         else if (searchForSkill)
         {
           //get skill - first node with SR inside
@@ -898,7 +878,7 @@ public abstract class DeviceAdapter
           System.out.println("moduleName " + module.getName());
 
           String ns = n2.getAttributes().getNamedItem("ns").getNodeValue();
-          module.setAddRecipeObjectID(ns + ":" + n2.getTextContent());
+          module.setChangeRecipeObjectID(ns + ":" + n2.getTextContent());
 
         }
         else if (n2.getNodeName().equals("ID"))
@@ -1257,7 +1237,7 @@ public abstract class DeviceAdapter
             if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Path"))
             {
               String auxTest = auxNode.getAttributes().getNamedItem("ns").getNodeValue();
-              module.setAddRecipeMethodID(auxTest + ":" + auxNode.getTextContent());
+              module.setChangeRecipeMethodID(auxTest + ":" + auxNode.getTextContent());
             }
           }
         }
@@ -1633,7 +1613,7 @@ public abstract class DeviceAdapter
     NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
 
     System.out.println("State elements num: " + nodeList.getLength());
-    
+
     NodeList childNodeList = nodeList.item(0).getChildNodes();
     for (int i = 0; i < childNodeList.getLength(); i++)
     {
@@ -1644,10 +1624,10 @@ public abstract class DeviceAdapter
         return auxTest + ":" + auxNode.getTextContent();
       }
     }
-    
+
     return "";
   }
-  
+
   private String ReadObjectIDFromDeviceAdapter(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
     String query1 = "//DeviceAdapter/*[AssemblySystem]/*[SubSystem][Equipment]";
@@ -1655,7 +1635,7 @@ public abstract class DeviceAdapter
     NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
 
     System.out.println("State elements num: " + nodeList.getLength());
-    
+
     NodeList childNodeList = nodeList.item(0).getChildNodes();
     for (int i = 0; i < childNodeList.getLength(); i++)
     {
@@ -1666,10 +1646,10 @@ public abstract class DeviceAdapter
         return auxTest + ":" + auxNode.getTextContent();
       }
     }
-    
+
     return "";
   }
-  
+
   private static boolean isRecipeNode(Node node)
   {
     boolean skillFound = false;
@@ -1717,6 +1697,68 @@ public abstract class DeviceAdapter
       }
     }
     return false;
+  }
+
+  private void fill_FulfilledSkillRequirements_for_all_recipes()
+  {
+    for (Recipe recipe : subSystem.getRecipes())
+    {
+      for (SkillRequirement sr : recipe.getSkillRequirements())
+      {
+        for (String recipe_id : sr.getRecipeIDs())
+        {
+          Recipe aux_recipe = getRecipe_by_id(recipe_id);
+          if (aux_recipe.getFulfilledSkillRequirements() == null)
+              aux_recipe.setFulfilledSkillRequirements(new ArrayList<>());
+          if (!aux_recipe.getFulfilledSkillRequirements().contains(sr))
+          {
+            aux_recipe.getFulfilledSkillRequirements().add(sr);
+          }
+        }
+      }
+    }
+    
+    for (Module module : subSystem.getModules())
+    {
+      for (Recipe recipe : module.getRecipes())
+      {
+        for (SkillRequirement sr : recipe.getSkillRequirements())
+        {
+          for (String recipe_id : sr.getRecipeIDs())
+          {
+            Recipe aux_recipe = getRecipe_by_id( recipe_id);
+            if (aux_recipe.getFulfilledSkillRequirements() == null)
+              aux_recipe.setFulfilledSkillRequirements(new ArrayList<>());
+            if (!aux_recipe.getFulfilledSkillRequirements().contains(sr))
+            {
+              aux_recipe.getFulfilledSkillRequirements().add(sr);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private Recipe getRecipe_by_id(String recipe_id)
+  {
+    for (Recipe recipe : subSystem.getRecipes())
+    {
+      if (recipe.getUniqueId().equals(recipe_id))
+      {
+        return recipe;
+      }
+    }
+    for (Module module : subSystem.getModules())
+    {
+      for (Recipe recipe : module.getRecipes())
+      {
+        if (recipe.getUniqueId().equals(recipe_id))
+        {
+          return recipe;
+        }
+      }
+    }
+    return null;
   }
 
   public void initVertx()

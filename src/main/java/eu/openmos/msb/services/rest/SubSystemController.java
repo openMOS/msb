@@ -26,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
@@ -43,8 +44,7 @@ public class SubSystemController extends Base
   private static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
 
   /**
-   * Returns the list of workstations and transports, e.g. resource and transport agents. Fills the system overview page
-   * (slide 5 of 34)
+   * Returns the list of workstations and transports, e.g. resource and transport agents. Fills the system overview page (slide 5 of 34)
    *
    * @return list of cyberphysicalagentdescription objects. List can be empty, cannot be null.
    */
@@ -108,9 +108,8 @@ public class SubSystemController extends Base
   }
 
   /**
-   * Returns the detail of a given workstation or transport, e.g. of a resource or transport agent. Fills the
-   * workstation view page (slide 6 of 34) or the transport view (slide 7 of 34) according to the type field of the
-   * subsystem.
+   * Returns the detail of a given workstation or transport, e.g. of a resource or transport agent. Fills the workstation view page (slide 6 of 34) or the
+   * transport view (slide 7 of 34) according to the type field of the subsystem.
    *
    * @return detail of cyberphysical agent
    *
@@ -136,8 +135,8 @@ public class SubSystemController extends Base
   }
 
   /**
-   * Returns the list of recipes associated to a workstation or a transport. Fills the skills recipe list (slide 22 of
-   * 34) This method is exposed via a "/subsystems/{subsystemId}/recipes" service call.
+   * Returns the list of recipes associated to a workstation or a transport. Fills the skills recipe list (slide 22 of 34) This method is exposed via a
+   * "/subsystems/{subsystemId}/recipes" service call.
    *
    * @param subsystemId subsystem id, i.e. the agent unique identifier.
    * @return list of recipe objects. List can be empty, cannot be null.
@@ -163,8 +162,8 @@ public class SubSystemController extends Base
   }
 
   /**
-   * Returns the list of recipes associated to a workstation or a transport. Fills the skills recipe list (slide 22 of
-   * 34) This method is exposed via a "/subsystems/{subsystemId}/recipes" service call.
+   * Returns the list of recipes associated to a workstation or a transport. Fills the skills recipe list (slide 22 of 34) This method is exposed via a
+   * "/subsystems/{subsystemId}/recipes" service call.
    *
    * @param subsystemId subsystem id, i.e. the agent unique identifier.
    * @return list of recipe objects. List can be empty, cannot be null.
@@ -194,69 +193,96 @@ public class SubSystemController extends Base
   }
 
   /**
-   * Allows to insert a new recipe associated to a workstation or a transport. Returns the updated list of recipes
-   * associated to the same workstation or transport. Fills the skills recipe creation view (slide 23 of 34) This method
-   * is exposed via a POST to "/subsystems/{subsystemId}/recipes" service call.
+   * Allows to insert a new recipe associated to a workstation or a transport. Returns the updated list of recipes associated to the same workstation or
+   * transport. Fills the skills recipe creation view (slide 23 of 34) This method is exposed via a POST to "/subsystems/{subsystemId}/recipes" service call.
    *
    * @param pathToInsert
    * @param newRecipe the recipe to be inserted.
-   * @return list of recipe objects associated to the same subsystem (workstation or transport). List can be empty,
-   * cannot be null.
+   * @return list of recipe objects associated to the same subsystem (workstation or transport). List can be empty, cannot be null.
    */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/{subsystemId}/recipes")
-  public List<Recipe> newRecipe(@PathParam("subsystemId") String pathToInsert,
+  public Boolean newRecipe(@PathParam("subsystemId") String pathToInsert,
           Recipe newRecipe)
   {
-
     logger.debug("New Recipe for: " + pathToInsert);
 
     PathHelper helper = new PathHelper(pathToInsert, logger);
 
+    Boolean ret = null;
+    List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdapters_AML_IDs();
+    
     if (helper.hasSubModules())
     {
       Module module = (new ModuleController()).getDetail(helper.getModulesPath());
       if (module != null)
       {
-        //module.getRecipes().add(newRecipe);
-        //return module.getRecipes();
+        for (String da_id : deviceAdaptersID)
+        {
+          DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+          if (da != null)
+          {
+            for (Module auxModule : da.getSubSystem().getModules())
+            {
+              if (auxModule.getUniqueId().equals(module.getUniqueId()))
+              {
+                String string_recipe = Functions.ClassToString(newRecipe);
+
+                DeviceAdapterOPC client = (DeviceAdapterOPC) da;
+                OpcUaClient opcua_client = client.getClient().getClientObject();
+
+                NodeId update_object_id = Functions.convertStringToNodeId(auxModule.getChangeRecipeObjectID());
+                NodeId update_method_id = Functions.convertStringToNodeId(auxModule.getChangeRecipeMethodID());
+
+                ret = client.getClient().InvokeUpdate(opcua_client, update_object_id, update_method_id, string_recipe);
+
+                logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
+
+                return ret;
+              }
+            }
+          }
+        }
       }
-    } else
+    }
+    else
     {
       SubSystem subSystem = (new SubSystemController()).getDetail(helper.getSubSystemId());
       if (subSystem != null)
       {
-        subSystem.getRecipes().add(newRecipe);
-        return subSystem.getRecipes();
+        for (String da_id : deviceAdaptersID)
+        {
+          DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
+          if (da != null)
+          {
+            if (da.getSubSystem().getUniqueId().equals(subSystem.getUniqueId()))
+            {
+              String string_recipe = Functions.ClassToString(newRecipe);
+
+              DeviceAdapterOPC client = (DeviceAdapterOPC) da;
+              OpcUaClient opcua_client = client.getClient().getClientObject();
+
+              NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
+              NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
+
+              ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+
+              logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
+
+              return ret;
+            }
+          }
+        }
       }
     }
-    return null;
-
-    /*
-        
-        if (subsystemId.contains(Base.PARAMSEPARATOR + Base.SKILLMARKERPREFIX)) {
-            subsystemId = subsystemId.substring(0, subsystemId.lastIndexOf(Base.PARAMSEPARATOR + Base.SKILLMARKERPREFIX) + 1);
-            logger.debug("Trimmed String: " + subsystemId);
-        }
-        
-        String[] ids = subsystemId.split(Base.PARAMSEPARATOR);
-        String realSubSystemId = ids[0].split(Base.PARAMVALUESEPARATOR)[1];
-        
-        if (ids.length == 1) {
-            getDetail(realSubSystemId).getRecipes().add(newRecipe);
-        } else {
-            new ModuleController().getDetail(subsystemId).getRecipes().add(newRecipe);
-            return new ModuleController().getDetail(subsystemId).getRecipes();
-        }
-
-        return getRecipesList(subsystemId);*/
+    return false;
   }
 
   /**
-   * Returns the list of sub-modules associated to a workstation or a transport. Fills the sub system view page (slide
-   * 14 of 34). This method is exposed via a "/subsystems/{subsystemId}/modules" service call.
+   * Returns the list of sub-modules associated to a workstation or a transport. Fills the sub system view page (slide 14 of 34). This method is exposed via a
+   * "/subsystems/{subsystemId}/modules" service call.
    *
    * @param subsystemId subsystem id, i.e. the agent unique identifier.
    * @return list of modules objects. List can be empty, cannot be null.
@@ -282,8 +308,8 @@ public class SubSystemController extends Base
   }
 
   /**
-   * Returns the list of skills associated to a workstation or a transport. Fills the skills list view page (slide 16 of
-   * 34). This method is exposed via a "/subsystems/{subsystemId}/skills" service call.
+   * Returns the list of skills associated to a workstation or a transport. Fills the skills list view page (slide 16 of 34). This method is exposed via a
+   * "/subsystems/{subsystemId}/skills" service call.
    *
    * @param subsystemId subsystem id, i.e. the agent unique identifier.
    * @return list of skills objects. List can be empty, cannot be null.
@@ -309,14 +335,12 @@ public class SubSystemController extends Base
   }
 
   /**
-   * Allows to insert a new skill associated to a workstation or a transport. Returns the updated list of skills
-   * associated to the same workstation or transport. Fills the composite skill creation view (slide 21 of 34) This
-   * method is exposed via a POST to "/subsystems/{subsystemId}/skills" service call.
+   * Allows to insert a new skill associated to a workstation or a transport. Returns the updated list of skills associated to the same workstation or
+   * transport. Fills the composite skill creation view (slide 21 of 34) This method is exposed via a POST to "/subsystems/{subsystemId}/skills" service call.
    *
    * @param subsystemId the agent unique identifier.
    * @param newSkill the skill to be inserted.
-   * @return list of skill objects associated to the same subsystem (workstation or transport). List can be empty,
-   * cannot be null.
+   * @return list of skill objects associated to the same subsystem (workstation or transport). List can be empty, cannot be null.
    */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
@@ -409,12 +433,14 @@ public class SubSystemController extends Base
               bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, CLOUD_ENDPOINT);
 
               systemConfigurator.changeSubSystemStage(subsystemId, newSubSystemStage.getStage());
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
               System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
             }
           }
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
 
         }

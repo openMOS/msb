@@ -71,7 +71,6 @@ public class Recipe_DA extends Base implements Serializable
    * @param parameterSettings - Recipe's parameter settings. These must match the skill's parameters.
    * @param skillRequirements - The skills necessary to execute this recipe.
    * @param skill_id
-   * @param equipmentIds
    * @param valid
    * @param registeredTimestamp
    */

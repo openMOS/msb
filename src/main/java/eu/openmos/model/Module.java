@@ -37,9 +37,9 @@ public class Module extends Equipment implements Serializable
 
   private List<Recipe> recipes;
 
-  private transient String addRecipeObjectID;
+  private transient String changeRecipeObjectID;
 
-  private transient String addRecipeMethodID;
+  private transient String changeRecipeMethodID;
 
   public List<Recipe> getRecipes()
   {
@@ -81,24 +81,24 @@ public class Module extends Equipment implements Serializable
     this.parentType = parentType;
   }
 
-  public String getAddRecipeObjectID()
+  public String getChangeRecipeObjectID()
   {
-    return addRecipeObjectID;
+    return changeRecipeObjectID;
   }
 
-  public void setAddRecipeObjectID(String changeRecipeObjectID)
+  public void setChangeRecipeObjectID(String changeRecipeObjectID)
   {
-    this.addRecipeObjectID = changeRecipeObjectID;
+    this.changeRecipeObjectID = changeRecipeObjectID;
   }
 
-  public String getAddRecipeMethodID()
+  public String getChangeRecipeMethodID()
   {
-    return addRecipeMethodID;
+    return changeRecipeMethodID;
   }
 
-  public void setAddRecipeMethodID(String changeRecipeMethodID)
+  public void setChangeRecipeMethodID(String changeRecipeMethodID)
   {
-    this.addRecipeMethodID = changeRecipeMethodID;
+    this.changeRecipeMethodID = changeRecipeMethodID;
   }
 
   /**

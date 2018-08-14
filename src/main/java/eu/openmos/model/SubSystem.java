@@ -71,9 +71,9 @@ public class SubSystem extends Equipment implements Serializable
 
   private boolean valid = true;
 
-  private transient String addRecipeObjectID;
+  private transient String changeRecipeObjectID;
 
-  private transient String addRecipeMethodID;
+  private transient String changeRecipeMethodID;
   /**
    * List of internal modules.
    */
@@ -89,24 +89,24 @@ public class SubSystem extends Equipment implements Serializable
     this.internalModules = internalModules;
   }
 
-  public String getAddRecipeObjectID()
+  public String getChangeRecipeObjectID()
   {
-    return addRecipeObjectID;
+    return changeRecipeObjectID;
   }
 
-  public void setAddRecipeObjectID(String addRecipeObjectID)
+  public void setChangeRecipeObjectID(String changeRecipeObjectID)
   {
-    this.addRecipeObjectID = addRecipeObjectID;
+    this.changeRecipeObjectID = changeRecipeObjectID;
   }
 
-  public String getAddRecipeMethodID()
+  public String getChangeRecipeMethodID()
   {
-    return addRecipeMethodID;
+    return changeRecipeMethodID;
   }
 
-  public void setAddRecipeMethodID(String addRecipeMethodID)
+  public void setChangeRecipeMethodID(String changeRecipeMethodID)
   {
-    this.addRecipeMethodID = addRecipeMethodID;
+    this.changeRecipeMethodID = changeRecipeMethodID;
   }
 //    private static final int FIELDS_COUNT = 15;
 

@@ -1,11 +1,12 @@
 package eu.openmos.msb.services.soap;
 
 import eu.openmos.model.ExecutionTable;
+import eu.openmos.model.Module;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Recipe_DA;
-import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.services.rest.SystemStageController;
 import eu.openmos.msb.utilities.Functions;
@@ -30,8 +31,6 @@ public class RecipesDeploymentImpl implements RecipesDeployment
   @Override
   public boolean updateRecipes(String da_id, int mode, List<Recipe> recipes)
   {
-
-    Boolean ret = false;
     logger.debug("updateRecipes MSB method");
     logger.debug("device ID = [" + da_id + "]");
 
@@ -44,84 +43,92 @@ public class RecipesDeploymentImpl implements RecipesDeployment
       logger.debug("mode = [" + mode + "]");
       if (mode == RecipesDeploymentImpl.SUGGESTION)
       {
-        logger.debug("suggested recipes mode");
-        //updated:*******
-        for (Recipe newRecipe : recipes)
-        {
-          boolean found = false;
-          for (Recipe recipe : da.getSubSystem().getRecipes())
-          {
-            if (recipe.getUniqueId().equals(newRecipe.getUniqueId()))
-            {
-              found = true;
-              recipe.setDescription(newRecipe.getDescription());
-              recipe.setEquipmentIds(newRecipe.getEquipmentIds());
-              recipe.setExecutedBySkillControlPort(newRecipe.getExecutedBySkillControlPort());
-              recipe.setInvokeMethodID(newRecipe.getInvokeMethodID());
-              recipe.setInvokeObjectID(newRecipe.getInvokeObjectID());
-              recipe.setKpiSettings(newRecipe.getKpiSettings());
-              recipe.setLastOptimizationTime(newRecipe.getLastOptimizationTime());
-              recipe.setMsbProtocolEndpoint(newRecipe.getMsbProtocolEndpoint());
-              recipe.setName(newRecipe.getName());
-              recipe.setOptimized(newRecipe.isOptimized());
-              recipe.setParameterSettings(newRecipe.getParameterSettings());
-              recipe.setRegistered(newRecipe.getRegistered());
-              recipe.setSkill(newRecipe.getSkill());
-              recipe.setSkillRequirements(newRecipe.getSkillRequirements());
-              recipe.setState(newRecipe.getState());
-              recipe.setStatePath(newRecipe.getStatePath());
-              recipe.setUniqueAgentName(newRecipe.getUniqueAgentName());
-              recipe.setUniqueId(newRecipe.getUniqueId());
-              recipe.setValid(newRecipe.isValid());
-            }
-          }
-          if (!found)
-          {
-            da.getSubSystem().getRecipes().add(newRecipe);
-          }
-        }
-
         SystemStageController ssc = null;
         if (ssc != null && !ssc.getSystemStage().equals("PRODUCTION"))
         {
+          logger.debug("suggested recipes mode");
+          //updated:*******
           int count = 0;
-          for (Recipe recipe: recipes)
+          for (Recipe newRecipe : recipes)
           {
-            Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
-            MSBClientSubscription client = (MSBClientSubscription) da.getClient();
-            String RecipeSerialized = Functions.ClassToString(recipe_DA);
-            NodeId objectID = Functions.convertStringToNodeId(recipe.getChangeRecipeObjectID());
-            NodeId methodID = Functions.convertStringToNodeId(recipe.getChangeRecipeMethodID());
-            boolean updateRecipe = client.InvokeUpdate(client.getClientObject(), objectID, methodID, RecipeSerialized);
-            if (updateRecipe)
+            boolean found = false;
+            for (Recipe recipe : da.getSubSystem().getRecipes())
             {
-              count++;
+              if (recipe.getUniqueId().equals(newRecipe.getUniqueId()))
+              {
+                found = true;
+                Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(newRecipe);
+                DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da;
+                MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
+                String string_recipe = Functions.ClassToString(recipe_DA);
+
+                NodeId objectID = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
+                NodeId methodID = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
+
+                boolean updateRecipe = client.InvokeUpdate(client.getClientObject(), objectID, methodID, string_recipe);
+                if (updateRecipe)
+                {
+                  count++;
+                }
+                break;
+              }
+            }
+
+            if (!found)
+            {
+              for (Module module : da.getSubSystem().getModules())
+              {
+                for (Recipe recipe : module.getRecipes())
+                {
+                  if (recipe.getUniqueId().equals(newRecipe.getUniqueId()))
+                  {
+                    found = true;
+                    Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(newRecipe);
+                    DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da;
+                    MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
+                    String string_recipe = Functions.ClassToString(recipe_DA);
+
+                    NodeId objectID = Functions.convertStringToNodeId(module.getChangeRecipeObjectID());
+                    NodeId methodID = Functions.convertStringToNodeId(module.getChangeRecipeMethodID());
+
+                    boolean updateRecipe = client.InvokeUpdate(client.getClientObject(), objectID, methodID, string_recipe);
+                    if (updateRecipe)
+                    {
+                      count++;
+                    }
+                    break;
+                  }
+                }
+                if (found)
+                {
+                  break;
+                }
+              }
             }
           }
-          if (count == recipes.size())
-          {
-            return true;
-          } else
-          {
-            return false;
-          }
+          
+          return count == recipes.size();
         }
         return true;
-      } else
+      }
+      else
       {
         logger.error("DA for recipe update not found in the database!");
         return false;
       }
 
-    } else if (mode == RecipesDeploymentImpl.ACTUAL)
+    }
+    else if (mode == RecipesDeploymentImpl.ACTUAL)
     {
       logger.debug("actual recipes mode");
 
-    } else if (RecipesDeploymentImpl.ACTIVATION == mode)
+    }
+    else if (RecipesDeploymentImpl.ACTIVATION == mode)
     {
       logger.debug("activation of already sent recipes mode");
       //msb should activate the selected Recipe (OPC namespace write?  method? )
-    } else
+    }
+    else
     {
       logger.debug("unknown mode");
     }
@@ -146,10 +153,10 @@ public class RecipesDeploymentImpl implements RecipesDeployment
       DeviceAdapter deviceAdapter = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
       if (deviceAdapter != null)
       {
-      if (deviceAdapter.getSubSystem().getName().toUpperCase().contains("MSB"))
-      {
-        continue;
-      }
+        if (deviceAdapter.getSubSystem().getName().toUpperCase().contains("MSB"))
+        {
+          continue;
+        }
         if (deviceAdapter.getSubSystem().getExecutionTable().getUniqueId().equals(execTableUniqueId))
         {
           deviceAdapter.getSubSystem().setExecutionTable(executionTable);
@@ -175,7 +182,8 @@ public class RecipesDeploymentImpl implements RecipesDeployment
           //client.InvokeExecTableUpdate(client, NodeId.NULL_GUID, NodeId.NULL_GUID, excTablesString); //TO be done by DA
           ret = true;
           logger.info("Sending new execution table to DA: " + deviceAdapter.getSubSystem().getName());
-        } else
+        }
+        else
         {
 
         }

@@ -122,8 +122,8 @@ public class SkillController extends Base
                 DeviceAdapterOPC client = (DeviceAdapterOPC) da;
                 OpcUaClient opcua_client = client.getClient().getClientObject();
 
-                NodeId update_object_id = Functions.convertStringToNodeId(auxModule.getAddRecipeObjectID());
-                NodeId update_method_id = Functions.convertStringToNodeId(auxModule.getAddRecipeMethodID());
+                NodeId update_object_id = Functions.convertStringToNodeId(auxModule.getChangeRecipeObjectID());
+                NodeId update_method_id = Functions.convertStringToNodeId(auxModule.getChangeRecipeMethodID());
 
                 ret = client.getClient().InvokeUpdate(opcua_client, update_object_id, update_method_id, string_recipe);
 
@@ -159,8 +159,8 @@ public class SkillController extends Base
               DeviceAdapterOPC client = (DeviceAdapterOPC) da;
               OpcUaClient opcua_client = client.getClient().getClientObject();
 
-              NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeObjectID());
-              NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeMethodID());
+              NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
+              NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
 
               ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
 

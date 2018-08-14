@@ -184,12 +184,14 @@ public class UpdateDevice
               Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level.skills")),
               ignore));
 
-      // print to file the XML structure extracted from the browsing process             
+      // print to file the XML structure extracted from the browsing process  
+      /*
       XMLOutputter xmlOutput = new XMLOutputter();
       xmlOutput.setFormat(Format.getPrettyFormat());
 
-      //xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
-      //xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
+      xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
+      xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
+      */
       logger.info("Starting DA Parser **********************");
       boolean ok = da.parseDNToObjects(client, node, nSkills, false);
       logger.info("***** End namespace browsing ***** \n\n");

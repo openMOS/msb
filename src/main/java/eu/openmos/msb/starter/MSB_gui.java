@@ -1957,8 +1957,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     DeviceAdapterOPC client = (DeviceAdapterOPC) da;
     OpcUaClient opcua_client = client.getClient().getClientObject();
 
-    NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeObjectID());
-    NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getAddRecipeMethodID());
+    NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
+    NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
 
     boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
 

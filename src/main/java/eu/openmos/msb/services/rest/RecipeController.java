@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -114,7 +115,6 @@ public class RecipeController extends Base
    * @return detail of recipe
    *
    * @param recipe the recipe object to update
-   * @return recipe updated object, or null if not existing
    */
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
@@ -122,18 +122,7 @@ public class RecipeController extends Base
   @Path(value = "/{recipeId}")
   public Recipe update(@PathParam("recipeId") String recipeId, Recipe recipe)
   {
-    Recipe recipeToUpdate = this.getDetail(recipeId);
-    logger.debug("To UPDATE ID: " + recipeToUpdate.getUniqueId());
-    //logger.debug("New RECIPE ID: " + recipe.getUniqueId());
-
-    recipeToUpdate.setSkillRequirements(recipe.getSkillRequirements());
-    recipeToUpdate.setKpiSettings(recipe.getKpiSettings());
-
-    if (recipe.getParameterSettings() != null
-            && !recipe.getParameterSettings().isEmpty())
-    {
-      recipeToUpdate.setParameterSettings(recipe.getParameterSettings());
-    }
+    logger.debug("To UPDATE ID: " + recipeId);
 
     //send the updated recipe to DA
     List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdapters_AML_IDs();
@@ -144,68 +133,57 @@ public class RecipeController extends Base
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
       if (da != null)
       {
-        List<Recipe> recipes = da.getSubSystem().getRecipes();
-        for(Module module : da.getSubSystem().getModules())
-          recipes.addAll(module.getRecipes());
-        
-        for (Recipe auxRecipe : recipes)
+        Boolean found = false;
+        for (Recipe auxRecipe : da.getSubSystem().getRecipes())
         {
           if (auxRecipe.getUniqueId().equals(recipeId))
           {
-            /*
-            auxRecipe.setDescription(recipe.getDescription());
-            auxRecipe.setEquipmentIds(recipe.getEquipmentIds());
-            auxRecipe.setExecutedBySkillControlPort(recipe.getExecutedBySkillControlPort());
-            auxRecipe.setInvokeMethodID(recipe.getInvokeMethodID());
-            auxRecipe.setInvokeObjectID(recipe.getInvokeObjectID());
-            auxRecipe.setKpiSettings(recipe.getKpiSettings());
-            auxRecipe.setLastOptimizationTime(recipe.getLastOptimizationTime());
-            auxRecipe.setMsbProtocolEndpoint(recipe.getMsbProtocolEndpoint());
-            auxRecipe.setName(recipe.getName());
-            auxRecipe.setOptimized(recipe.isOptimized());
-            auxRecipe.setParameterSettings(recipe.getParameterSettings());
-            auxRecipe.setRegistered(recipe.getRegistered());
-            auxRecipe.setSkill(recipe.getSkill());
-            auxRecipe.setSkillRequirements(recipe.getSkillRequirements());
-            auxRecipe.setState(recipe.getState());
-            auxRecipe.setStatePath(recipe.getStatePath());
-            auxRecipe.setUniqueAgentName(recipe.getUniqueAgentName());
-            auxRecipe.setUniqueId(recipe.getUniqueId());
-            auxRecipe.setValid(recipe.isValid());
-            */
-            String string_recipe = Functions.ClassToString(recipe);
-            
+            Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
+            String string_recipe = Functions.ClassToString(recipe_DA);
+
             DeviceAdapterOPC client = (DeviceAdapterOPC) da;
             OpcUaClient opcua_client = client.getClient().getClientObject();
-            
-            NodeId object_id = Functions.convertStringToNodeId(recipeToUpdate.getChangeRecipeMethodID());
-            NodeId method_id = Functions.convertStringToNodeId(recipeToUpdate.getChangeRecipeObjectID());
-            
-            ret = client.getClient().InvokeUpdate(opcua_client, object_id,method_id, string_recipe);
-            
-            logger.info("Sending new execution table to DA: " + da.getSubSystem().getName());
+
+            NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
+            NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
+
+            ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+
+            found = true;
+          }
+        }
+
+        if (!found)
+        {
+          for (Module module : da.getSubSystem().getModules())
+          {
+            for (Recipe auxRecipe : module.getRecipes())
+            {
+              if (auxRecipe.getUniqueId().equals(recipeId))
+              {
+                Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
+                String string_recipe = Functions.ClassToString(recipe_DA);
+
+                DeviceAdapterOPC client = (DeviceAdapterOPC) da;
+                OpcUaClient opcua_client = client.getClient().getClientObject();
+
+                NodeId object_id = Functions.convertStringToNodeId(module.getChangeRecipeMethodID());
+                NodeId method_id = Functions.convertStringToNodeId(module.getChangeRecipeObjectID());
+
+                ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+              }
+            }
           }
         }
 
         if (ret)
         {
-          Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
-          DeviceAdapterOPC da_opc = (DeviceAdapterOPC) da;
-          MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
-
-          String RecipeSerialized = Functions.ClassToString(recipe_DA);
-          NodeId objectID = Functions.convertStringToNodeId(recipe.getChangeRecipeObjectID());
-          NodeId methodID = Functions.convertStringToNodeId(recipe.getChangeRecipeMethodID());
-          boolean updateRecipe = client.InvokeUpdate(client.getClientObject(), objectID, methodID, RecipeSerialized);
-
-          if (updateRecipe)
-          {
-            return recipe;
-          }
-          else
-          {
-            return null;
-          }
+          logger.info("Sending new updated to DA: " + da.getSubSystem().getName());
+          return recipe;
+        }
+        else
+        {
+          return null;
         }
 
       }
@@ -233,7 +211,7 @@ public class RecipeController extends Base
 
     DACManager DACinstance = DACManager.getInstance();
     List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
-    
+
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
@@ -273,7 +251,7 @@ public class RecipeController extends Base
     List<SkillRequirement> skillReq = new LinkedList<>();
     DACManager DACinstance = DACManager.getInstance();
     List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
-    
+
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
@@ -313,7 +291,7 @@ public class RecipeController extends Base
 
     DACManager DACinstance = DACManager.getInstance();
     List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
-    
+
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
@@ -340,9 +318,8 @@ public class RecipeController extends Base
   @Path("/insertNewRecipe/{subSystemId}")
   public Recipe startInsertNewRecipe(@PathParam("subSystemId") String subSystemId/*, Skill skill*/)
   {
-
     logger.debug("Insert Skill for : " + subSystemId);
-    
+
     SubSystem ss;
 
     // Creating new Recipe Object
@@ -352,16 +329,13 @@ public class RecipeController extends Base
 
     ss = (new SubSystemController()).getDetail(helper.getSubSystemId());
 
-    // Getting SubSystem Detail 
-    // SubSystem subSystem = (new SubSystemController()).getDetail(subSystemId);
     // Setting Recipe registered Date
     recipe.setRegistered(new Date());
 
     // Setting Recipe uniqueID
-    recipe.setUniqueId(this.generateId(recipe.getRegistered()));
+    recipe.setUniqueId(UUID.randomUUID().toString());
 
     // Setting recipe skill
-    //Skill skill = helper.getSkillId();
     Skill skill = null;
     for (Skill auxSkill : ss.getSkills())
     {
@@ -386,15 +360,13 @@ public class RecipeController extends Base
     recipe.setOptimized(true);
     recipe.setValid(true);
 
-    // Setting Recipe subSystemId
-//        recipe.setEquipmentId(subSystem.getUniqueId());
     List<String> equipmentIds = new LinkedList<>();
     equipmentIds.add(ss.getUniqueId());
     recipe.setEquipmentIds(equipmentIds);
 
-    recipe.setKpiSettings(getKPISettingFromSkill2(skill));
+    recipe.setKpiSettings(getKPISettingFromSkill(skill));
 
-    recipe.setParameterSettings(getParameterSettingsFromSkill2(skill));
+    recipe.setParameterSettings(getParameterSettingsFromSkill(skill));
 
     // fulfilled skill reqs
     recipe.setFulfilledSkillRequirements(new LinkedList<>());
@@ -406,36 +378,6 @@ public class RecipeController extends Base
   {
     List<KPISetting> kpiSettings = new ArrayList<>();
     logger.debug("getting KPI from skill");
-    if (skill != null && skill.getInformationPorts() != null)
-    {
-
-      for (InformationPort infoPort : skill.getInformationPorts())
-      {
-        for (KPI kpi : infoPort.getKpis())
-        {
-          KPISetting kpiSetting
-                  = new KPISetting(
-                          "KPISetting From KPI: " + kpi.getName(),
-                          generateId(new Date()),
-                          "KPISetting Name",
-                          kpi,
-                          kpi.getKpiType(),
-                          kpi.getUnit(),
-                          kpi.getValue(),
-                          new Date()
-                  );
-          kpiSettings.add(kpiSetting);
-        }
-      }
-    }
-    logger.debug("Return " + kpiSettings.size() + " KPIs Settings");
-    return kpiSettings;
-  }
-
-  public List<KPISetting> getKPISettingFromSkill2(Skill skill)
-  {
-    List<KPISetting> kpiSettings = new ArrayList<>();
-    logger.debug("getting KPI from skill");
     if (skill != null && skill.getKpis() != null)
     {
 
@@ -444,7 +386,7 @@ public class RecipeController extends Base
         KPISetting kpiSetting
                 = new KPISetting(
                         "KPISetting From KPI: " + kpi.getName(),
-                        generateId(new Date()),
+                        UUID.randomUUID().toString(),
                         "KPISetting Name",
                         kpi,
                         kpi.getKpiType(),
@@ -464,34 +406,6 @@ public class RecipeController extends Base
   {
     List<ParameterSetting> parameterSettings = new ArrayList<>();
     logger.debug("getting Parameter from Skill");
-    if (skill != null && skill.getParameterPorts() != null)
-    {
-      logger.debug("Found " + skill.getParameterPorts().size() + " ParamPort");
-      for (ParameterPort paramPort : skill.getParameterPorts())
-      {
-        for (Parameter parameter : paramPort.getParameters())
-        {
-          ParameterSetting paramSett
-                  = new ParameterSetting(
-                          "ParamSetting from Param: " + parameter.getName(),
-                          generateId(new Date()),
-                          "ParamSetting NAME",
-                          "ParamSetting Value",
-                          parameter,
-                          new Date()
-                  );
-          parameterSettings.add(paramSett);
-        }
-      }
-    }
-    logger.debug("Returning " + parameterSettings.size() + " PARAM SETTING");
-    return parameterSettings;
-  }
-
-  private List<ParameterSetting> getParameterSettingsFromSkill2(Skill skill)
-  {
-    List<ParameterSetting> parameterSettings = new ArrayList<>();
-    logger.debug("getting Parameter from Skill");
     if (skill != null && skill.getParameters() != null)
     {
       //logger.debug("Found " + skill.getParameterPorts().size() + " ParamPort");
@@ -501,7 +415,7 @@ public class RecipeController extends Base
         ParameterSetting paramSett
                 = new ParameterSetting(
                         "ParamSetting from Param: " + parameter.getName(),
-                        generateId(new Date()),
+                        UUID.randomUUID().toString(),
                         "ParamSetting NAME",
                         "ParamSetting Value",
                         parameter,
@@ -513,13 +427,6 @@ public class RecipeController extends Base
     }
     logger.debug("Returning " + parameterSettings.size() + " PARAM SETTING");
     return parameterSettings;
-  }
-
-  private String generateId(Date registeredDate)
-  {
-    return registeredDate.getTime()
-            + "_"
-            + new Random().nextInt(10000);
   }
 
   /**
@@ -536,7 +443,7 @@ public class RecipeController extends Base
     logger.debug("start triggering!");
     DACManager DACinstance = DACManager.getInstance();
     List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
-    
+
     for (String da_id : deviceAdaptersID)
     {
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
