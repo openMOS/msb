@@ -194,8 +194,8 @@ public class RecipeController extends Base
           MSBClientSubscription client = (MSBClientSubscription) da_opc.getClient();
 
           String RecipeSerialized = Functions.ClassToString(recipe_DA);
-          NodeId objectID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeObjectID());
-          NodeId methodID = Functions.convertStringToNodeId(recipe_DA.getChangeRecipeMethodID());
+          NodeId objectID = Functions.convertStringToNodeId(recipe.getChangeRecipeObjectID());
+          NodeId methodID = Functions.convertStringToNodeId(recipe.getChangeRecipeMethodID());
           boolean updateRecipe = client.InvokeUpdate(client.getClientObject(), objectID, methodID, RecipeSerialized);
 
           if (updateRecipe)
@@ -342,22 +342,15 @@ public class RecipeController extends Base
   {
 
     logger.debug("Insert Skill for : " + subSystemId);
-
-    Equipment equipment;
+    
+    SubSystem ss;
 
     // Creating new Recipe Object
     Recipe recipe = new Recipe();
 
     PathHelper helper = new PathHelper(subSystemId, logger);
 
-    equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
-    /*
-        Not used at the moment, need only subSystemId
-        if (helper.hasSubModules()) {
-            equipment = (new ModuleController()).getDetail(helper.getModulesPath());
-        } else {
-            equipment = (new SubSystemController()).getDetail(helper.getSubSystemId());
-        }*/
+    ss = (new SubSystemController()).getDetail(helper.getSubSystemId());
 
     // Getting SubSystem Detail 
     // SubSystem subSystem = (new SubSystemController()).getDetail(subSystemId);
@@ -370,7 +363,7 @@ public class RecipeController extends Base
     // Setting recipe skill
     //Skill skill = helper.getSkillId();
     Skill skill = null;
-    for (Skill auxSkill : equipment.getSkills())
+    for (Skill auxSkill : ss.getSkills())
     {
       if (auxSkill.getUniqueId().equals(helper.getSkillId()))
       {
@@ -396,7 +389,7 @@ public class RecipeController extends Base
     // Setting Recipe subSystemId
 //        recipe.setEquipmentId(subSystem.getUniqueId());
     List<String> equipmentIds = new LinkedList<>();
-    equipmentIds.add(equipment.getUniqueId());
+    equipmentIds.add(ss.getUniqueId());
     recipe.setEquipmentIds(equipmentIds);
 
     recipe.setKpiSettings(getKPISettingFromSkill2(skill));

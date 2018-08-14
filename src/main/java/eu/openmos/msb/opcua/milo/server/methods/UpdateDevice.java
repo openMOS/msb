@@ -13,9 +13,7 @@ import static eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet.browse
 import eu.openmos.msb.starter.MSB_gui;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -117,6 +115,7 @@ public class UpdateDevice
                   if (qa != null)
                   {
                     DACManager.getInstance().VerifyQueuedActions(test_da, qa);
+                    DACManager.getInstance().QueuedActionMap.remove(da_id);
                   }
                 } catch (InterruptedException ex)
                 {
