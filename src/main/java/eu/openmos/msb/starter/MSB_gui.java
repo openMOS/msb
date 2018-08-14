@@ -187,7 +187,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       String HostName = addr.getHostName();
       msbServerAddress.setText("opc.tcp://" + HostName + ":12637/MSB-OPCUA-SERVER");
       ldsSserverAddress.setText("opc.tcp://" + HostName + ":4840");
-    } catch (UnknownHostException ex)
+    }
+    catch (UnknownHostException ex)
     {
       System.out.println("hostname can not be resolved! " + ex);
     }
@@ -1266,7 +1267,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         setConnectionColor(true, false, OnOffSOAP, labelSOAP);
         opc_comms_log.append("MSB WebServices Successfully Started\n");
-      } else
+      }
+      else
       {
         setConnectionColor(false, true, OnOffSOAP, labelSOAP);
         opc_comms_log.append("Failed to Start MSB WebServices\n");
@@ -1295,7 +1297,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       this.p_dds.repaint();
       this.isDDSRunning = true;
 
-    } else if (this.isDDSRunning)
+    }
+    else if (this.isDDSRunning)
     {
       this.b_startMSBDDS.setText("Start");
       this.isDDSRunning = false;
@@ -1349,7 +1352,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       status = listenerWriter.write(msgSample, HANDLE_NIL.value);
       DDSErrorHandler.checkStatus(status, "StringMessageDataWriter.write");
 
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       System.out.println("à meu deus" + ex.toString());
     }
@@ -1415,7 +1419,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         result = msb.getClient().InvokeDeviceMARTELO(msb.getClient().getClientObject(), obj, meth, "prodID", da.getSubSystem().getUniqueId(), "dryedrydry").get();
       }
-    } catch (InterruptedException | ExecutionException ex)
+    }
+    catch (InterruptedException | ExecutionException ex)
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -1475,7 +1480,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
             NodeId objNode = Functions.convertStringToNodeId(recipe.getInvokeObjectID());
             boolean ret = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objNode, methodNode, deviceName, deviceName, false);
             System.out.println("Method call retuned: " + ret);
-          } else
+          }
+          else
           {
 
           }
@@ -1570,7 +1576,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           try
           {
             Thread.sleep(1000);
-          } catch (InterruptedException ex)
+          }
+          catch (InterruptedException ex)
           {
             Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
           }
@@ -1590,7 +1597,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           if (name.contains("MSB"))
           {
             ComboMSB.addItem(name);
-          } else
+          }
+          else
           {
             comboServers.addItem(name);
           }
@@ -1628,7 +1636,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
       OPCServersDiscoverySnippet OPCDiscoverySnippet = new OPCServersDiscoverySnippet(LDS_uri, MSB_uri, ntoficationsListner);
       OPCDiscoverySnippet.start();
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       System.out.println("boda");
     }
@@ -1649,12 +1658,14 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         opc_comms_log.append("Success\n");
         setConnectionColor(true, false, OnOffRegister, labelRegister);
-      } else
+      }
+      else
       {
         opc_comms_log.append("Failed to register MSB OPCUA Milo Server on the LDS server!\n");
         setConnectionColor(false, true, OnOffRegister, labelRegister);
       }
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -1689,13 +1700,15 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           opcuaServerInstanceMILO.startup().get();
           opc_comms_log.append("Server created. \n");
           setConnectionColor(true, false, OnOffServerPanel, labelServer);
-        } catch (InterruptedException | ExecutionException ex)
+        }
+        catch (InterruptedException | ExecutionException ex)
         {
           Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, "[StartMSBServerActionPerformed] Exception: " + ex);
           opc_comms_log.append("[StartMSBServerActionPerformed] Exception: " + ex);
           setConnectionColor(false, true, OnOffServerPanel, labelServer);
         }
-      } else
+      }
+      else
       {
         System.out.println("MSB Server already created!\n");
         opc_comms_log.append("MSB Server already created!\n");
@@ -1704,14 +1717,16 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       try
       {//test to see if the server is running at the first discovery
         Thread.sleep(500);
-      } catch (InterruptedException ex)
+      }
+      catch (InterruptedException ex)
       {
         Thread.currentThread().interrupt();
       }
 
       MSBVar.setSystemStage(MSBConstants.STAGE_PRODUCTION);
 
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, "[StartMSBServerActionPerformed] Exception: " + ex);
     }
@@ -1768,7 +1783,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       try
       {
         HttpServer server = JdkHttpServerFactory.createHttpServer(uri, resourceConfig);
-      } catch (ProcessingException pe)
+      }
+      catch (ProcessingException pe)
       {
         // IOException thrown when creating the JDK HttpServer.
         // Caused by: java.net.BindException: Address already in use: bind
@@ -1778,7 +1794,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       setConnectionColor(true, false, OnOffREST, labelREST);
       logger.info("Start Rest services at " + uri.toString());
       opc_comms_log.append("Start Rest services at " + uri.toString());
-    } catch (URISyntaxException ex)
+    }
+    catch (URISyntaxException ex)
     {
       setConnectionColor(false, false, OnOffREST, labelREST);
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
@@ -1795,7 +1812,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         {
           addToProductcb(newProducts); //add to combo products
         }
-      } catch (FileNotFoundException ex)
+      }
+      catch (FileNotFoundException ex)
       {
         Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
       }
@@ -1929,7 +1947,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     try
     {
       perfMeasure.exportTimers();
-    } catch (IOException ex)
+    }
+    catch (IOException ex)
     {
       Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -1949,9 +1968,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
     Module module = da.getSubSystem().getModules().get(0);
-    Recipe recipe= module.getRecipes().get(0);
-    recipe.setUniqueId(UUID.randomUUID().toString());
-    
+    Recipe recipe = module.getRecipes().get(0);
+    //recipe.setUniqueId(UUID.randomUUID().toString());
+
     String string_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(recipe));
 
     DeviceAdapterOPC client = (DeviceAdapterOPC) da;
@@ -1962,7 +1981,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
 
-    
     logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
 
     QueuedAction qa = new QueuedAction();
@@ -1972,6 +1990,23 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     qa.setProduct_instance_id("random stuff");
     qa.setProduct_type_id("");
     DACManager.getInstance().QueuedActionMap.put(da_ids.get(0), qa);
+
+    try
+    {
+      Thread.sleep(5000);
+    }
+    catch (InterruptedException ex)
+    {
+      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    /*
+    QueuedAction qa1 = DACManager.getInstance().QueuedActionMap.get(da_ids.get(0));
+    if (qa1 != null)
+    {
+      DACManager.getInstance().VerifyQueuedActions(da, qa1);
+      DACManager.getInstance().QueuedActionMap.remove(da_ids.get(0));
+    }
+     */
   }//GEN-LAST:event_jButton2ActionPerformed
 
   public static Order fillOrder(Product prod)
@@ -2337,7 +2372,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     if (indexToRemove != -1)
     {
       opc_comms_log.append("SERVER DELETED from table: " + serverName + "\n");
-    } else
+    }
+    else
     {
       opc_comms_log.append("SERVER TO DELETE NOT FOUND from table: " + serverName + "\n");
     }
@@ -2373,7 +2409,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     if (indexToRemove != -1)
     {
       opc_comms_log.append("RECIPE DELETED from table: " + recipe + "\n");
-    } else
+    }
+    else
     {
       opc_comms_log.append("RECIPE TO DELETE NOT FOUND from table: " + recipe + "\n");
     }
@@ -2414,7 +2451,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       //Print if server found 
       System.out.println("MODULE DELETED from table: " + module);
       opc_comms_log.append("MODULE DELETED from table: " + module + "\n");
-    } else
+    }
+    else
     {
       //Print if server not found 
       System.out.println("MODULE TO DELETE NOT FOUND from table: " + module);
@@ -2446,7 +2484,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       redLight = new ImageIcon(dimg2);
       greyLight = new ImageIcon(dimg3);
 
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       logger.info("Start Rest services at " + e.toString());
     }
@@ -2474,7 +2513,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         panel.add(label);
         panel.revalidate();
         panel.repaint();
-      } else if (con == false)
+      }
+      else if (con == false)
       {
 
         panel.removeAll();
@@ -2534,7 +2574,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         {
           System.out.println(columnName + ": " + true);
           opc_comms_log.append("SendChanges:" + columnName + " of " + recipeID + " " + true + "\n");
-        } else
+        }
+        else
         {
           System.out.println(columnName + ": " + false);
           opc_comms_log.append("SendChanges:" + columnName + " of " + recipeID + " " + false + "\n");
@@ -2578,7 +2619,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         theDir.mkdir();
         result = true;
-      } catch (SecurityException se)
+      }
+      catch (SecurityException se)
       {
         //handle it
       }
@@ -2617,16 +2659,20 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
           break;
         }
       }
-    } catch (ClassNotFoundException ex)
+    }
+    catch (ClassNotFoundException ex)
     {
       java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (InstantiationException ex)
+    }
+    catch (InstantiationException ex)
     {
       java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex)
+    }
+    catch (IllegalAccessException ex)
     {
       java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (javax.swing.UnsupportedLookAndFeelException ex)
+    }
+    catch (javax.swing.UnsupportedLookAndFeelException ex)
     {
       java.util.logging.Logger.getLogger(MSB_gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
@@ -2647,7 +2693,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         try
         {
           new MSB_gui().setVisible(true);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
           Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
         }

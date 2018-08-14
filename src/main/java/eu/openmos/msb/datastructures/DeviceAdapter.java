@@ -279,7 +279,7 @@ public abstract class DeviceAdapter
       }
 
       fill_FulfilledSkillRequirements_for_all_recipes();
-      
+
       subSystem.setSsType(ReadDeviceAdapterType(deviceDescriptionDoc));
 
       //Recipe_SR_to_Skill_SR();
@@ -300,20 +300,17 @@ public abstract class DeviceAdapter
         if (resources.equals(""))
         {
           PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(1));
-        }
-        else
+        } else
         {
           PECManager.getInstance().getExecutionMap().put(subSystem.getUniqueId(), new Semaphore(Integer.parseInt(resources)));
         }
         logger.debug("[SEMAPHORE] CREATED for " + subSystem.getName());
       }
       return true;
-    }
-    catch (XPathExpressionException ex)
+    } catch (XPathExpressionException ex)
     {
       logger.error("[ERROR] " + ex.getMessage());
-    }
-    catch (JDOMException ex)
+    } catch (JDOMException ex)
     {
       logger.error(ex.getMessage());
     }
@@ -338,8 +335,7 @@ public abstract class DeviceAdapter
       if (n.getNodeName().equals("Path"))
       {
         execTable.setName(n.getTextContent());
-      }
-      else if ("ID".equals(n.getNodeName()))
+      } else if ("ID".equals(n.getNodeName()))
       {
         for (int j = 0; j < n.getChildNodes().getLength(); j++)
         {
@@ -349,8 +345,7 @@ public abstract class DeviceAdapter
             execTable.setUniqueId(IdChildNodes.getTextContent());
           }
         }
-      }
-      else
+      } else
       {
         NodeList execTableAux = n.getChildNodes();
         ExecutionTableRow execRow = new ExecutionTableRow();
@@ -372,8 +367,7 @@ public abstract class DeviceAdapter
                 }
               }
             }
-          }
-          else if (n2.getNodeName().startsWith("Recipe"))
+          } else if (n2.getNodeName().startsWith("Recipe"))
           {
             NodeList recipes = n2.getChildNodes();
             for (int k = 0; k < recipes.getLength(); k++)
@@ -401,8 +395,7 @@ public abstract class DeviceAdapter
                 }
               }
             }
-          }
-          else if (n2.getNodeName().startsWith("Product"))
+          } else if (n2.getNodeName().startsWith("Product"))
           {
             NodeList products = n2.getChildNodes();
             for (int k = 0; k < products.getLength(); k++)
@@ -431,8 +424,7 @@ public abstract class DeviceAdapter
                 }
               }
             }
-          }
-          else if (n2.getNodeName().startsWith("NextRecipeToExecute"))
+          } else if (n2.getNodeName().startsWith("NextRecipeToExecute"))
           {
             NodeList nRtE = n2.getChildNodes();
             for (int k = 0; k < nRtE.getLength(); k++)
@@ -459,8 +451,7 @@ public abstract class DeviceAdapter
                           String recipeid = IDchildNodes.item(id).getTextContent();
                           System.out.println("next recipe id: " + recipeid);
                           execRow.setNextRecipeId(IDchildNodes.item(id).getTextContent());
-                        }
-                        else if (IDchildNodes.item(id).getNodeName().equals("Path"))
+                        } else if (IDchildNodes.item(id).getNodeName().equals("Path"))
                         {
                           String ns = IDchildNodes.item(id).getAttributes().getNamedItem("ns").getNodeValue();
                           execRow.setNextRecipeIdPath(ns + ":" + IDchildNodes.item(id).getTextContent()); //CHECK THIS
@@ -471,8 +462,7 @@ public abstract class DeviceAdapter
                 }
               }
             }
-          }
-          else if (n2.getNodeName().startsWith("ListOfPossibleRecipeChoices"))
+          } else if (n2.getNodeName().startsWith("ListOfPossibleRecipeChoices"))
           {
             NodeList ListOfpossRchoices = n2.getChildNodes();
             List<String> PossibleRC = new ArrayList<>();
@@ -542,8 +532,7 @@ public abstract class DeviceAdapter
           recipe.setName(temp[temp.length - 1]);
           recipeNamespace = temp[0] + "/" + temp[1];
           System.out.println("recipeName " + recipe.getName());
-        }
-        else if (n2.getNodeName().equals("ID"))
+        } else if (n2.getNodeName().equals("ID"))
         {
           for (int t = 0; t < n2.getChildNodes().getLength(); t++)
           {
@@ -554,8 +543,7 @@ public abstract class DeviceAdapter
               recipe.setUniqueId(IdChildNodes.getTextContent());
             }
           }
-        }
-        else if (n2.getNodeName().equals("description"))
+        } else if (n2.getNodeName().equals("description"))
         {
           NodeList descChilds = n2.getChildNodes();
           for (int k = 0; k < descChilds.getLength(); k++)
@@ -569,8 +557,7 @@ public abstract class DeviceAdapter
             }
           }
           //SKRequirements
-        }
-        else if (n2.getNodeName().matches(("SR(\\d).*")))//SR+um digito pelo menos
+        } else if (n2.getNodeName().matches(("SR(\\d).*")))//SR+um digito pelo menos
         {
           System.out.println("isto é um SR: " + n2.getNodeName());
           NodeList SkillReqs = n2.getChildNodes();
@@ -594,8 +581,7 @@ public abstract class DeviceAdapter
                 break;
               }
 
-            }
-            else if (skillReq.getNodeName().equals("ID"))
+            } else if (skillReq.getNodeName().equals("ID"))
             {
               NodeList auxNodeList = skillReq.getChildNodes();
               for (int index = 0; index < auxNodeList.getLength(); index++)
@@ -607,8 +593,7 @@ public abstract class DeviceAdapter
                   System.out.println("SR ID: " + auxSkillReq.getUniqueId());
                 }
               }
-            }
-            else if (isRecipeNode(skillReq))
+            } else if (isRecipeNode(skillReq))
             {
               String auxRecipeID;
 
@@ -631,8 +616,7 @@ public abstract class DeviceAdapter
                   }
                 }
               }
-            }
-            else if (skillReq.getNodeName().equals("InvokeSkill"))
+            } else if (skillReq.getNodeName().equals("InvokeSkill"))
             {
               NodeList auxNodeList = skillReq.getChildNodes();
               for (int index = 0; index < auxNodeList.getLength(); index++)
@@ -651,8 +635,7 @@ public abstract class DeviceAdapter
           {
             SRs.add(auxSkillReq);
           }
-        }
-        //KPIs
+        } //KPIs
         else if (n2.getNodeName().endsWith("InformationPort"))
         {
           NodeList auxNodeList = n2.getChildNodes();
@@ -682,8 +665,7 @@ public abstract class DeviceAdapter
                       System.out.println("KPI ID: " + auxKPISetting.getUniqueId());
                     }
                   }
-                }
-                else if (auxNode.getNodeName().equals("value"))
+                } else if (auxNode.getNodeName().equals("value"))
                 {
                   NodeList auxNodeList1 = auxNode.getChildNodes();
                   for (int index = 0; index < auxNodeList1.getLength(); index++)
@@ -696,8 +678,7 @@ public abstract class DeviceAdapter
                       System.out.println("KPI path: " + auxKPISetting.getPath());
                     }
                   }
-                }
-                else if (auxNode.getNodeName().equals("Unit"))
+                } else if (auxNode.getNodeName().equals("Unit"))
                 {
                   NodeList auxNodeList1 = auxNode.getChildNodes();
                   for (int index = 0; index < auxNodeList1.getLength(); index++)
@@ -715,8 +696,7 @@ public abstract class DeviceAdapter
               KPIsettings.add(auxKPISetting);
             }
           }
-        }
-        else if (n2.getNodeName().endsWith("ParameterPort"))
+        } else if (n2.getNodeName().endsWith("ParameterPort"))
         {
           NodeList auxNodeList = n2.getChildNodes();
           for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -743,8 +723,7 @@ public abstract class DeviceAdapter
                       System.out.println("PARAMETER ID: " + auxParameterSetting.getUniqueId());
                     }
                   }
-                }
-                else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
+                } else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
                         && !auxNode.getNodeName().toLowerCase().endsWith("parameter") && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                 {
                   auxParameterSetting.setName(auxNode.getNodeName());
@@ -757,8 +736,7 @@ public abstract class DeviceAdapter
                       auxParameterSetting.setValue(auxNode1.getTextContent());
                       System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
                       break;
-                    }
-                    else if (auxNode1.getNodeName().equals("Path"))
+                    } else if (auxNode1.getNodeName().equals("Path"))
                     {
                       auxParameterSetting.setValuePath(auxNode1.getTextContent());
                       System.out.println("PARAMETER PATH value: " + auxParameterSetting.getValuePath());
@@ -770,8 +748,7 @@ public abstract class DeviceAdapter
               paraSettings.add(auxParameterSetting);
             }
           }
-        }
-        else if (n2.getNodeName().equals("InvokeSkill"))
+        } else if (n2.getNodeName().equals("InvokeSkill"))
         {
           NodeList auxNodeList = n2.getChildNodes();
           for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -783,8 +760,7 @@ public abstract class DeviceAdapter
               recipe.setInvokeMethodID(auxTest + ":" + auxNode.getTextContent());
             }
           }
-        }
-        else if (n2.getNodeName().equals("SkillState"))
+        } else if (n2.getNodeName().equals("SkillState"))
         {
           NodeList auxNodeList = n2.getChildNodes();
           for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -794,8 +770,7 @@ public abstract class DeviceAdapter
             {
               int ns = Integer.parseInt(auxNode.getAttributes().getNamedItem("ns").getNodeValue());
               recipe.setStatePath(ns + ":" + auxNode.getTextContent()); //CHECK THIS!
-            }
-            else
+            } else
             {
               if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Value"))
               {
@@ -803,8 +778,7 @@ public abstract class DeviceAdapter
               }
             }
           }
-        }
-        else if (searchForSkill)
+        } else if (searchForSkill)
         {
           //get skill - first node with SR inside
           if (n2.getNodeType() == Node.ELEMENT_NODE)
@@ -880,8 +854,7 @@ public abstract class DeviceAdapter
           String ns = n2.getAttributes().getNamedItem("ns").getNodeValue();
           module.setChangeRecipeObjectID(ns + ":" + n2.getTextContent());
 
-        }
-        else if (n2.getNodeName().equals("ID"))
+        } else if (n2.getNodeName().equals("ID"))
         {
           for (int t = 0; t < n2.getChildNodes().getLength(); t++)
           {
@@ -892,8 +865,7 @@ public abstract class DeviceAdapter
               module.setUniqueId(IdChildNodes.getTextContent());
             }
           }
-        }
-        else if (n2.getNodeName().equals("description"))
+        } else if (n2.getNodeName().equals("description"))
         {
           NodeList descChilds = n2.getChildNodes();
           for (int k = 0; k < descChilds.getLength(); k++)
@@ -905,8 +877,7 @@ public abstract class DeviceAdapter
               System.out.println("moduleDescription " + module.getDescription());
             }
           }
-        }
-        else if (isRecipeNode(n2))
+        } else if (isRecipeNode(n2))
         {
           Recipe recipe = new Recipe();
           boolean searchForSkill = true;
@@ -928,8 +899,7 @@ public abstract class DeviceAdapter
               recipe.setName(temp[temp.length - 1]);
               recipeNamespace = temp[0] + "/" + temp[1];
               System.out.println("recipeName " + recipe.getName());
-            }
-            else if ("ID".equals(nRecipe.getNodeName()))
+            } else if ("ID".equals(nRecipe.getNodeName()))
             {
               for (int t = 0; t < nRecipe.getChildNodes().getLength(); t++)
               {
@@ -940,8 +910,7 @@ public abstract class DeviceAdapter
                   recipe.setUniqueId(IdChildNodes.getTextContent());
                 }
               }
-            }
-            else if ("description".equals(nRecipe.getNodeName()))
+            } else if ("description".equals(nRecipe.getNodeName()))
             {
               NodeList descChilds = nRecipe.getChildNodes();
               for (int k = 0; k < descChilds.getLength(); k++)
@@ -955,8 +924,7 @@ public abstract class DeviceAdapter
                 }
               }
               //SKRequirements
-            }
-            else if (nRecipe.getNodeName().matches(("SR(\\d).*")))//SR+um digito pelo menos
+            } else if (nRecipe.getNodeName().matches(("SR(\\d).*")))//SR+um digito pelo menos
             {
               System.out.println("isto é um SR: " + nRecipe.getNodeName());
               NodeList SkillReqs = nRecipe.getChildNodes();
@@ -980,8 +948,7 @@ public abstract class DeviceAdapter
                     break;
                   }
 
-                }
-                else if (skillReq.getNodeName().equals("ID"))
+                } else if (skillReq.getNodeName().equals("ID"))
                 {
                   NodeList auxNodeList = skillReq.getChildNodes();
                   for (int index = 0; index < auxNodeList.getLength(); index++)
@@ -993,8 +960,7 @@ public abstract class DeviceAdapter
                       System.out.println("SR ID: " + auxSkillReq.getUniqueId());
                     }
                   }
-                }
-                else if (isRecipeNode(skillReq))
+                } else if (isRecipeNode(skillReq))
                 {
                   String auxRecipeID;
 
@@ -1017,8 +983,7 @@ public abstract class DeviceAdapter
                       }
                     }
                   }
-                }
-                else if (skillReq.getNodeName().equals("InvokeSkill"))
+                } else if (skillReq.getNodeName().equals("InvokeSkill"))
                 {
                   NodeList auxNodeList = skillReq.getChildNodes();
                   for (int index = 0; index < auxNodeList.getLength(); index++)
@@ -1037,8 +1002,7 @@ public abstract class DeviceAdapter
               {
                 SRs.add(auxSkillReq);
               }
-            }
-            //KPIs
+            } //KPIs
             else if (nRecipe.getNodeName().endsWith("InformationPort"))
             {
               NodeList auxNodeList = nRecipe.getChildNodes();
@@ -1068,8 +1032,7 @@ public abstract class DeviceAdapter
                           System.out.println("KPI ID: " + auxKPISetting.getUniqueId());
                         }
                       }
-                    }
-                    else if (auxNode.getNodeName().toLowerCase().equals("value"))
+                    } else if (auxNode.getNodeName().toLowerCase().equals("value"))
                     {
                       NodeList auxNodeList1 = auxNode.getChildNodes();
                       for (int index = 0; index < auxNodeList1.getLength(); index++)
@@ -1082,8 +1045,7 @@ public abstract class DeviceAdapter
                           System.out.println("KPI path: " + auxKPISetting.getPath());
                         }
                       }
-                    }
-                    else if (auxNode.getNodeName().equals("Unit"))
+                    } else if (auxNode.getNodeName().equals("Unit"))
                     {
                       NodeList auxNodeList1 = auxNode.getChildNodes();
                       for (int index = 0; index < auxNodeList1.getLength(); index++)
@@ -1100,8 +1062,7 @@ public abstract class DeviceAdapter
                   KPIsettings.add(auxKPISetting);
                 }
               }
-            }
-            else if (nRecipe.getNodeName().endsWith("ParameterPort"))
+            } else if (nRecipe.getNodeName().endsWith("ParameterPort"))
             {
               NodeList auxNodeList = nRecipe.getChildNodes();
               for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -1129,8 +1090,7 @@ public abstract class DeviceAdapter
                           System.out.println("PARAMETER ID: " + auxParameterSetting.getUniqueId());
                         }
                       }
-                    }
-                    else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
+                    } else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
                             && !auxNode.getNodeName().toLowerCase().endsWith("parameter") && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                     {
                       auxParameterSetting.setName(auxNode.getNodeName());
@@ -1149,8 +1109,7 @@ public abstract class DeviceAdapter
                   paraSettings.add(auxParameterSetting);
                 }
               }
-            }
-            else if (nRecipe.getNodeName().equals("InvokeSkill"))
+            } else if (nRecipe.getNodeName().equals("InvokeSkill"))
             {
               NodeList auxNodeList = nRecipe.getChildNodes();
               for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -1162,8 +1121,7 @@ public abstract class DeviceAdapter
                   recipe.setInvokeMethodID(auxTest + ":" + auxNode.getTextContent());
                 }
               }
-            }
-            else if (nRecipe.getNodeName().equals("SkillState"))
+            } else if (nRecipe.getNodeName().equals("SkillState"))
             {
               NodeList auxNodeList = nRecipe.getChildNodes();
               for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -1173,15 +1131,13 @@ public abstract class DeviceAdapter
                 {
                   int ns = Integer.parseInt(auxNode.getAttributes().getNamedItem("ns").getNodeValue());
                   recipe.setStatePath(ns + ":" + auxNode.getTextContent()); //CHECK THIS!
-                }
-                else if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Value"))
+                } else if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("Value"))
                 {
                   recipe.setState(auxNode.getTextContent());
                 }
 
               }
-            }
-            else if (searchForSkill)
+            } else if (searchForSkill)
             {
               //get skill - first node with SR inside
               if (nRecipe.getNodeType() == Node.ELEMENT_NODE)
@@ -1227,8 +1183,7 @@ public abstract class DeviceAdapter
             //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
             recipeList.add(recipe);
           }
-        }
-        else if (n2.getNodeName().equals("changeSkillRecipe"))
+        } else if (n2.getNodeName().equals("changeSkillRecipe"))
         {
           NodeList auxNodeList = n2.getChildNodes();
           for (int z = 0; z < auxNodeList.getLength(); z++)
@@ -1308,8 +1263,7 @@ public abstract class DeviceAdapter
                   }
                 }
 
-              }
-              else if (auxData.getNodeName().matches("ID"))
+              } else if (auxData.getNodeName().matches("ID"))
               {
                 NodeList IDchilds = auxData.getChildNodes();
                 for (int z = 0; z < IDchilds.getLength(); z++)
@@ -1320,8 +1274,7 @@ public abstract class DeviceAdapter
                     System.out.println("Skill TEM ID! :O " + IDchilds.item(z).getTextContent());
                   }
                 }
-              }
-              else if (auxData.getNodeName().toLowerCase().contains("parameterport"))
+              } else if (auxData.getNodeName().toLowerCase().contains("parameterport"))
               {
                 NodeList childs = auxData.getChildNodes();
                 for (int z = 0; z < childs.getLength(); z++)
@@ -1348,8 +1301,7 @@ public abstract class DeviceAdapter
                               parameter.setUniqueId(paraChilds.item(p).getTextContent());
                             }
                           }
-                        }
-                        else if (pChilds.item(x).getNodeName().toLowerCase().equals("unit"))
+                        } else if (pChilds.item(x).getNodeName().toLowerCase().equals("unit"))
                         {
                           NodeList paraChilds = pChilds.item(x).getChildNodes();
                           for (int p = 0; p < paraChilds.getLength(); p++)
@@ -1359,8 +1311,7 @@ public abstract class DeviceAdapter
                               parameter.setUnit(paraChilds.item(p).getTextContent());
                             }
                           }
-                        }
-                        else
+                        } else
                         {
                           NodeList paraChilds = pChilds.item(x).getChildNodes();
                           for (int p = 0; p < paraChilds.getLength(); p++)
@@ -1379,8 +1330,7 @@ public abstract class DeviceAdapter
                     System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
                   }
                 }
-              }
-              else if (auxData.getNodeName().toLowerCase().contains("informationport"))
+              } else if (auxData.getNodeName().toLowerCase().contains("informationport"))
               {
                 NodeList childs = auxData.getChildNodes();
                 for (int z = 0; z < childs.getLength(); z++)
@@ -1408,8 +1358,7 @@ public abstract class DeviceAdapter
                               kpi.setUniqueId(paraChilds.item(p).getTextContent());
                             }
                           }
-                        }
-                        else if (pChilds.item(x).getNodeName().toLowerCase().equals("unit"))
+                        } else if (pChilds.item(x).getNodeName().toLowerCase().equals("unit"))
                         {
                           NodeList paraChilds = pChilds.item(x).getChildNodes();
                           for (int p = 0; p < paraChilds.getLength(); p++)
@@ -1419,8 +1368,7 @@ public abstract class DeviceAdapter
                               kpi.setUnit(paraChilds.item(p).getTextContent());
                             }
                           }
-                        }
-                        else
+                        } else
                         {
                           NodeList paraChilds = pChilds.item(x).getChildNodes();
                           for (int p = 0; p < paraChilds.getLength(); p++)
@@ -1446,8 +1394,7 @@ public abstract class DeviceAdapter
           if (auxSkill.getSkillRequirements() == null || auxSkill.getSkillRequirements().isEmpty())
           {
             auxSkill.setSkType(DatabaseConstants.SKILLTYPE_ATOMIC);
-          }
-          else
+          } else
           {
             auxSkill.setSkType(DatabaseConstants.SKILLTYPE_COMPOSITE);
           }
@@ -1524,13 +1471,11 @@ public abstract class DeviceAdapter
       if (nodeChilds.getLength() == 1)
       {
         return nodeChilds.item(0).getTextContent();
-      }
-      else
+      } else
       {
         return "NOAMLID";
       }
-    }
-    else
+    } else
     {
       return "NOAMLID";
     }
@@ -1553,14 +1498,12 @@ public abstract class DeviceAdapter
     if (nodeList.getLength() > 0)
     {
       return MSBConstants.DEVICE_ADAPTER_TYPE_TRANSPORT;
-    }
-    else
+    } else
     {
       if (nodeList2.getLength() > 0)
       {
         return MSBConstants.DEVICE_ADAPTER_TYPE_WORKSTATION;
-      }
-      else
+      } else
       {
         return MSBConstants.DEVICE_ADAPTER_TYPE_UNKNOWNTYPE;
       }
@@ -1580,8 +1523,7 @@ public abstract class DeviceAdapter
     try
     {
       childNodeList = nodeList.item(0).getChildNodes();
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       return results;
     }
@@ -1592,8 +1534,7 @@ public abstract class DeviceAdapter
       if (childNodeList.item(i).getNodeName().equals("Value"))
       {
         results.add(childNodeList.item(i).getTextContent());
-      }
-      else
+      } else
       {
         if (childNodeList.item(i).getNodeName().equals("Path"))
         {
@@ -1662,8 +1603,7 @@ public abstract class DeviceAdapter
       if (auxNode.getNodeName().toUpperCase().equals("SKILL"))
       {
         skillFound = true;
-      }
-      else if (auxNode.getNodeName().toUpperCase().equals("INVOKESKILL"))
+      } else if (auxNode.getNodeName().toUpperCase().equals("INVOKESKILL"))
       {
         invokeSkillFound = true;
       }
@@ -1708,16 +1648,21 @@ public abstract class DeviceAdapter
         for (String recipe_id : sr.getRecipeIDs())
         {
           Recipe aux_recipe = getRecipe_by_id(recipe_id);
-          if (aux_recipe.getFulfilledSkillRequirements() == null)
-              aux_recipe.setFulfilledSkillRequirements(new ArrayList<>());
-          if (!aux_recipe.getFulfilledSkillRequirements().contains(sr))
+          if (aux_recipe != null)
           {
-            aux_recipe.getFulfilledSkillRequirements().add(sr);
+            if (aux_recipe.getFulfilledSkillRequirements() == null)
+            {
+              aux_recipe.setFulfilledSkillRequirements(new ArrayList<>());
+            }
+            if (!aux_recipe.getFulfilledSkillRequirements().contains(sr))
+            {
+              aux_recipe.getFulfilledSkillRequirements().add(sr);
+            }
           }
         }
       }
     }
-    
+
     for (Module module : subSystem.getModules())
     {
       for (Recipe recipe : module.getRecipes())
@@ -1726,12 +1671,17 @@ public abstract class DeviceAdapter
         {
           for (String recipe_id : sr.getRecipeIDs())
           {
-            Recipe aux_recipe = getRecipe_by_id( recipe_id);
-            if (aux_recipe.getFulfilledSkillRequirements() == null)
-              aux_recipe.setFulfilledSkillRequirements(new ArrayList<>());
-            if (!aux_recipe.getFulfilledSkillRequirements().contains(sr))
+            Recipe aux_recipe = getRecipe_by_id(recipe_id);
+            if (aux_recipe != null)
             {
-              aux_recipe.getFulfilledSkillRequirements().add(sr);
+              if (aux_recipe.getFulfilledSkillRequirements() == null)
+              {
+                aux_recipe.setFulfilledSkillRequirements(new ArrayList<>());
+              }
+              if (!aux_recipe.getFulfilledSkillRequirements().contains(sr))
+              {
+                aux_recipe.getFulfilledSkillRequirements().add(sr);
+              }
             }
           }
         }
@@ -1774,14 +1724,12 @@ public abstract class DeviceAdapter
         if (res.succeeded())
         {
           vert = res.result();
-        }
-        else
+        } else
         {
           System.out.println("[DEVICE ADAPTER] vertx creation not succedeed");
         }
       });
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       System.out.println("Error trying to init vertx: " + ex.getMessage());
     }
