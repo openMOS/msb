@@ -1970,7 +1970,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     Module module = da.getSubSystem().getModules().get(0);
     Recipe recipe = module.getRecipes().get(0);
     //recipe.setUniqueId(UUID.randomUUID().toString());
-
+    recipe.getParameterSettings().get(1).setValue("43");
+        
     String string_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(recipe));
 
     DeviceAdapterOPC client = (DeviceAdapterOPC) da;
@@ -1991,22 +1992,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     qa.setProduct_type_id("");
     DACManager.getInstance().QueuedActionMap.put(da_ids.get(0), qa);
 
-    try
-    {
-      Thread.sleep(5000);
-    }
-    catch (InterruptedException ex)
-    {
-      Logger.getLogger(MSB_gui.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    /*
-    QueuedAction qa1 = DACManager.getInstance().QueuedActionMap.get(da_ids.get(0));
-    if (qa1 != null)
-    {
-      DACManager.getInstance().VerifyQueuedActions(da, qa1);
-      DACManager.getInstance().QueuedActionMap.remove(da_ids.get(0));
-    }
-     */
   }//GEN-LAST:event_jButton2ActionPerformed
 
   public static Order fillOrder(Product prod)
