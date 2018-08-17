@@ -1,6 +1,5 @@
 package eu.openmos.msb.datastructures;
 
-import eu.openmos.agentcloud.config.ConfigurationLoader;
 import eu.openmos.agentcloud.utilities.ServiceCallStatus;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator;
 import eu.openmos.agentcloud.ws.systemconfigurator.wsimport.SystemConfigurator_Service;
@@ -84,7 +83,8 @@ public class DACManager
    * @param long_info
    * @return
    */
-  public DeviceAdapter addDeviceAdapter(String deviceAdapterName, EProtocol device_protocol, String short_info, String long_info)
+  public DeviceAdapter addDeviceAdapter(String deviceAdapterName, EProtocol device_protocol, 
+          String short_info, String long_info)
   {
     String protocol = "";
     try
@@ -201,6 +201,8 @@ public class DACManager
       {
         int ret = DatabaseInteraction.getInstance().removeSkillByID(availableSkillID);
       }
+      
+      QueuedActionMap.remove(da_id);
     }
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
@@ -368,7 +370,8 @@ public class DACManager
    * @param method_id
    * @return
    */
-  public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, String recipeValid, String recipeName, String object_id, String method_id)
+  public boolean registerRecipe(String deviceAdapterName, String aml_id, String skillName, String recipeValid, 
+          String recipeName, String object_id, String method_id)
   {
     DatabaseInteraction db = DatabaseInteraction.getInstance();
     int da_id = db.getDeviceAdapterDB_ID_ByName(deviceAdapterName);
