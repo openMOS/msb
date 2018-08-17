@@ -52,8 +52,7 @@ public class UpdateDevice
     {
       logger.debug("Update Device invoked! '{}'", context.getObjectNode().getBrowseName().getName());
       //rebrowse namespace of targert DA
-      Thread.sleep(5000);
-      
+
       Thread threadUpdateDevice = new Thread()
       {
         @Override

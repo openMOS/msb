@@ -1610,29 +1610,8 @@ public abstract class DeviceAdapter
   {
     String query1 = "//DeviceAdapter/*[AssemblySystem]/*[SubSystem][Equipment]/" + method_name;
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
-    NodeList nodeList = null;
+    NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
 
-    int count = 0;
-    int max = 5;
-
-    while (count < max)
-    {
-      nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
-      System.out.println("State elements num: " + nodeList.getLength() + " *** " + count);
-      if (nodeList.getLength() > 0)
-      {
-        break;
-      }
-      count++;
-      try
-      {
-        Thread.sleep(500);
-      }
-      catch (InterruptedException ex)
-      {
-        Logger.getLogger(DeviceAdapter.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    }
     if (nodeList != null && nodeList.getLength() > 0)
     {
       NodeList childNodeList = nodeList.item(0).getChildNodes();
@@ -1653,29 +1632,7 @@ public abstract class DeviceAdapter
   {
     String query1 = "//DeviceAdapter/*[AssemblySystem]/*[SubSystem][Equipment]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
-    NodeList nodeList = null;
-
-    int count = 0;
-    int max = 5;
-
-    while (count < max)
-    {
-      nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
-      System.out.println("State elements num: " + nodeList.getLength() + " *** " + count);
-      if (nodeList.getLength() > 0)
-      {
-        break;
-      }
-      count++;
-      try
-      {
-        Thread.sleep(500);
-      }
-      catch (InterruptedException ex)
-      {
-        Logger.getLogger(DeviceAdapter.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    }
+    NodeList nodeList = (NodeList) xPath.compile(query1).evaluate(xmlDocument, XPathConstants.NODESET);
 
     if (nodeList != null && nodeList.getLength() > 0)
     {
