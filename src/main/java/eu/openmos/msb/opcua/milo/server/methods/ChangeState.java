@@ -19,6 +19,7 @@ import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.MSBConstants;
 import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
+import eu.openmos.msb.datastructures.QueuedAction;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.utilities.Functions;
@@ -136,6 +137,9 @@ public class ChangeState
               public synchronized void run()
               {
                 readKPIs_Module(da_id, recipe_id, productInstance_id);
+                
+                if (!checkNextRecipe)
+                  remove_queued_action(recipe_id);
               }
             };
             threadKPI.start();
@@ -148,6 +152,7 @@ public class ChangeState
                 {
                   logger.info("[ChangeState] Starting ChangeStateChecker!");
                   ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
+                  remove_queued_action(recipe_id);
                 }
               };
               threadCheck.start();
@@ -187,6 +192,8 @@ public class ChangeState
               public synchronized void run()
               {
                 readKPIs_DA(da_id, recipe_id, productInstance_id);
+                if (!checkNextRecipe)
+                  remove_queued_action(recipe_id);
               }
             };
             threadKPI.start();
@@ -200,6 +207,7 @@ public class ChangeState
                 {
                   logger.info("[ChangeState] Starting ChangeStateChecker!");
                   ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
+                  remove_queued_action(recipe_id);
                 }
               };
               threadCheck.start();
@@ -1257,7 +1265,6 @@ public class ChangeState
     }
   }
 
-  // *** MARTELO *** 
   private void finishProduct_MARTELO(String da_id, String productInst_id)
   {
     try
@@ -1454,4 +1461,14 @@ public class ChangeState
     prodInst.setState(ProductInstanceStatus.PRODUCING);
   }
 
+  private void remove_queued_action(String recipe_id)
+  {
+    QueuedAction qa = DACManager.getInstance().QueuedActionMap.get(recipe_id);
+    if (qa != null)
+    {
+      //TODO add recipe remove code
+      DACManager.getInstance().QueuedActionMap.remove(recipe_id);
+    }
+  }
+  
 }

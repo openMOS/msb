@@ -136,6 +136,12 @@ public class SkillController extends Base
                 qa.setProduct_instance_id(productInstanceId);
                 qa.setProduct_type_id("");
                 DACManager.getInstance().QueuedActionMap.put(da_id, qa);
+
+                QueuedAction qa_remove = new QueuedAction();
+                qa_remove.setDa_id(da_id);
+                qa_remove.setActionType(MSBConstants.QUEUE_TYPE_REMOVE);
+                qa_remove.setRecipe_id(tmpRecipe.getUniqueId());
+                DACManager.getInstance().QueuedActionMap.put(tmpRecipe.getUniqueId(), qa_remove);
               }
             }
           }
@@ -173,6 +179,12 @@ public class SkillController extends Base
               qa.setProduct_instance_id(productInstanceId);
               qa.setProduct_type_id("");
               DACManager.getInstance().QueuedActionMap.put(da_id, qa);
+
+              QueuedAction qa_remove = new QueuedAction();
+              qa_remove.setDa_id(da_id);
+              qa_remove.setActionType(MSBConstants.QUEUE_TYPE_REMOVE);
+              qa_remove.setRecipe_id(tmpRecipe.getUniqueId());
+              DACManager.getInstance().QueuedActionMap.put(tmpRecipe.getUniqueId(), qa_remove);
             }
           }
         }

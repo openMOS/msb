@@ -54,6 +54,7 @@ public class MSBConstants
   public static final String MSB_IP = ConfigurationLoader.getMandatoryProperty("openmos.msb.ipaddress");
   
   public static final String QUEUE_TYPE_EXECUTE = "EXECUTE";
+  public static final String QUEUE_TYPE_REMOVE = "REMOVE";
   
   
 }
