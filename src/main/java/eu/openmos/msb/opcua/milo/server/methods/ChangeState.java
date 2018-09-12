@@ -843,7 +843,7 @@ public class ChangeState
           //check if is the same as previous one
           if (da_next_next.getSubSystem().getUniqueId().equals(da_id) || da_next_next.getSubSystem().getUniqueId().equals(da_next.getSubSystem().getUniqueId()))
           {
-            logger.info("No need to get semaphore! same as previous one.");
+            logger.info("[checkAdapterState] No need to get semaphore! same as previous one.");
             ret = 2;
           }
           else
@@ -875,20 +875,20 @@ public class ChangeState
         }
         else
         {
-          logger.info("Next Recipe is the last ");
+          logger.info("[checkAdapterState] Next Recipe is the last ");
           ret = 1;
         }
 
-        logger.info("the next recipe Adapter (" + da_next.getSubSystem().getName() + ") is ready for execution!");
+        logger.info("[checkAdapterState] the next recipe Adapter (" + da_next.getSubSystem().getName() + ") is ready for execution!");
         return ret;
       }
       else
       {
-        logger.error("ERROR in DA " + da_next.getSubSystem().getName());
+        logger.error("[checkAdapterState] ERROR in DA " + da_next.getSubSystem().getName());
         return 0;
       }
     }
-    logger.error("DA NOT READY! - returning 0");
+    logger.error("[checkAdapterState] DA NOT READY! - returning 0");
     return 0;
   }
 
@@ -949,7 +949,8 @@ public class ChangeState
         {
           for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
           {
-            if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+            if (execRow.getRecipeId() != null && execRow.getProductId() != null &&
+                    execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
             {
               //get the nextRecipe on its executionTables
               String auxNextRecipeNode = execRow.getNextRecipeIdPath();
@@ -1094,10 +1095,11 @@ public class ChangeState
     {
       for (ExecutionTableRow auxRow : da.getExecutionTable().getRows())
       {
-        if (auxRow.getRecipeId().equals(recipeID) && auxRow.getProductId().equals(prodID))
+        if (auxRow.getRecipeId() != null && auxRow.getProductId() != null &&
+                auxRow.getRecipeId().equals(recipeID) && auxRow.getProductId().equals(prodID))
         {
           nextRecipeID = auxRow.getNextRecipeId();
-          String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
+          String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
           if (Daid_next != null)
           {
             DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyAML_ID(Daid_next);
@@ -1343,7 +1345,8 @@ public class ChangeState
         {
           for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
           {
-            if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+            if (execRow.getRecipeId() != null && execRow.getProductId() != null &&
+                    execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
             {
               //get the nextRecipe on its executionTables
               String auxNextRecipeNode = execRow.getNextRecipeIdPath();

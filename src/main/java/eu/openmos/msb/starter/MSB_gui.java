@@ -1968,7 +1968,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
     Recipe recipe = da.getSubSystem().getRecipes().get(0);
-    recipe.setName("WOWOWOOW");
+    //recipe.setName("WOWOWOOW");
     recipe.setUniqueId(UUID.randomUUID().toString());
 
     String string_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(recipe));
@@ -2023,7 +2023,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       OrderLine ol = new OrderLine();
       ol.setOrderId(orderUID);
       ol.setProductId(prod.getUniqueId());
-      ol.setQuantity(15);
+      ol.setQuantity(5);
       ol.setUniqueId(UUID.randomUUID().toString());
       line.add(ol);
     }

@@ -280,7 +280,8 @@ public class ProductExecution implements Runnable
     {
       for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
       {
-        if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+        
+        if (execRow.getRecipeId() != null && execRow.getProductId() != null && execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
           nextRecipeID = execRow.getNextRecipeId();
           if (nextRecipeID == null)
@@ -341,7 +342,8 @@ public class ProductExecution implements Runnable
     {
       for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
       {
-        if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+        if (execRow.getRecipeId() != null && execRow.getProductId() != null && 
+                execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
           nextRecipeID = execRow.getNextRecipeId();
           String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
@@ -377,7 +379,8 @@ public class ProductExecution implements Runnable
     {
       for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
       {
-        if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+        if (execRow.getRecipeId() != null && execRow.getProductId() != null && 
+                execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
           foundP = true;
           nextRecipeID = execRow.getNextRecipeId();
