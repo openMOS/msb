@@ -136,7 +136,7 @@ public abstract class DeviceAdapter
    */
   public List<Module> getListOfModules()
   {
-    return this.subSystem.getModules();
+    return this.subSystem.getInternalModules();
   }
 
   /**
@@ -145,7 +145,7 @@ public abstract class DeviceAdapter
    */
   public void addEquipmentModule(Module module)
   {
-    this.subSystem.getModules().add(module);
+    this.subSystem.getInternalModules().add(module);
   }
 
   /**
@@ -1723,7 +1723,7 @@ public abstract class DeviceAdapter
       }
     }
 
-    for (Module module : subSystem.getModules())
+    for (Module module : subSystem.getInternalModules())
     {
       for (Recipe recipe : module.getRecipes())
       {
@@ -1758,7 +1758,7 @@ public abstract class DeviceAdapter
         return recipe;
       }
     }
-    for (Module module : subSystem.getModules())
+    for (Module module : subSystem.getInternalModules())
     {
       for (Recipe recipe : module.getRecipes())
       {

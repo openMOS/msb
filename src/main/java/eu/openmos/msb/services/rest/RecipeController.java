@@ -155,7 +155,7 @@ public class RecipeController extends Base
 
         if (!found)
         {
-          for (Module module : da.getSubSystem().getModules())
+          for (Module module : da.getSubSystem().getInternalModules())
           {
             for (Recipe auxRecipe : module.getRecipes())
             {
@@ -216,7 +216,7 @@ public class RecipeController extends Base
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
       List<Recipe> recipes = new ArrayList<>(da.getSubSystem().getRecipes());
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
       {
         recipes.addAll(module.getRecipes());
       }
@@ -256,7 +256,7 @@ public class RecipeController extends Base
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
       List<Recipe> recipesFromDeviceAdapter = new ArrayList<>(da.getSubSystem().getRecipes());
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
       {
         recipesFromDeviceAdapter.addAll(module.getRecipes());
       }
@@ -296,7 +296,7 @@ public class RecipeController extends Base
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
       List<Recipe> recipesFromDeviceAdapter = new ArrayList<>(da.getSubSystem().getRecipes());
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
       {
         recipesFromDeviceAdapter.addAll(module.getRecipes());
       }

@@ -79,7 +79,7 @@ public class SubSystem extends Equipment implements Serializable
    */
   protected List<Module> internalModules;
 
-  public List<Module> getModules()
+  public List<Module> getInternalModules()
   {
     return internalModules;
   }

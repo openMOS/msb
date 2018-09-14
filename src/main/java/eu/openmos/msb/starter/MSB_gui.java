@@ -2049,7 +2049,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       DeviceAdapter da = dac.getDeviceAdapterbyAML_ID(da_id);
       List<Recipe> recipes = new ArrayList<>(da.getListOfRecipes());
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
       {
         recipes.addAll(module.getRecipes());
       }
@@ -2133,7 +2133,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     for (String da_id : adapters)
     {
       DeviceAdapter da = instance.getDeviceAdapterbyAML_ID(da_id);
-      List<Module> modules = da.getSubSystem().getModules();
+      List<Module> modules = da.getSubSystem().getInternalModules();
       // VaG - 29/09/2017
       if (modules != null)
       {

@@ -418,7 +418,7 @@ public class ProductExecution implements Runnable
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
       List<Recipe> recipes = new ArrayList<>(da.getListOfRecipes());
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
         recipes.addAll(module.getRecipes());
       
       for (Recipe recipe : recipes)

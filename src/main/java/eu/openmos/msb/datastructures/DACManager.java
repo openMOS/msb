@@ -208,7 +208,7 @@ public class DACManager
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
     List<Recipe> recipes = new ArrayList<>(da.getSubSystem().getRecipes());
 
-    for (Module module : da.getSubSystem().getModules())
+    for (Module module : da.getSubSystem().getInternalModules())
     {
       recipes.addAll(module.getRecipes());
     }
@@ -253,7 +253,7 @@ public class DACManager
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(da_name);
     List<Recipe> recipes = new ArrayList<>(da.getSubSystem().getRecipes());
 
-    for (Module module : da.getSubSystem().getModules())
+    for (Module module : da.getSubSystem().getInternalModules())
     {
       recipes.addAll(module.getRecipes());
     }
@@ -301,7 +301,7 @@ public class DACManager
     int id = DatabaseInteraction.getInstance().getDeviceAdapterDB_ID_ByName(deviceAdapterName);
     if (id != -1 && deviceAdapters.containsKey(id))
     {
-      deviceAdapters.get(id).getSubSystem().getModules().add(device);
+      deviceAdapters.get(id).getSubSystem().getInternalModules().add(device);
     }
   }
 
@@ -503,7 +503,7 @@ public class DACManager
     if (action.getaActionType().equals(MSBConstants.QUEUE_TYPE_EXECUTE))
     {
       List<Recipe> recipes = new ArrayList<>(da.getSubSystem().getRecipes());
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
       {
         recipes.addAll(module.getRecipes());
       }

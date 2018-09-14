@@ -76,7 +76,7 @@ public class RecipesDeploymentImpl implements RecipesDeployment
 
             if (!found)
             {
-              for (Module module : da.getSubSystem().getModules())
+              for (Module module : da.getSubSystem().getInternalModules())
               {
                 for (Recipe recipe : module.getRecipes())
                 {
