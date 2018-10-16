@@ -2454,20 +2454,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   {
     try
     {
-      /*
-      BufferedImage img1 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/green-circle.png").getFile())); 
-      BufferedImage img2 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/red.png").getFile()));
-      BufferedImage img3 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/glossy-gray.png").getFile()));
-
-      Image dimg1 = img1.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-      Image dimg2 = img2.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-      Image dimg3 = img3.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-      
-      greenLight = new ImageIcon(dimg1);
-      redLight = new ImageIcon(dimg2);
-      greyLight = new ImageIcon(dimg3);
-      */
-      
       Image dimg1 = new ImageIcon(this.classLoader.getResource("eu/openmos/msb/icons/green-circle.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
       Image dimg2 = new ImageIcon(this.classLoader.getResource("eu/openmos/msb/icons/red.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
       Image dimg3 = new ImageIcon(this.classLoader.getResource("eu/openmos/msb/icons/glossy-gray.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
@@ -2475,7 +2461,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       greenLight = new ImageIcon(dimg1);
       redLight = new ImageIcon(dimg2);
       greyLight = new ImageIcon(dimg3);
-
     }
     catch (Exception e)
     {
