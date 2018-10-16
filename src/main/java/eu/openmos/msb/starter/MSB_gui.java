@@ -1963,7 +1963,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
     Recipe recipe = da.getSubSystem().getRecipes().get(0);
-    recipe.setName("WOWOWOOW");
+    //recipe.setName("WOWOWOOW");
     recipe.setUniqueId(UUID.randomUUID().toString());
 
     String string_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(recipe));
@@ -2018,7 +2018,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       OrderLine ol = new OrderLine();
       ol.setOrderId(orderUID);
       ol.setProductId(prod.getUniqueId());
-      ol.setQuantity(15);
+      ol.setQuantity(5);
       ol.setUniqueId(UUID.randomUUID().toString());
       line.add(ol);
     }
@@ -2044,7 +2044,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       DeviceAdapter da = dac.getDeviceAdapterbyAML_ID(da_id);
       List<Recipe> recipes = new ArrayList<>(da.getListOfRecipes());
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
       {
         recipes.addAll(module.getRecipes());
       }
@@ -2128,7 +2128,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     for (String da_id : adapters)
     {
       DeviceAdapter da = instance.getDeviceAdapterbyAML_ID(da_id);
-      List<Module> modules = da.getSubSystem().getModules();
+      List<Module> modules = da.getSubSystem().getInternalModules();
       // VaG - 29/09/2017
       if (modules != null)
       {

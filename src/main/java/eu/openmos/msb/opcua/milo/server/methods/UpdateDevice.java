@@ -269,7 +269,7 @@ public class UpdateDevice
     {
       boolean notFound = true;
 
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
       {
         if (module.getUniqueId().equals(moduleAML_DB_ID))
         {
@@ -284,7 +284,7 @@ public class UpdateDevice
       }
     }
 
-    for (Module module : da.getSubSystem().getModules())
+    for (Module module : da.getSubSystem().getInternalModules())
     {
       if (!idsFound.contains(module.getUniqueId()))
       {

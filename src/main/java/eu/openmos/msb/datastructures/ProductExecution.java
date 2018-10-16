@@ -280,7 +280,8 @@ public class ProductExecution implements Runnable
     {
       for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
       {
-        if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+        
+        if (execRow.getRecipeId() != null && execRow.getProductId() != null && execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
           nextRecipeID = execRow.getNextRecipeId();
           if (nextRecipeID == null)
@@ -341,7 +342,8 @@ public class ProductExecution implements Runnable
     {
       for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
       {
-        if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+        if (execRow.getRecipeId() != null && execRow.getProductId() != null && 
+                execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
           nextRecipeID = execRow.getNextRecipeId();
           String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
@@ -377,7 +379,8 @@ public class ProductExecution implements Runnable
     {
       for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
       {
-        if (execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+        if (execRow.getRecipeId() != null && execRow.getProductId() != null && 
+                execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
           foundP = true;
           nextRecipeID = execRow.getNextRecipeId();
@@ -415,7 +418,7 @@ public class ProductExecution implements Runnable
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
       List<Recipe> recipes = new ArrayList<>(da.getListOfRecipes());
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
         recipes.addAll(module.getRecipes());
       
       for (Recipe recipe : recipes)

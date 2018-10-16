@@ -181,7 +181,7 @@ public class SubSystemController extends Base
       if (subsystem.getUniqueId().equals(subsystemId))
       {
         List<Recipe> recipeList = new ArrayList<>(subsystem.getRecipes());
-        for (Module module : subsystem.getModules())
+        for (Module module : subsystem.getInternalModules())
         {
           recipeList.addAll(new ArrayList<>(module.getRecipes()));
         }
@@ -224,7 +224,7 @@ public class SubSystemController extends Base
           DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
           if (da != null)
           {
-            for (Module auxModule : da.getSubSystem().getModules())
+            for (Module auxModule : da.getSubSystem().getInternalModules())
             {
               if (auxModule.getUniqueId().equals(module.getUniqueId()))
               {
@@ -300,7 +300,7 @@ public class SubSystemController extends Base
       if (subsystem.getUniqueId().equals(subsystemId))
       {
         //logger.debug("subsystem - found " + subsystemId + " - returning " + subsystem.toString());
-        return subsystem.getModules();
+        return subsystem.getInternalModules();
       }
     }
     //logger.debug("subsystem - not found " + subsystemId + " - returning null");

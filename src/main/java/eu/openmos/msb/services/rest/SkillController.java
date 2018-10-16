@@ -113,7 +113,7 @@ public class SkillController extends Base
           DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
           if (da != null)
           {
-            for (Module auxModule : da.getSubSystem().getModules())
+            for (Module auxModule : da.getSubSystem().getInternalModules())
             {
               if (auxModule.getUniqueId().equals(module.getUniqueId()))
               {
@@ -267,7 +267,7 @@ public class SkillController extends Base
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
       List<Skill> recipesFromDeviceAdapter = da.getSubSystem().getSkills();
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
       {
         recipesFromDeviceAdapter.addAll(module.getSkills());
       }
@@ -308,7 +308,7 @@ public class SkillController extends Base
     {
       DeviceAdapter da = DACinstance.getDeviceAdapterbyAML_ID(da_id);
       List<Skill> recipesFromDeviceAdapter = da.getSubSystem().getSkills();
-      for (Module module : da.getSubSystem().getModules())
+      for (Module module : da.getSubSystem().getInternalModules())
       {
         recipesFromDeviceAdapter.addAll(module.getSkills());
       }
