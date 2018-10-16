@@ -20,8 +20,6 @@ import io.vertx.core.VertxOptions;
 import java.util.LinkedList;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;

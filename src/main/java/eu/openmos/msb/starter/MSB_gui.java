@@ -30,11 +30,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.DefaultCaret;
 import javax.xml.ws.Endpoint;
-import DDS.DataWriter;
-import DDS.HANDLE_NIL;
-import MSB2ADAPTER.StringMessage;
-import MSB2ADAPTER.StringMessageDataWriter;
-import MSB2ADAPTER.StringMessageDataWriterHelper;
+//import DDS.DataWriter;
+//import DDS.HANDLE_NIL;
 import eu.openmos.msb.utilities.ProductUpload;
 import com.sun.net.httpserver.HttpServer;
 import eu.openmos.model.Equipment;
@@ -49,7 +46,6 @@ import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.Recipe_DA;
-import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
@@ -59,7 +55,6 @@ import eu.openmos.msb.datastructures.PECManager;
 import eu.openmos.msb.datastructures.PerformanceMasurement;
 import eu.openmos.msb.datastructures.ProductExecution;
 import eu.openmos.msb.datastructures.QueuedAction;
-import eu.openmos.msb.dds.DDSErrorHandler;
 import eu.openmos.msb.services.rest.CORSFilter;
 import eu.openmos.msb.services.rest.ExecutionTableController;
 import eu.openmos.msb.services.rest.OrderController;
@@ -88,10 +83,8 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.UUID;
 import javax.swing.JFileChooser;
-import javax.ws.rs.ProcessingException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.apache.commons.lang3.time.StopWatch;
@@ -158,7 +151,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     OnOffREST.setLayout(new FlowLayout());
 
     //faz o setup das imagens e dimensiona para o tamanho pretendido
-    setImage();
+    loadImages();
     labelServer = new JLabel(redLight);
     OnOffServerPanel.add(labelServer);
     OnOffServerPanel.setMaximumSize(new Dimension(32, 32));
@@ -298,6 +291,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     exportTimers = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setTitle("OpenMOS MSB");
 
     opc_comms_log.setEditable(false);
     opc_comms_log.setColumns(20);
@@ -1338,6 +1332,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     //dm.getDevice(cb_DDSDevice.getModel().getElementAt(cb_DDSDevice.getSelectedIndex()));
     try
     {
+      /*
       int status;
       String deviceName = cb_DDSDevice.getSelectedItem().toString();
       String topic = cb_DDSRecipeList.getSelectedItem().toString();
@@ -1351,7 +1346,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       msgSample.args = "0";
       status = listenerWriter.write(msgSample, HANDLE_NIL.value);
       DDSErrorHandler.checkStatus(status, "StringMessageDataWriter.write");
-
+*/
     }
     catch (Exception ex)
     {
@@ -1784,7 +1779,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       {
         HttpServer server = JdkHttpServerFactory.createHttpServer(uri, resourceConfig);
       }
-      catch (ProcessingException pe)
+      catch (Exception pe)
       {
         // IOException thrown when creating the JDK HttpServer.
         // Caused by: java.net.BindException: Address already in use: bind
@@ -2090,7 +2085,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
         }
       }
        */
-      //***********************************************************************************************************
+      //**********************************************************
       return newProducts;
     }
     return null;
@@ -2455,30 +2450,36 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   /**
    *
    */
-  private void setImage()
+  private void loadImages()
   {
-    //faz o set das images e dimensiona se acordo com o tamanho do panel
-    BufferedImage img = null;
-    BufferedImage img1 = null;
-    BufferedImage img2 = null;
     try
     {
+      /*
+      BufferedImage img1 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/green-circle.png").getFile())); 
+      BufferedImage img2 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/red.png").getFile()));
+      BufferedImage img3 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/glossy-gray.png").getFile()));
 
-      img = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/green-circle.png").getFile()));
-      img1 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/red.png").getFile()));
-      img2 = ImageIO.read(new File(this.classLoader.getResource("eu/openmos/msb/icons/glossy-gray.png").getFile()));
-
-      Image dimg = img.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-      Image dimg2 = img1.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-      Image dimg3 = img2.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-      greenLight = new ImageIcon(dimg);
+      Image dimg1 = img1.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+      Image dimg2 = img2.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+      Image dimg3 = img3.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+      
+      greenLight = new ImageIcon(dimg1);
+      redLight = new ImageIcon(dimg2);
+      greyLight = new ImageIcon(dimg3);
+      */
+      
+      Image dimg1 = new ImageIcon(this.classLoader.getResource("eu/openmos/msb/icons/green-circle.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+      Image dimg2 = new ImageIcon(this.classLoader.getResource("eu/openmos/msb/icons/red.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+      Image dimg3 = new ImageIcon(this.classLoader.getResource("eu/openmos/msb/icons/glossy-gray.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+      
+      greenLight = new ImageIcon(dimg1);
       redLight = new ImageIcon(dimg2);
       greyLight = new ImageIcon(dimg3);
 
     }
-    catch (IOException e)
+    catch (Exception e)
     {
-      logger.info("Start Rest services at " + e.toString());
+      logger.error("Error trying to load image resources: \n" + e.toString());
     }
   }
 

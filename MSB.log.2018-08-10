@@ -1,0 +1,39 @@
+2018-08-10 15:38:54,568 | INFO  | Successfully removed cryptography restrictions.
+2018-08-10 15:38:54,572 | INFO  | security temp dir: C:\Users\renato.martins\Repositories\openmos\openmos-msb\.\security
+2018-08-10 15:38:55,943 | INFO  | Loaded nodes in 594ms.
+2018-08-10 15:38:55,983 | INFO  | added namespace index=0, uri=http://opcfoundation.org/UA/
+2018-08-10 15:38:55,992 | INFO  | registered and added namespace index=1, uri=urn:MSB:opcua:server
+2018-08-10 15:39:00,505 | INFO  | Binding endpoint opc.tcp://RMARTINS-PC2:12637/MSB-OPCUA-SERVER to RMARTINS-PC2 [None/None]
+2018-08-10 15:39:00,506 | INFO  | Binding endpoint opc.tcp://192.168.56.1:12637/MSB-OPCUA-SERVER to RMARTINS-PC2 [None/None]
+2018-08-10 15:39:00,507 | INFO  | Binding endpoint opc.tcp://RMARTINS-PC2.introsys.lan:12637/MSB-OPCUA-SERVER to RMARTINS-PC2 [None/None]
+2018-08-10 15:39:00,549 | INFO  | eclipse milo opc-ua stack version: 0.1.1
+2018-08-10 15:39:00,549 | INFO  | eclipse milo opc-ua sdk version: 0.1.1
+2018-08-10 15:39:00,783 | INFO  | registered and added namespace index=2, uri=urn:eclipse:milo:MSB-namespace
+2018-08-10 15:39:01,220 | INFO  | opc.tcp://RMARTINS-PC2:12637/MSB-OPCUA-SERVER bound to RMARTINS-PC2:12637 [None/None]
+2018-08-10 15:39:01,223 | INFO  | opc.tcp://192.168.56.1:12637/MSB-OPCUA-SERVER bound to RMARTINS-PC2:12637 [None/None]
+2018-08-10 15:39:01,223 | INFO  | opc.tcp://RMARTINS-PC2.introsys.lan:12637/MSB-OPCUA-SERVER bound to RMARTINS-PC2:12637 [None/None]
+2018-08-10 15:39:01,740 | INFO  | Property file default.properties successfully loaded.
+2018-08-10 15:39:04,049 | INFO  | Received RegisterServerResponse output=ResponseHeader{Timestamp=DateTime{utcTime=131783855440320000, javaDate=Fri Aug 10 15:39:04 BST 2018}, RequestHandle=1, ServiceResult=StatusCode{name=Good, value=0x00000000, quality=good}, ServiceDiagnostics=null, StringTable=null, AdditionalHeader=ExtensionObject{encoded=null, encodingTypeId=NodeId{ns=0, id=0}}}
+2018-08-10 15:39:05,494 | INFO  | 
+
+ Registered the MSB Milo server
+
+
+2018-08-10 15:39:16,610 | INFO  | 
+
+ Registered the Ford
+
+
+2018-08-10 15:39:16,665 | INFO  | Using endpoint: opc.tcp://172.18.3.80:20002/Ford [None]
+2018-08-10 15:39:16,756 | INFO  | ServerArray=[urn:Ford:opcua:server]
+2018-08-10 15:39:16,756 | INFO  | NamespaceArray=[http://opcfoundation.org/UA/, urn:Ford:opcua:server, urn:eclipse:milo:opcua:test-namespace]
+2018-08-10 15:39:16,786 | INFO  | ServerStatus=ServerStatusDataType{StartTime=DateTime{utcTime=131783855519410000, javaDate=Fri Aug 10 15:39:11 BST 2018}, CurrentTime=DateTime{utcTime=131783855556800000, javaDate=Fri Aug 10 15:39:15 BST 2018}, State=Running, BuildInfo=BuildInfo{ProductUri=, ManufacturerName=, ProductName=, SoftwareVersion=, BuildNumber=, BuildDate=DateTime{utcTime=0, javaDate=Mon Jan 01 00:00:00 GMT 1601}}, SecondsTillShutdown=0, ShutdownReason=LocalizedText{text=null, locale=null}}
+2018-08-10 15:39:16,851 | INFO  | ServerStatus.BuildInfo=BuildInfo{ProductUri=, ManufacturerName=, ProductName=, SoftwareVersion=, BuildNumber=, BuildDate=DateTime{utcTime=0, javaDate=Mon Jan 01 00:00:00 GMT 1601}}
+2018-08-10 15:39:16,851 | INFO  | ServerStatus.StartTime=DateTime{utcTime=131783855519410000, javaDate=Fri Aug 10 15:39:11 BST 2018}
+2018-08-10 15:39:16,851 | INFO  | ServerStatus.CurrentTime=DateTime{utcTime=131783855557410000, javaDate=Fri Aug 10 15:39:15 BST 2018}
+2018-08-10 15:39:16,851 | INFO  | ServerStatus.State=Running
+2018-08-10 15:39:16,885 | INFO  | 
+***** Starting namespace browsing ***** 
+
+2018-08-10 15:39:16,896 | INFO  | Browse instance Hierarchy started
+2018-08-10 15:39:17,048 | INFO  | Browse instance Hierarchy ended with: Pre-Demonstrator_InstanceHierarchy
