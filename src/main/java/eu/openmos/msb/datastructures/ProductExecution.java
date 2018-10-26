@@ -453,6 +453,7 @@ public class ProductExecution implements Runnable
               switch (nextStep)
               {
                 case 1:
+                    logger.info("[executeRecipe]: 1");
                   //there is next DA
                   DeviceAdapter da_next = getDAofNextRecipe(da, recipeID, prodInst);
                   MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
@@ -482,14 +483,16 @@ public class ProductExecution implements Runnable
                     }
                   } break;
                 case 2:
+                    logger.info("[executeRecipe]: 2");
                   //there is no next recipe
                   MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
                   break;
                 default:
+                    logger.info("[executeRecipe]: 3");
                   //CHECK THIS AFTER FOR ONLY ONE RECIPE!!!!!!
-                  PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
-                  MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
-                  logger.info("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
+                  //PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
+                  //MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
+                  //logger.info("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
                   break;
               }
             }
