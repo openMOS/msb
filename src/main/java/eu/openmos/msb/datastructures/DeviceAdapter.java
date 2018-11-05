@@ -564,7 +564,6 @@ public abstract class DeviceAdapter
             if (descChild.getNodeName().equals("Value"))
             {
               recipe.setDescription(descChild.getTextContent());
-              System.out.println("recipeDescription " + recipe.getDescription());
               recipe.setValid(true); //let's supose all recipes on the adapter are valid upon registration?
             }
           }
@@ -572,7 +571,6 @@ public abstract class DeviceAdapter
         }
         else if (n2.getNodeName().matches(("SR(\\d).*")))//SR+um digito pelo menos
         {
-          System.out.println("isto é um SR: " + n2.getNodeName());
           NodeList SkillReqs = n2.getChildNodes();
           SkillRequirement auxSkillReq = new SkillRequirement();
           auxSkillReq.setRecipeIDs(new ArrayList<>());
@@ -581,12 +579,11 @@ public abstract class DeviceAdapter
 
           for (int z = 0; z < SkillReqs.getLength(); z++)
           {
-            Node skillReq = SkillReqs.item(z);
+            Node skillReq_node = SkillReqs.item(z);
 
-            if ("Path".equals(skillReq.getNodeName()))
+            if ("Path".equals(skillReq_node.getNodeName()))
             {
-
-              String[] temp = skillReq.getTextContent().split("/");
+              String[] temp = skillReq_node.getTextContent().split("/");
               String testNameSpace = temp[0] + "/" + temp[1];
               if (!testNameSpace.equals(recipeNamespace))
               {
@@ -595,24 +592,23 @@ public abstract class DeviceAdapter
               }
 
             }
-            else if (skillReq.getNodeName().equals("ID"))
+            else if (skillReq_node.getNodeName().equals("ID"))
             {
-              NodeList auxNodeList = skillReq.getChildNodes();
+              NodeList auxNodeList = skillReq_node.getChildNodes();
               for (int index = 0; index < auxNodeList.getLength(); index++)
               {
                 Node auxNode = auxNodeList.item(index);
                 if (auxNode.getNodeName().equals("Value"))
                 {
                   auxSkillReq.setUniqueId(auxNode.getTextContent());
-                  System.out.println("SR ID: " + auxSkillReq.getUniqueId());
                 }
               }
             }
-            else if (isRecipeNode(skillReq))
+            else if (isRecipeNode(skillReq_node))
             {
               String auxRecipeID;
 
-              NodeList auxRecipeChilds = skillReq.getChildNodes();
+              NodeList auxRecipeChilds = skillReq_node.getChildNodes();
               for (int index = 0; index < auxRecipeChilds.getLength(); index++)
               {
                 Node nRecipe = auxRecipeChilds.item(index);
@@ -632,9 +628,9 @@ public abstract class DeviceAdapter
                 }
               }
             }
-            else if (skillReq.getNodeName().equals("InvokeSkill"))
+            else if (skillReq_node.getNodeName().equals("InvokeSkill"))
             {
-              NodeList auxNodeList = skillReq.getChildNodes();
+              NodeList auxNodeList = skillReq_node.getChildNodes();
               for (int index = 0; index < auxNodeList.getLength(); index++)
               {
                 Node auxNode = auxNodeList.item(index);

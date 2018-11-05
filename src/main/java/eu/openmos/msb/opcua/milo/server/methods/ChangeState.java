@@ -8,10 +8,12 @@ import eu.openmos.model.FinishedProductInfo;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Module;
 import eu.openmos.model.OrderInstance;
+import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.model.ProductInstanceStatus;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.RecipeExecutionData;
+import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
@@ -137,9 +139,11 @@ public class ChangeState
               public synchronized void run()
               {
                 readKPIs_Module(da_id, recipe_id, productInstance_id);
-                
+
                 if (!checkNextRecipe)
+                {
                   remove_queued_action(recipe_id);
+                }
               }
             };
             threadKPI.start();
@@ -193,7 +197,9 @@ public class ChangeState
               {
                 readKPIs_DA(da_id, recipe_id, productInstance_id);
                 if (!checkNextRecipe)
+                {
                   remove_queued_action(recipe_id);
+                }
               }
             };
             threadKPI.start();
@@ -830,7 +836,8 @@ public class ChangeState
           break;
         }
 
-      } while (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
+      }
+      while (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
 
       logger.info("[checkAdapterState] DA_next STATE: " + da_next.getSubSystem().getState());
 
@@ -949,8 +956,8 @@ public class ChangeState
         {
           for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
           {
-            if (execRow.getRecipeId() != null && execRow.getProductId() != null &&
-                    execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+            if (execRow.getRecipeId() != null && execRow.getProductId() != null
+                    && execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
             {
               //get the nextRecipe on its executionTables
               String auxNextRecipeNode = execRow.getNextRecipeIdPath();
@@ -980,15 +987,34 @@ public class ChangeState
                 }
               }
 
-              String SR_ID = DatabaseInteraction.getInstance().getSkillReqIDbyRecipeID(nextRecipeID);
-              List<String> recipeID_for_SR = DatabaseInteraction.getInstance().getRecipesIDbySkillReqID(SR_ID);
+              List<String> recipeIDs_for_SR = new ArrayList<>();
+              //String SR_ID = DatabaseInteraction.getInstance().getSkillReqIDbyRecipeID(nextRecipeID);
+              //recipeIDs_for_SR = DatabaseInteraction.getInstance().getRecipesIDbySkillReqID(SR_ID);
+              //RECIPE REQUIREMENTS MUST COME FROM PRODUCT DEF?? -- to be tested
+              List<Product> availableProducts = PECManager.getInstance().getAvailableProducts();
+              for (Product auxProduct : availableProducts)
+              {
+                if (auxProduct.getUniqueId() == null ? productType_id == null : auxProduct.getUniqueId().equals(productType_id)) //check if the resquested product is available
+                {
+                  for (SkillRequirement sr : auxProduct.getSkillRequirements())
+                  {
+                    if (sr.getRecipeIDs().contains(nextRecipeID))
+                    {
+                      recipeIDs_for_SR = sr.getRecipeIDs();
+                      break;
+                    }
+                  }
+                  break;
+                }
+              }
+              //***************
 
-              if (recipeID_for_SR.size() > 1)
+              if (recipeIDs_for_SR.size() > 1)
               {
                 Recipe firstRecipe = null;
                 //check if the precedences are the same
                 List<Recipe> recipes = new ArrayList<>();
-                for (String auxRecipeID : recipeID_for_SR)
+                for (String auxRecipeID : recipeIDs_for_SR)
                 {
                   String da_aml_ID = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(auxRecipeID);
                   if (da_aml_ID == null)
@@ -1095,8 +1121,8 @@ public class ChangeState
     {
       for (ExecutionTableRow auxRow : da.getExecutionTable().getRows())
       {
-        if (auxRow.getRecipeId() != null && auxRow.getProductId() != null &&
-                auxRow.getRecipeId().equals(recipeID) && auxRow.getProductId().equals(prodID))
+        if (auxRow.getRecipeId() != null && auxRow.getProductId() != null
+                && auxRow.getRecipeId().equals(recipeID) && auxRow.getProductId().equals(prodID))
         {
           nextRecipeID = auxRow.getNextRecipeId();
           String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
@@ -1325,13 +1351,13 @@ public class ChangeState
   {
     //get deviceAdapter that does the required recipe
     String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
-    logger.info("[checkNextRecipe] DA id from checkNextRecipe: " + Daid);
+    logger.info("[isLastRecipe] DA id from checkNextRecipe: " + Daid);
 
     if (Daid != null)
     {
       //get DA name
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
-      logger.info("[checkNextRecipe]DA name of finished recipe : " + DA_name);
+      logger.info("[isLastRecipe]DA name of finished recipe : " + DA_name);
       //get DA object from it's name
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
       if (da == null)
@@ -1345,8 +1371,8 @@ public class ChangeState
         {
           for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
           {
-            if (execRow.getRecipeId() != null && execRow.getProductId() != null &&
-                    execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
+            if (execRow.getRecipeId() != null && execRow.getProductId() != null
+                    && execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
             {
               //get the nextRecipe on its executionTables
               String auxNextRecipeNode = execRow.getNextRecipeIdPath();
@@ -1354,7 +1380,7 @@ public class ChangeState
               if (auxNextRecipeNode == null)
               {
                 //is last recipe
-                logger.info("[checkNextRecipe] returning - last");
+                logger.info("[isLastRecipe] returning - last");
                 return true;
               }
 
@@ -1364,14 +1390,14 @@ public class ChangeState
 
               if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))
               {
-                logger.info("[checkNextRecipe] returning - last");
+                logger.info("[isLastRecipe] returning - last");
                 return true;
               }
               else
               {
                 if (nextRecipeID.isEmpty())
                 {
-                  logger.info("[checkNextRecipe] returning - 'empty'");
+                  logger.info("[isLastRecipe] returning - 'empty'");
                   return true;
                 }
               }
@@ -1473,5 +1499,5 @@ public class ChangeState
       DACManager.getInstance().QueuedActionMap.remove(recipe_id);
     }
   }
-  
+
 }
