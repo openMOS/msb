@@ -502,6 +502,7 @@ public class RecipeController extends Base
   @Path("/{recipeId}/trigger/{productInstanceId}")
   public String recipeTriggering(@PathParam("recipeId") String recipeId, @PathParam("productInstanceId") String productInstanceId)
   {
+      logger.debug("[recipeTriggering] HMI - recipeID: " + recipeId);
     DACManager DACinstance = DACManager.getInstance();
     List<String> deviceAdaptersID = DACinstance.getDeviceAdapters_AML_IDs();
     for (String da_id : deviceAdaptersID)
@@ -519,10 +520,10 @@ public class RecipeController extends Base
             String invokeMethodID = recipe.getInvokeMethodID();
             DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da;
 
-            if (createSinglePI(productInstanceId))
+            if (createSinglePI(productInstanceId, "HMItest", da.getSubSystem().getName()))
             {
               //EXECUTE THE RECIPE
-              logger.debug("[EXECUTE] recipeID: " + recipeId);
+              logger.debug("[recipeTriggering] recipeID: " + recipeId);
               NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
               NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
 
@@ -552,7 +553,7 @@ public class RecipeController extends Base
     return "Recipe not found";
   }
 
-  private Boolean createSinglePI(String productInstance_id)
+  private Boolean createSinglePI(String productInstance_id, String product_type, String da_name)
   {
     if (!PECManager.getInstance().getProductsDoing().keySet().contains(productInstance_id))
     {
@@ -560,7 +561,7 @@ public class RecipeController extends Base
       List<ProductInstance> piList = new ArrayList<>();
       oi.setUniqueId(productInstance_id + "id");
       //create instance and agent
-      ProductInstance pi = new ProductInstance(productInstance_id, "type", "name", "no_description",
+      ProductInstance pi = new ProductInstance(productInstance_id, product_type, "name", "no_description",
               oi.getUniqueId(), null, false, null, ProductInstanceStatus.PRODUCING,
               new Date(), new Date());
 
@@ -574,8 +575,8 @@ public class RecipeController extends Base
 
       PECManager.getInstance().getProductsDoing().put(productInstance_id, pi);
 
-      MSB_gui.addToTableCurrentOrders(oi.getUniqueId(), "type", productInstance_id);
-
+      MSB_gui.addToTableCurrentOrders(oi.getUniqueId(), product_type, productInstance_id);
+      MSB_gui.updateDATableCurrentOrderNextDA(productInstance_id, da_name);
       if (MSBConstants.USING_CLOUD)
       {
         try
