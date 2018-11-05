@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
+ *         &lt;element name="alsoTriggerData" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *         &lt;element name="kpiSettingName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="productInstanceId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="recipeId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -31,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "recipeExecutionDataFilter", propOrder = {
+    "alsoTriggerData",
     "kpiSettingName",
     "productInstanceId",
     "recipeId",
@@ -39,11 +41,28 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class RecipeExecutionDataFilter {
 
+    protected boolean alsoTriggerData;
     protected String kpiSettingName;
     protected String productInstanceId;
     protected String recipeId;
     protected String startInterval;
     protected String stopInterval;
+
+    /**
+     * Gets the value of the alsoTriggerData property.
+     * 
+     */
+    public boolean isAlsoTriggerData() {
+        return alsoTriggerData;
+    }
+
+    /**
+     * Sets the value of the alsoTriggerData property.
+     * 
+     */
+    public void setAlsoTriggerData(boolean value) {
+        this.alsoTriggerData = value;
+    }
 
     /**
      * Gets the value of the kpiSettingName property.

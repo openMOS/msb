@@ -1,5 +1,5 @@
 <wsdl:definitions name="SystemConfigurator" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <wsdl:types>
+<wsdl:types>
 <xs:schema elementFormDefault="unqualified" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 <xs:element name="acceptNewOrderInstance" type="tns:acceptNewOrderInstance" />
 <xs:element name="acceptNewOrderInstanceResponse" type="tns:acceptNewOrderInstanceResponse" />
@@ -305,6 +305,7 @@
 <xs:sequence>
 <xs:element minOccurs="0" name="description" type="xs:string" />
 <xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentName" type="xs:string" />
 <xs:element minOccurs="0" name="equipmentType" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:equipmentAssessmentRow" />
@@ -520,16 +521,22 @@
 <xs:complexContent>
 <xs:extension base="tns:equipment">
 <xs:sequence>
+<xs:element minOccurs="0" name="changeRecipeMethodID" type="xs:string" />
+<xs:element minOccurs="0" name="changeRecipeObjectID" type="xs:string" />
 <xs:element minOccurs="0" name="executionTable" type="tns:executionTable" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="internalModules" nillable="true" type="tns:module" />
 <xs:element minOccurs="0" name="logicalLocation" type="tns:logicalLocation" />
 <xs:element minOccurs="0" name="physicalLocation" type="tns:physicalLocation" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="recipes" nillable="true" type="tns:recipe" />
+<xs:element minOccurs="0" name="removeRecipeMethodID" type="xs:string" />
+<xs:element minOccurs="0" name="removeRecipeObjectID" type="xs:string" />
 <xs:element minOccurs="0" name="ssType" type="xs:string" />
 <xs:element minOccurs="0" name="stage" type="xs:string" />
 <xs:element minOccurs="0" name="stagePath" type="xs:string" />
 <xs:element minOccurs="0" name="state" type="xs:string" />
 <xs:element minOccurs="0" name="statePath" type="xs:string" />
+<xs:element minOccurs="0" name="updateExectutionTableMethodID" type="xs:string" />
+<xs:element minOccurs="0" name="updateExectutionTableObjectID" type="xs:string" />
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -656,6 +663,7 @@
 </xs:complexType>
 <xs:complexType name="recipeExecutionDataFilter">
 <xs:sequence>
+<xs:element name="alsoTriggerData" type="xs:boolean" />
 <xs:element minOccurs="0" name="kpiSettingName" type="xs:string" />
 <xs:element minOccurs="0" name="productInstanceId" type="xs:string" />
 <xs:element minOccurs="0" name="recipeId" type="xs:string" />
@@ -722,10 +730,14 @@
 <xs:extension base="tns:base">
 <xs:sequence>
 <xs:element minOccurs="0" name="description" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentId" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentName" type="xs:string" />
+<xs:element minOccurs="0" name="equipmentType" type="xs:string" />
 <xs:element minOccurs="0" name="name" type="xs:string" />
 <xs:element minOccurs="0" name="recipeId" type="xs:string" />
+<xs:element minOccurs="0" name="recipeName" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:processAssessmentRow" />
-<xs:element minOccurs="0" name="systemStatus" type="xs:string" />
+<xs:element minOccurs="0" name="systemStage" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="userName" type="xs:string" />
 <xs:element minOccurs="0" name="userText" type="xs:string" />

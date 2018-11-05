@@ -90,6 +90,7 @@ public class ExecutionTableController
       SubSystem subSystem = getSubSystemById(subSystemId);
       if (subSystem != null)
       {
+          //send execTable to DA -- Valerio fault DONT THINK SO!!!!
         subSystem.setExecutionTable(executionTable);
         logger.debug(subSystem != null ? "execution update - ExecutionTable successfully updated"
                 : "execution table update - can not find subSystem with Id: " + subSystemId);
