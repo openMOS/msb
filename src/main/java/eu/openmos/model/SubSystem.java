@@ -14,7 +14,8 @@ import org.bson.Document;
 /**
  * Describes workstation and transport:
  *
- * into the cloud, the agent that arrives to the cloud from the Manufacturing Service Bus to be created (the old SubSystem class);
+ * into the cloud, the agent that arrives to the cloud from the Manufacturing Service Bus to be created (the old
+ * SubSystem class);
  *
  * into the MSB, the device adapter information (the old RegFile class)
  *
@@ -56,7 +57,8 @@ public class SubSystem extends Equipment implements Serializable
   /**
    * Agent's type. TBV if we need it or not
    *
-   * TODO: check the value if "resource", "transport", "df_resource..." Refactoring from type to ssType (sub system type)
+   * TODO: check the value if "resource", "transport", "df_resource..." Refactoring from type to ssType (sub system
+   * type)
    */
 //    @XmlElement(name = "type")    
   private String ssType;
@@ -74,6 +76,11 @@ public class SubSystem extends Equipment implements Serializable
   private transient String changeRecipeObjectID;
 
   private transient String changeRecipeMethodID;
+
+  private transient String updateExectutionTableObjectID;
+
+  private transient String updateExectutionTableMethodID;
+
   /**
    * List of internal modules.
    */
@@ -108,8 +115,40 @@ public class SubSystem extends Equipment implements Serializable
   {
     this.changeRecipeMethodID = changeRecipeMethodID;
   }
-//    private static final int FIELDS_COUNT = 15;
 
+  /**
+   * @return the updateExectutionObjectID
+   */
+  public String getUpdateExectutionTableObjectID()
+  {
+    return updateExectutionTableObjectID;
+  }
+
+  /**
+   * @param updateExectutionTableObjectID the updateExectutionObjectID to set
+   */
+  public void setUpdateExectutionTableObjectID(String updateExectutionTableObjectID)
+  {
+    this.updateExectutionTableObjectID = updateExectutionTableObjectID;
+  }
+
+  /**
+   * @return the updateExectutionMethodID
+   */
+  public String getUpdateExectutionTableMethodID()
+  {
+    return updateExectutionTableMethodID;
+  }
+
+  /**
+   * @param updateExectutionTableMethodID the updateExectutionMethodID to set
+   */
+  public void setUpdateExectutionTableMethodID(String updateExectutionTableMethodID)
+  {
+    this.updateExectutionTableMethodID = updateExectutionTableMethodID;
+  }
+
+//    private static final int FIELDS_COUNT = 15;
   /**
    * Default constructor, for reflection purpose.
    */
@@ -419,4 +458,5 @@ public class SubSystem extends Equipment implements Serializable
 
     return builder.toString();
   }
+
 }
