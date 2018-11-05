@@ -268,9 +268,10 @@ public abstract class DeviceAdapter
       String da_objectID = ReadObjectIDFromDeviceAdapter(deviceDescriptionDoc);
       subSystem.setChangeRecipeObjectID(da_objectID);
       subSystem.setChangeRecipeMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "changeSkillRecipe"));
-      subSystem.setChangeRecipeObjectID(da_objectID);
-      subSystem.setChangeRecipeMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "updateExecutionTable"));
-      
+      subSystem.setUpdateExectutionTableObjectID(da_objectID);
+      subSystem.setUpdateExectutionTableMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "updateExecutionTable"));
+      subSystem.setRemoveRecipeObjectID(da_objectID);
+      subSystem.setRemoveRecipeMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "removeSkillRecipe"));
 
       //Introsys DEMO: associate DAid to the recipe
       List<Recipe> recipes = subSystem.getRecipes();
