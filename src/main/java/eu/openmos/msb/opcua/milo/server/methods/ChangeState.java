@@ -837,7 +837,8 @@ public class ChangeState
         }
 
       }
-      while (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && !da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
+      while (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY) && 
+              !da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR));
 
       logger.info("[checkAdapterState] DA_next STATE: " + da_next.getSubSystem().getState());
 

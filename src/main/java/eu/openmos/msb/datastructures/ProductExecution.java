@@ -247,8 +247,7 @@ public class ProductExecution implements Runnable
           String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath); //read the DA state, capable of executing the required recipeID
           da.getSubSystem().setState(state);
 
-          //MARTELO
-          //if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+          if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
           {
             if (checkNextRecipe(da, recipeID, prodInst))
             {
@@ -448,7 +447,9 @@ public class ProductExecution implements Runnable
           if (MSBConstants.MSB_OPTIMIZER)
           {
             MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
-
+            
+            //check da_state
+            
             if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
             {
               logger.info("[SEMAPHORE][PS] ACQUIRED for " + da.getSubSystem().getName());
