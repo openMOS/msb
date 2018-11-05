@@ -77,6 +77,10 @@ public class SubSystem extends Equipment implements Serializable
 
   private transient String changeRecipeMethodID;
 
+  private transient String removeRecipeObjectID;
+
+  private transient String removeRecipeMethodID;
+
   private transient String updateExectutionTableObjectID;
 
   private transient String updateExectutionTableMethodID;
@@ -146,6 +150,38 @@ public class SubSystem extends Equipment implements Serializable
   public void setUpdateExectutionTableMethodID(String updateExectutionTableMethodID)
   {
     this.updateExectutionTableMethodID = updateExectutionTableMethodID;
+  }
+
+  /**
+   * @return the removeRecipeObjectID
+   */
+  public String getRemoveRecipeObjectID()
+  {
+    return removeRecipeObjectID;
+  }
+
+  /**
+   * @param removeRecipeObjectID the removeRecipeObjectID to set
+   */
+  public void setRemoveRecipeObjectID(String removeRecipeObjectID)
+  {
+    this.removeRecipeObjectID = removeRecipeObjectID;
+  }
+
+  /**
+   * @return the removeRecipeMethodID
+   */
+  public String getRemoveRecipeMethodID()
+  {
+    return removeRecipeMethodID;
+  }
+
+  /**
+   * @param removeRecipeMethodID the removeRecipeMethodID to set
+   */
+  public void setRemoveRecipeMethodID(String removeRecipeMethodID)
+  {
+    this.removeRecipeMethodID = removeRecipeMethodID;
   }
 
 //    private static final int FIELDS_COUNT = 15;

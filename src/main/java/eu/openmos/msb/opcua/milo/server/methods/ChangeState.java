@@ -990,7 +990,7 @@ public class ChangeState
               List<String> recipeIDs_for_SR = new ArrayList<>();
               //String SR_ID = DatabaseInteraction.getInstance().getSkillReqIDbyRecipeID(nextRecipeID);
               //recipeIDs_for_SR = DatabaseInteraction.getInstance().getRecipesIDbySkillReqID(SR_ID);
-              //RECIPE REQUIREMENTS MUST COME FROM PRODUCT DEF?? -- to be tested
+              //RECIPE REQUIREMENTS MUST COME FROM PRODUCT DEF?? -- to be tested cpde below
               List<Product> availableProducts = PECManager.getInstance().getAvailableProducts();
               for (Product auxProduct : availableProducts)
               {
