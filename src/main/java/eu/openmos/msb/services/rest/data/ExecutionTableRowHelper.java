@@ -42,5 +42,11 @@ public class ExecutionTableRowHelper {
         this.row = row;
     }
 
+    @Override
+    public String toString() {
+        return "ExecutionTableRowHelper{" + "executionTableId=" + executionTableId + ", rowPosition=" + rowPosition + ", row=" + row + '}';
+    }
+
+    
     
 }

@@ -1963,7 +1963,9 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
   {//GEN-HEADEREND:event_jButton2ActionPerformed
-    List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
+    /*
+      //execTable
+      List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
     ExecutionTable et = da.getSubSystem().getExecutionTable();
@@ -1977,9 +1979,28 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableMethodID());
 
     boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_et);
+    
+    logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());*/
+
+      //recipe
+      List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
+
+    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
+    Recipe recipe = da.getSubSystem().getRecipes().get(0);
+    recipe.setName("WOWOWOOW");
+    recipe.setUniqueId(UUID.randomUUID().toString());
+
+    String string_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(recipe));
+
+    DeviceAdapterOPC client = (DeviceAdapterOPC) da;
+    OpcUaClient opcua_client = client.getClient().getClientObject();
+
+    NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
+    NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
+
+    boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
 
     logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
-
   }//GEN-LAST:event_jButton2ActionPerformed
 /*
    List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();

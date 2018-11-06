@@ -139,4 +139,11 @@ public class ExecutionTableRow extends Base implements Serializable {
     public static ExecutionTableRow fromBSON(Document bsonRow) {
         return (ExecutionTableRow)ExecutionTableRow.fromBSON2(bsonRow, ExecutionTableRow.class);
     }
+
+    @Override
+    public String toString() {
+        return "ExecutionTableRow{" + "uniqueId=" + uniqueId + ", productId=" + productId + ", recipeId=" + recipeId + ", nextRecipeId=" + nextRecipeId + ", nextRecipeIdPath=" + nextRecipeIdPath + ", possibleRecipeChoices=" + possibleRecipeChoices + '}';
+    }
+    
+    
 }

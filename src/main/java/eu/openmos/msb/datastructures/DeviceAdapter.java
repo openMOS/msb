@@ -748,6 +748,7 @@ public abstract class DeviceAdapter
                 {
                   auxParameterSetting.setName(auxNode.getNodeName());
                   NodeList auxNodeList1 = auxNode.getChildNodes();
+                  int test = auxNodeList1.getLength();
                   for (int index = 0; index < auxNodeList1.getLength(); index++)
                   {
                     Node auxNode1 = auxNodeList1.item(index);
@@ -755,13 +756,13 @@ public abstract class DeviceAdapter
                     {
                       auxParameterSetting.setValue(auxNode1.getTextContent());
                       System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
-                      break;
+                      //break;
                     }
                     else if (auxNode1.getNodeName().equals("Path"))
                     {
                       auxParameterSetting.setValuePath(auxNode1.getTextContent());
                       System.out.println("PARAMETER PATH value: " + auxParameterSetting.getValuePath());
-                      break;
+                      //break;
                     }
                   }
                 }

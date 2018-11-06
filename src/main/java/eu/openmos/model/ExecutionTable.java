@@ -130,4 +130,11 @@ public class ExecutionTable extends Base implements Serializable {
         
         return doc;
     }
+
+    @Override
+    public String toString() {
+        return "ExecutionTable{" + "uniqueId=" + uniqueId + ", name=" + name + ", description=" + description + ", rows=" + rows + ", changeExecutionTableObjectID=" + changeExecutionTableObjectID + ", changeExecutionTableMethodID=" + changeExecutionTableMethodID + '}';
+    }
+    
+    
 }

@@ -84,6 +84,7 @@ public class ExecutionTableController
   {
 
     logger.debug("execution table update - Update ExecutionTable from SubSystem: " + subSystemId);
+    logger.debug("execution table update - data received by the msb: " + executionTable);
 
     if (MSBVar.getSystemStage().equals(MSBConstants.STAGE_RAMP_UP))
     {
@@ -126,6 +127,8 @@ public class ExecutionTableController
   {
 
     logger.debug("execution table insert - Insert new row in ExecutionTable from SubSystem: " + subSystemId);
+    logger.debug("execution table insert - data received by the msb: " + rowToInsert);
+    
     SubSystem subSystem = getSubSystemById(subSystemId);
     if (subSystem != null)
     {
