@@ -13,6 +13,7 @@ import eu.openmos.model.OrderInstance;
 import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.model.Recipe;
+import eu.openmos.model.SkillReqPrecedent;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.starter.MSB_gui;
@@ -147,6 +148,7 @@ public class ProductExecution implements Runnable
                 //will execute all non precedent requirements  i the found order, only goes to the next after executing successfully
                 if (auxSR.getPrecedents() == null) //check which recipe has the precedents =null , which means it is the first one 
                 {
+                    logger.debug("[PS] SR to execute: " + auxSR.getName() + " --- " + auxSR.getUniqueId());
                   //check for 1 available recipe for the SR
                   while (true)
                   {
@@ -161,7 +163,7 @@ public class ProductExecution implements Runnable
                       }
                       if (checkRecipeAvailable(recipe_to_check, auxProdInstance)) //check if the recipe is valid and if the DA and nextDA are at ready state
                       {
-                        if (executeRecipe(recipe_to_check, auxProdInstance)) //if returns false, check another alternative recipe for the same SR
+                        if (executeRecipe(recipe_to_check, auxProdInstance, auxSR)) //if returns false, check another alternative recipe for the same SR
                         {
                           logger.info("The execution of Recipe: " + recipe_to_check + " Returned true");
                           HashMap<String, String> temp_sr_map = PECManager.getInstance().getProduct_sr_tracking().get(auxProdInstance.getUniqueId());
@@ -339,7 +341,7 @@ public class ProductExecution implements Runnable
                 da_next.getSubSystem().setState(state);
                 System.out.println("daState for NEXT: " + state);
 
-                if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+                //if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
                 {
                   return true;
                 }
@@ -411,7 +413,7 @@ public class ProductExecution implements Runnable
    * @param prodInst
    * @return true if the recipe was executed successfully; Checks if DAs are available (semaphores)
    */
-  private boolean executeRecipe(String recipeID, ProductInstance prodInst)
+  private boolean executeRecipe(String recipeID, ProductInstance prodInst, SkillRequirement sr)
   {
     String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
     if (Daid != null)
@@ -450,6 +452,8 @@ public class ProductExecution implements Runnable
             //check da_state
             if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
             {
+              MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
+
               logger.info("[SEMAPHORE][PS] ACQUIRED for " + da.getSubSystem().getName());
               int nextStep = nextDAExists(da, recipeID, prodInst);
               //DeviceAdapter da_next = getDAofNextRecipe(da, recipeID, prodInst);
@@ -460,7 +464,7 @@ public class ProductExecution implements Runnable
                 case 1:
                   logger.info("[executeRecipe]: 1 - next Recipe is available - checking DA");
                   //there is next DA
-                  da_next = PECManager.getInstance().getDAofNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId());
+                  da_next = PECManager.getInstance().getDAofNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId(), sr.getUniqueId());
                   MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
                   if (da.getSubSystem().getUniqueId().equals(da_next.getSubSystem().getUniqueId()))
                   {
@@ -470,7 +474,8 @@ public class ProductExecution implements Runnable
                   }
                   else
                   {
-                    SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId());
+                      String next_recipe_id = PECManager.getInstance().getNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId(), sr.getUniqueId());
+                    SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr.getUniqueId(), prodInst.getProductId(), next_recipe_id);
                     if (PECManager.getInstance().need_to_get_da(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), prodInst.getUniqueId()))
                     {
                       if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
@@ -528,7 +533,7 @@ public class ProductExecution implements Runnable
                 {
                   case 1:
                     //next DA exists
-                    da_next = PECManager.getInstance().getDAofNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId());
+                    da_next = PECManager.getInstance().getDAofNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId(), sr.getUniqueId());
 
                     MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
                     if (da.getSubSystem().getUniqueId().equals(da_next.getSubSystem().getUniqueId()))
@@ -606,12 +611,11 @@ public class ProductExecution implements Runnable
           }
           if (MSBConstants.MSB_OPTIMIZER)
           {
-            Product prod = PECManager.getInstance().getProductByID(prodInst.getProductId());
-            SkillRequirement sr = PECManager.getInstance().getSRbyRecipeID(prod, recipeID);
             PECManager.getInstance().lock_SR_to_WS(da.getSubSystem().getUniqueId(), sr.getUniqueId(), prodInst.getUniqueId());
             if (da_next != null)
             {
-              SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId());
+              String next_recipe_id = PECManager.getInstance().getNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId(), sr.getUniqueId());
+              SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr.getUniqueId(), prodInst.getProductId(), next_recipe_id);
               PECManager.getInstance().lock_SR_to_WS(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), prodInst.getUniqueId());
             }
           }
@@ -619,7 +623,7 @@ public class ProductExecution implements Runnable
           NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
           NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
           //MARTELO bool = false apenas para a recolha bruta de dados
-          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, prodInst.getUniqueId(), prodInst.getProductId(), true);
+          result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, prodInst.getUniqueId(), prodInst.getProductId(), true, sr.getUniqueId());
 
           return result;
         }

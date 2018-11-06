@@ -1477,8 +1477,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
             System.out.println("Found Recipe!");
             NodeId methodNode = Functions.convertStringToNodeId(recipe.getInvokeMethodID());
             NodeId objNode = Functions.convertStringToNodeId(recipe.getInvokeObjectID());
-            boolean ret = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objNode, methodNode, deviceName, deviceName, false);
-            System.out.println("Method call retuned: " + ret);
+            //boolean ret = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objNode, methodNode, deviceName, deviceName, false);
+            //System.out.println("Method call retuned: " + ret);
           }
           else
           {
@@ -2062,7 +2062,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       OrderLine ol = new OrderLine();
       ol.setOrderId(orderUID);
       ol.setProductId(prod.getUniqueId());
-      ol.setQuantity(5);
+      ol.setQuantity(1);
       ol.setUniqueId(UUID.randomUUID().toString());
       line.add(ol);
     }
@@ -2214,7 +2214,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     for (int i = 0; i < adaptersTableModel.getRowCount(); i++)
     {
       rowData = (String) adaptersTableModel.getValueAt(i, 0);
-      if (rowData.contains(serverName))
+      if (rowData.equals(serverName))
       {
         adaptersTableModel.setValueAt(somaphoreState, i, 3);
       }

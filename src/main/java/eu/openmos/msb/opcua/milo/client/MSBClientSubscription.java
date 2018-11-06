@@ -260,7 +260,7 @@ public class MSBClientSubscription implements IClient
    * @param checkNextRecipe
    * @return
    */
-  public boolean InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId, String productInstanceId, String ProductTypeId, boolean checkNextRecipe)
+  public boolean InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId, String productInstanceId, String ProductTypeId, boolean checkNextRecipe, String sr_id)
   {
     PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
     recipeExecutionWatch.reset();
@@ -271,9 +271,9 @@ public class MSBClientSubscription implements IClient
             {
               new Variant(productInstanceId),
               new Variant(ProductTypeId),
-              new Variant(checkNextRecipe)
+              new Variant(checkNextRecipe),
+              new Variant(sr_id)     
             });
-
     try
     {
       StatusCode res = client.call(request).get().getStatusCode();

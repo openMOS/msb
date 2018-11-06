@@ -13,6 +13,7 @@ import eu.openmos.model.ProductInstance;
 import eu.openmos.model.ProductInstanceStatus;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.RecipeExecutionData;
+import eu.openmos.model.SkillReqPrecedent;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
@@ -79,6 +80,9 @@ public class ChangeState
           @UaInputArgument(
                   name = "newProductState",
                   description = "New Product State") String newProductState,
+          @UaInputArgument(
+                  name = "newProductState",
+                  description = "SkillRequirement completed") String sr_id,
           @UaOutputArgument(
                   name = "Ackowledge",
                   description = "Acknowledge 1-OK 0-NOK") AnnotationBasedInvocationHandler.Out<Integer> result)
@@ -157,7 +161,7 @@ public class ChangeState
                 public synchronized void run()
                 {
                   logger.info("[ChangeState] Starting ChangeStateChecker!");
-                  ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id);
+                  ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id, sr_id);
                   remove_queued_action(recipe_id);
                 }
               };
@@ -214,7 +218,7 @@ public class ChangeState
                 public synchronized void run()
                 {
                   logger.info("[ChangeState] Starting ChangeStateChecker!");
-                  ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id);
+                  ChangeStateChecker(recipe_id, productInstance_id, da_id, productType_id, sr_id);
                   remove_queued_action(recipe_id);
                 }
               };
@@ -513,9 +517,9 @@ public class ChangeState
     }
   }
 
-  private void ChangeStateChecker_Modules(String recipe_id, String productInst_id, String module_id, String productType_id)
+  private void ChangeStateChecker_Modules(String recipe_id, String productInst_id, String module_id, String productType_id, String sr_id)
   {
-    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id); //returns the next recipe to execute
+    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id, sr_id); //returns the next recipe to execute
     logger.info("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID);
 
     DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(module_id);
@@ -523,7 +527,7 @@ public class ChangeState
 
     if (!nextRecipeID.isEmpty() && !nextRecipeID.equals("last"))
     {
-      int retSem = checkAdapterState(da_id, nextRecipeID, productInst_id, productType_id);
+      int retSem = checkAdapterState(da_id, nextRecipeID, productInst_id, productType_id, sr_id);
       if (retSem != 0) //check if adapter is ready
       { //if is ready
         logger.info("[ChangeStateChecker] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State");
@@ -547,11 +551,16 @@ public class ChangeState
         while (true)
         {
           tries++;
-          boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, productInst_id, productType_id, true);
+          SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
+          boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, productInst_id, productType_id, true, sr_next.getUniqueId());
           logger.info("[ChangeStateChecker] executing recipeID: " + nextRecipeID);
 
           if (res)
           {
+            if (MSBConstants.MSB_OPTIMIZER)
+            {
+              PECManager.getInstance().lock_SR_to_WS(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), productInst_id);
+            }
             if (retSem == 2)
             {
               logger.info("[ChangeStateChecker] DA is the same as the previous one, semaphore will not be released!");
@@ -654,14 +663,15 @@ public class ChangeState
     }
   }
 
-  private void ChangeStateChecker(String recipe_id, String productInst_id, String da_id, String productType_id)
+  private void ChangeStateChecker(String recipe_id, String productInst_id, String da_id, String productType_id, String sr_id)
   {
-    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id); //returns the next recipe to execute
+      
+    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id, sr_id); //returns the next recipe to execute
     logger.info("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID);
 
     if (!nextRecipeID.isEmpty() && !nextRecipeID.equals("last"))
     {
-      int retSem = checkAdapterState(da_id, nextRecipeID, productInst_id, productType_id);
+      int retSem = checkAdapterState(da_id, nextRecipeID, productInst_id, productType_id, sr_id);
       if (retSem != 0) //check if adapter is ready
       { //if is ready
         logger.info("[ChangeStateChecker] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State");
@@ -679,20 +689,20 @@ public class ChangeState
         PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
         perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
         //changeStateAndNextRecipeTimer.stop();
-
+        
         int tries = 0;
         //for (tries = 1; tries < 4; tries++)
         while (true)
         {
           tries++;
-          boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, productInst_id, productType_id, true);
+          SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
+          boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, productInst_id, productType_id, true, sr_next.getUniqueId());
           logger.info("[ChangeStateChecker] executing recipeID: " + nextRecipeID);
 
           if (res)
           {
             if (MSBConstants.MSB_OPTIMIZER)
             {
-              SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da_next, recipe_id, productInst_id, productType_id);
               PECManager.getInstance().lock_SR_to_WS(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), productInst_id);
             }
             if (retSem == 2)
@@ -804,7 +814,7 @@ public class ChangeState
    * @param nextRecipeID
    * @return
    */
-  private int checkAdapterState(String da_id, String nextRecipeID, String productInst_id, String productType_id)
+  private int checkAdapterState(String da_id, String nextRecipeID, String productInst_id, String productType_id, String sr_id)
   {
     logger.info("[checkAdapterState] current da - " + da_id);
     String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
@@ -853,7 +863,8 @@ public class ChangeState
 
       if (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
       {
-        DeviceAdapter da_next_next = PECManager.getInstance().getDAofNextRecipe(da_next, nextRecipeID, productInst_id, productType_id);
+          SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
+        DeviceAdapter da_next_next = PECManager.getInstance().getDAofNextRecipe(da_next, nextRecipeID, productInst_id, productType_id, sr_next.getUniqueId());
         int ret = 0;
         if (da_next_next != null)
         {
@@ -867,7 +878,8 @@ public class ChangeState
           {
             try
             {
-              SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da_next_next, nextRecipeID, productInst_id, productType_id);
+              //SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da_next, nextRecipeID, productInst_id, productType_id);
+              
               if (PECManager.getInstance().need_to_get_da(da_next_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), productInst_id))
               {
                 logger.info("[checkAdapterState][SEMAPHORE] Acquiring for " + da_next_next.getSubSystem().getName());
@@ -947,7 +959,7 @@ public class ChangeState
    * @param recipeID
    * @return
    */
-  private String getNextValidRecipe(String recipeID, String productInst_id, String productType_id)
+  private String getNextValidRecipe(String recipeID, String productInst_id, String productType_id, String sr_id)
   {
     //get deviceAdapter that does the required recipe
     String Daid = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipeID);
@@ -1005,12 +1017,8 @@ public class ChangeState
               //String SR_ID = DatabaseInteraction.getInstance().getSkillReqIDbyRecipeID(nextRecipeID);
               //recipeIDs_for_SR = DatabaseInteraction.getInstance().getRecipesIDbySkillReqID(SR_ID);
               //RECIPE REQUIREMENTS MUST COME FROM PRODUCT DEF?? -- to be tested cpde below
-              List<Product> availableProducts = PECManager.getInstance().getAvailableProducts();
-              for (Product auxProduct : availableProducts)
-              {
-                if (auxProduct.getUniqueId() == null ? productType_id == null : auxProduct.getUniqueId().equals(productType_id)) //check if the resquested product is available
-                {
-                  for (SkillRequirement temp_sr : auxProduct.getSkillRequirements())
+                
+                  for (SkillRequirement temp_sr : PECManager.getInstance().getNextSR_list(sr_id, prodID))
                   {
                     if (temp_sr.getRecipeIDs().contains(nextRecipeID))
                     {
@@ -1019,9 +1027,9 @@ public class ChangeState
                       break;
                     }
                   }
-                  break;
-                }
-              }
+                  //break;
+                
+              
               //***************
 
               if (recipeIDs_for_SR.size() > 1 && sr_to_do != null)
