@@ -19,6 +19,7 @@ import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -143,30 +144,56 @@ public class ProductExecution implements Runnable
               List<SkillRequirement> skillRequirements = auxProduct.getSkillRequirements();
               for (SkillRequirement auxSR : skillRequirements)
               {
+                //will execute all non precedent requirements  i the found order, only goes to the next after executing successfully
                 if (auxSR.getPrecedents() == null) //check which recipe has the precedents =null , which means it is the first one 
                 {
                   //check for 1 available recipe for the SR
                   while (true)
                   {
                     boolean getOut = false;
+
                     for (String recipeID : auxSR.getRecipeIDs())
                     {
-                      if (checkRecipeAvailable(recipeID, auxProdInstance)) //check if the recipe is valid and if the DA and nextDA are at ready state
+                      String recipe_to_check = recipeID;
+                      if (MSBConstants.MSB_OPTIMIZER)
                       {
-                        if (executeRecipe(recipeID, auxProdInstance)) //if returns false, check another alternative recipe for the same SR
+                        recipe_to_check = PECManager.getInstance().getRecipeIDbyTrackPI(auxSR, auxProdInstance.getUniqueId(), recipeID);
+                      }
+                      if (checkRecipeAvailable(recipe_to_check, auxProdInstance)) //check if the recipe is valid and if the DA and nextDA are at ready state
+                      {
+                        if (executeRecipe(recipe_to_check, auxProdInstance)) //if returns false, check another alternative recipe for the same SR
                         {
-                          logger.info("The execution of Recipe: " + recipeID + " Returned true");
-
-                          ProdManager.getProductsDoing().put(auxProdInstance.getUniqueId(), ProdManager.getProductsToDo().remove(0)); //the first recipe of the product is done, put it into "doing"
-                          MSB_gui.addToTableCurrentOrders(auxProdInstance.getOrderId(), auxProdInstance.getProductId(), auxProdInstance.getUniqueId());
-
-                          String Daid = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
-                          if (Daid != null)
+                          logger.info("The execution of Recipe: " + recipe_to_check + " Returned true");
+                          HashMap<String, String> temp_sr_map = PECManager.getInstance().getProduct_sr_tracking().get(auxProdInstance.getUniqueId());
+                          if (temp_sr_map == null)
                           {
-                            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
+                            temp_sr_map = new HashMap<>();
+                          }
+                          String da_aml_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipe_to_check);
+                          temp_sr_map.put(auxSR.getUniqueId(), da_aml_id);
+
+                          PECManager.getInstance().getProduct_sr_tracking().put(auxProdInstance.getUniqueId(), temp_sr_map);
+                          logger.debug("[] added " + auxSR.getUniqueId() + da_aml_id + " to product_sr_tracking for pi_ID: " + auxProdInstance.getUniqueId());
+                          /*
+                          if (temp_sr_map.get(auxSR.getUniqueId()) == null)
+                          {
+                            
+                          }
+                           */
+
+                          if (ProdManager.getProductsDoing().get(auxProdInstance.getUniqueId()) == null)
+                          {
+                            //the first recipe of the product is done, put it into "doing"
+                            ProdManager.getProductsDoing().put(auxProdInstance.getUniqueId(), ProdManager.getProductsToDo().remove(0));
+                            MSB_gui.addToTableCurrentOrders(auxProdInstance.getOrderId(), auxProdInstance.getProductId(), auxProdInstance.getUniqueId());
+                            MSB_gui.removeFromTableSubmitedOrder(auxProdInstance.getUniqueId());
+                          }
+                          String da_db_id = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(recipeID);
+                          if (da_db_id != null)
+                          {
+                            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(da_db_id);
                             MSB_gui.updateDATableCurrentOrderNextDA(auxProdInstance.getUniqueId(), DA_name);
                           }
-                          MSB_gui.removeFromTableSubmitedOrder(auxProdInstance.getUniqueId());
                           getOut = true;
                           break;
                         }
@@ -279,13 +306,19 @@ public class ProductExecution implements Runnable
     {
       for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
       {
-
         if (execRow.getRecipeId() != null && execRow.getProductId() != null && execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
         {
           nextRecipeID = execRow.getNextRecipeId();
           if (nextRecipeID == null)
           {
             return true;
+          }
+
+          if (MSBConstants.MSB_OPTIMIZER)
+          {
+            Product prod = PECManager.getInstance().getProductByID(prodInst.getProductId());
+            SkillRequirement sr = PECManager.getInstance().getSRbyRecipeID(prod, nextRecipeID);
+            nextRecipeID = PECManager.getInstance().getRecipeIDbyTrackPI(sr, prodInst.getUniqueId(), nextRecipeID);
           }
 
           boolean recipeIdIsValid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
@@ -324,41 +357,6 @@ public class ProductExecution implements Runnable
       prodID = prodInst.getProductId();
     }
     return false;
-  }
-
-  /**
-   *
-   * @param da
-   * @param recipeID
-   * @param prodInst
-   * @return DeviceAdapter of the next recipe, searched in the execution table
-   */
-  public static DeviceAdapter getDAofNextRecipe(DeviceAdapter da, String recipeID, ProductInstance prodInst)
-  {
-    String nextRecipeID = "";
-    String prodID = prodInst.getUniqueId();
-    for (int i = 0; i < 2; i++)
-    {
-      for (ExecutionTableRow execRow : da.getExecutionTable().getRows())
-      {
-        if (execRow.getRecipeId() != null && execRow.getProductId() != null
-                && execRow.getRecipeId().equals(recipeID) && execRow.getProductId().equals(prodID))
-        {
-          nextRecipeID = execRow.getNextRecipeId();
-          String Daid_next = DatabaseInteraction.getInstance().getDA_DB_IDbyRecipeID(nextRecipeID);
-          if (Daid_next != null)
-          {
-            String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid_next);
-            DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
-            return da_next;
-          }
-          break;
-        }
-      }
-      //no prodInst found in execTable, search for productType now
-      prodID = prodInst.getProductId();
-    }
-    return null;
   }
 
   /**
@@ -420,6 +418,7 @@ public class ProductExecution implements Runnable
     {
       String DA_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByDB_ID(Daid);
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyName(DA_name);
+      DeviceAdapter da_next = null;
       List<Recipe> recipes = new ArrayList<>(da.getListOfRecipes());
       for (Module module : da.getSubSystem().getInternalModules())
       {
@@ -447,9 +446,8 @@ public class ProductExecution implements Runnable
           if (MSBConstants.MSB_OPTIMIZER)
           {
             MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
-            
+
             //check da_state
-            
             if (PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).tryAcquire())
             {
               logger.info("[SEMAPHORE][PS] ACQUIRED for " + da.getSubSystem().getName());
@@ -462,30 +460,35 @@ public class ProductExecution implements Runnable
                 case 1:
                   logger.info("[executeRecipe]: 1 - next Recipe is available - checking DA");
                   //there is next DA
-                  DeviceAdapter da_next = getDAofNextRecipe(da, recipeID, prodInst);
+                  da_next = PECManager.getInstance().getDAofNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId());
                   MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
                   if (da.getSubSystem().getUniqueId().equals(da_next.getSubSystem().getUniqueId()))
                   {
                     logger.info("[executeRecipe] The first and second recipe are from the same adapter!");
+
                     //break;
                   }
                   else
                   {
-                    if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
+                    SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId());
+                    if (PECManager.getInstance().need_to_get_da(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), prodInst.getUniqueId()))
                     {
-                      MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
+                      if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
+                      {
+                        MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
 
-                      logger.info("[SEMAPHORE][PS] ACQUIRED for NEXT " + da_next.getSubSystem().getName());
-                      //break;
-                    }
-                    else
-                    {
-                      PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
-                      MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
-                      MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
+                        logger.info("[SEMAPHORE][PS] ACQUIRED for NEXT " + da_next.getSubSystem().getName());
+                        //break;
+                      }
+                      else
+                      {
+                        PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
+                        MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
+                        MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
 
-                      logger.info("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
-                      return false;
+                        logger.info("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
+                        return false;
+                      }
                     }
                   }
                   break;
@@ -525,7 +528,8 @@ public class ProductExecution implements Runnable
                 {
                   case 1:
                     //next DA exists
-                    DeviceAdapter da_next = getDAofNextRecipe(da, recipeID, prodInst);
+                    da_next = PECManager.getInstance().getDAofNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId());
+
                     MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
                     if (da.getSubSystem().getUniqueId().equals(da_next.getSubSystem().getUniqueId()))
                     {
@@ -534,28 +538,37 @@ public class ProductExecution implements Runnable
                     }
                     else
                     {
-                      if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
+                      SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId());
+                      if (PECManager.getInstance().need_to_get_da(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), prodInst.getUniqueId()))
                       {
-                        MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
-                        logger.info("[SEMAPHORE] ACQUIRED for NEXT " + da_next.getSubSystem().getName());
-                        break OUTER;
+                        if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
+                        {
+                          MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
+                          logger.info("[SEMAPHORE] ACQUIRED for NEXT " + da_next.getSubSystem().getName());
+                          break OUTER;
+                        }
+                        else
+                        {
+                          PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
+                          MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
+                          MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
+
+                          logger.info("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
+
+                          try
+                          {
+                            Thread.sleep(3000);
+                          }
+                          catch (InterruptedException ex)
+                          {
+                            Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
+                          }
+                        }
                       }
                       else
                       {
-                        PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
-                        MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
-                        MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da_next.getSubSystem().getName());
-
-                        logger.info("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
-
-                        try
-                        {
-                          Thread.sleep(3000);
-                        }
-                        catch (InterruptedException ex)
-                        {
-                          Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        logger.info("[SEMAPHORE] ACQUIRED from SR " + da_next.getSubSystem().getName());
+                        break OUTER;
                       }
                     }
                     break;
@@ -589,6 +602,17 @@ public class ProductExecution implements Runnable
             catch (Exception ex)
             {
               System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+            }
+          }
+          if (MSBConstants.MSB_OPTIMIZER)
+          {
+            Product prod = PECManager.getInstance().getProductByID(prodInst.getProductId());
+            SkillRequirement sr = PECManager.getInstance().getSRbyRecipeID(prod, recipeID);
+            PECManager.getInstance().lock_SR_to_WS(da.getSubSystem().getUniqueId(), sr.getUniqueId(), prodInst.getUniqueId());
+            if (da_next != null)
+            {
+              SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId());
+              PECManager.getInstance().lock_SR_to_WS(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), prodInst.getUniqueId());
             }
           }
           logger.info("[EXECUTE] recipeID: " + recipeID);
