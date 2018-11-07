@@ -559,6 +559,8 @@ public class ChangeState
           {
             if (MSBConstants.MSB_OPTIMIZER)
             {
+                //sr_next already locked?????
+                //need to lock sr_next_next
               PECManager.getInstance().lock_SR_to_WS(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), productInst_id);
             }
             if (retSem == 2)
@@ -863,7 +865,7 @@ public class ChangeState
 
       if (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
       {
-          SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
+        SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
         DeviceAdapter da_next_next = PECManager.getInstance().getDAofNextRecipe(da_next, nextRecipeID, productInst_id, productType_id, sr_next.getUniqueId());
         int ret = 0;
         if (da_next_next != null)
@@ -879,7 +881,9 @@ public class ChangeState
             try
             {
               //SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da_next, nextRecipeID, productInst_id, productType_id);
-              if (PECManager.getInstance().need_to_get_da(da_next_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), productInst_id))
+              boolean need_da = PECManager.getInstance().need_to_get_da(da_next_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), productInst_id);
+              logger.debug("[checkAdapterState] Checking if need to get semaphore for - " + da_next_next.getSubSystem().getName() + " -- " + need_da);
+              if (need_da)
               {
                 logger.info("[checkAdapterState][SEMAPHORE] Acquiring for " + da_next_next.getSubSystem().getName());
                 PECManager.getInstance().getExecutionMap().get(da_next_next.getSubSystem().getUniqueId()).acquire();
@@ -963,7 +967,7 @@ public class ChangeState
   {
     //get deviceAdapter that does the required recipe
     String Daid = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipeID);
-    logger.info("[checkNextRecipe] DA id from checkNextRecipe: " + Daid);
+    logger.info("[checkNextRecipe] DA id from NextRecipe: " + Daid);
 
     if (Daid != null)
     {
@@ -1011,28 +1015,15 @@ public class ChangeState
                   return "";
                 }
               }
-
-              List<String> recipeIDs_for_SR = new ArrayList<>();
-              SkillRequirement sr_to_do = null;
-              //String SR_ID = DatabaseInteraction.getInstance().getSkillReqIDbyRecipeID(nextRecipeID);
-              //recipeIDs_for_SR = DatabaseInteraction.getInstance().getRecipesIDbySkillReqID(SR_ID);
-              //RECIPE REQUIREMENTS MUST COME FROM PRODUCT DEF?? -- to be tested cpde below
-                
-                  for (SkillRequirement temp_sr : PECManager.getInstance().getNextSR_list(sr_id, prodID))
-                  {
-                    if (temp_sr.getRecipeIDs().contains(nextRecipeID))
-                    {
-                      sr_to_do = temp_sr;
-                      recipeIDs_for_SR = temp_sr.getRecipeIDs();
-                      break;
-                    }
-                  }
-                  //break;
-                
               
-              //***************
+              SkillRequirement sr_to_do = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
+              if (sr_to_do != null)
+                logger.debug("[getNextValidRecipe] last_sr_id: " + sr_id + " --- next_sr_id: " + sr_to_do.getUniqueId());
+              else
+                  logger.debug("[getNextValidRecipe] last_sr_id: " + sr_id + " --- next_sr_id: null");
+              
 
-              if (recipeIDs_for_SR.size() > 1 && sr_to_do != null)
+              if (sr_to_do != null && sr_to_do.getRecipeIDs().size() > 1)
               {
                 String temp_used_da_id = null;
                 HashMap<String, String> temp_sr_map = PECManager.getInstance().getProduct_sr_tracking().get(productInst_id);
@@ -1043,7 +1034,7 @@ public class ChangeState
                 Recipe firstRecipe = null;
                 //check if the precedences are the same
                 List<Recipe> recipes = new ArrayList<>();
-                for (String auxRecipeID : recipeIDs_for_SR)
+                for (String auxRecipeID : sr_to_do.getRecipeIDs())
                 {
                   String da_aml_ID = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(auxRecipeID);
                   if (da_aml_ID == null)
@@ -1076,7 +1067,15 @@ public class ChangeState
                     }
                   }
                 }
+                
                 //first validate if the main path is available, if not available check the others
+                logger.debug("[getNextValidRecipe] firstRecipe: " + firstRecipe);
+                if (firstRecipe == null && recipes.size() > 0)
+                {
+                    //rand_test(sr_to_do, productInst_id, nextRecipeID);
+                    firstRecipe = recipes.remove(0);
+                }
+                
                 if (firstRecipe != null)
                 {
                   recipes.remove(firstRecipe);
@@ -1148,6 +1147,7 @@ public class ChangeState
                   logger.warn("There are no other Recipe choices for the current recipe " + recipeID);
                 }
               }
+              logger.debug("[getNextValidRecipe] WTF recipeID: " + recipeID + " --- sr_id:" + sr_id);
               return "";
             }
           }
@@ -1524,4 +1524,49 @@ public class ChangeState
     }
   }
 
+  private void rand_test(SkillRequirement sr_to_do, String productInst_id, String nextRecipeID){
+      String temp_used_da_id = null;
+                HashMap<String, String> temp_sr_map = PECManager.getInstance().getProduct_sr_tracking().get(productInst_id);
+                if (temp_sr_map != null)
+                {
+                  temp_used_da_id = temp_sr_map.get(sr_to_do.getUniqueId());
+                }
+                Recipe firstRecipe = null;
+                //check if the precedences are the same
+                List<Recipe> recipes = new ArrayList<>();
+                for (String auxRecipeID : sr_to_do.getRecipeIDs())
+                {
+                  String da_aml_ID = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(auxRecipeID);
+                  if (da_aml_ID == null)
+                  {
+                    continue;
+                  }
+                  if (temp_used_da_id != null && !da_aml_ID.equals(temp_used_da_id))
+                  {
+                    continue;
+                  }
+                  DeviceAdapter auxDA = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_aml_ID);
+
+                  //MARTELO add modules recipe list to global list temporary
+                  List<Recipe> tempRepList = new ArrayList<>(auxDA.getListOfRecipes());
+                  for (Module auxMod : auxDA.getListOfModules())
+                  {
+                    tempRepList.addAll(auxMod.getRecipes());
+                  }
+
+                  for (Recipe auxRecipe : tempRepList)
+                  {
+                    if (auxRecipe.getUniqueId().equals(auxRecipeID))
+                    {
+                      recipes.add(auxRecipe);
+                      if (auxRecipeID.equals(nextRecipeID))
+                      {
+                        firstRecipe = auxRecipe;
+                      }
+                      break;
+                    }
+                  }
+                }
+  }
+  
 }

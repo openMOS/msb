@@ -19,6 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -28,6 +30,7 @@ public class PECManager
 {
 
   // Singleton specific objects
+    private final Logger logger = LoggerFactory.getLogger(getClass());
   private static final Object lock = new Object();
   private static volatile PECManager instance = null;
   private final List<Product> availableProducts;
@@ -262,7 +265,7 @@ public class PECManager
         }
       }
     }
-    String aml_da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipe_id);
+    //String aml_da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipe_id);
     //lock_SR_to_WS(aml_da_id, sr.getUniqueId(), prod_inst_id);
     return recipe_id;
   }
@@ -277,6 +280,7 @@ public class PECManager
 
     temp.put(sr_id, da_id);
     PECManager.getInstance().getProduct_sr_tracking().put(prod_inst_id, temp);
+    logger.debug("[lock_SR_to_WS] prod_inst_id: " + prod_inst_id + " --- sr_id: " + sr_id + " --- da_id: " + da_id);
   }
 
   public boolean need_to_get_da(String da_id, String sr_id, String prod_inst_id)
@@ -321,6 +325,8 @@ public class PECManager
           if (MSBConstants.MSB_OPTIMIZER)
           {
               System.out.println("[getDAofNextRecipe] -- last_sr = " + sr_id + " -- nextRecipeID = " + nextRecipeID);
+              if (nextRecipeID == null)
+                  return null;
             SkillRequirement sr_next = getNextSR(sr_id, productType_id, nextRecipeID);
             
             nextRecipeID = PECManager.getInstance().getRecipeIDbyTrackPI(sr_next, productInst_id, nextRecipeID);
