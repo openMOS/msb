@@ -879,7 +879,6 @@ public class ChangeState
             try
             {
               //SkillRequirement sr_next = PECManager.getInstance().getNextSRbyRecipeID(da_next, nextRecipeID, productInst_id, productType_id);
-              
               if (PECManager.getInstance().need_to_get_da(da_next_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), productInst_id))
               {
                 logger.info("[checkAdapterState][SEMAPHORE] Acquiring for " + da_next_next.getSubSystem().getName());
@@ -901,6 +900,7 @@ public class ChangeState
             }
             catch (InterruptedException ex)
             {
+                logger.error("[checkAdapterState] " + ex.getMessage());
               java.util.logging.Logger.getLogger(ChangeState.class.getName()).log(Level.SEVERE, null, ex);
             }
           }

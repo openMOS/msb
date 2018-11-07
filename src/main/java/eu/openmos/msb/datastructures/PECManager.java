@@ -322,6 +322,7 @@ public class PECManager
           {
               System.out.println("[getDAofNextRecipe] -- last_sr = " + sr_id + " -- nextRecipeID = " + nextRecipeID);
             SkillRequirement sr_next = getNextSR(sr_id, productType_id, nextRecipeID);
+            
             nextRecipeID = PECManager.getInstance().getRecipeIDbyTrackPI(sr_next, productInst_id, nextRecipeID);
           }
           String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
@@ -362,27 +363,41 @@ public class PECManager
     }
     return null;
   }
-  
-  public List<SkillRequirement> getNextSR_list(String last_sr_id, String prod_id)
-  {
-      List<SkillRequirement> sr_list = new ArrayList<>();
-      Product prod = PECManager.getInstance().getProductByID(prod_id);
-      for(SkillRequirement sr : prod.getSkillRequirements())
-      {
-          if (sr.getPrecedents() != null)
-          {
-        for (SkillReqPrecedent srp : sr.getPrecedents())
-        {
-            if (srp.getUniqueId().equals(last_sr_id))
-            {
-                sr_list.add(sr);
+ /**
+  * 
+  * @param last_sr_id
+  * @param prod_id
+  * @return list of SRs next to last_sr_id
+  */
+    public List<SkillRequirement> getNextSR_list(String last_sr_id, String prod_id) {
+        List<SkillRequirement> sr_list = new ArrayList<>();
+        Product prod = PECManager.getInstance().getProductByID(prod_id);
+        for (SkillRequirement sr : prod.getSkillRequirements()) {
+            if (sr.getPrecedents() != null) {
+                for (SkillReqPrecedent srp : sr.getPrecedents()) {
+                    if (srp.getUniqueId().equals(last_sr_id)) {
+                        sr_list.add(sr);
+                    }
+                }
             }
-         }
-       }
-      }
-      return sr_list;
-  }
+        }
+        return sr_list;
+    }
   
+     public SkillRequirement getNextSR_test(String last_sr_id, String prod_id) {
+        Product prod = PECManager.getInstance().getProductByID(prod_id);
+        for (SkillRequirement sr : prod.getSkillRequirements()) {
+            if (sr.getPrecedents() != null) {
+                for (SkillReqPrecedent srp : sr.getPrecedents()) {
+                    if (srp.getUniqueId().equals(last_sr_id)) {
+                        return sr;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+     
     public SkillRequirement getNextSR(String last_sr_id, String prod_id, String recipe_id) {
         for (SkillRequirement temp_sr : getNextSR_list(last_sr_id, prod_id)) {
             if (temp_sr.getRecipeIDs().contains(recipe_id)) {
