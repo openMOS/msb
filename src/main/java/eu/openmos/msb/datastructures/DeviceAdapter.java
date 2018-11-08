@@ -909,6 +909,10 @@ public abstract class DeviceAdapter
         else if (isRecipeNode(n2))
         {
           Recipe recipe = new Recipe();
+          List<String> equipmentIds = new LinkedList<>();
+          equipmentIds.add(subSystem.getUniqueId());
+          equipmentIds.add(module.getUniqueId());
+          recipe.setEquipmentIds(equipmentIds);
           boolean searchForSkill = true;
           List<SkillRequirement> SRs = new ArrayList<>();
           List<KPISetting> KPIsettings = new ArrayList<>();

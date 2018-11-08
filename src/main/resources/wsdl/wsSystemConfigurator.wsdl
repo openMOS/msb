@@ -1,5 +1,5 @@
 <wsdl:definitions name="SystemConfigurator" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-<wsdl:types>
+  <wsdl:types>
 <xs:schema elementFormDefault="unqualified" targetNamespace="http://cloudinterface.agentcloud.openmos.eu/" version="1.0" xmlns:tns="http://cloudinterface.agentcloud.openmos.eu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 <xs:element name="acceptNewOrderInstance" type="tns:acceptNewOrderInstance" />
 <xs:element name="acceptNewOrderInstanceResponse" type="tns:acceptNewOrderInstanceResponse" />
@@ -737,6 +737,8 @@
 <xs:element minOccurs="0" name="recipeId" type="xs:string" />
 <xs:element minOccurs="0" name="recipeName" type="xs:string" />
 <xs:element maxOccurs="unbounded" minOccurs="0" name="rows" nillable="true" type="tns:processAssessmentRow" />
+<xs:element minOccurs="0" name="skillId" type="xs:string" />
+<xs:element minOccurs="0" name="skillName" type="xs:string" />
 <xs:element minOccurs="0" name="systemStage" type="xs:string" />
 <xs:element minOccurs="0" name="uniqueId" type="xs:string" />
 <xs:element minOccurs="0" name="userName" type="xs:string" />

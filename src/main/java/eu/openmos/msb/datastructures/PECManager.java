@@ -247,6 +247,7 @@ public class PECManager
 
   public String getRecipeIDbyTrackPI(SkillRequirement sr, String prod_inst_id, String recipe_id)
   {
+      if (sr != null){
       //System.out.println("[getRecipeIDbyTrackPI] " + sr + " -- " + prod_inst_id + " -- " + recipe_id);
     HashMap<String, String> temp = PECManager.getInstance().getProduct_sr_tracking().get(prod_inst_id);
     if (temp != null)
@@ -267,11 +268,13 @@ public class PECManager
     }
     //String aml_da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipe_id);
     //lock_SR_to_WS(aml_da_id, sr.getUniqueId(), prod_inst_id);
+      }
     return recipe_id;
   }
 
   public void lock_SR_to_WS(String da_id, String sr_id, String prod_inst_id)
   {
+      /*
     HashMap<String, String> temp = PECManager.getInstance().getProduct_sr_tracking().get(prod_inst_id);
     if (temp == null)
     {
@@ -281,6 +284,7 @@ public class PECManager
     temp.put(sr_id, da_id);
     PECManager.getInstance().getProduct_sr_tracking().put(prod_inst_id, temp);
     logger.debug("[lock_SR_to_WS] prod_inst_id: " + prod_inst_id + " --- sr_id: " + sr_id + " --- da_id: " + da_id);
+    */
   }
 
   public boolean need_to_get_da(String da_id, String sr_id, String prod_inst_id)
