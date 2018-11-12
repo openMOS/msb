@@ -551,7 +551,7 @@ public class ChangeState
         while (true)
         {
           tries++;
-          SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
+          SkillRequirement sr_next = PECManager.getInstance().getNextSR_test(sr_id, productType_id);
           boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, productInst_id, productType_id, true, sr_next.getUniqueId());
           logger.info("[ChangeStateChecker] executing recipeID: " + nextRecipeID);
 
@@ -697,7 +697,7 @@ public class ChangeState
         while (true)
         {
           tries++;
-          SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
+          SkillRequirement sr_next = PECManager.getInstance().getNextSR_test(sr_id, productType_id);
           boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, productInst_id, productType_id, true, sr_next.getUniqueId());
           logger.info("[ChangeStateChecker] executing recipeID: " + nextRecipeID);
 
@@ -865,7 +865,7 @@ public class ChangeState
 
       if (!da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
       {
-        SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
+        SkillRequirement sr_next = PECManager.getInstance().getNextSR_test(sr_id, productType_id);
         DeviceAdapter da_next_next = PECManager.getInstance().getDAofNextRecipe(da_next, nextRecipeID, productInst_id, productType_id, sr_next.getUniqueId());
         int ret = 0;
         if (da_next_next != null)
@@ -1016,7 +1016,7 @@ public class ChangeState
                 }
               }
               
-              SkillRequirement sr_to_do = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
+              SkillRequirement sr_to_do = PECManager.getInstance().getNextSR_test(sr_id, productType_id);
               if (sr_to_do != null)
                 logger.debug("[getNextValidRecipe] last_sr_id: " + sr_id + " --- next_sr_id: " + sr_to_do.getUniqueId());
               else

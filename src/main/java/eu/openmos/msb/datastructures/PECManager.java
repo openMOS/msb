@@ -30,7 +30,7 @@ public class PECManager
 {
 
   // Singleton specific objects
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
   private static final Object lock = new Object();
   private static volatile PECManager instance = null;
   private final List<Product> availableProducts;
@@ -247,34 +247,35 @@ public class PECManager
 
   public String getRecipeIDbyTrackPI(SkillRequirement sr, String prod_inst_id, String recipe_id)
   {
-      if (sr != null){
-      //System.out.println("[getRecipeIDbyTrackPI] " + sr + " -- " + prod_inst_id + " -- " + recipe_id);
-    HashMap<String, String> temp = PECManager.getInstance().getProduct_sr_tracking().get(prod_inst_id);
-    if (temp != null)
+    if (sr != null)
     {
-      String temp_da_id = temp.get(sr.getUniqueId());
-      if (temp_da_id != null)
+      //System.out.println("[getRecipeIDbyTrackPI] " + sr + " -- " + prod_inst_id + " -- " + recipe_id);
+      HashMap<String, String> temp = PECManager.getInstance().getProduct_sr_tracking().get(prod_inst_id);
+      if (temp != null)
       {
-        for (String temp_recipe_id : sr.getRecipeIDs())
+        String temp_da_id = temp.get(sr.getUniqueId());
+        if (temp_da_id != null)
         {
-          String aml_da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(temp_recipe_id);
-          if (aml_da_id != null && aml_da_id.equals(temp_recipe_id))
+          for (String temp_recipe_id : sr.getRecipeIDs())
           {
-            //lock_SR_to_WS(aml_da_id, sr.getUniqueId(), prod_inst_id);
-            return temp_recipe_id;
+            String aml_da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(temp_recipe_id);
+            if (aml_da_id != null && aml_da_id.equals(temp_recipe_id))
+            {
+              //lock_SR_to_WS(aml_da_id, sr.getUniqueId(), prod_inst_id);
+              return temp_recipe_id;
+            }
           }
         }
       }
+      //String aml_da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipe_id);
+      //lock_SR_to_WS(aml_da_id, sr.getUniqueId(), prod_inst_id);
     }
-    //String aml_da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipe_id);
-    //lock_SR_to_WS(aml_da_id, sr.getUniqueId(), prod_inst_id);
-      }
     return recipe_id;
   }
 
   public void lock_SR_to_WS(String da_id, String sr_id, String prod_inst_id)
   {
-      /*
+    
     HashMap<String, String> temp = PECManager.getInstance().getProduct_sr_tracking().get(prod_inst_id);
     if (temp == null)
     {
@@ -284,7 +285,7 @@ public class PECManager
     temp.put(sr_id, da_id);
     PECManager.getInstance().getProduct_sr_tracking().put(prod_inst_id, temp);
     logger.debug("[lock_SR_to_WS] prod_inst_id: " + prod_inst_id + " --- sr_id: " + sr_id + " --- da_id: " + da_id);
-    */
+     
   }
 
   public boolean need_to_get_da(String da_id, String sr_id, String prod_inst_id)
@@ -311,7 +312,7 @@ public class PECManager
    * @param recipeID
    * @param productInst_id
    * @param productType_id
-     * @param sr_id
+   * @param sr_id
    * @return true if the adapter is at ready state
    */
   public DeviceAdapter getDAofNextRecipe(DeviceAdapter da, String recipeID, String productInst_id, String productType_id, String sr_id)
@@ -328,11 +329,13 @@ public class PECManager
           nextRecipeID = auxRow.getNextRecipeId();
           if (MSBConstants.MSB_OPTIMIZER)
           {
-              System.out.println("[getDAofNextRecipe] -- last_sr = " + sr_id + " -- nextRecipeID = " + nextRecipeID);
-              if (nextRecipeID == null)
-                  return null;
-            SkillRequirement sr_next = getNextSR(sr_id, productType_id, nextRecipeID);
-            
+            System.out.println("[getDAofNextRecipe] -- last_sr = " + sr_id + " -- nextRecipeID = " + nextRecipeID);
+            if (nextRecipeID == null)
+            {
+              return null;
+            }
+            SkillRequirement sr_next = getNextSR_test(sr_id, productType_id);
+
             nextRecipeID = PECManager.getInstance().getRecipeIDbyTrackPI(sr_next, productInst_id, nextRecipeID);
           }
           String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
@@ -350,8 +353,9 @@ public class PECManager
     return null;
   }
 
-  public String getNextRecipe(DeviceAdapter da, String recipeID, String productInst_id, String productType_id, String sr_id){
-     String nextRecipeID;
+  public String getNextRecipe(DeviceAdapter da, String recipeID, String productInst_id, String productType_id, String sr_id)
+  {
+    String nextRecipeID;
     String prodID = productInst_id;
     for (int i = 0; i < 2; i++)
     {
@@ -363,7 +367,7 @@ public class PECManager
           nextRecipeID = auxRow.getNextRecipeId();
           if (MSBConstants.MSB_OPTIMIZER)
           {
-            SkillRequirement sr_next = getNextSR(sr_id, productType_id, nextRecipeID);
+            SkillRequirement sr_next = getNextSR_test(sr_id, productType_id);
             return PECManager.getInstance().getRecipeIDbyTrackPI(sr_next, productInst_id, nextRecipeID);
           }
         }
@@ -373,48 +377,62 @@ public class PECManager
     }
     return null;
   }
- /**
-  * 
-  * @param last_sr_id
-  * @param prod_id
-  * @return list of SRs next to last_sr_id
-  */
-    public List<SkillRequirement> getNextSR_list(String last_sr_id, String prod_id) {
-        List<SkillRequirement> sr_list = new ArrayList<>();
-        Product prod = PECManager.getInstance().getProductByID(prod_id);
-        for (SkillRequirement sr : prod.getSkillRequirements()) {
-            if (sr.getPrecedents() != null) {
-                for (SkillReqPrecedent srp : sr.getPrecedents()) {
-                    if (srp.getUniqueId().equals(last_sr_id)) {
-                        sr_list.add(sr);
-                    }
-                }
-            }
+
+  /**
+   *
+   * @param last_sr_id
+   * @param prod_id
+   * @return list of SRs next to last_sr_id
+   */
+  public List<SkillRequirement> getNextSR_list(String last_sr_id, String prod_id)
+  {
+    List<SkillRequirement> sr_list = new ArrayList<>();
+    Product prod = PECManager.getInstance().getProductByID(prod_id);
+    for (SkillRequirement sr : prod.getSkillRequirements())
+    {
+      if (sr.getPrecedents() != null)
+      {
+        for (SkillReqPrecedent srp : sr.getPrecedents())
+        {
+          if (srp.getUniqueId().equals(last_sr_id))
+          {
+            sr_list.add(sr);
+          }
         }
-        return sr_list;
+      }
     }
-  
-     public SkillRequirement getNextSR_test(String last_sr_id, String prod_id) {
-        Product prod = PECManager.getInstance().getProductByID(prod_id);
-        for (SkillRequirement sr : prod.getSkillRequirements()) {
-            if (sr.getPrecedents() != null) {
-                for (SkillReqPrecedent srp : sr.getPrecedents()) {
-                    if (srp.getUniqueId().equals(last_sr_id)) {
-                        return sr;
-                    }
-                }
-            }
+    return sr_list;
+  }
+
+  public SkillRequirement getNextSR_test(String last_sr_id, String prod_id)
+  {
+    Product prod = PECManager.getInstance().getProductByID(prod_id);
+    for (SkillRequirement sr : prod.getSkillRequirements())
+    {
+      if (sr.getPrecedents() != null)
+      {
+        for (SkillReqPrecedent srp : sr.getPrecedents())
+        {
+          if (srp.getUniqueId().equals(last_sr_id))
+          {
+            return sr;
+          }
         }
-        return null;
+      }
     }
-     
-    public SkillRequirement getNextSR(String last_sr_id, String prod_id, String recipe_id) {
-        for (SkillRequirement temp_sr : getNextSR_list(last_sr_id, prod_id)) {
-            if (temp_sr.getRecipeIDs().contains(recipe_id)) {
-                return temp_sr;
-            }
-        }
-        return null;
+    return null;
+  }
+
+  public SkillRequirement getNextSR(String last_sr_id, String prod_id, String recipe_id)
+  {
+    for (SkillRequirement temp_sr : getNextSR_list(last_sr_id, prod_id))
+    {
+      if (temp_sr.getRecipeIDs().contains(recipe_id))
+      {
+        return temp_sr;
+      }
     }
-    
+    return null;
+  }
+
 }

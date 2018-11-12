@@ -148,12 +148,11 @@ public class ProductExecution implements Runnable
                 //will execute all non precedent requirements  i the found order, only goes to the next after executing successfully
                 if (auxSR.getPrecedents() == null) //check which recipe has the precedents =null , which means it is the first one 
                 {
-                    logger.debug("[PS] SR to execute: " + auxSR.getName() + " --- " + auxSR.getUniqueId());
+                  logger.debug("[PS] SR to execute: " + auxSR.getName() + " --- " + auxSR.getUniqueId());
                   //check for 1 available recipe for the SR
                   while (true)
                   {
                     boolean getOut = false;
-
                     for (String recipeID : auxSR.getRecipeIDs())
                     {
                       String recipe_to_check = recipeID;
@@ -474,8 +473,8 @@ public class ProductExecution implements Runnable
                   }
                   else
                   {
-                      String next_recipe_id = PECManager.getInstance().getNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId(), sr.getUniqueId());
-                    SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr.getUniqueId(), prodInst.getProductId(), next_recipe_id);
+                    //String next_recipe_id = PECManager.getInstance().getNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId(), sr.getUniqueId());
+                    SkillRequirement sr_next = PECManager.getInstance().getNextSR_test(sr.getUniqueId(), prodInst.getProductId());
                     if (PECManager.getInstance().need_to_get_da(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), prodInst.getUniqueId()))
                     {
                       if (PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).tryAcquire())
@@ -614,12 +613,16 @@ public class ProductExecution implements Runnable
             PECManager.getInstance().lock_SR_to_WS(da.getSubSystem().getUniqueId(), sr.getUniqueId(), prodInst.getUniqueId());
             if (da_next != null)
             {
-              String next_recipe_id = PECManager.getInstance().getNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId(), sr.getUniqueId());
-              SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr.getUniqueId(), prodInst.getProductId(), next_recipe_id);
+              //String next_recipe_id = PECManager.getInstance().getNextRecipe(da, recipeID, prodInst.getUniqueId(), prodInst.getProductId(), sr.getUniqueId());
+              SkillRequirement sr_next = PECManager.getInstance().getNextSR_test(sr.getUniqueId(), prodInst.getProductId());
               if (sr_next != null)
+              {
                 PECManager.getInstance().lock_SR_to_WS(da_next.getSubSystem().getUniqueId(), sr_next.getUniqueId(), prodInst.getUniqueId());
+              }
               else
-                  logger.debug("sr next is null");
+              {
+                logger.debug("sr next is null");
+              }
             }
           }
           logger.info("[EXECUTE] recipeID: " + recipeID);
