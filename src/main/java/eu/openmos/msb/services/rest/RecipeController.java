@@ -576,7 +576,7 @@ public class RecipeController extends Base
       PECManager.getInstance().getProductsDoing().put(productInstance_id, pi);
 
       MSB_gui.addToTableCurrentOrders(oi.getUniqueId(), product_type, productInstance_id);
-      MSB_gui.updateDATableCurrentOrderNextDA(productInstance_id, da_name);
+      MSB_gui.updateDATableCurrentOrderNextDA(productInstance_id, da_name, 0);
       if (MSBConstants.USING_CLOUD)
       {
         try

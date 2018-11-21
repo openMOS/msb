@@ -71,7 +71,6 @@ public class MSBClientSubscription implements IClient
   private ArrayList<ReadValueId> readValueList;
   private final AtomicLong clientHandles = new AtomicLong(1L);
   private List<UaMonitoredItem> items;
-  private final StopWatch recipeExecutionWatch = new StopWatch();
   private final StopWatch recipeUpdateWatch = new StopWatch();
   
 
@@ -263,6 +262,8 @@ public class MSBClientSubscription implements IClient
   public boolean InvokeDeviceSkill(OpcUaClient client, NodeId objectId, NodeId methodId, String productInstanceId, String ProductTypeId, boolean checkNextRecipe, String sr_id)
   {
     PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+
+    StopWatch recipeExecutionWatch = new StopWatch();
     recipeExecutionWatch.reset();
     recipeExecutionWatch.start();
 
@@ -296,8 +297,8 @@ public class MSBClientSubscription implements IClient
       }
     } catch (InterruptedException | ExecutionException ex)
     {
-      perfMeasurement.getRecipeCallMethodTillResultTimers().add(recipeExecutionWatch.getTime());
-      recipeExecutionWatch.stop();
+      //perfMeasurement.getRecipeCallMethodTillResultTimers().add(recipeExecutionWatch.getTime());
+      //recipeExecutionWatch.stop();
       java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
 
     }

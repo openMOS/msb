@@ -38,6 +38,14 @@ public class MSBConstants
   public static final String STATE_PRODUCT_PRODUCING = "Running";
   public static final String STATE_PRODUCT_READY = "Ready";
   
+  public static final int SEMAPHORE_DA_STATE_ERROR = 0;
+  public static final int SEMAPHORE_DA_STATE_DIFFERENT = 1;
+  public static final int SEMAPHORE_DA_STATE_SAME = 2;
+  
+  public static final int NEXT_STEP_ERROR = 0;
+  public static final int NEXT_STEP_FOUND = 1;
+  public static final int NEXT_STEP_LAST_RECIPE = 2;
+  
   public static final String PROJECT_PATH = System.getProperty("user.dir");
   public static final String CLOUD_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
   public static final String XML_PATH = PROJECT_PATH + ConfigurationLoader.getMandatoryProperty("openmos.msb.xml.path");
