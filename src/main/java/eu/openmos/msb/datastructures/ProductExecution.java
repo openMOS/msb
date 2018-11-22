@@ -164,15 +164,6 @@ public class ProductExecution implements Runnable
                         {
                           logger.info("The execution of Recipe: " + recipe_to_check + " Returned true");
 
-                          try
-                          {
-                            Thread.sleep(1000);
-                          }
-                          catch (InterruptedException ex)
-                          {
-                            Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
-                          }
-
                           if (ProdManager.getProductsDoing().get(auxProdInstance.getUniqueId()) == null)
                           {
                             //the first recipe of the product is done, put it into "doing"
