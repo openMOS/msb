@@ -15,7 +15,6 @@ import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 public class PECManager
 {
-
   // Singleton specific objects
   private final Logger logger = LoggerFactory.getLogger(getClass());
   private static final Object lock = new Object();
@@ -296,7 +294,9 @@ public class PECManager
             }
             SkillRequirement sr_next = getNextSR(last_sr_id, productType_id, nextRecipeID);
             if (sr_next != null)
+            {
               System.out.println("[getDAofNextRecipe] -- next_sr = " + sr_next.getUniqueId());
+            }
             nextRecipeID = PECManager.getInstance().getRecipeIDbyTrackPI(sr_next, productInst_id, nextRecipeID);
           }
           String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);

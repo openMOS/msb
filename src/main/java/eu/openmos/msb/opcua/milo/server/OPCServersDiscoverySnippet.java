@@ -519,7 +519,7 @@ public class OPCServersDiscoverySnippet extends Thread
       
       logger.info("Starting DA Parser **********************");
 
-      boolean ok = da.parseDNToObjects(client, node, nSkills, true);
+      boolean ok = da.parseDNToObjects(client, node, nSkills, true, false);
 
       logger.info("***** End namespace browsing ***** \n\n");
 

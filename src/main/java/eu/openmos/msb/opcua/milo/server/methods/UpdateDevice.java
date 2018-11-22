@@ -194,7 +194,7 @@ public class UpdateDevice
       xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
       */
       logger.info("Starting DA Parser **********************");
-      boolean ok = da.parseDNToObjects(client, node, nSkills, false);
+      boolean ok = da.parseDNToObjects(client, node, nSkills, false, false);
       logger.info("***** End namespace browsing ***** \n\n");
 
       if (ok)

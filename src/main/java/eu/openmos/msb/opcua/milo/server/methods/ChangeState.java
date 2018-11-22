@@ -95,13 +95,14 @@ public class ChangeState
     changeStateAndNextRecipeTimer.start();
 
     logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
-    logger.info("[CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id
-            + " productInstID: " + productInstance_id + " recipeID:" + recipe_id
-            + " productTypeID: " + productType_id + " checkNextRecipe: " + checkNextRecipe
-            + " newProductState: " + newProductState + " SR_ID: " + sr_id);
 
     String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
     final int CS_ID_final = ++CS_ID;
+
+    logger.info("[" + CS_ID_final + "][CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id
+            + " productInstID: " + productInstance_id + " recipeID:" + recipe_id
+            + " productTypeID: " + productType_id + " checkNextRecipe: " + checkNextRecipe
+            + " newProductState: " + newProductState + " SR_ID: " + sr_id);
 
     String MARTELO_CS = productInstance_id + recipe_id + sr_id;
     if (MARTELO_RECEIVED_CHANGE_STATES.contains(MARTELO_CS))
@@ -111,14 +112,14 @@ public class ChangeState
         //release 1 from next DA because last station needed 2 triggers
         DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
         DeviceAdapter da_next = PECManager.getInstance().getDAofNextRecipe(da, recipe_id, productType_id, productType_id, sr_id);
-        logger.info("[SEMAPHORE] RELEASE for da_id: " + da_next.getSubSystem().getUniqueId() + " *** JOIN");
+        logger.info("[" + CS_ID_final + "][SEMAPHORE] RELEASE for da_id: " + da_next.getSubSystem().getUniqueId() + " *** JOIN");
         PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).release();
         MSB_gui.updateTableAdaptersSemaphore(
                 String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()),
                 da_next.getSubSystem().getName());
       }
       result.set(1);
-      logger.info("returned 1 changeState - " + da_name + " *** " + da_id + " *** JOIN");
+      logger.info("[" + CS_ID_final + "]returned 1 changeState - " + da_name + " *** " + da_id + " *** JOIN");
       return;
     }
     else
@@ -135,7 +136,7 @@ public class ChangeState
           try
           {
             semaphore_passive.acquire();
-            logger.debug("[CHANGE_STATE] passive mode");
+            logger.debug("[" + CS_ID_final + "][CHANGE_STATE] passive mode");
             passiveMode(productInstance_id, productType_id, da_name, da_id, recipe_id, CS_ID_final);
             //passiveMode_VDMA_MARTELO(productInstance_id, productType_id, da_name, da_id, recipe_id);
             semaphore_passive.release();
@@ -152,7 +153,7 @@ public class ChangeState
     {
       try
       {
-        logger.debug("[CHANGE_STATE] active mode");
+        logger.debug("[" + CS_ID_final + "][CHANGE_STATE] active mode");
         activeMode(productInstance_id, productType_id, da_name, da_id, recipe_id, newProductState, checkNextRecipe, sr_id, CS_ID_final);
       }
       catch (Exception ex)
@@ -161,7 +162,7 @@ public class ChangeState
       }
     }
     result.set(1);
-    logger.info("returned 1 changeState - " + da_name + " *** " + da_id);
+    logger.info("[" + CS_ID_final + "]returned 1 changeState - " + da_name + " *** " + da_id);
     return;
   }
 
@@ -182,7 +183,7 @@ public class ChangeState
           //da does not exists, check modules?
           //da_id can be module_id
           //read recipe KPIs
-          logger.info("Module changeState");
+          logger.info("[" + CS_ID_final + "]Module changeState");
           Thread threadKPI = new Thread()
           {
             public synchronized void run()
@@ -203,7 +204,7 @@ public class ChangeState
             {
               public synchronized void run()
               {
-                logger.info("[ChangeState] Starting ChangeStateChecker!");
+                logger.info("[" + CS_ID_final + "][ChangeState] Starting ChangeStateChecker!");
                 ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id, sr_id, CS_ID_final);
                 remove_queued_action(recipe_id);
               }
@@ -227,12 +228,12 @@ public class ChangeState
 
             if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_ERROR))
             {
-              logger.info("[ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
+              logger.info("[" + CS_ID_final + "][ChangeState] ADAPTER ERROR: " + da.getSubSystem().getName());
             }
           }
           else
           {
-            logger.error("Error reading ADAPTER STATE!");
+            logger.error("[" + CS_ID_final + "]Error reading ADAPTER STATE!");
           }
           MSB_gui.updateDATableCurrentOrderLastDA(productInstance_id, da_name, CS_ID_final);
 
@@ -257,7 +258,7 @@ public class ChangeState
             {
               public synchronized void run()
               {
-                logger.info("[ChangeState] Starting ChangeStateChecker!");
+                logger.info("[" + CS_ID_final + "][ChangeState] Starting ChangeStateChecker!");
                 ChangeStateChecker_DA(recipe_id, productInstance_id, da_id, productType_id, sr_id, CS_ID_final);
                 remove_queued_action(recipe_id);
               }
@@ -555,7 +556,7 @@ public class ChangeState
 
   private void ChangeStateChecker_Modules(String recipe_id, String productInst_id, String module_id, String productType_id, String sr_id, int CS_ID_final)
   {
-    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id, sr_id); //returns the next recipe to execute
+    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id, sr_id, CS_ID_final); //returns the next recipe to execute
     logger.info("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID);
 
     DeviceAdapter CurrentDA = DACManager.getInstance().getDeviceAdapterFromModuleID(module_id);
@@ -719,8 +720,8 @@ public class ChangeState
 
   private void ChangeStateChecker_DA(String recipe_id, String productInst_id, String da_id, String productType_id, String sr_id, int CS_ID_final)
   {
-    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id, sr_id); //returns the next recipe to execute
-    logger.info("[ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID);
+    String nextRecipeID = getNextValidRecipe(recipe_id, productInst_id, productType_id, sr_id, CS_ID_final); //returns the next recipe to execute
+    logger.info("[" + CS_ID_final + "][ChangeStateChecker]Next Recipe to execute will be: " + nextRecipeID);
 
     if (!nextRecipeID.isEmpty() && !nextRecipeID.equals("last"))
     {
@@ -728,7 +729,7 @@ public class ChangeState
       int retSem = 2; //testing!!!
       if (retSem != MSBConstants.SEMAPHORE_DA_STATE_ERROR) //check if adapter is ready
       { //if is ready
-        logger.info("[ChangeStateChecker] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State");
+        logger.info("[" + CS_ID_final + "][ChangeStateChecker] The adapter for the nextRecipe: " + nextRecipeID + " is at READY State");
 
         String method = DatabaseInteraction.getInstance().getRecipeMethodByID(nextRecipeID);
         NodeId methodNode = Functions.convertStringToNodeId(method);
@@ -737,7 +738,7 @@ public class ChangeState
 
         String Daid_next = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
         DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyAML_ID(Daid_next);
-        logger.info("[ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + da_next.getSubSystem().getName());
+        logger.info("[" + CS_ID_final + "][ChangeStateChecker] Trying to Invoke the nextRecipe" + "(" + nextRecipeID + ")" + " in DA: " + da_next.getSubSystem().getName());
         MSBClientSubscription client = (MSBClientSubscription) da_next.getClient();
 
         PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
@@ -752,11 +753,11 @@ public class ChangeState
           SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
           if (sr_next == null)
           {
-            logger.error("[ChangeStateChecker] sr_next is null! cannot execute");
+            logger.error("[" + CS_ID_final + "][ChangeStateChecker] sr_next is null! cannot execute");
             break;
           }
           boolean res = client.InvokeDeviceSkill(client.getClientObject(), objNode, methodNode, productInst_id, productType_id, true, sr_next.getUniqueId());
-          logger.info("[ChangeStateChecker] executing recipeID: " + nextRecipeID + " -- for sr: " + sr_next.getUniqueId() + " -- result: " + res);
+          logger.info("[" + CS_ID_final + "][ChangeStateChecker] executing recipeID: " + nextRecipeID + " -- for sr: " + sr_next.getUniqueId() + " -- result: " + res);
 
           if (res)
           {
@@ -784,12 +785,12 @@ public class ChangeState
              */
             if (retSem == MSBConstants.SEMAPHORE_DA_STATE_SAME)
             {
-              logger.info("[ChangeStateChecker] DA is the same as the previous one, semaphore will not be released!");
+              logger.info("[" + CS_ID_final + "][ChangeStateChecker] DA is the same as the previous one, semaphore will not be released!");
             }
             else if (retSem == MSBConstants.SEMAPHORE_DA_STATE_DIFFERENT)
             {
               String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-              logger.info("[SEMAPHORE] RELEASED1 " + da_name1);
+              logger.info("[" + CS_ID_final + "][SEMAPHORE] RELEASED1 " + da_name1);
               PECManager.getInstance().getExecutionMap().get(da_id).release();
 
               DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
@@ -805,8 +806,8 @@ public class ChangeState
           {
             //ERROR EXECUTING RECIPE
             MSB_gui.updateDATableCurrentOrderNextDA(productInst_id, "Try " + tries, CS_ID_final);
-            logger.error("Error executing recipe: " + nextRecipeID + " -- probably because the recipe was already in execution.");
-            logger.warn("** " + tries + " **Trying every 5s until success! - DA_NAME:" + da_next.getSubSystem().getName() + " * Recipe_ID: " + nextRecipeID);
+            logger.error("[" + CS_ID_final + "]Error executing recipe: " + nextRecipeID + " -- probably because the recipe was already in execution.");
+            logger.warn("[" + CS_ID_final + "]** " + tries + " **Trying every 5s until success! - DA_NAME:" + da_next.getSubSystem().getName() + " * Recipe_ID: " + nextRecipeID);
             try
             {
               Thread.sleep(5000);
@@ -823,7 +824,7 @@ public class ChangeState
         PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
         perfMeasurement.getChangeStateTillNextRecipeCallTimers().add(changeStateAndNextRecipeTimer.getTime());
         //changeStateAndNextRecipeTimer.stop();
-        logger.info("NEXT ADAPTER IS AT ERROR STATE");
+        logger.info("[" + CS_ID_final + "]NEXT ADAPTER IS AT ERROR STATE");
       }
     }
     else if (nextRecipeID.equals("last"))
@@ -836,9 +837,9 @@ public class ChangeState
         MSB_gui.removeFromTableCurrentOrder(prodInst.getUniqueId());
 
         //System.out.println("[ChangeState] This Recipe is the last one for product instance ID: " + productInst_id);
-        logger.info("[ChangeState] This Recipe is the last one for product instance ID: " + productInst_id);
+        logger.info("[" + CS_ID_final + "][ChangeState] This Recipe is the last one for product instance ID: " + productInst_id);
         String da_name1 = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
-        logger.info("[SEMAPHORE" + da_name1 + "] RELEASED1");
+        logger.info("[" + CS_ID_final + "][SEMAPHORE" + da_name1 + "] RELEASED1");
         PECManager.getInstance().getExecutionMap().get(da_id).release();
 
         DeviceAdapter da_test = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
@@ -867,18 +868,18 @@ public class ChangeState
           }
           catch (Exception ex)
           {
-            System.out.println("Error trying to connect to cloud!: " + ex.getMessage());
+            logger.error("[" + CS_ID_final + "]Error trying to connect to cloud!: " + ex.getMessage());
           }
         }
       }
       else
       {
-        logger.error("[ChangeStateChecker] ERROR prodInst not found: " + productInst_id);
+        logger.error("[" + CS_ID_final + "][ChangeStateChecker] ERROR prodInst not found: " + productInst_id);
       }
     }
     else if (nextRecipeID.isEmpty())
     {
-      logger.warn("It was not possible to execute the next Recipe. The path is not available!/n"
+      logger.warn("[" + CS_ID_final + "]It was not possible to execute the next Recipe. The path is not available!/n"
               + " Last executed Recipe: " + recipe_id + " ProdInst_ID: " + productInst_id);
     }
   }
@@ -1040,9 +1041,9 @@ public class ChangeState
    * @param nextRecipeID
    * @return
    */
-  private Boolean checkNextValidation(String da_id_last, String recipeID, String productInst_id, String productType_id, String last_sr_id)
+  private Boolean checkNextValidation(String da_id_last, String recipeID, String productInst_id, String productType_id, String last_sr_id, int CS_ID_final)
   {
-    logger.info("[checkNextValidation] recipeID: " + recipeID);
+    logger.info("[" + CS_ID_final + "][checkNextValidation] recipeID: " + recipeID);
     String da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipeID);
     if (da_id != null)
     {
@@ -1061,7 +1062,7 @@ public class ChangeState
             {
               if (!da_id.equals(da_id_last))
               {
-                logger.info("[SEMAPHORE] RELEASE for da_id: " + da_id_last + " -- there no next recipe!");
+                logger.info("[" + CS_ID_final + "][SEMAPHORE] RELEASE for da_id: " + da_id_last + " -- there no next recipe!");
                 PECManager.getInstance().getExecutionMap().get(da_id_last).release();
                 DeviceAdapter temp_da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id_last);
                 MSB_gui.updateTableAdaptersSemaphore(
@@ -1073,18 +1074,32 @@ public class ChangeState
             boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
             String da_next_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
             DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_next_id);
+
+            NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
+            DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da_next;
+            if (statePath.isNotNull())
+            {
+              String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
+              da_next.getSubSystem().setState(state);
+            }
+            else
+            {
+              logger.error("[" + CS_ID_final + "][checkAdapterState] Error reading adapter state!");
+              return false;
+            }
+
             Boolean res = valid && da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY);
             //add lock verify
             SkillRequirement sr_next = PECManager.getInstance().getNextSR(last_sr_id, productType_id, nextRecipeID);
             if (sr_next == null)
             {
-              logger.error("[NULL] last_da: " + da_id + " -- last_sr_id: " + last_sr_id + " -- last_recipeID: " + recipeID + " -- "
+              logger.error("[" + CS_ID_final + "][NULL] last_da: " + da_id + " -- last_sr_id: " + last_sr_id + " -- last_recipeID: " + recipeID + " -- "
                       + "da_next_id: " + da_next_id + " -- nextRecipeID(ET): " + nextRecipeID);
             }
             if (da_id_last.equals(da_next_id) || da_id.equals(da_id_last))
             {
               //no need to get semaphore
-              if (res && checkSemaphoreWithLock(da_next_id, productInst_id, sr_next.getUniqueId(), false))
+              if (res && checkSemaphoreWithLock(da_next_id, productInst_id, sr_next.getUniqueId(), false, CS_ID_final))
               {
                 PECManager.getInstance().lock_SR_to_WS(da_next_id, sr_next.getUniqueId(), productInst_id);
                 return true;
@@ -1092,10 +1107,10 @@ public class ChangeState
             }
             else
             {
-              if (res && checkSemaphoreWithLock(da_next_id, productInst_id, sr_next.getUniqueId(), true))
+              if (res && checkSemaphoreWithLock(da_next_id, productInst_id, sr_next.getUniqueId(), true, CS_ID_final))
               {
                 //release previous DA
-                logger.info("[SEMAPHORE] RELEASE for da_id: " + da_id_last);
+                logger.info("[" + CS_ID_final + "][SEMAPHORE] RELEASE for da_id: " + da_id_last);
                 PECManager.getInstance().getExecutionMap().get(da_id_last).release();
                 DeviceAdapter temp_da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id_last);
                 MSB_gui.updateTableAdaptersSemaphore(
@@ -1106,17 +1121,19 @@ public class ChangeState
                 return true;
               }
             }
+            logger.info("[" + CS_ID_final + "][checkNextValidation] recipeID: " + recipeID + " -- is not valid1");
             return false;
           }
-          //no prodInst found in execTable, search for productType now
-          prodID = productType_id;
         }
+        //no prodInst found in execTable, search for productType now
+        prodID = productType_id;
       }
     }
+    logger.info("[" + CS_ID_final + "][checkNextValidation] recipeID: " + recipeID + " -- is not valid2");
     return false;
   }
 
-  private Boolean checkSemaphoreWithLock(String da_id, String prod_inst_id, String sr_id, boolean needSemaphore)
+  private Boolean checkSemaphoreWithLock(String da_id, String prod_inst_id, String sr_id, boolean needSemaphore, int CS_ID_final)
   {
     HashMap<String, String> temp_map = PECManager.getInstance().getProduct_sr_tracking().get(prod_inst_id);
     if (temp_map != null)
@@ -1126,8 +1143,8 @@ public class ChangeState
       {
         if (da_id.equals(temp_da_id))
         {
-          logger.debug("[SEMAPHORE] NO NEED TO GET from da: " + da_id + " -- to fullfil sr: " + sr_id);
-          logger.debug("[checkSemaphoreWithLock] da: " + da_id + " was already waiting for sr: " + sr_id);
+          logger.debug("[" + CS_ID_final + "][SEMAPHORE] NO NEED TO GET from da: " + da_id + " -- to fullfil sr: " + sr_id);
+          logger.debug("[" + CS_ID_final + "][checkSemaphoreWithLock] da: " + da_id + " was already waiting for sr: " + sr_id);
           return true;
         }
       }
@@ -1138,8 +1155,8 @@ public class ChangeState
       //ACQUIRE semaphore here?????
       if (PECManager.getInstance().getExecutionMap().get(da_id).tryAcquire())
       {
-        logger.debug("[SEMAPHORE] ACQUIRED from da: " + da_id + " -- to fullfil sr: " + sr_id);
-        logger.debug("[checkSemaphoreWithLock] da: " + da_id + " is available for sr: " + sr_id);
+        logger.debug("[" + CS_ID_final + "][SEMAPHORE] ACQUIRED from da: " + da_id + " -- to fullfil sr: " + sr_id);
+        logger.debug("[" + CS_ID_final + "][checkSemaphoreWithLock] da: " + da_id + " is available for sr: " + sr_id);
 
         DeviceAdapter temp_da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
         MSB_gui.updateTableAdaptersSemaphore(
@@ -1150,13 +1167,13 @@ public class ChangeState
       }
       else
       {
-        logger.debug("[checkSemaphoreWithLock] da: " + da_id + " is NOT available for sr: " + sr_id);
+        logger.debug("[" + CS_ID_final + "][checkSemaphoreWithLock] da: " + da_id + " is NOT available for sr: " + sr_id);
         return false;
       }
     }
     else
     {
-      logger.debug("[checkSemaphoreWithLock] da: " + da_id + " no need to get for sr: " + sr_id + " -- same as previous");
+      logger.debug("[" + CS_ID_final + "][checkSemaphoreWithLock] da: " + da_id + " no need to get for sr: " + sr_id + " -- same as previous");
       return true;
     }
   }
@@ -1166,11 +1183,11 @@ public class ChangeState
    * @param recipeID
    * @return
    */
-  private String getNextValidRecipe(String recipeID, String productInst_id, String productType_id, String sr_id)
+  private String getNextValidRecipe(String recipeID, String productInst_id, String productType_id, String sr_id, int CS_ID_final)
   {
     //get deviceAdapter that does the required recipe
     String da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipeID);
-    logger.info("[checkNextRecipe] DA id from NextRecipe: " + da_id);
+    logger.info("[" + CS_ID_final + "][getNextValidRecipe] da_id from last da: " + da_id);
 
     if (da_id != null)
     {
@@ -1178,11 +1195,11 @@ public class ChangeState
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
       if (da == null)
       {
-        logger.warn("The DA is null!");
+        logger.warn("[" + CS_ID_final + "]The DA is null!");
       }
       else
       {
-        logger.info("[checkNextRecipe]DA name of finished recipe : " + da.getSubSystem().getName());
+        logger.info("[" + CS_ID_final + "][getNextValidRecipe]DA name of finished recipe : " + da.getSubSystem().getName());
         String prodID = productInst_id;
         for (int i = 0; i < 2; i++)
         {
@@ -1197,7 +1214,7 @@ public class ChangeState
               if (auxNextRecipeNode == null)
               {
                 //is last recipe
-                logger.info("[checkNextRecipe] returning - last");
+                logger.info("[" + CS_ID_final + "][getNextValidRecipe] returning - last");
                 return "last";
               }
 
@@ -1207,14 +1224,14 @@ public class ChangeState
 
               if (nextRecipeID == null || nextRecipeID.equals("done") || nextRecipeID.equals("last"))
               {
-                logger.info("[checkNextRecipe] returning - last");
+                logger.info("[" + CS_ID_final + "][getNextValidRecipe] returning - last");
                 return "last";
               }
               else
               {
                 if (nextRecipeID.isEmpty())
                 {
-                  logger.info("[checkNextRecipe] returning - 'empty'");
+                  logger.info("[" + CS_ID_final + "][getNextValidRecipe] returning - 'empty'1");
                   return "";
                 }
               }
@@ -1222,11 +1239,11 @@ public class ChangeState
               SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
               if (sr_next != null)
               {
-                logger.debug("[getNextValidRecipe] last_sr_id: " + sr_id + " --- next_sr_id: " + sr_next.getUniqueId());
+                logger.debug("[" + CS_ID_final + "][getNextValidRecipe] last_sr_id: " + sr_id + " --- next_sr_id: " + sr_next.getUniqueId());
               }
               else
               {
-                logger.debug("[getNextValidRecipe] last_sr_id: " + sr_id + " --- next_sr_id: null");
+                logger.debug("[" + CS_ID_final + "][getNextValidRecipe] last_sr_id: " + sr_id + " --- next_sr_id: null");
               }
 
               if (sr_next != null && sr_next.getRecipeIDs().size() > 1)
@@ -1280,20 +1297,20 @@ public class ChangeState
                   firstRecipe = recipes.get(0);
                 }
                 //first validate if the main path is available, if not available check the others
-                logger.debug("[getNextValidRecipe] firstRecipe: " + firstRecipe);
+                logger.debug("[" + CS_ID_final + "][getNextValidRecipe] firstRecipe: " + firstRecipe);
                 if (firstRecipe != null)
                 {
                   recipes.remove(firstRecipe);
 
                   if (temp_used_da_id != null)
                   {
-                    logger.info("[checkNextRecipe][product_sr_tracking] will be locked until the recipe is valid " + firstRecipe.getUniqueId()
+                    logger.info("[" + CS_ID_final + "][getNextValidRecipe][product_sr_tracking] will be locked until the recipe is valid " + firstRecipe.getUniqueId()
                             + "da_id: " + temp_used_da_id + "sr_id: " + sr_next.getUniqueId());
                     while (true)
                     {
-                      if (checkNextValidation(da_id, firstRecipe.getUniqueId(), productInst_id, productType_id, sr_next.getUniqueId()))
+                      if (checkNextValidation(da_id, firstRecipe.getUniqueId(), productInst_id, productType_id, sr_next.getUniqueId(), CS_ID_final))
                       {
-                        logger.info("[checkNextRecipe] returning - " + firstRecipe.getUniqueId());
+                        logger.info("[" + CS_ID_final + "][getNextValidRecipe] returning - " + firstRecipe.getUniqueId());
                         return firstRecipe.getUniqueId();
                       }
                       else
@@ -1313,10 +1330,10 @@ public class ChangeState
                           {
                             java.util.logging.Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
                           }
-                          if (checkNextValidation(da_id, temp_recipe.getUniqueId(), productInst_id, productType_id, sr_next.getUniqueId()))
+                          if (checkNextValidation(da_id, temp_recipe.getUniqueId(), productInst_id, productType_id, sr_next.getUniqueId(), CS_ID_final))
                           {
-                            logger.info("[checkNextRecipe] returning - " + firstRecipe.getUniqueId());
-                            return firstRecipe.getUniqueId();
+                            logger.info("[" + CS_ID_final + "][getNextValidRecipe] returning - " + temp_recipe.getUniqueId());
+                            return temp_recipe.getUniqueId();
                           }
                         }
                       }
@@ -1324,9 +1341,9 @@ public class ChangeState
                   }
                   else
                   {
-                    if (checkNextValidation(da_id, firstRecipe.getUniqueId(), productInst_id, productType_id, sr_next.getUniqueId()))
+                    if (checkNextValidation(da_id, firstRecipe.getUniqueId(), productInst_id, productType_id, sr_next.getUniqueId(), CS_ID_final))
                     {
-                      logger.info("[checkNextRecipe] returning - " + firstRecipe.getUniqueId());
+                      logger.info("[" + CS_ID_final + "][getNextValidRecipe] returning - " + firstRecipe.getUniqueId());
                       return firstRecipe.getUniqueId();
                     }
                     else
@@ -1342,13 +1359,13 @@ public class ChangeState
 
                         if ((auxDA.getSubSystem().getSsType().equals(MSBConstants.DEVICE_ADAPTER_TYPE_TRANSPORT)
                                 || auxDA.getSubSystem().getUniqueId().equals(auxDAFirst.getSubSystem().getUniqueId()))
-                                && checkNextValidation(da_id, auxRecipe.getUniqueId(), productInst_id, productType_id, sr_next.getUniqueId()))
+                                && checkNextValidation(da_id, auxRecipe.getUniqueId(), productInst_id, productType_id, sr_next.getUniqueId(), CS_ID_final))
                         {
-                          logger.info("[checkNextRecipe] returning - " + auxRecipe.getUniqueId());
+                          logger.info("[" + CS_ID_final + "][getNextValidRecipe] returning - " + auxRecipe.getUniqueId());
                           return auxRecipe.getUniqueId();
                         }
                       }
-                      logger.warn("There are no other Recipe choices for the current recipe " + recipeID);
+                      logger.warn("[" + CS_ID_final + "]There are no other Recipe choices for the current recipe " + recipeID);
                     }
                   }
                 }
@@ -1359,14 +1376,15 @@ public class ChangeState
                 if (valid)
                 {
                   //yes
+                  logger.info("[" + CS_ID_final + "][getNextValidRecipe] returning - " + nextRecipeID);
                   return nextRecipeID;
                 }
                 else
                 {
-                  logger.warn("There are no other Recipe choices for the current recipe " + recipeID);
+                  logger.warn("[" + CS_ID_final + "]There are no other Recipe choices for the current recipe " + recipeID);
                 }
               }
-              logger.debug("[getNextValidRecipe] WTF recipeID: " + recipeID + " --- sr_id:" + sr_id);
+              logger.debug("[" + CS_ID_final + "][getNextValidRecipe] WTF recipeID: " + recipeID + " --- sr_id:" + sr_id);
               return "";
             }
           }
@@ -1377,9 +1395,9 @@ public class ChangeState
     }
     else
     {
-      logger.error("There are no Adapters that can perform the required recipe: " + recipeID);
+      logger.error("[" + CS_ID_final + "]There are no Adapters that can perform the required recipe: " + recipeID);
     }
-    logger.info("[checkNextRecipe] returning - 'empty'");
+    logger.info("[" + CS_ID_final + "][getNextValidRecipe] returning - 'empty'2");
     return "";
   }
 

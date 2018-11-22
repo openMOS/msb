@@ -163,7 +163,7 @@ public class ProductExecution implements Runnable
                         if (executeRecipe(recipe_to_check, auxProdInstance, auxSR)) //if returns false, check another alternative recipe for the same SR
                         {
                           logger.info("The execution of Recipe: " + recipe_to_check + " Returned true");
-                          
+
                           try
                           {
                             Thread.sleep(1000);
@@ -172,9 +172,6 @@ public class ProductExecution implements Runnable
                           {
                             Logger.getLogger(ProductExecution.class.getName()).log(Level.SEVERE, null, ex);
                           }
-                          
-                          String da_aml_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipe_to_check);
-                          //PECManager.getInstance().lock_SR_to_WS(da_aml_id, auxSR.getUniqueId(), auxProdInstance.getUniqueId());
 
                           if (ProdManager.getProductsDoing().get(auxProdInstance.getUniqueId()) == null)
                           {
@@ -202,7 +199,6 @@ public class ProductExecution implements Runnable
                     {
                       break;
                     }
-
                     //trying recipes in 5sec cycles
                     try
                     {

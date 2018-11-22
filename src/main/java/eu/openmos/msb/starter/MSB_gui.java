@@ -2105,26 +2105,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       // user selects a file
       selectedFile = fc.getSelectedFile();
-
       List<Product> newProducts = ProductUpload.getProductsFromFile(selectedFile.getAbsolutePath());
-
-      PECManager aux = PECManager.getInstance();
-
-      aux.getProductList().addAll(newProducts);
-
-      //******************************************* SR links into the DB
-      /*
-      for (int i = 0; i < newProducts.size(); i++)
-      {
-        Product auxProduct = newProducts.get(i);
-        for (int j = 0; j < auxProduct.getSkillRequirements().size(); j++)
-        {
-          SkillRequirement auxSR = auxProduct.getSkillRequirements().get(j);
-          DatabaseInteraction.getInstance().associateRecipeToSR(auxSR.getUniqueId(), auxSR.getRecipeIDs());
-        }
-      }
-       */
-      //**********************************************************
+      PECManager.getInstance().getProductList().addAll(newProducts);
       return newProducts;
     }
     return null;
