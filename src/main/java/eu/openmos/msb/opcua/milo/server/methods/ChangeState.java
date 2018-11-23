@@ -847,7 +847,15 @@ public class ChangeState
             boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
             String da_next_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
             DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_next_id);
-
+            
+            if (da_next == null)
+            {
+                logger.error("[" + CS_ID_final + "][checkNextValidation] error getting da_next from recipe: " + nextRecipeID);
+                logger.info("[" + CS_ID_final + "][checkNextValidation] recipeID: " + recipeID + " -- is not valid3");
+            return false;
+            }
+            if (da_next.getSubSystem().getStatePath()== null)
+                logger.error("[" + CS_ID_final + "][checkNextValidation] error getting statepath for da: " + da_next.getSubSystem().getUniqueId());
             NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
             DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da_next;
             if (statePath.isNotNull())
