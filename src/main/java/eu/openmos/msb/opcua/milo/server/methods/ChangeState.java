@@ -814,7 +814,7 @@ public class ChangeState
    * @param nextRecipeID
    * @return
    */
-  private Boolean checkNextValidation(String da_id_last, String recipeID, String productInst_id, String productType_id, String last_sr_id, int CS_ID_final)
+  private Boolean checkNextValidation(String da_id_last, String recipeID, String productInst_id, String productType_id, String sr_id, int CS_ID_final)
   {
     logger.info("[" + CS_ID_final + "][checkNextValidation] recipeID: " + recipeID);
     String da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipeID);
@@ -847,15 +847,17 @@ public class ChangeState
             boolean valid = DatabaseInteraction.getInstance().getRecipeIdIsValid(nextRecipeID);
             String da_next_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(nextRecipeID);
             DeviceAdapter da_next = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_next_id);
-            
+
             if (da_next == null)
             {
-                logger.error("[" + CS_ID_final + "][checkNextValidation] error getting da_next from recipe: " + nextRecipeID);
-                logger.info("[" + CS_ID_final + "][checkNextValidation] recipeID: " + recipeID + " -- is not valid3");
-            return false;
+              logger.error("[" + CS_ID_final + "][checkNextValidation] error getting da_next from recipe: " + nextRecipeID);
+              logger.info("[" + CS_ID_final + "][checkNextValidation] recipeID: " + recipeID + " -- is not valid3");
+              return false;
             }
-            if (da_next.getSubSystem().getStatePath()== null)
-                logger.error("[" + CS_ID_final + "][checkNextValidation] error getting statepath for da: " + da_next.getSubSystem().getUniqueId());
+            if (da_next.getSubSystem().getStatePath() == null)
+            {
+              logger.error("[" + CS_ID_final + "][checkNextValidation] error getting statepath for da: " + da_next.getSubSystem().getUniqueId());
+            }
             NodeId statePath = Functions.convertStringToNodeId(da_next.getSubSystem().getStatePath());
             DeviceAdapterOPC daOPC = (DeviceAdapterOPC) da_next;
             if (statePath.isNotNull())
@@ -871,10 +873,10 @@ public class ChangeState
 
             Boolean res = valid && da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY);
             //add lock verify
-            SkillRequirement sr_next = PECManager.getInstance().getNextSR(last_sr_id, productType_id, nextRecipeID);
+            SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
             if (sr_next == null)
             {
-              logger.error("[" + CS_ID_final + "][NULL] last_da: " + da_id + " -- last_sr_id: " + last_sr_id + " -- last_recipeID: " + recipeID + " -- "
+              logger.error("[" + CS_ID_final + "][NULL] last_da: " + da_id + " -- last_sr_id: " + sr_id + " -- last_recipeID: " + recipeID + " -- "
                       + "da_next_id: " + da_next_id + " -- nextRecipeID(ET): " + nextRecipeID);
             }
             if (da_id_last.equals(da_next_id) || da_id.equals(da_id_last))
@@ -914,6 +916,7 @@ public class ChangeState
 
   private Boolean checkSemaphoreWithLock(String da_id, String prod_inst_id, String sr_id, boolean needSemaphore, int CS_ID_final)
   {
+    logger.debug("[" + CS_ID_final + "][checkSemaphoreWithLock] checking da: " + da_id + " -- sr: " + sr_id + " -- prod_inst_id: " + prod_inst_id);
     HashMap<String, String> temp_map = PECManager.getInstance().getProduct_sr_tracking().get(prod_inst_id);
     if (temp_map != null)
     {
@@ -925,6 +928,11 @@ public class ChangeState
           logger.debug("[" + CS_ID_final + "][SEMAPHORE] NO NEED TO GET from da: " + da_id + " -- to fullfil sr: " + sr_id);
           logger.debug("[" + CS_ID_final + "][checkSemaphoreWithLock] da: " + da_id + " was already waiting for sr: " + sr_id);
           return true;
+        }
+        else
+        {
+          logger.debug("[" + CS_ID_final + "][checkSemaphoreWithLock] there id another da[" + temp_da_id + "] waiting for sr: " + sr_id);
+          return false;
         }
       }
     }
