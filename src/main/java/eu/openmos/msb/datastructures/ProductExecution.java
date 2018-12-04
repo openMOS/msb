@@ -130,6 +130,7 @@ public class ProductExecution implements Runnable
         if (ProdManager.getNewInstanceSemaphore().tryAcquire())
         {
           ProductInstance auxProdInstance = ProdManager.getProductsToDo().get(0);
+          logger.info("ProdInst on queue: " + ProdManager.getProductsToDo().size()); //da instancia
           logger.info("ProdInst to start: " + auxProdInstance.getUniqueId()); //da instancia
           String productId = auxProdInstance.getProductId(); //prod type
           //ir as tabelas de execução

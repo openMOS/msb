@@ -833,7 +833,7 @@ public class DatabaseInteraction
         while (rs.next())
         {
           id = rs.getInt("id");
-          System.out.println("Found skill with id:  " + id);
+          //System.out.println("Found skill with id:  " + id);
           break;
         }
       }
@@ -927,7 +927,7 @@ public class DatabaseInteraction
         while (rs.next())
         {
           id = rs.getInt("id");
-          System.out.println("Found skill with id:  " + id);
+          //System.out.println("Found skill with id:  " + id);
           break;
         }
       }
@@ -1188,7 +1188,7 @@ public class DatabaseInteraction
               + "','" + Boolean.toString(valid) + "','" + name + "','" + object_id + "','" + method_id + "');";
       stmt.execute(sql);
       stmt.close();
-      System.out.println("NEW RECIPE: " + name + " " + aml_id + " " + da_id + " " + sk_id + " " + valid + " " + object_id + " " + method_id);
+      //System.out.println("NEW RECIPE: " + name + " " + aml_id + " " + da_id + " " + sk_id + " " + valid + " " + object_id + " " + method_id);
       return true;
     } catch (SQLException ex)
     {

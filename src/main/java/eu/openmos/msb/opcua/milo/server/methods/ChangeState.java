@@ -8,12 +8,10 @@ import eu.openmos.model.FinishedProductInfo;
 import eu.openmos.model.KPISetting;
 import eu.openmos.model.Module;
 import eu.openmos.model.OrderInstance;
-import eu.openmos.model.Product;
 import eu.openmos.model.ProductInstance;
 import eu.openmos.model.ProductInstanceStatus;
 import eu.openmos.model.Recipe;
 import eu.openmos.model.RecipeExecutionData;
-import eu.openmos.model.SkillReqPrecedent;
 import eu.openmos.model.SkillRequirement;
 import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
@@ -871,7 +869,7 @@ public class ChangeState
               return false;
             }
 
-            Boolean res = valid && da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY);
+            Boolean res = valid /*&& da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY)*/;
             //add lock verify
             SkillRequirement sr_next = PECManager.getInstance().getNextSR(sr_id, productType_id, nextRecipeID);
             if (sr_next == null)
