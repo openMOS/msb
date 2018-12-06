@@ -247,7 +247,7 @@ public class ProductExecution implements Runnable
           String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath); //read the DA state, capable of executing the required recipeID
           da.getSubSystem().setState(state);
 
-          if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+          //if (da.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
           {
             if (checkNextRecipe(da, recipeID, prodInst))
             {
