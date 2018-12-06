@@ -755,13 +755,13 @@ public abstract class DeviceAdapter
                     {
                       auxParameterSetting.setValue(auxNode1.getTextContent());
                       System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
-                      break;
+                      //break;
                     }
                     else if (auxNode1.getNodeName().equals("Path"))
                     {
                       auxParameterSetting.setValuePath(auxNode1.getTextContent());
                       System.out.println("PARAMETER PATH value: " + auxParameterSetting.getValuePath());
-                      break;
+                      //break;
                     }
                   }
                 }
