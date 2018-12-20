@@ -192,7 +192,14 @@ public class ChangeState
               public synchronized void run()
               {
                 logger.info("[" + CS_ID_final + "][ChangeState] Starting ChangeStateChecker!");
-                ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id, sr_id, CS_ID_final);
+                if (productType_id.toUpperCase().equals("HMITEST"))
+                {
+                  finishProduct(productInstance_id);
+                }
+                else
+                {
+                  ChangeStateChecker_Modules(recipe_id, productInstance_id, da_id, productType_id, sr_id, CS_ID_final);
+                }
                 remove_queued_action(recipe_id);
               }
             };
@@ -241,7 +248,14 @@ public class ChangeState
               public synchronized void run()
               {
                 logger.info("[" + CS_ID_final + "][ChangeState] Starting ChangeStateChecker!");
-                ChangeStateChecker_DA(recipe_id, productInstance_id, da_id, productType_id, sr_id, CS_ID_final);
+                if (productType_id.toUpperCase().equals("HMITEST"))
+                {
+                  finishProduct(productInstance_id);
+                }
+                else
+                {
+                  ChangeStateChecker_DA(recipe_id, productInstance_id, da_id, productType_id, sr_id, CS_ID_final);
+                }
                 remove_queued_action(recipe_id);
               }
             };
@@ -1418,5 +1432,4 @@ public class ChangeState
       finishProduct(productInstance_id);
     }
   }
-  
 }
