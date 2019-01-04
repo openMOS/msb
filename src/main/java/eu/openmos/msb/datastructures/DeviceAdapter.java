@@ -1264,8 +1264,9 @@ public abstract class DeviceAdapter
       {
         Node n2 = skillChilds.item(j);
 
-        if (n2.getNodeType() == Node.ELEMENT_NODE && !n2.getNodeName().equals("Type")
-                && !n2.getNodeName().equals("Path") && !n2.getNodeName().equals("Skill"))
+        if (n2.getNodeType() == Node.ELEMENT_NODE && !n2.getNodeName().equals("Type") &&
+                !n2.getNodeName().equals("Path") && !n2.getNodeName().equals("Skill") &&
+                !n2.getNodeName().equals("Value"))
         {
           Skill auxSkill = new Skill();
           List<SkillRequirement> auxReqList = new ArrayList<>();
