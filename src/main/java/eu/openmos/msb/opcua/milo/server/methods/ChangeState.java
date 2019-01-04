@@ -95,7 +95,7 @@ public class ChangeState
             + " productTypeID: " + productType_id + " checkNextRecipe: " + checkNextRecipe
             + " newProductState: " + newProductState + " SR_ID: " + sr_id);
     String MARTELO_CS = productInstance_id + recipe_id + sr_id;
-    if (MARTELO_RECEIVED_CHANGE_STATES.contains(MARTELO_CS))
+    if (MARTELO_RECEIVED_CHANGE_STATES.contains(MARTELO_CS) && !productType_id.toUpperCase().equals("HMITEST"))
     {
       if (!da_name.equals(""))
       {
