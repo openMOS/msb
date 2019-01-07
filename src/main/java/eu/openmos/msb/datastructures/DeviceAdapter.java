@@ -38,6 +38,7 @@ import org.w3c.dom.NodeList;
  */
 public abstract class DeviceAdapter
 {
+
   protected int bd_id;
   protected boolean hasAgent;
   private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
@@ -796,6 +797,7 @@ public abstract class DeviceAdapter
                 break;
               }
             }
+            logger.debug("[DA_PARSER] skill_id: " + skill_id + " *** for recipe: " + recipe.getName());
             if (!skill_id.equals(""))
             {
               for (Skill skill : subSystem.getSkills())
@@ -803,6 +805,7 @@ public abstract class DeviceAdapter
                 //if (nRecipe.getNodeName().equals(skill.getName()))
                 if (skill_id.equals(skill.getUniqueId()))
                 {
+                  logger.debug("[DA_PARSER] skill found: " + skill.getName());
                   recipe.setSkill(skill);
                   for (ParameterSetting paraSetting : paraSettings)
                   {
@@ -835,7 +838,10 @@ public abstract class DeviceAdapter
       recipe.setParameterSettings(paraSettings);
       recipe.setKpiSettings(KPIsettings);
       recipe.setSkillRequirements(SRs);
-      recipe.getSkill().setSkillRequirements(SRs);
+      if (recipe.getSkill() != null)
+      {
+        recipe.getSkill().setSkillRequirements(SRs);
+      }
       //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
       recipeList.add(recipe);
     }
@@ -1176,6 +1182,7 @@ public abstract class DeviceAdapter
                     break;
                   }
                 }
+                logger.debug("[DA_PARSER] skill_id: " + skill_id + " *** for recipe: " + recipe.getName());
                 if (!skill_id.equals(""))
                 {
                   for (Skill skill : subSystem.getSkills())
@@ -1183,6 +1190,7 @@ public abstract class DeviceAdapter
                     //if (nRecipe.getNodeName().equals(skill.getName()))
                     if (skill_id.equals(skill.getUniqueId()))
                     {
+                      logger.debug("[DA_PARSER] skill found: " + skill.getName());
                       recipe.setSkill(skill);
                       for (ParameterSetting paraSetting : paraSettings)
                       {
@@ -1217,7 +1225,14 @@ public abstract class DeviceAdapter
             recipe.setParameterSettings(paraSettings);
             recipe.setKpiSettings(KPIsettings);
             recipe.setSkillRequirements(SRs);
-            recipe.getSkill().setSkillRequirements(SRs);
+            if (recipe.getSkill() != null)
+            {
+              recipe.getSkill().setSkillRequirements(SRs);
+            }
+            else
+            {
+              System.out.println("");
+            }
             //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
             recipeList.add(recipe);
           }
@@ -1275,7 +1290,7 @@ public abstract class DeviceAdapter
               if (auxData.getNodeName().matches("SR(\\d).*")) //SR+um digito pelo menos
               {
                 //SR
-                System.out.println("***SR NAME: " + auxData.getNodeName());
+                //System.out.println("***SR NAME: " + auxData.getNodeName());
                 SkillRequirement auxSR = new SkillRequirement();
                 auxSR.setName(auxData.getNodeName());
                 auxReqList.add(auxSR);
@@ -1291,7 +1306,7 @@ public abstract class DeviceAdapter
                       if (IDchilds.item(q).getNodeName().matches("Value"))
                       {
                         auxSR.setUniqueId(IDchilds.item(q).getTextContent());
-                        System.out.println("SR TEM ID! :O " + IDchilds.item(q).getTextContent());
+                        //System.out.println("SR TEM ID! :O " + IDchilds.item(q).getTextContent());
                       }
                     }
                   }
@@ -1305,7 +1320,7 @@ public abstract class DeviceAdapter
                   if (IDchilds.item(z).getNodeName().matches("Value"))
                   {
                     auxSkill.setUniqueId(IDchilds.item(z).getTextContent());
-                    System.out.println("Skill TEM ID! :O " + IDchilds.item(z).getTextContent());
+                    //System.out.println("Skill TEM ID! :O " + IDchilds.item(z).getTextContent());
                   }
                 }
               }
@@ -1362,7 +1377,7 @@ public abstract class DeviceAdapter
                       }
                     }
                     auxPara.add(parameter);
-                    System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
+                    //System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
                   }
                 }
               }
@@ -1419,7 +1434,7 @@ public abstract class DeviceAdapter
                       }
                     }
                     auxKPI.add(kpi);
-                    System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
+                    //System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
                   }
                 }
               }
@@ -1451,7 +1466,7 @@ public abstract class DeviceAdapter
       {
         if (i != j)
         {
-          if (skillList.get(i).getName().equals(skillList.get(j).getName()))
+          if (skillList.get(i).getUniqueId().equals(skillList.get(j).getUniqueId()))
           {
             if (!indexToRemove.contains(skillList.get(j)))
             {
