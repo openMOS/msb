@@ -747,7 +747,7 @@ public abstract class DeviceAdapter
           {
             Node parameterNode = auxNodeList.item(z);
             //if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
-            if (isParameterNode(parameterNode, report))  
+            if (isParameterNode(parameterNode, report))
             {
               if (report)
               {
@@ -786,7 +786,9 @@ public abstract class DeviceAdapter
                     if (auxNode1.getNodeName().equals("Value"))
                     {
                       if (!auxNode1.getTextContent().equals(""))
+                      {
                         auxParameterSetting.setValue(auxNode1.getTextContent());
+                      }
                       if (report)
                       {
                         logger.debug("PARAMETER value: " + auxNode1.getTextContent());
@@ -795,7 +797,9 @@ public abstract class DeviceAdapter
                     else if (auxNode1.getNodeName().equals("Path"))
                     {
                       if (!auxNode1.getTextContent().equals(""))
+                      {
                         auxParameterSetting.setValuePath(auxNode1.getTextContent());
+                      }
                       if (report)
                       {
                         logger.debug("PARAMETER PATH value: " + auxNode1.getTextContent());
@@ -1254,10 +1258,23 @@ public abstract class DeviceAdapter
                         if (auxNode1.getNodeName().equals("Value"))
                         {
                           if (!auxNode1.getTextContent().equals(""))
+                          {
                             auxParameterSetting.setValue(auxNode1.getTextContent());
+                          }
                           if (report)
                           {
                             logger.debug("PARAMETER value: " + auxNode1.getTextContent());
+                          }
+                        }
+                        else if (auxNode1.getNodeName().equals("Path"))
+                        {
+                          if (!auxNode1.getTextContent().equals(""))
+                          {
+                            auxParameterSetting.setValuePath(auxNode1.getTextContent());
+                          }
+                          if (report)
+                          {
+                            logger.debug("PARAMETER PATH value: " + auxNode1.getTextContent());
                           }
                         }
                       }
