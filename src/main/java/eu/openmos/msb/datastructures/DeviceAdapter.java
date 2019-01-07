@@ -260,11 +260,11 @@ public abstract class DeviceAdapter
 
       subSystem.setUniqueId(ReadDeviceAdapterID(deviceDescriptionDoc, report)); //aml_id
       subSystem.setConnected(true);
-      subSystem.setSkills(ReadSkills(skillDescriptionDoc, true));
+      subSystem.setSkills(ReadSkills(skillDescriptionDoc, report));
       subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc, report));
       subSystem.setExecutionTable(ReadExecutionTable(deviceDescriptionDoc, report));
-      subSystem.setInternalModules(ReadModules(deviceDescriptionDoc, report));
-      subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc, report));
+      subSystem.setInternalModules(ReadModules(deviceDescriptionDoc, true));
+      subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc, true));
 
       String da_objectID = ReadObjectIDFromDeviceAdapter(deviceDescriptionDoc);
       subSystem.setChangeRecipeObjectID(da_objectID);
@@ -844,36 +844,69 @@ public abstract class DeviceAdapter
         else if (searchForSkill)
         {
           //get skill - first node with SR inside
+          //get skill - first node with SR inside
           if (n2.getNodeType() == Node.ELEMENT_NODE)
           {
-            for (Skill skill : subSystem.getSkills())
+            String skill_id = "";
+            //id node
+            NodeList auxNodeList = n2.getChildNodes();
+            for (int z = 0; z < auxNodeList.getLength(); z++)
             {
-              if (n2.getNodeName().equals(skill.getName()))
+              Node auxNode = auxNodeList.item(z);
+              if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("ID"))
               {
-                recipe.setSkill(skill);
-
-                for (ParameterSetting paraSetting : paraSettings)
+                NodeList auxNodeList1 = auxNode.getChildNodes();
+                for (int index = 0; index < auxNodeList1.getLength(); index++)
                 {
-                  for (Parameter para : skill.getParameters())
+                  Node auxNode1 = auxNodeList1.item(index);
+                  if (auxNode1.getNodeName().equals("Value"))
                   {
-                    if (paraSetting.getName().equals(para.getName()))
-                    {
-                      paraSetting.setParameter(para);
-                    }
+                    skill_id = auxNode1.getTextContent();
+                    break;
                   }
                 }
-                for (KPISetting kpiSetting : KPIsettings)
-                {
-                  for (KPI kpi : skill.getKpis())
-                  {
-                    if (kpiSetting.getName().equals(kpi.getName()))
-                    {
-                      kpiSetting.setKpi(kpi);
-                    }
-                  }
-                }
-                searchForSkill = false;
                 break;
+              }
+            }
+            if (report)
+            {
+              logger.debug("[DA_PARSER] skill_id: " + skill_id + " *** for recipe: " + recipe.getName());
+            }
+            if (!skill_id.equals(""))
+            {
+              for (Skill skill : subSystem.getSkills())
+              {
+                //if (nRecipe.getNodeName().equals(skill.getName()))
+                if (skill_id.equals(skill.getUniqueId()))
+                {
+                  if (report)
+                  {
+                    logger.debug("[DA_PARSER] skill found: " + skill.getName());
+                  }
+                  recipe.setSkill(skill);
+                  for (ParameterSetting paraSetting : paraSettings)
+                  {
+                    for (Parameter para : skill.getParameters())
+                    {
+                      if (paraSetting.getName().equals(para.getName()))
+                      {
+                        paraSetting.setParameter(para);
+                      }
+                    }
+                  }
+                  for (KPISetting kpiSetting : KPIsettings)
+                  {
+                    for (KPI kpi : skill.getKpis())
+                    {
+                      if (kpiSetting.getName().equals(kpi.getName()))
+                      {
+                        kpiSetting.setKpi(kpi);
+                      }
+                    }
+                  }
+                  searchForSkill = false;
+                  break;
+                }
               }
             }
           }
@@ -1268,36 +1301,64 @@ public abstract class DeviceAdapter
               //get skill - first node with SR inside
               if (nRecipe.getNodeType() == Node.ELEMENT_NODE)
               {
-                for (Skill skill : subSystem.getSkills())
+                String skill_id = "";
+                //id node
+                NodeList auxNodeList = nRecipe.getChildNodes();
+                for (int z = 0; z < auxNodeList.getLength(); z++)
                 {
-                  if (nRecipe.getNodeName().equals(skill.getName()))
+                  Node auxNode = auxNodeList.item(z);
+                  if (auxNode.getNodeType() == Node.ELEMENT_NODE && auxNode.getNodeName().equals("ID"))
                   {
-                    recipe.setSkill(skill);
-                    for (ParameterSetting paraSetting : paraSettings)
+                    NodeList auxNodeList1 = auxNode.getChildNodes();
+                    for (int index = 0; index < auxNodeList1.getLength(); index++)
                     {
-                      for (Parameter para : skill.getParameters())
+                      Node auxNode1 = auxNodeList1.item(index);
+                      if (auxNode1.getNodeName().equals("Value"))
                       {
-                        if (paraSetting.getName().equals(para.getName()))
-                        {
-                          paraSetting.setParameter(para);
-                        }
+                        skill_id = auxNode1.getTextContent();
+                        break;
                       }
                     }
-                    for (KPISetting kpiSetting : KPIsettings)
-                    {
-                      for (KPI kpi : skill.getKpis())
-                      {
-                        if (kpiSetting.getName().equals(kpi.getName()))
-                        {
-                          kpiSetting.setKpi(kpi);
-                        }
-                      }
-                    }
-                    searchForSkill = false;
                     break;
                   }
                 }
+                logger.debug("[DA_PARSER] skill_id: " + skill_id + " *** for recipe: " + recipe.getName());
+                if (!skill_id.equals(""))
+                {
+                  for (Skill skill : subSystem.getSkills())
+                  {
+                    //if (nRecipe.getNodeName().equals(skill.getName()))
+                    if (skill_id.equals(skill.getUniqueId()))
+                    {
+                      logger.debug("[DA_PARSER] skill found: " + skill.getName());
+                      recipe.setSkill(skill);
+                      for (ParameterSetting paraSetting : paraSettings)
+                      {
+                        for (Parameter para : skill.getParameters())
+                        {
+                          if (paraSetting.getName().equals(para.getName()))
+                          {
+                            paraSetting.setParameter(para);
+                          }
+                        }
+                      }
+                      for (KPISetting kpiSetting : KPIsettings)
+                      {
+                        for (KPI kpi : skill.getKpis())
+                        {
+                          if (kpiSetting.getName().equals(kpi.getName()))
+                          {
+                            kpiSetting.setKpi(kpi);
+                          }
+                        }
+                      }
+                      searchForSkill = false;
+                      break;
+                    }
+                  }
+                }
               }
+
             }
           }
           //if (recipe.getInvokeMethodID() != null && !"".equals(recipe.getInvokeMethodID())) 
@@ -1351,9 +1412,9 @@ public abstract class DeviceAdapter
       {
         Node n2 = skillChilds.item(j);
 
-        if (n2.getNodeType() == Node.ELEMENT_NODE && !n2.getNodeName().equals("Type") &&
-                !n2.getNodeName().equals("Path") && !n2.getNodeName().equals("Skill") &&
-                !n2.getNodeName().equals("Value"))
+        if (n2.getNodeType() == Node.ELEMENT_NODE && !n2.getNodeName().equals("Type")
+                && !n2.getNodeName().equals("Path") && !n2.getNodeName().equals("Skill")
+                && !n2.getNodeName().equals("Value"))
         {
           Skill auxSkill = new Skill();
           List<SkillRequirement> auxReqList = new ArrayList<>();
@@ -1573,7 +1634,7 @@ public abstract class DeviceAdapter
       {
         if (i != j)
         {
-          if (skillList.get(i).getName().equals(skillList.get(j).getName()))
+          if (skillList.get(i).getUniqueId().equals(skillList.get(j).getUniqueId()))
           {
             if (!indexToRemove.contains(skillList.get(j)))
             {
