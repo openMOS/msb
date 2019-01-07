@@ -313,7 +313,7 @@ public abstract class DeviceAdapter
     return false;
   }
 
-  private static ExecutionTable ReadExecutionTable(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  private ExecutionTable ReadExecutionTable(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
     String query = "//DeviceAdapter/*[AssemblySystem]/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)][not(self::ExecutionTable)][not(self::Value)]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
@@ -690,7 +690,8 @@ public abstract class DeviceAdapter
           for (int z = 0; z < auxNodeList.getLength(); z++)
           {
             Node parameterNode = auxNodeList.item(z);
-            if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+            //if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+            if (isParameterNode(parameterNode))
             {
               System.out.println("PARAMETER NAME: " + parameterNode.getNodeName());
               ParameterSetting auxParameterSetting = new ParameterSetting();
@@ -712,7 +713,7 @@ public abstract class DeviceAdapter
                   }
                 }
                 else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
-                        && !auxNode.getNodeName().toLowerCase().endsWith("parameter") && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
+                        /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                 {
                   auxParameterSetting.setName(auxNode.getNodeName());
                   NodeList auxNodeList1 = auxNode.getChildNodes();
@@ -721,15 +722,19 @@ public abstract class DeviceAdapter
                     Node auxNode1 = auxNodeList1.item(index);
                     if (auxNode1.getNodeName().equals("Value"))
                     {
-                      auxParameterSetting.setValue(auxNode1.getTextContent());
-                      System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
-                      //break;
+                      if (!auxNode1.getTextContent().equals(""))
+                      {
+                        auxParameterSetting.setValue(auxNode1.getTextContent());
+                      }
+                      System.out.println("PARAMETER value: " + auxNode1.getTextContent());
                     }
                     else if (auxNode1.getNodeName().equals("Path"))
                     {
-                      auxParameterSetting.setValuePath(auxNode1.getTextContent());
-                      System.out.println("PARAMETER PATH value: " + auxParameterSetting.getValuePath());
-                      //break;
+                      if (!auxNode1.getTextContent().equals(""))
+                      {
+                        auxParameterSetting.setValuePath(auxNode1.getTextContent());
+                      }
+                      System.out.println("PARAMETER PATH value: " + auxNode1.getTextContent());
                     }
                   }
                 }
@@ -1085,7 +1090,8 @@ public abstract class DeviceAdapter
               for (int z = 0; z < auxNodeList.getLength(); z++)
               {
                 Node parameterNode = auxNodeList.item(z);
-                if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+                //if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+                if (isParameterNode(parameterNode))
                 {
                   //System.out.println("PARAMETER NAME: " + parameterNode.getNodeName());
                   ParameterSetting auxParameterSetting = new ParameterSetting();
@@ -1107,7 +1113,7 @@ public abstract class DeviceAdapter
                       }
                     }
                     else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
-                            && !auxNode.getNodeName().toLowerCase().endsWith("parameter") && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
+                            /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                     {
                       auxParameterSetting.setName(auxNode.getNodeName());
                       NodeList auxNodeList1 = auxNode.getChildNodes();
@@ -1116,8 +1122,19 @@ public abstract class DeviceAdapter
                         Node auxNode1 = auxNodeList1.item(index);
                         if (auxNode1.getNodeName().equals("Value"))
                         {
-                          auxParameterSetting.setValue(auxNode1.getTextContent());
-                          //System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
+                          if (!auxNode1.getTextContent().equals(""))
+                          {
+                            auxParameterSetting.setValue(auxNode1.getTextContent());
+                          }
+                          System.out.println("PARAMETER value: " + auxNode1.getTextContent());
+                        }
+                        else if (auxNode1.getNodeName().equals("Path"))
+                        {
+                          if (!auxNode1.getTextContent().equals(""))
+                          {
+                            auxParameterSetting.setValuePath(auxNode1.getTextContent());
+                          }
+                          System.out.println("PARAMETER PATH value: " + auxNode1.getTextContent());
                         }
                       }
                     }
@@ -1257,7 +1274,7 @@ public abstract class DeviceAdapter
     return moduleList;
   }
 
-  private static List<Skill> ReadSkills(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  private List<Skill> ReadSkills(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
     String query = "//Skills/*[contains(name(),'AtomicSkill') or contains(name(),'CompositeSkill')]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
@@ -1480,7 +1497,7 @@ public abstract class DeviceAdapter
     return skillList;
   }
 
-  private static String ReadManufacturer(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  private String ReadManufacturer(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
     String query = "//DeviceAdapter/*[AssemblySystem]/*/manufacturer/Type[contains(@namespace, 'manufacturer')]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
@@ -1501,7 +1518,7 @@ public abstract class DeviceAdapter
     return "";
   }
 
-  private static String ReadDeviceAdapterID(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  private String ReadDeviceAdapterID(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
     String query = "//DeviceAdapter/*[AssemblySystem]/*/ID/Value";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
@@ -1525,7 +1542,7 @@ public abstract class DeviceAdapter
     }
   }
 
-  private static String ReadDeviceAdapterType(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  private String ReadDeviceAdapterType(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
     String query1 = "//DeviceAdapter/*[AssemblySystem]/*/TransportSystem";
     String query2 = "//DeviceAdapter/*[AssemblySystem]/*/WorkStation";
@@ -1551,7 +1568,7 @@ public abstract class DeviceAdapter
     }
   }
 
-  private static List<String> ReadDeviceAdapterState(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
+  private List<String> ReadDeviceAdapterState(org.w3c.dom.Document xmlDocument) throws XPathExpressionException
   {
     String query1 = "//DeviceAdapter/*[AssemblySystem]/*/DeviceAdapterState";
     List<String> results = new ArrayList<>();
@@ -1628,7 +1645,7 @@ public abstract class DeviceAdapter
     return "";
   }
 
-  private static boolean isRecipeNode(Node node)
+  private boolean isRecipeNode(Node node)
   {
     boolean skillFound = false;
     boolean invokeSkillFound = false;
@@ -1653,7 +1670,7 @@ public abstract class DeviceAdapter
     return false;
   }
 
-  private static boolean isKPINode(Node node)
+  private boolean isKPINode(Node node)
   {
     boolean KPIFound = false;
     NodeList recipeChilds = node.getChildNodes();
@@ -1667,6 +1684,28 @@ public abstract class DeviceAdapter
       if (KPIFound)
       {
         System.out.println("/n***** /n KPI FOUND -- " + node.getNodeName() + " /n ***** /n");
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isParameterNode(Node node)
+  {
+    boolean ParameterFound = false;
+    NodeList recipeChilds = node.getChildNodes();
+
+    for (int i = 0; i < recipeChilds.getLength(); i++)
+    {
+      Node auxNode = recipeChilds.item(i);
+      if (auxNode.getNodeName().toUpperCase().equals("PARAMETER"))
+      {
+        ParameterFound = true;
+      }
+
+      if (ParameterFound)
+      {
+        logger.debug("Parameter FOUND -- " + node.getNodeName());
         return true;
       }
     }
