@@ -263,7 +263,7 @@ public abstract class DeviceAdapter
       subSystem.setSkills(ReadSkills(skillDescriptionDoc, report));
       subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc, report));
       subSystem.setExecutionTable(ReadExecutionTable(deviceDescriptionDoc, report));
-      subSystem.setInternalModules(ReadModules(deviceDescriptionDoc, true));
+      subSystem.setInternalModules(ReadModules(deviceDescriptionDoc, report));
       subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc, report));
 
       String da_objectID = ReadObjectIDFromDeviceAdapter(deviceDescriptionDoc);
