@@ -264,7 +264,7 @@ public abstract class DeviceAdapter
       subSystem.setManufacturer(ReadManufacturer(deviceDescriptionDoc, report));
       subSystem.setExecutionTable(ReadExecutionTable(deviceDescriptionDoc, report));
       subSystem.setInternalModules(ReadModules(deviceDescriptionDoc, true));
-      subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc, true));
+      subSystem.setRecipes(ReadRecipes(deviceDescriptionDoc, report));
 
       String da_objectID = ReadObjectIDFromDeviceAdapter(deviceDescriptionDoc);
       subSystem.setChangeRecipeObjectID(da_objectID);
@@ -325,7 +325,7 @@ public abstract class DeviceAdapter
     return false;
   }
 
-  private static ExecutionTable ReadExecutionTable(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
+  private ExecutionTable ReadExecutionTable(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
   {
     String query = "//DeviceAdapter/*[AssemblySystem]/*/ExecutionTable/*[not(self::Type)][not(self::TaskExecutionTable)][not(self::ExecutionTable)][not(self::Value)]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
@@ -333,7 +333,7 @@ public abstract class DeviceAdapter
 
     if (report)
     {
-      System.out.println("Elements " + nodeList.getLength());
+      logger.debug("Elements " + nodeList.getLength());
     }
 
     ExecutionTable execTable = new ExecutionTable();
@@ -467,7 +467,7 @@ public abstract class DeviceAdapter
                           String recipeid = IDchildNodes.item(id).getTextContent();
                           if (report)
                           {
-                            System.out.println("next recipe id: " + recipeid);
+                            logger.debug("next recipe id: " + recipeid);
                           }
                           execRow.setNextRecipeId(IDchildNodes.item(id).getTextContent());
                         }
@@ -529,7 +529,7 @@ public abstract class DeviceAdapter
 
     if (report)
     {
-      System.out.println("Elements " + nodeList.getLength());
+      logger.debug("Elements " + nodeList.getLength());
     }
     List<Recipe> recipeList = new ArrayList<>();
 
@@ -557,7 +557,7 @@ public abstract class DeviceAdapter
           recipeNamespace = temp[0] + "/" + temp[1];
           if (report)
           {
-            System.out.println("recipeName " + recipe.getName());
+            logger.debug("recipeName " + recipe.getName());
           }
         }
         else if (n2.getNodeName().equals("ID"))
@@ -655,7 +655,7 @@ public abstract class DeviceAdapter
                 {
                   //INVOKESKILL FOR SR IS HERE!
                   //auxSkillReq.set
-                  //System.out.println("SR Name: " + auxSkillReq.getName());
+                  //logger.debug("SR Name: " + auxSkillReq.getName());
                 }
               }
             }
@@ -675,7 +675,7 @@ public abstract class DeviceAdapter
             {
               if (report)
               {
-                System.out.println("KPI NAME: " + kpiNode.getNodeName());
+                logger.debug("KPI NAME: " + kpiNode.getNodeName());
               }
               KPISetting auxKPISetting = new KPISetting();
               auxKPISetting.setName(kpiNode.getNodeName()); //MASMEC
@@ -696,7 +696,7 @@ public abstract class DeviceAdapter
                       auxKPISetting.setUniqueId(auxNode1.getTextContent());
                       if (report)
                       {
-                        System.out.println("KPI ID: " + auxKPISetting.getUniqueId());
+                        logger.debug("KPI ID: " + auxKPISetting.getUniqueId());
                       }
                     }
                   }
@@ -713,7 +713,7 @@ public abstract class DeviceAdapter
                       auxKPISetting.setPath(ns + ":" + auxNode1.getTextContent()); //CHECK THIS!
                       if (report)
                       {
-                        System.out.println("KPI path: " + auxKPISetting.getPath());
+                        logger.debug("KPI path: " + auxKPISetting.getPath());
                       }
                     }
                   }
@@ -729,7 +729,7 @@ public abstract class DeviceAdapter
                       auxKPISetting.setUnit(auxNode1.getTextContent());
                       if (report)
                       {
-                        System.out.println("KPI Unit: " + auxKPISetting.getUnit());
+                        logger.debug("KPI Unit: " + auxKPISetting.getUnit());
                       }
                     }
                   }
@@ -746,11 +746,12 @@ public abstract class DeviceAdapter
           for (int z = 0; z < auxNodeList.getLength(); z++)
           {
             Node parameterNode = auxNodeList.item(z);
-            if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+            //if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+            if (isParameterNode(parameterNode, report))  
             {
               if (report)
               {
-                System.out.println("PARAMETER NAME: " + parameterNode.getNodeName());
+                logger.debug("PARAMETER NAME: " + parameterNode.getNodeName());
               }
               ParameterSetting auxParameterSetting = new ParameterSetting();
 
@@ -769,37 +770,36 @@ public abstract class DeviceAdapter
                       auxParameterSetting.setUniqueId(auxNode1.getTextContent());
                       if (report)
                       {
-                        System.out.println("PARAMETER ID: " + auxParameterSetting.getUniqueId());
+                        logger.debug("PARAMETER ID: " + auxParameterSetting.getUniqueId());
                       }
                     }
                   }
                 }
                 else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
-                        && !auxNode.getNodeName().toLowerCase().endsWith("parameter") && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
+                        /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                 {
                   auxParameterSetting.setName(auxNode.getNodeName());
                   NodeList auxNodeList1 = auxNode.getChildNodes();
-                  int test = auxNodeList1.getLength();
                   for (int index = 0; index < auxNodeList1.getLength(); index++)
                   {
                     Node auxNode1 = auxNodeList1.item(index);
                     if (auxNode1.getNodeName().equals("Value"))
                     {
-                      auxParameterSetting.setValue(auxNode1.getTextContent());
+                      if (!auxNode1.getTextContent().equals(""))
+                        auxParameterSetting.setValue(auxNode1.getTextContent());
                       if (report)
                       {
-                        System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
+                        logger.debug("PARAMETER value: " + auxNode1.getTextContent());
                       }
-                      //break;
                     }
                     else if (auxNode1.getNodeName().equals("Path"))
                     {
-                      auxParameterSetting.setValuePath(auxNode1.getTextContent());
+                      if (!auxNode1.getTextContent().equals(""))
+                        auxParameterSetting.setValuePath(auxNode1.getTextContent());
                       if (report)
                       {
-                        System.out.println("PARAMETER PATH value: " + auxParameterSetting.getValuePath());
+                        logger.debug("PARAMETER PATH value: " + auxNode1.getTextContent());
                       }
-                      //break;
                     }
                   }
                 }
@@ -930,7 +930,7 @@ public abstract class DeviceAdapter
 
     if (report)
     {
-      System.out.println("Elements " + nodeList.getLength());
+      logger.debug("Elements " + nodeList.getLength());
     }
     List<Module> moduleList = new ArrayList<>();
 
@@ -950,7 +950,7 @@ public abstract class DeviceAdapter
           module.setName(temp[temp.length - 1]);
           if (report)
           {
-            System.out.println("moduleName " + module.getName());
+            logger.debug("moduleName " + module.getName());
           }
 
           String ns = n2.getAttributes().getNamedItem("ns").getNodeValue();
@@ -980,7 +980,7 @@ public abstract class DeviceAdapter
               module.setDescription(descChild.getTextContent());
               if (report)
               {
-                System.out.println("moduleDescription " + module.getDescription());
+                logger.debug("moduleDescription " + module.getDescription());
               }
             }
           }
@@ -1012,7 +1012,7 @@ public abstract class DeviceAdapter
               recipeNamespace = temp[0] + "/" + temp[1];
               if (report)
               {
-                System.out.println("recipeName " + recipe.getName());
+                logger.debug("recipeName " + recipe.getName());
               }
             }
             else if ("ID".equals(nRecipe.getNodeName()))
@@ -1038,7 +1038,7 @@ public abstract class DeviceAdapter
                   recipe.setDescription(descChild.getTextContent());
                   if (report)
                   {
-                    System.out.println("recipeDescription " + recipe.getDescription());
+                    logger.debug("recipeDescription " + recipe.getDescription());
                   }
                   recipe.setValid(true); //let's supose all recipes on the adapter are valid upon registration?
                 }
@@ -1049,7 +1049,7 @@ public abstract class DeviceAdapter
             {
               if (report)
               {
-                System.out.println("isto é um SR: " + nRecipe.getNodeName());
+                logger.debug("isto é um SR: " + nRecipe.getNodeName());
               }
               NodeList SkillReqs = nRecipe.getChildNodes();
               SkillRequirement auxSkillReq = new SkillRequirement();
@@ -1084,7 +1084,7 @@ public abstract class DeviceAdapter
                       auxSkillReq.setUniqueId(auxNode.getTextContent());
                       if (report)
                       {
-                        System.out.println("SR ID: " + auxSkillReq.getUniqueId());
+                        logger.debug("SR ID: " + auxSkillReq.getUniqueId());
                       }
                     }
                   }
@@ -1123,7 +1123,7 @@ public abstract class DeviceAdapter
                     {
                       //INVOKESKILL FOR SR IS HERE!
                       //auxSkillReq.set
-                      //System.out.println("SR Name: " + auxSkillReq.getName());
+                      //logger.debug("SR Name: " + auxSkillReq.getName());
                     }
                   }
                 }
@@ -1143,7 +1143,7 @@ public abstract class DeviceAdapter
                 {
                   if (report)
                   {
-                    System.out.println("KPI NAME: " + kpiNode.getNodeName());
+                    logger.debug("KPI NAME: " + kpiNode.getNodeName());
                   }
                   KPISetting auxKPISetting = new KPISetting();
                   auxKPISetting.setName(kpiNode.getNodeName()); //MASMEC
@@ -1164,7 +1164,7 @@ public abstract class DeviceAdapter
                           auxKPISetting.setUniqueId(auxNode1.getTextContent());
                           if (report)
                           {
-                            System.out.println("KPI ID: " + auxKPISetting.getUniqueId());
+                            logger.debug("KPI ID: " + auxKPISetting.getUniqueId());
                           }
                         }
                       }
@@ -1181,7 +1181,7 @@ public abstract class DeviceAdapter
                           auxKPISetting.setPath(ns + ":" + auxNode1.getTextContent()); //CHECK THIS!
                           if (report)
                           {
-                            System.out.println("KPI path: " + auxKPISetting.getPath());
+                            logger.debug("KPI path: " + auxKPISetting.getPath());
                           }
                         }
                       }
@@ -1197,7 +1197,7 @@ public abstract class DeviceAdapter
                           auxKPISetting.setUnit(auxNode1.getTextContent());
                           if (report)
                           {
-                            System.out.println("KPI Unit: " + auxKPISetting.getUnit());
+                            logger.debug("KPI Unit: " + auxKPISetting.getUnit());
                           }
                         }
                       }
@@ -1213,11 +1213,12 @@ public abstract class DeviceAdapter
               for (int z = 0; z < auxNodeList.getLength(); z++)
               {
                 Node parameterNode = auxNodeList.item(z);
-                if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+                //if (parameterNode.getNodeName().toLowerCase().endsWith("_parameter"))
+                if (isParameterNode(parameterNode, report))
                 {
                   if (report)
                   {
-                    System.out.println("PARAMETER NAME: " + parameterNode.getNodeName());
+                    logger.debug("PARAMETER NAME: " + parameterNode.getNodeName());
                   }
                   ParameterSetting auxParameterSetting = new ParameterSetting();
 
@@ -1237,13 +1238,13 @@ public abstract class DeviceAdapter
                           auxParameterSetting.setUniqueId(auxNode1.getTextContent());
                           if (report)
                           {
-                            System.out.println("PARAMETER ID: " + auxParameterSetting.getUniqueId());
+                            logger.debug("PARAMETER ID: " + auxParameterSetting.getUniqueId());
                           }
                         }
                       }
                     }
                     else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
-                            && !auxNode.getNodeName().toLowerCase().endsWith("parameter") && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
+                            /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                     {
                       auxParameterSetting.setName(auxNode.getNodeName());
                       NodeList auxNodeList1 = auxNode.getChildNodes();
@@ -1252,10 +1253,11 @@ public abstract class DeviceAdapter
                         Node auxNode1 = auxNodeList1.item(index);
                         if (auxNode1.getNodeName().equals("Value"))
                         {
-                          auxParameterSetting.setValue(auxNode1.getTextContent());
+                          if (!auxNode1.getTextContent().equals(""))
+                            auxParameterSetting.setValue(auxNode1.getTextContent());
                           if (report)
                           {
-                            System.out.println("PARAMETER value: " + auxParameterSetting.getValue());
+                            logger.debug("PARAMETER value: " + auxNode1.getTextContent());
                           }
                         }
                       }
@@ -1391,7 +1393,7 @@ public abstract class DeviceAdapter
     return moduleList;
   }
 
-  private static List<Skill> ReadSkills(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
+  private List<Skill> ReadSkills(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
   {
     String query = "//Skills/*[contains(name(),'AtomicSkill') or contains(name(),'CompositeSkill')]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
@@ -1399,7 +1401,7 @@ public abstract class DeviceAdapter
 
     if (report)
     {
-      System.out.println("Elements " + nodeList.getLength());
+      logger.debug("Elements " + nodeList.getLength());
     }
     List<Skill> skillList = new ArrayList<>();
 
@@ -1422,7 +1424,7 @@ public abstract class DeviceAdapter
           List<KPI> auxKPI = new ArrayList<>();
           if (report)
           {
-            System.out.println("***SKILL NAME: " + n2.getNodeName());
+            logger.debug("***SKILL NAME: " + n2.getNodeName());
           }
           auxSkill.setName(n2.getNodeName());
 
@@ -1437,7 +1439,7 @@ public abstract class DeviceAdapter
                 //SR
                 if (report)
                 {
-                  System.out.println("***SR NAME: " + auxData.getNodeName());
+                  logger.debug("***SR NAME: " + auxData.getNodeName());
                 }
                 SkillRequirement auxSR = new SkillRequirement();
                 auxSR.setName(auxData.getNodeName());
@@ -1457,7 +1459,7 @@ public abstract class DeviceAdapter
                         auxSR.setUniqueId(IDchilds.item(q).getTextContent());
                         if (report)
                         {
-                          System.out.println("SR TEM ID! :O " + IDchilds.item(q).getTextContent());
+                          logger.debug("SR TEM ID! :O " + IDchilds.item(q).getTextContent());
                         }
                       }
                     }
@@ -1475,7 +1477,7 @@ public abstract class DeviceAdapter
                     auxSkill.setUniqueId(IDchilds.item(z).getTextContent());
                     if (report)
                     {
-                      System.out.println("Skill TEM ID! :O " + IDchilds.item(z).getTextContent());
+                      logger.debug("Skill TEM ID! :O " + IDchilds.item(z).getTextContent());
                     }
                   }
                 }
@@ -1536,7 +1538,7 @@ public abstract class DeviceAdapter
                     auxPara.add(parameter);
                     if (report)
                     {
-                      System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
+                      logger.debug("Skill TEM ID! :O " + childs.item(z).getTextContent());
                     }
                   }
                 }
@@ -1597,7 +1599,7 @@ public abstract class DeviceAdapter
                     auxKPI.add(kpi);
                     if (report)
                     {
-                      System.out.println("Skill TEM ID! :O " + childs.item(z).getTextContent());
+                      logger.debug("Skill TEM ID! :O " + childs.item(z).getTextContent());
                     }
                   }
                 }
@@ -1649,7 +1651,7 @@ public abstract class DeviceAdapter
     return skillList;
   }
 
-  private static String ReadManufacturer(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
+  private String ReadManufacturer(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
   {
     String query = "//DeviceAdapter/*[AssemblySystem]/*/manufacturer/Type[contains(@namespace, 'manufacturer')]";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
@@ -1657,7 +1659,7 @@ public abstract class DeviceAdapter
 
     if (report)
     {
-      System.out.println("Elements " + nodeList.getLength());
+      logger.debug("Elements " + nodeList.getLength());
     }
 
     if (nodeList.getLength() > 0)
@@ -1677,7 +1679,7 @@ public abstract class DeviceAdapter
     return "";
   }
 
-  private static String ReadDeviceAdapterID(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
+  private String ReadDeviceAdapterID(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
   {
     String query = "//DeviceAdapter/*[AssemblySystem]/*/ID/Value";
     XPath xPath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
@@ -1685,7 +1687,7 @@ public abstract class DeviceAdapter
 
     if (report)
     {
-      System.out.println("Elements " + nodeList.getLength());
+      logger.debug("Elements " + nodeList.getLength());
     }
 
     if (nodeList.getLength() > 0)
@@ -1707,7 +1709,7 @@ public abstract class DeviceAdapter
 
   }
 
-  private static String ReadDeviceAdapterType(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
+  private String ReadDeviceAdapterType(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
   {
     String query1 = "//DeviceAdapter/*[AssemblySystem]/*/TransportSystem";
     String query2 = "//DeviceAdapter/*[AssemblySystem]/*/WorkStation";
@@ -1716,14 +1718,14 @@ public abstract class DeviceAdapter
 
     if (report)
     {
-      System.out.println("Type elements Transport: " + nodeList.getLength());
+      logger.debug("Type elements Transport: " + nodeList.getLength());
     }
 
     NodeList nodeList2 = (NodeList) xPath.compile(query2).evaluate(xmlDocument, XPathConstants.NODESET);
 
     if (report)
     {
-      System.out.println("Type elements Workstation: " + nodeList2.getLength());
+      logger.debug("Type elements Workstation: " + nodeList2.getLength());
     }
 
     if (nodeList.getLength() > 0)
@@ -1744,7 +1746,7 @@ public abstract class DeviceAdapter
 
   }
 
-  private static List<String> ReadDeviceAdapterState(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
+  private List<String> ReadDeviceAdapterState(org.w3c.dom.Document xmlDocument, boolean report) throws XPathExpressionException
   {
     String query1 = "//DeviceAdapter/*[AssemblySystem]/*/DeviceAdapterState";
     List<String> results = new ArrayList<>();
@@ -1753,7 +1755,7 @@ public abstract class DeviceAdapter
 
     if (report)
     {
-      System.out.println("State elements num: " + nodeList.getLength());
+      logger.debug("State elements num: " + nodeList.getLength());
     }
     NodeList childNodeList = null;
     try
@@ -1780,7 +1782,6 @@ public abstract class DeviceAdapter
           results.add(auxTest + ":" + childNodeList.item(i).getTextContent());
         }
       }
-
     }
     return results;
   }
@@ -1829,7 +1830,7 @@ public abstract class DeviceAdapter
     return "";
   }
 
-  private static boolean isRecipeNode(Node node, boolean report)
+  private boolean isRecipeNode(Node node, boolean report)
   {
     boolean skillFound = false;
     boolean invokeSkillFound = false;
@@ -1851,7 +1852,7 @@ public abstract class DeviceAdapter
       {
         if (report)
         {
-          System.out.println("/n***** /n RECIPE FOUND -- " + node.getNodeName() + " /n ***** /n");
+          logger.debug("RECIPE FOUND -- " + node.getNodeName());
         }
         return true;
       }
@@ -1859,7 +1860,7 @@ public abstract class DeviceAdapter
     return false;
   }
 
-  private static boolean isKPINode(Node node, boolean report)
+  private boolean isKPINode(Node node, boolean report)
   {
     boolean KPIFound = false;
     NodeList recipeChilds = node.getChildNodes();
@@ -1876,7 +1877,32 @@ public abstract class DeviceAdapter
       {
         if (report)
         {
-          System.out.println("/n***** /n KPI FOUND -- " + node.getNodeName() + " /n ***** /n");
+          logger.debug("KPI FOUND -- " + node.getNodeName());
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isParameterNode(Node node, boolean report)
+  {
+    boolean ParameterFound = false;
+    NodeList recipeChilds = node.getChildNodes();
+
+    for (int i = 0; i < recipeChilds.getLength(); i++)
+    {
+      Node auxNode = recipeChilds.item(i);
+      if (auxNode.getNodeName().toUpperCase().equals("PARAMETER"))
+      {
+        ParameterFound = true;
+      }
+
+      if (ParameterFound)
+      {
+        if (report)
+        {
+          logger.debug("Parameter FOUND -- " + node.getNodeName());
         }
         return true;
       }
@@ -1972,13 +1998,13 @@ public abstract class DeviceAdapter
         }
         else
         {
-          System.out.println("[DEVICE ADAPTER] vertx creation not succedeed");
+          logger.debug("[DEVICE ADAPTER] vertx creation not succedeed");
         }
       });
     }
     catch (Exception ex)
     {
-      System.out.println("Error trying to init vertx: " + ex.getMessage());
+      logger.debug("Error trying to init vertx: " + ex.getMessage());
     }
   }
 
