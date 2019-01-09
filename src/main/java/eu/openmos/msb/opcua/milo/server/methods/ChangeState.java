@@ -818,24 +818,37 @@ public class ChangeState
               logger.error("[" + CS_ID_final + "][NULL] last_da: " + da_id + " -- last_sr_id: " + sr_id + " -- last_recipeID: " + recipeID + " -- "
                       + "da_next_id: " + da_next_id + " -- nextRecipeID(ET): " + nextRecipeID);
             }
-            if (da_id_last.equals(da_next_id) || da_id.equals(da_id_last))
+            if (da_next_id.equals(da_id_last) /*|| da_id_last.equals(da_id)*/ || da_next_id.equals(da_id))
             {
+              logger.info("[" + CS_ID_final + "][SEMAPHORE] will not take for last_da: " + da_id_last + " *** da: " + da_id + " *** next_da: " + da_next_id);
               //no need to get semaphore
               if (res && checkSemaphoreWithLock(da_next_id, productInst_id, sr_next.getUniqueId(), false, CS_ID_final))
               {
                 PECManager.getInstance().lock_SR_to_WS(da_next_id, sr_next.getUniqueId(), productInst_id);
+                if (!(da_id_last.equals(da_next_id) || da_id_last.equals(da_id)))
+                {
+                  logger.info("[" + CS_ID_final + "][SEMAPHORE] RELEASE for da_id: " + da_id_last);
+                  PECManager.getInstance().getExecutionMap().get(da_id_last).release();
+                  DeviceAdapter temp_da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id_last);
+                  MSB_gui.updateTableAdaptersSemaphore(
+                          String.valueOf(PECManager.getInstance().getExecutionMap().get(da_id_last).availablePermits()),
+                          temp_da.getSubSystem().getName());
+                }
                 return true;
               }
             }
             else if (res && checkSemaphoreWithLock(da_next_id, productInst_id, sr_next.getUniqueId(), true, CS_ID_final))
             {
               //release previous DA
-              logger.info("[" + CS_ID_final + "][SEMAPHORE] RELEASE for da_id: " + da_id_last);
-              PECManager.getInstance().getExecutionMap().get(da_id_last).release();
-              DeviceAdapter temp_da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id_last);
-              MSB_gui.updateTableAdaptersSemaphore(
-                      String.valueOf(PECManager.getInstance().getExecutionMap().get(da_id_last).availablePermits()),
-                      temp_da.getSubSystem().getName());
+              if (!da_id_last.equals(da_id))
+              {
+                logger.info("[" + CS_ID_final + "][SEMAPHORE] RELEASE for da_id: " + da_id_last);
+                PECManager.getInstance().getExecutionMap().get(da_id_last).release();
+                DeviceAdapter temp_da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id_last);
+                MSB_gui.updateTableAdaptersSemaphore(
+                        String.valueOf(PECManager.getInstance().getExecutionMap().get(da_id_last).availablePermits()),
+                        temp_da.getSubSystem().getName());
+              }
               PECManager.getInstance().lock_SR_to_WS(da_next_id, sr_next.getUniqueId(), productInst_id);
               return true;
             }
@@ -1422,14 +1435,6 @@ public class ChangeState
     {
       //TODO add recipe remove code
       DACManager.getInstance().QueuedActionMap.remove(recipe_id);
-    }
-  }
-
-  private void finishRecipeFromHMI(String prod_type_id, String productInstance_id)
-  {
-    if (prod_type_id.toUpperCase().equals(""))
-    {
-      finishProduct(productInstance_id);
     }
   }
 }
