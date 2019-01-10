@@ -754,7 +754,8 @@ public abstract class DeviceAdapter
                 logger.debug("PARAMETER NAME: " + parameterNode.getNodeName());
               }
               ParameterSetting auxParameterSetting = new ParameterSetting();
-
+              auxParameterSetting.setName(parameterNode.getNodeName());
+              auxParameterSetting.setValue(new ArrayList<>());
               NodeList auxNodeList12 = parameterNode.getChildNodes();
               for (int h = 0; h < auxNodeList12.getLength(); h++)
               {
@@ -778,16 +779,16 @@ public abstract class DeviceAdapter
                 else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
                         /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                 {
-                  auxParameterSetting.setName(auxNode.getNodeName());
+
                   NodeList auxNodeList1 = auxNode.getChildNodes();
                   for (int index = 0; index < auxNodeList1.getLength(); index++)
                   {
                     Node auxNode1 = auxNodeList1.item(index);
                     if (auxNode1.getNodeName().equals("Value"))
                     {
-                      if (!auxNode1.getTextContent().equals(""))
+                      if (!auxNode1.getTextContent().trim().equals(""))
                       {
-                        auxParameterSetting.setValue(auxNode1.getTextContent());
+                        auxParameterSetting.getValue().add(auxNode1.getTextContent());
                       }
                       if (report)
                       {
@@ -1225,7 +1226,8 @@ public abstract class DeviceAdapter
                     logger.debug("PARAMETER NAME: " + parameterNode.getNodeName());
                   }
                   ParameterSetting auxParameterSetting = new ParameterSetting();
-
+                  auxParameterSetting.setValue(new ArrayList<>());
+                  auxParameterSetting.setName(parameterNode.getNodeName());
                   NodeList auxNodeList12 = parameterNode.getChildNodes();
                   for (int h = 0; h < auxNodeList12.getLength(); h++)
                   {
@@ -1250,7 +1252,7 @@ public abstract class DeviceAdapter
                     else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
                             /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                     {
-                      auxParameterSetting.setName(auxNode.getNodeName());
+                      
                       NodeList auxNodeList1 = auxNode.getChildNodes();
                       for (int index = 0; index < auxNodeList1.getLength(); index++)
                       {
@@ -1259,7 +1261,7 @@ public abstract class DeviceAdapter
                         {
                           if (!auxNode1.getTextContent().equals(""))
                           {
-                            auxParameterSetting.setValue(auxNode1.getTextContent());
+                            auxParameterSetting.getValue().add(auxNode1.getTextContent());
                           }
                           if (report)
                           {
@@ -1499,22 +1501,24 @@ public abstract class DeviceAdapter
                   }
                 }
               }
-              else if (auxData.getNodeName().toLowerCase().contains("parameterport"))
+              else if (auxData.getNodeName().toLowerCase().endsWith("parameterport"))
               {
                 NodeList childs = auxData.getChildNodes();
                 for (int z = 0; z < childs.getLength(); z++)
                 {
+                  /*
                   if (childs.item(z).getNodeName().toLowerCase().contains("parameter")
-                          && !childs.item(z).getNodeName().toLowerCase().contains("parameterport"))
+                          && !childs.item(z).getNodeName().toLowerCase().contains("parameterport"))*/
+                  if (isParameterNode(childs.item(z), report))
                   {
                     NodeList pChilds = childs.item(z).getChildNodes();
                     Parameter parameter = new Parameter();
-
+                    parameter.setName(childs.item(z).getNodeName());
                     for (int x = 0; x < pChilds.getLength(); x++)
                     {
                       if (!pChilds.item(x).getNodeName().toLowerCase().contains("type")
                               && !pChilds.item(x).getNodeName().toLowerCase().contains("path")
-                              && !pChilds.item(x).getNodeName().toLowerCase().contains("parameter"))
+                              /*&& !pChilds.item(x).getNodeName().toLowerCase().contains("parameter")*/)
                       {
                         if (pChilds.item(x).getNodeName().equals("ID"))
                         {
@@ -1545,8 +1549,8 @@ public abstract class DeviceAdapter
                           {
                             if (paraChilds.item(p).getNodeName().toLowerCase().equals("value"))
                             {
-                              parameter.setName(pChilds.item(x).getNodeName());
-                              parameter.setDefaultValue(paraChilds.item(p).getTextContent());
+                              //parameter.setName(pChilds.item(x).getNodeName());
+                              //parameter.setDefaultValue(paraChilds.item(p).getTextContent());
                             }
                           }
                         }
@@ -1555,7 +1559,7 @@ public abstract class DeviceAdapter
                     auxPara.add(parameter);
                     if (report)
                     {
-                      logger.debug("Skill TEM ID! :O " + childs.item(z).getTextContent());
+                      logger.debug("Parameter added: " + parameter.getName());
                     }
                   }
                 }

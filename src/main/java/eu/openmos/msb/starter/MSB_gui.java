@@ -1959,7 +1959,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
-    Recipe recipe = da.getSubSystem().getRecipes().get(0);
+    Recipe recipe = da.getSubSystem().getInternalModules().get(5).getRecipes().get(0);
     //recipe.setName("WOWOWOOW");
     recipe.setUniqueId(UUID.randomUUID().toString());
 

@@ -5,6 +5,7 @@ import java.util.Date;
 import eu.openmos.model.utilities.SerializationConstants;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -36,7 +37,7 @@ public class ParameterSetting extends Base implements Serializable
   /**
    * Paramenter Setting value.
    */
-  private String value;
+  private List<String> value;
   /**
    * Pointer to the parameter.
    */
@@ -65,7 +66,7 @@ public class ParameterSetting extends Base implements Serializable
   public ParameterSetting(String description,
           String id,
           String name,
-          String value,
+          List<String> value,
           Parameter parameter,
           Date registeredTimestamp
   )
@@ -110,12 +111,12 @@ public class ParameterSetting extends Base implements Serializable
     this.name = name;
   }
 
-  public String getValue()
+  public List<String> getValue()
   {
     return value;
   }
 
-  public void setValue(String value)
+  public void setValue(List<String> value)
   {
     this.value = value;
   }
