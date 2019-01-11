@@ -38,6 +38,7 @@ import eu.openmos.model.Module;
 import eu.openmos.model.Order;
 import eu.openmos.model.OrderInstance;
 import eu.openmos.model.OrderLine;
+import eu.openmos.model.ParameterSetting;
 import eu.openmos.model.Part;
 import eu.openmos.model.PartInstance;
 import eu.openmos.model.Product;
@@ -1956,22 +1957,46 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
   private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
   {//GEN-HEADEREND:event_jButton2ActionPerformed
+    //GEN-HEADEREND:event_jButton2ActionPerformed
     List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
-    Recipe recipe = da.getSubSystem().getInternalModules().get(5).getRecipes().get(0);
+    Recipe weighingHRecipe = da.getSubSystem().getInternalModules().get(5).getRecipes().get(0);
+    Recipe productTubRecipe = da.getSubSystem().getRecipes().get(0);
     //recipe.setName("WOWOWOOW");
-    recipe.setUniqueId(UUID.randomUUID().toString());
+    weighingHRecipe.setUniqueId(UUID.randomUUID().toString());
+    productTubRecipe.setUniqueId(UUID.randomUUID().toString());
+    weighingHRecipe.setName(weighingHRecipe.getName() + "KirillDemo");
 
-    String string_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(recipe));
+    
+    for (ParameterSetting ps :  weighingHRecipe.getParameterSettings())
+    {
+      if (ps.getName().toLowerCase().contains("cycles"))
+      {
+        List<String> wow = new ArrayList<>();
+        wow.add("555");
+        ps.setValue(wow);
+      }
+    }
+    
+    String string_wh_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(weighingHRecipe));
+    //String string_pt_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(productTubRecipe));
+    
+    System.out.println("###recipies start###");
+    System.out.println(string_wh_recipe);
+    System.out.println();
+    //System.out.println(string_pt_recipe);
+    System.out.println("###recipies end###");
 
     DeviceAdapterOPC client = (DeviceAdapterOPC) da;
     OpcUaClient opcua_client = client.getClient().getClientObject();
 
-    NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
-    NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
+    NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getInternalModules().get(5).getChangeRecipeObjectID());
+    NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getInternalModules().get(5).getChangeRecipeMethodID());
 
-    boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+    boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_wh_recipe);
+  
+    logger.debug("RECIPE UPDATE RESULT: " + ret);
   }//GEN-LAST:event_jButton2ActionPerformed
   /*
    List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
