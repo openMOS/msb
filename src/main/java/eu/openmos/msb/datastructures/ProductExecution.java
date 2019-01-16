@@ -139,6 +139,7 @@ public class ProductExecution implements Runnable
           {
             if (auxProduct.getUniqueId() == null ? productId == null : auxProduct.getUniqueId().equals(productId)) //check if the resquested product is available
             {
+                logger.debug("Product type found: " + auxProduct);
               //analisar SkillRequirements
               List<SkillRequirement> skillRequirements = auxProduct.getSkillRequirements();
               for (SkillRequirement auxSR : skillRequirements)
@@ -146,13 +147,16 @@ public class ProductExecution implements Runnable
                 if (auxSR.getPrecedents() == null) //check which recipe has the precedents =null , which means it is the first one 
                 {
                   //check for 1 available recipe for the SR
+                  logger.debug("Trying to execute SR: " + auxSR.getName());
                   while (true)
                   {
                     boolean getOut = false;
                     for (String recipeID : auxSR.getRecipeIDs())
                     {
+                        logger.debug("Checking recipe: " + recipeID);
                       if (checkRecipeAvailable(recipeID, auxProdInstance)) //check if the recipe is valid and if the DA and nextDA are at ready state
                       {
+                          logger.debug("Recipe: " + recipeID + " is ready");
                         if (executeRecipe(recipeID, auxProdInstance)) //if returns false, check another alternative recipe for the same SR
                         {
                           logger.info("The execution of Recipe: " + recipeID + " Returned true");
@@ -174,6 +178,10 @@ public class ProductExecution implements Runnable
                         {
                           logger.warn("[ExecuteProdsInstance] The execution of Recipe: " + recipeID + " Returned false! checking alternatives...");
                         }
+                      }
+                      else
+                      {
+                          logger.debug("Recipe: " + recipeID + " is not ready");
                       }
                     }
                     if (getOut)
@@ -304,9 +312,9 @@ public class ProductExecution implements Runnable
               {
                 String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
                 da_next.getSubSystem().setState(state);
-                System.out.println("daState for NEXT: " + state);
+                logger.info("daState for NEXT: " + state);
 
-                if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
+                //if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY))
                 {
                   return true;
                 }
