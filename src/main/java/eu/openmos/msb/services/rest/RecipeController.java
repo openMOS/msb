@@ -527,7 +527,7 @@ public class RecipeController extends Base
               NodeId objectID = Functions.convertStringToNodeId(invokeObjectID);
               NodeId methodID = Functions.convertStringToNodeId(invokeMethodID);
 
-              boolean result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, productInstanceId, "HMItest", false);
+              boolean result = daOPC.getClient().InvokeDeviceSkill(daOPC.getClient().getClientObject(), objectID, methodID, productInstanceId, "HMItest", true);
 
               if (result)
               { //status code of the call
