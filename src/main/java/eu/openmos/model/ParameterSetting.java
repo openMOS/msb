@@ -37,7 +37,7 @@ public class ParameterSetting extends Base implements Serializable
   /**
    * Paramenter Setting value.
    */
-  private List<String> value;
+  private String value;
   /**
    * Pointer to the parameter.
    */
@@ -66,7 +66,7 @@ public class ParameterSetting extends Base implements Serializable
   public ParameterSetting(String description,
           String id,
           String name,
-          List<String> value,
+          String value,
           Parameter parameter,
           Date registeredTimestamp
   )
@@ -111,12 +111,12 @@ public class ParameterSetting extends Base implements Serializable
     this.name = name;
   }
 
-  public List<String> getValue()
+  public String getValue()
   {
     return value;
   }
 
-  public void setValue(List<String> value)
+  public void setValue(String value)
   {
     this.value = value;
   }

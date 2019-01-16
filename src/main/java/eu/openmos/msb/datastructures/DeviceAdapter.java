@@ -755,7 +755,7 @@ public abstract class DeviceAdapter
               }
               ParameterSetting auxParameterSetting = new ParameterSetting();
               auxParameterSetting.setName(parameterNode.getNodeName());
-              auxParameterSetting.setValue(new ArrayList<>());
+              //auxParameterSetting.setValue(new ArrayList<>());
               NodeList auxNodeList12 = parameterNode.getChildNodes();
               for (int h = 0; h < auxNodeList12.getLength(); h++)
               {
@@ -788,7 +788,7 @@ public abstract class DeviceAdapter
                     {
                       if (!auxNode1.getTextContent().trim().equals(""))
                       {
-                        auxParameterSetting.getValue().add(auxNode1.getTextContent());
+                        auxParameterSetting.setValue(auxNode1.getTextContent());
                       }
                       if (report)
                       {
@@ -920,7 +920,8 @@ public abstract class DeviceAdapter
       recipe.setParameterSettings(paraSettings);
       recipe.setKpiSettings(KPIsettings);
       recipe.setSkillRequirements(SRs);
-      recipe.getSkill().setSkillRequirements(SRs);
+      if (recipe.getSkill() != null)
+        recipe.getSkill().setSkillRequirements(SRs);
       //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
       recipeList.add(recipe);
     }
@@ -1226,7 +1227,7 @@ public abstract class DeviceAdapter
                     logger.debug("PARAMETER NAME: " + parameterNode.getNodeName());
                   }
                   ParameterSetting auxParameterSetting = new ParameterSetting();
-                  auxParameterSetting.setValue(new ArrayList<>());
+                  //auxParameterSetting.setValue(new ArrayList<>());
                   auxParameterSetting.setName(parameterNode.getNodeName());
                   NodeList auxNodeList12 = parameterNode.getChildNodes();
                   for (int h = 0; h < auxNodeList12.getLength(); h++)
@@ -1261,7 +1262,7 @@ public abstract class DeviceAdapter
                         {
                           if (!auxNode1.getTextContent().equals(""))
                           {
-                            auxParameterSetting.getValue().add(auxNode1.getTextContent());
+                            auxParameterSetting.setValue(auxNode1.getTextContent());
                           }
                           if (report)
                           {
@@ -1343,7 +1344,8 @@ public abstract class DeviceAdapter
                     break;
                   }
                 }
-                logger.debug("[DA_PARSER] skill_id: " + skill_id + " *** for recipe: " + recipe.getName());
+                if (report)
+                    logger.debug("[DA_PARSER] skill_id: " + skill_id + " *** for recipe: " + recipe.getName());
                 if (!skill_id.equals(""))
                 {
                   for (Skill skill : subSystem.getSkills())
@@ -1387,7 +1389,8 @@ public abstract class DeviceAdapter
             recipe.setParameterSettings(paraSettings);
             recipe.setKpiSettings(KPIsettings);
             recipe.setSkillRequirements(SRs);
-            recipe.getSkill().setSkillRequirements(SRs);
+            if (recipe.getSkill() != null)
+                recipe.getSkill().setSkillRequirements(SRs);
             //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
             recipeList.add(recipe);
           }

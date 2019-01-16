@@ -409,8 +409,6 @@ public class RecipeController extends Base
     if (skill != null && skill.getParameters() != null)
     {
       //logger.debug("Found " + skill.getParameterPorts().size() + " ParamPort");
-      List<String> parameterValueList = new ArrayList<>();
-      parameterValueList.add("ParamSetting Value");
       for (Parameter parameter : skill.getParameters())
       {
         ParameterSetting paramSett
@@ -418,7 +416,7 @@ public class RecipeController extends Base
                         "ParamSetting from Param: " + parameter.getName(),
                         UUID.randomUUID().toString(),
                         "ParamSetting NAME",
-                        parameterValueList,
+                        "ParamSetting Value",
                         parameter,
                         new Date()
                 );

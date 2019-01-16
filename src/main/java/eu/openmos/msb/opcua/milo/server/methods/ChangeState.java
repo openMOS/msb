@@ -87,7 +87,7 @@ public class ChangeState
   {
     changeStateAndNextRecipeTimer.reset();
     changeStateAndNextRecipeTimer.start();
-    logger.debug("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
+    logger.info("Change State invoked! '{}'", context.getObjectNode().getBrowseName().getName());
     String da_name = DatabaseInteraction.getInstance().getDeviceAdapterNameByAmlID(da_id);
     final int CS_ID_final = ++CS_ID;
     logger.info("[" + CS_ID_final + "][CHANGE_STATE]Change State invoked with parameters-> DaID:" + da_id

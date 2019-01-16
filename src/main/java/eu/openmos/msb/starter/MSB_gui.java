@@ -1956,8 +1956,8 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   }//GEN-LAST:event_btnClearSubmittedOrdersActionPerformed
 
   private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
-  {//GEN-HEADEREND:event_jButton2ActionPerformed
-    //GEN-HEADEREND:event_jButton2ActionPerformed
+  {                                             
+//GEN-HEADEREND:event_jButton2ActionPerformed
     List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
 
     DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
@@ -1973,9 +1973,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     {
       if (ps.getName().toLowerCase().contains("cycles"))
       {
-        List<String> wow = new ArrayList<>();
-        wow.add("555");
-        ps.setValue(wow);
+        ps.setValue("555");
       }
     }
     
