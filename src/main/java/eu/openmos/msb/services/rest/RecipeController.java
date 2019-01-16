@@ -371,6 +371,8 @@ public class RecipeController extends Base
     // fulfilled skill reqs
     recipe.setFulfilledSkillRequirements(new LinkedList<>());
 
+    //call changeRecipe 
+    
     return recipe;
   }
 
