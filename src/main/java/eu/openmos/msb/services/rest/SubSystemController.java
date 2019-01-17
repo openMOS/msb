@@ -204,8 +204,7 @@ public class SubSystemController extends Base
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/{subsystemId}/recipes")
-  public Boolean newRecipe(@PathParam("subsystemId") String pathToInsert,
-          Recipe newRecipe)
+  public Boolean newRecipe(@PathParam("subsystemId") String pathToInsert, Recipe newRecipe)
   {
     logger.debug("New Recipe for: " + pathToInsert);
 
@@ -228,7 +227,8 @@ public class SubSystemController extends Base
             {
               if (auxModule.getUniqueId().equals(module.getUniqueId()))
               {
-                String string_recipe = Functions.ClassToString(newRecipe);
+                  Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(newRecipe);
+                String string_recipe = Functions.ClassToString(recipe_DA);
 
                 DeviceAdapterOPC client = (DeviceAdapterOPC) da;
                 OpcUaClient opcua_client = client.getClient().getClientObject();
@@ -259,7 +259,8 @@ public class SubSystemController extends Base
           {
             if (da.getSubSystem().getUniqueId().equals(subSystem.getUniqueId()))
             {
-              String string_recipe = Functions.ClassToString(newRecipe);
+                Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(newRecipe);
+              String string_recipe = Functions.ClassToString(recipe_DA);
 
               DeviceAdapterOPC client = (DeviceAdapterOPC) da;
               OpcUaClient opcua_client = client.getClient().getClientObject();
@@ -269,7 +270,7 @@ public class SubSystemController extends Base
 
               ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
 
-              logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
+              logger.info("Sending new recipe to DA: " + da.getSubSystem().getName());
 
               return ret;
             }

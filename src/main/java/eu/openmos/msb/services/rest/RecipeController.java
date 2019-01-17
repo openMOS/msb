@@ -136,16 +136,17 @@ public class RecipeController extends Base
         Boolean found = false;
         for (Recipe auxRecipe : da.getSubSystem().getRecipes())
         {
-          if (auxRecipe.getUniqueId().equals(recipeId))
+          if (auxRecipe.getUniqueId().equals(recipe.getUniqueId()))
           {
+              logger.debug("[RECIPE_UPDATE] recipe found in da: " + da_id);
             Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
             String string_recipe = Functions.ClassToString(recipe_DA);
 
             DeviceAdapterOPC client = (DeviceAdapterOPC) da;
             OpcUaClient opcua_client = client.getClient().getClientObject();
 
-            NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
-            NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
+            NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
+            NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
 
             ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
 
@@ -159,16 +160,17 @@ public class RecipeController extends Base
           {
             for (Recipe auxRecipe : module.getRecipes())
             {
-              if (auxRecipe.getUniqueId().equals(recipeId))
+              if (auxRecipe.getUniqueId().equals(recipe.getUniqueId()))
               {
+                  logger.debug("[RECIPE_UPDATE] recipe found in module from da: " + da_id);
                 Recipe_DA recipe_DA = Recipe_DA.createRecipe_DA(recipe);
                 String string_recipe = Functions.ClassToString(recipe_DA);
 
                 DeviceAdapterOPC client = (DeviceAdapterOPC) da;
                 OpcUaClient opcua_client = client.getClient().getClientObject();
 
-                NodeId object_id = Functions.convertStringToNodeId(module.getChangeRecipeMethodID());
-                NodeId method_id = Functions.convertStringToNodeId(module.getChangeRecipeObjectID());
+                NodeId object_id = Functions.convertStringToNodeId(module.getChangeRecipeObjectID());
+                NodeId method_id = Functions.convertStringToNodeId(module.getChangeRecipeMethodID());
 
                 ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
               }
@@ -356,7 +358,6 @@ public class RecipeController extends Base
     // Setting Recipe Skill Requirements with empty list that 
     // that will be filled using HMI
     recipe.setSkillRequirements(skill.getSkillRequirements());
-
     recipe.setOptimized(true);
     recipe.setValid(true);
 
@@ -387,9 +388,9 @@ public class RecipeController extends Base
       {
         KPISetting kpiSetting
                 = new KPISetting(
-                        "KPISetting From KPI: " + kpi.getName(),
+                        kpi.getName(),
                         UUID.randomUUID().toString(),
-                        "KPISetting Name",
+                        kpi.getName(),
                         kpi,
                         kpi.getKpiType(),
                         kpi.getUnit(),
@@ -415,9 +416,9 @@ public class RecipeController extends Base
       {
         ParameterSetting paramSett
                 = new ParameterSetting(
-                        "ParamSetting from Param: " + parameter.getName(),
+                        parameter.getName(),
                         UUID.randomUUID().toString(),
-                        "ParamSetting NAME",
+                        parameter.getName(),
                         "ParamSetting Value",
                         parameter,
                         new Date()

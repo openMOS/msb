@@ -50,7 +50,7 @@ public class UpdateDevice
   {
     try
     {
-      logger.debug("Update Device invoked! '{}'", context.getObjectNode().getBrowseName().getName());
+      logger.debug("Update Device invoked! ID: " + da_id);
       //rebrowse namespace of targert DA
 
       Thread threadUpdateDevice = new Thread()
@@ -65,10 +65,13 @@ public class UpdateDevice
             try
             {
               da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_id);
-
+              
               if (da == null)
               {
-                Thread.sleep(1000);
+                  DACManager.getInstance().getDeviceAdapterFromModuleID(da_id);
+                  if (da == null){
+                     Thread.sleep(1000);
+                  }
               }
               count++;
             } catch (InterruptedException ex)
@@ -76,7 +79,9 @@ public class UpdateDevice
               java.util.logging.Logger.getLogger(UpdateDevice.class.getName()).log(Level.SEVERE, null, ex);
             }
           }
-
+          if (da == null)
+              return;
+          
           Thread threadRebrowseNamespace = DACManager.getInstance().update_device_threadMap.get(da_id);
           try
           {
@@ -92,6 +97,7 @@ public class UpdateDevice
 
           }
 
+          if (da != null){
           final DeviceAdapter test_da = da;
           threadRebrowseNamespace = new Thread()
           {
@@ -138,10 +144,14 @@ public class UpdateDevice
 
           logger.debug("" + threadRebrowseNamespace.getName());
           threadRebrowseNamespace.start();
+          }
+          else{
+              logger.debug("[UPDATE_DEVICE] da not found!");
+          }
         }
       };
       threadUpdateDevice.start();
-      logger.debug("Update Device FINISHED!");
+      logger.debug("Update Device returned!");
       result.set(1);
     } catch (Exception ex)
     {

@@ -331,6 +331,10 @@ public class PECManager
             SkillRequirement sr_next = getNextSR(sr_id, productType_id, nextRecipeID);
             return PECManager.getInstance().getRecipeIDbyTrackPI(sr_next, productInst_id, nextRecipeID);
           }
+          else
+          {
+            return nextRecipeID;
+          }
         }
       }
       //no prodInst found in execTable, search for productType now
