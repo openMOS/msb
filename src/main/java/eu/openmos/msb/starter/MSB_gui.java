@@ -2233,7 +2233,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     for (int i = 0; i < modulesTableModel.getColumnCount(); i++)
     {
       rowData[i] = modulesTableModel.getValueAt(0, i);
-      System.out.println("Devices NA TABELA: " + rowData[i].toString());
+      //System.out.println("Devices NA TABELA: " + rowData[i].toString());
     }
     opc_comms_log.append(new Date(System.currentTimeMillis()) + "Devices successfully added to table. Name: " + DeviceName + "\n");
 

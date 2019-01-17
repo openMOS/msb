@@ -387,8 +387,8 @@ public abstract class DeviceAdapter
             for (int k = 0; k < recipes.getLength(); k++)
             {
               if (recipes.item(k).getNodeType() == Node.ELEMENT_NODE
-                      && (!recipes.item(k).getNodeName().contains("Path") || !recipes.item(k).getNodeName().contains("Type")
-                      || !recipes.item(k).getNodeName().contains("ID") || !recipes.item(k).getNodeName().contains("RecipeColumn")))
+                  && (!recipes.item(k).getNodeName().contains("Path") || !recipes.item(k).getNodeName().contains("Type")
+                  || !recipes.item(k).getNodeName().contains("ID") || !recipes.item(k).getNodeName().contains("RecipeColumn")))
               {
                 Node nID = recipes.item(k);
                 NodeList nIDChild = nID.getChildNodes();
@@ -416,9 +416,9 @@ public abstract class DeviceAdapter
             for (int k = 0; k < products.getLength(); k++)
             {
               if (products.item(k).getNodeType() == Node.ELEMENT_NODE && !products.item(k).getNodeName().equals("ID")
-                      && !products.item(k).getNodeName().contains("Column")
-                      && !products.item(k).getNodeName().equals("Path") && !products.item(k).getNodeName().equals("Type")
-                      && !products.item(k).getNodeName().equals("Line") && !products.item(k).getNodeName().equals("TaskExecutionTable"))
+                  && !products.item(k).getNodeName().contains("Column")
+                  && !products.item(k).getNodeName().equals("Path") && !products.item(k).getNodeName().equals("Type")
+                  && !products.item(k).getNodeName().equals("Line") && !products.item(k).getNodeName().equals("TaskExecutionTable"))
               {
                 Node nID = products.item(k);
                 NodeList nIDChild = nID.getChildNodes();
@@ -449,8 +449,8 @@ public abstract class DeviceAdapter
               {
                 Node nID = nRtE.item(k);
                 if (nID.getNodeType() == Node.ELEMENT_NODE
-                        && (!nID.getNodeName().contains("Path") || !nID.getNodeName().contains("Type")
-                        || !nID.getNodeName().contains("ID") || !nID.getNodeName().contains("RecipeColumn")))
+                    && (!nID.getNodeName().contains("Path") || !nID.getNodeName().contains("Type")
+                    || !nID.getNodeName().contains("ID") || !nID.getNodeName().contains("RecipeColumn")))
                 {
                   NodeList NextRecipeChildNodes = nID.getChildNodes();
                   for (int z = 0; z < NextRecipeChildNodes.getLength(); z++)
@@ -490,8 +490,8 @@ public abstract class DeviceAdapter
             for (int k = 0; k < ListOfpossRchoices.getLength(); k++)
             {
               if (ListOfpossRchoices.item(k).getNodeType() == Node.ELEMENT_NODE && !ListOfpossRchoices.item(k).getNodeName().contains("Column")
-                      && !ListOfpossRchoices.item(k).getNodeName().equals("Path") && !ListOfpossRchoices.item(k).getNodeName().equals("Type")
-                      && !ListOfpossRchoices.item(k).getNodeName().equals("ID"))
+                  && !ListOfpossRchoices.item(k).getNodeName().equals("Path") && !ListOfpossRchoices.item(k).getNodeName().equals("Type")
+                  && !ListOfpossRchoices.item(k).getNodeName().equals("ID"))
               {
                 Node nID = ListOfpossRchoices.item(k);
                 NodeList nIDChild = nID.getChildNodes();
@@ -777,7 +777,7 @@ public abstract class DeviceAdapter
                   }
                 }
                 else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
-                        /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
+                    /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                 {
 
                   NodeList auxNodeList1 = auxNode.getChildNodes();
@@ -921,7 +921,9 @@ public abstract class DeviceAdapter
       recipe.setKpiSettings(KPIsettings);
       recipe.setSkillRequirements(SRs);
       if (recipe.getSkill() != null)
+      {
         recipe.getSkill().setSkillRequirements(SRs);
+      }
       //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
       recipeList.add(recipe);
     }
@@ -1251,9 +1253,9 @@ public abstract class DeviceAdapter
                       }
                     }
                     else if (!auxNode.getNodeName().equals("Path") && !auxNode.getNodeName().equals("Type")
-                            /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
+                        /*&& !auxNode.getNodeName().toLowerCase().endsWith("parameter")*/ && !auxNode.getNodeName().toLowerCase().endsWith("unit"))
                     {
-                      
+
                       NodeList auxNodeList1 = auxNode.getChildNodes();
                       for (int index = 0; index < auxNodeList1.getLength(); index++)
                       {
@@ -1345,7 +1347,9 @@ public abstract class DeviceAdapter
                   }
                 }
                 if (report)
-                    logger.debug("[DA_PARSER] skill_id: " + skill_id + " *** for recipe: " + recipe.getName());
+                {
+                  logger.debug("[DA_PARSER] skill_id: " + skill_id + " *** for recipe: " + recipe.getName());
+                }
                 if (!skill_id.equals(""))
                 {
                   for (Skill skill : subSystem.getSkills())
@@ -1353,7 +1357,10 @@ public abstract class DeviceAdapter
                     //if (nRecipe.getNodeName().equals(skill.getName()))
                     if (skill_id.equals(skill.getUniqueId()))
                     {
-                      logger.debug("[DA_PARSER] skill found: " + skill.getName());
+                      if (report)
+                      {
+                        logger.debug("[DA_PARSER] skill found: " + skill.getName());
+                      }
                       recipe.setSkill(skill);
                       for (ParameterSetting paraSetting : paraSettings)
                       {
@@ -1390,7 +1397,9 @@ public abstract class DeviceAdapter
             recipe.setKpiSettings(KPIsettings);
             recipe.setSkillRequirements(SRs);
             if (recipe.getSkill() != null)
-                recipe.getSkill().setSkillRequirements(SRs);
+            {
+              recipe.getSkill().setSkillRequirements(SRs);
+            }
             //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
             recipeList.add(recipe);
           }
@@ -1437,8 +1446,8 @@ public abstract class DeviceAdapter
         Node n2 = skillChilds.item(j);
 
         if (n2.getNodeType() == Node.ELEMENT_NODE && !n2.getNodeName().equals("Type")
-                && !n2.getNodeName().equals("Path") && !n2.getNodeName().equals("Skill")
-                && !n2.getNodeName().equals("Value"))
+            && !n2.getNodeName().equals("Path") && !n2.getNodeName().equals("Skill")
+            && !n2.getNodeName().equals("Value"))
         {
           Skill auxSkill = new Skill();
           List<SkillRequirement> auxReqList = new ArrayList<>();
@@ -1520,8 +1529,7 @@ public abstract class DeviceAdapter
                     for (int x = 0; x < pChilds.getLength(); x++)
                     {
                       if (!pChilds.item(x).getNodeName().toLowerCase().contains("type")
-                              && !pChilds.item(x).getNodeName().toLowerCase().contains("path")
-                              /*&& !pChilds.item(x).getNodeName().toLowerCase().contains("parameter")*/)
+                          && !pChilds.item(x).getNodeName().toLowerCase().contains("path") /*&& !pChilds.item(x).getNodeName().toLowerCase().contains("parameter")*/)
                       {
                         if (pChilds.item(x).getNodeName().equals("ID"))
                         {
@@ -1582,8 +1590,8 @@ public abstract class DeviceAdapter
                     for (int x = 0; x < pChilds.getLength(); x++)
                     {
                       if (!pChilds.item(x).getNodeName().toLowerCase().contains("type")
-                              && !pChilds.item(x).getNodeName().toLowerCase().contains("path")
-                              && !pChilds.item(x).getNodeName().toLowerCase().endsWith("kpi"))
+                          && !pChilds.item(x).getNodeName().toLowerCase().contains("path")
+                          && !pChilds.item(x).getNodeName().toLowerCase().endsWith("kpi"))
                       {
                         if (pChilds.item(x).getNodeName().equals("ID"))
                         {
@@ -2014,7 +2022,7 @@ public abstract class DeviceAdapter
       VertxOptions options = new VertxOptions();
       options.setClustered(true).setClusterHost(myIP);
       Vertx.clusteredVertx(options, res
-              ->
+          ->
       {
         if (res.succeeded())
         {
