@@ -922,7 +922,7 @@ public abstract class DeviceAdapter
       recipe.setSkillRequirements(SRs);
       if (recipe.getSkill() != null)
       {
-        recipe.getSkill().setSkillRequirements(SRs);
+        //recipe.getSkill().setSkillRequirements(SRs);
       }
       //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
       recipeList.add(recipe);
@@ -1398,7 +1398,7 @@ public abstract class DeviceAdapter
             recipe.setSkillRequirements(SRs);
             if (recipe.getSkill() != null)
             {
-              recipe.getSkill().setSkillRequirements(SRs);
+              //recipe.getSkill().setSkillRequirements(SRs);
             }
             //AssociateRecipeToSR(recipe.getSkill());         //moved to OPCServersDiscoverySnippet
             recipeList.add(recipe);

@@ -7,10 +7,12 @@ import eu.openmos.msb.database.interaction.DatabaseInteraction;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
 import eu.openmos.msb.datastructures.DeviceAdapterOPC;
+import static eu.openmos.msb.datastructures.MSBConstants.XML_PATH;
 import eu.openmos.msb.datastructures.QueuedAction;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
 import static eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet.browseInstaceHierarchyNode;
 import eu.openmos.msb.starter.MSB_gui;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -196,13 +198,17 @@ public class UpdateDevice
               ignore));
 
       // print to file the XML structure extracted from the browsing process  
-      /*
-      XMLOutputter xmlOutput = new XMLOutputter();
-      xmlOutput.setFormat(Format.getPrettyFormat());
+      
+      try{
+        XMLOutputter xmlOutput = new XMLOutputter();
+        xmlOutput.setFormat(Format.getPrettyFormat());
 
-      xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
-      xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
-      */
+        xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
+        xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
+      }
+      catch(Exception ex){
+          
+      }
       logger.info("Starting DA Parser **********************");
       boolean ok = da.parseDNToObjects(client, node, nSkills, false, false);
       logger.info("***** End namespace browsing ***** \n\n");
