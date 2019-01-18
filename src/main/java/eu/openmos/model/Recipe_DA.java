@@ -48,6 +48,8 @@ public class Recipe_DA extends Base implements Serializable
   @XmlElement(name = "skillRequirements")
   private List<SkillRequirement> skillRequirements;
 
+  @XmlElement(name = "fulfilledSkillRequirements")
+  private List<SkillRequirement> fulfilledSkillRequirements;
   /**
    * Pointer to the skill.
    */
@@ -164,6 +166,16 @@ public class Recipe_DA extends Base implements Serializable
     this.valid = valid;
   }
 
+  public List<SkillRequirement> getFulfilledSkillRequirements()
+  {
+    return fulfilledSkillRequirements;
+  }
+
+  public void setFulfilledSkillRequirements(List<SkillRequirement> fulfilledSkillRequirements)
+  {
+    this.fulfilledSkillRequirements = fulfilledSkillRequirements;
+  }
+  
   public static Recipe_DA createRecipe_DA(Recipe recipe)
   {
     Recipe_DA recipe_da = new Recipe_DA();
@@ -173,6 +185,7 @@ public class Recipe_DA extends Base implements Serializable
     recipe_da.setRegistered(recipe.getRegistered());
     recipe_da.setSkill_id(recipe.getSkill().getUniqueId());
     recipe_da.setSkillRequirements(recipe.getSkillRequirements());
+    recipe_da.setFulfilledSkillRequirements(recipe.getFulfilledSkillRequirements());
     recipe_da.setUniqueId(recipe.getUniqueId());
     recipe_da.setValid(recipe.isValid());
     return recipe_da;
