@@ -206,6 +206,7 @@ public class SubSystemController extends Base
   @Path("/{subsystemId}/recipes")
   public Boolean newRecipe(@PathParam("subsystemId") String pathToInsert, Recipe newRecipe)
   {
+      //not dealing with product recipes or changes in product SR -- new field should be added in service call
     logger.debug("New Recipe for: " + pathToInsert);
 
     PathHelper helper = new PathHelper(pathToInsert, logger);
@@ -238,7 +239,7 @@ public class SubSystemController extends Base
 
                 ret = client.getClient().InvokeUpdate(opcua_client, update_object_id, update_method_id, string_recipe);
 
-                logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName());
+                logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName() + " *** result: " + ret);
 
                 return ret;
               }
@@ -270,7 +271,7 @@ public class SubSystemController extends Base
 
               ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
 
-              logger.info("Sending new recipe to DA: " + da.getSubSystem().getName());
+              logger.info("Sending new recipe to DA: " + da.getSubSystem().getName() + "*** result: " + ret);
 
               return ret;
             }
