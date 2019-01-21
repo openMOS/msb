@@ -487,9 +487,9 @@ public class DACManager
 
   }
 
-  public void AssociateRecipeToSR(Skill skill)
+  public void AssociateRecipeToSR(Recipe recipe)
   {
-    for (SkillRequirement sr : skill.getSkillRequirements())
+    for (SkillRequirement sr : recipe.getSkillRequirements())
     {
       if (sr.getRecipeIDs() != null)
       {

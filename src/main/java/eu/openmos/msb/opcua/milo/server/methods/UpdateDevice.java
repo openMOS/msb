@@ -269,7 +269,7 @@ public class UpdateDevice
         DACManager.getInstance().registerRecipe(da.getSubSystem().getName(), recipe.getUniqueId(), recipe.getSkill().getName(),
                 "true", recipe.getName(), recipe.getInvokeObjectID(), recipe.getInvokeMethodID());
       }
-      DACManager.getInstance().AssociateRecipeToSR(recipe.getSkill());
+      DACManager.getInstance().AssociateRecipeToSR(recipe);
     }
 
   }

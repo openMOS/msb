@@ -376,7 +376,7 @@ public class OPCServersDiscoverySnippet extends Thread
                     "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
             if (res)
             {
-              dacManager.AssociateRecipeToSR(auxRecipe.getSkill());
+              dacManager.AssociateRecipeToSR(auxRecipe);
               logger.info("Recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
             } else
             {
@@ -397,7 +397,7 @@ public class OPCServersDiscoverySnippet extends Thread
                       "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
               if (res)
               {
-                dacManager.AssociateRecipeToSR(auxRecipe.getSkill());
+                dacManager.AssociateRecipeToSR(auxRecipe);
                 logger.info("Module recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
               } else
               {
