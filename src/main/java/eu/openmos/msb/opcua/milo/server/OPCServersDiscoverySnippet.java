@@ -219,7 +219,11 @@ public class OPCServersDiscoverySnippet extends Thread
                     @Override
                     public synchronized void run()
                     {
-                      read_parse_opcua_namespace(aux_da, aux_url);
+                      if (!read_parse_opcua_namespace(aux_da, aux_url))
+                      {
+                          dacManager.deleteDeviceAdapter(daName);
+                      }
+                      
                     }
                   };
                   threadDiscoverEndpoints.start();   
@@ -231,8 +235,8 @@ public class OPCServersDiscoverySnippet extends Thread
           } // end of second "for" for Discovery Endpoints
         } catch (InterruptedException | ExecutionException e)
         {
-          logger.warn("Cannot discover Endpoints from URL {} : {}", da_url, e.getMessage());
-          logger.warn("DELETE THIS SERVER FROM DB IF CONNECTION LOST? " + da_url + ": " + e.getMessage());
+          logger.warn("Cannot discover Endpoints from URL {} *** {}", url, e.getMessage());
+          logger.warn("DELETE THIS SERVER FROM DB IF CONNECTION LOST? da_url: " + da_url + " *** " + e.getMessage());
 
           if (e.getCause().getMessage().toLowerCase().contains("connection refused")
                   || e.getCause().getMessage().toLowerCase().contains("connection timed out"))
@@ -472,7 +476,7 @@ public class OPCServersDiscoverySnippet extends Thread
     return null;
   }
 
-  private void read_parse_opcua_namespace(DeviceAdapter da, String da_url)
+  private Boolean read_parse_opcua_namespace(DeviceAdapter da, String da_url)
   {
     try
     {
@@ -482,7 +486,8 @@ public class OPCServersDiscoverySnippet extends Thread
 
       DeviceAdapterOPC opc = (DeviceAdapterOPC) da;
       MSBClientSubscription msbClient = opc.getClient();
-      msbClient.startConnection(da_url);
+      if (msbClient.startConnection(da_url))
+      {
       OpcUaClient client = msbClient.getClientObject();
 
       logger.info("\n***** Starting namespace browsing ***** \n");
@@ -549,10 +554,17 @@ public class OPCServersDiscoverySnippet extends Thread
       {
         logger.info("Client = null?");
       }
+      }
+      else{
+          logger.error("Error before parsing!");
+          return false;
+      }
     } catch (Exception ex)
     {
       java.util.logging.Logger.getLogger(OPCServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
+      return false;
     }
+    return true;
   }
 
 }

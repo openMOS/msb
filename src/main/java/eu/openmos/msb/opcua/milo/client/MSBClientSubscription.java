@@ -79,17 +79,25 @@ public class MSBClientSubscription implements IClient
    * TODO - fabio Documentation
    *
    * @param endpointUrl
+     * @return 
    * @throws Exception
    */
-  public void startConnection(String endpointUrl) throws Exception
+  public Boolean startConnection(String endpointUrl) throws Exception
   {
-    System.out.println("MILO StartConnection*************");
+      try{
+    logger.info("MILO StartConnection*************");
     if (msbClientInstance == null)
     {
-      System.out.println("Milo Client created. Trying to connect to: " + endpointUrl);
+      logger.info("Milo Client created. Trying to connect to: " + endpointUrl);
       //MSB_MiloClientSubscription example = new MSB_MiloClientSubscription();
       new ClientRunner(endpointUrl, this).run();
     }
+      }
+      catch(Exception ex){
+          logger.error("Error connecting to server: " + endpointUrl + " *** " + ex.getMessage());
+          return false;
+      }
+      return true;
   }
 
   /**
