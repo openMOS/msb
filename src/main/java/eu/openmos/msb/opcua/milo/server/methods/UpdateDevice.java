@@ -10,7 +10,6 @@ import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import static eu.openmos.msb.datastructures.MSBConstants.XML_PATH;
 import eu.openmos.msb.datastructures.QueuedAction;
 import eu.openmos.msb.opcua.milo.client.MSBClientSubscription;
-import static eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet.browseInstaceHierarchyNode;
 import eu.openmos.msb.starter.MSB_gui;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static eu.openmos.msb.opcua.milo.server.OPCServersDiscoverySnippet.browseInstanceHierarchyNode;
 
 /**
  *
@@ -178,7 +178,7 @@ public class UpdateDevice
       ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
 
       logger.info("Browse instance Hierarchy started");
-      NodeId InstaceHierarchyNode = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
+      NodeId InstaceHierarchyNode = browseInstanceHierarchyNode("", client, new NodeId(0, 84));
       if (InstaceHierarchyNode != null)
       {
         logger.info("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());

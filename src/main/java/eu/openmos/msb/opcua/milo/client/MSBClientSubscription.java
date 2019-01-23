@@ -57,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jdom2.Element;
 
+
 /**
  *
  * @author fabio.miranda
@@ -566,6 +567,7 @@ public class MSBClientSubscription implements IClient
       );
 
       BrowseResult browseResult = client.browse(browse).get();
+      ;
       List<ReferenceDescription> references = toList(browseResult.getReferences());
 
       for (ReferenceDescription rd : references)
@@ -597,12 +599,9 @@ public class MSBClientSubscription implements IClient
             {
               // read the value from the variable exposed in the OPC-UA Server
               VariableNode vNode = client.getAddressSpace().createVariableNode(NodeId);
-              DataValue value = vNode.readValue().get();
-              Variant aux = value.getValue();
-              Object aux1 = aux.getValue();
-              if (aux1 != null)
-                nodeValue.setText(aux1.toString());
-              
+              Object value = vNode.readValue().get().getValue().getValue();
+              if (value != null)
+                nodeValue.setText(value.toString());
             } catch (InterruptedException | ExecutionException ex)
             {
               java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
@@ -612,7 +611,6 @@ public class MSBClientSubscription implements IClient
           node.addContent(nodeValue);
         } catch (Exception ex)
         {
-          int ui = 0;
           logger.error(ex.getMessage());
           // this is empty on purpose, since every time a variable does not have a value an exception is thrown
           // TODO - handle this in another way, maybe or let the oompa loopas do there work and forget about this
@@ -642,7 +640,7 @@ public class MSBClientSubscription implements IClient
     }
     return nodes;
   }
-
+  
   /**
    *
    */

@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -84,7 +87,8 @@ public class OPCServersDiscoverySnippet extends Thread
         discoverServer(LDS_uri);
         //checkDBServersStatus();
         sleep(discovery_period * 1000);
-      } catch (InterruptedException ex)
+      }
+      catch (InterruptedException ex)
       {
         this.logger.error(ex.getMessage());
       }
@@ -120,7 +124,8 @@ public class OPCServersDiscoverySnippet extends Thread
           {
             discoverEndpoints(server);
           }
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
           this.logger.error(ex.getMessage());
         }
@@ -148,7 +153,8 @@ public class OPCServersDiscoverySnippet extends Thread
       }
 
       return true;
-    } catch (InterruptedException | ExecutionException ex)
+    }
+    catch (InterruptedException | ExecutionException ex)
     {
       this.logger.error(ex.getMessage());
     }
@@ -219,27 +225,29 @@ public class OPCServersDiscoverySnippet extends Thread
                     @Override
                     public synchronized void run()
                     {
-                      if (!read_parse_opcua_namespace(aux_da, aux_url))
+                      Boolean parse_is_ok = read_parse_opcua_namespace(aux_da, aux_url);
+                      if (!parse_is_ok)
                       {
-                          dacManager.deleteDeviceAdapter(daName);
+                        dacManager.deleteDeviceAdapter(daName);
                       }
-                      
+
                     }
                   };
-                  threadDiscoverEndpoints.start();   
+                  threadDiscoverEndpoints.start();
                 }
               }
               // Update the GUI with the new devices discovered 
               notify_channel.on_new_endpoint_discovered(serverApp.getApplicationName().getText(), ed.getEndpointUrl());
             }
           } // end of second "for" for Discovery Endpoints
-        } catch (InterruptedException | ExecutionException e)
+        }
+        catch (InterruptedException | ExecutionException e)
         {
           logger.warn("Cannot discover Endpoints from URL {} *** {}", url, e.getMessage());
           logger.warn("DELETE THIS SERVER FROM DB IF CONNECTION LOST? da_url: " + da_url + " *** " + e.getMessage());
 
           if (e.getCause().getMessage().toLowerCase().contains("connection refused")
-                  || e.getCause().getMessage().toLowerCase().contains("connection timed out"))
+              || e.getCause().getMessage().toLowerCase().contains("connection timed out"))
           {
             String daName = serverApp.getApplicationName().getText();
             if (dacManager.getDeviceAdapterbyName(daName) != null)
@@ -248,12 +256,14 @@ public class OPCServersDiscoverySnippet extends Thread
               removeDownServer(daName);
             }
           }
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
           java.util.logging.Logger.getLogger(OPCServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
         }
       } // end of first "for" for Discovery Urls
-    } else
+    }
+    else
     {
       logger.warn("No suitable discoveryUrl available: using the current Url");
     }
@@ -297,7 +307,8 @@ public class OPCServersDiscoverySnippet extends Thread
           String resCode = agentStatus.getCode();
 
           logger.info("Successfully removed Agent with UID: " + ss.getUniqueId() + "with status: " + resCode);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
           logger.info("Error trying to connect to cloud!: " + ex.getMessage());
         }
@@ -309,7 +320,8 @@ public class OPCServersDiscoverySnippet extends Thread
 
         //end
         return 1;
-      } else
+      }
+      else
       {
         String error = "Unable to remove  " + da.getSubSystem().getName() + " from DB!";
         notify_channel.on_notify_error(error);
@@ -317,7 +329,8 @@ public class OPCServersDiscoverySnippet extends Thread
         return -1;
       }
 
-    } else
+    }
+    else
     {
       logger.error("DA: " + da_name + " is null. Doesn't exist on the system!");
       return -1;
@@ -343,7 +356,8 @@ public class OPCServersDiscoverySnippet extends Thread
           if (res)
           {
             logger.info("Module registed | Name: " + auxModule.getName() + " | ID: " + auxModule.getUniqueId());
-          } else
+          }
+          else
           {
             logger.info("Module not registed | Name: " + auxModule.getName() + " | ID: " + auxModule.getUniqueId());
           }
@@ -362,7 +376,8 @@ public class OPCServersDiscoverySnippet extends Thread
             if (res)
             {
               logger.info("Skill registed | Name: " + auxSkill.getName() + " | ID: " + auxSkill.getUniqueId());
-            } else
+            }
+            else
             {
               logger.info("Skill not registed | Name: " + auxSkill.getName() + " | ID: " + auxSkill.getUniqueId());
             }
@@ -377,16 +392,18 @@ public class OPCServersDiscoverySnippet extends Thread
           if (da.getSubSystem().getName() != null && auxRecipe.getSkill() != null && auxRecipe.getSkill().getName() != null)
           {
             boolean res = dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
-                    "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
+                "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
             if (res)
             {
               dacManager.AssociateRecipeToSR(auxRecipe);
               logger.info("Recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
-            } else
+            }
+            else
             {
               logger.info("Recipe not registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
             }
-          } else
+          }
+          else
           {
             logger.error("\nCouldn't register recipe: " + auxRecipe.getName() + "\n");
           }
@@ -398,16 +415,18 @@ public class OPCServersDiscoverySnippet extends Thread
             if (da.getSubSystem().getName() != null && auxRecipe.getSkill() != null && auxRecipe.getSkill().getName() != null)
             {
               boolean res = dacManager.registerRecipe(da.getSubSystem().getName(), auxRecipe.getUniqueId(), auxRecipe.getSkill().getName(),
-                      "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
+                  "true", auxRecipe.getName(), auxRecipe.getInvokeObjectID(), auxRecipe.getInvokeMethodID());
               if (res)
               {
                 dacManager.AssociateRecipeToSR(auxRecipe);
                 logger.info("Module recipe registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
-              } else
+              }
+              else
               {
                 logger.info("Module recipe not registed | Name: " + auxRecipe.getName() + " | ID: " + auxRecipe.getUniqueId());
               }
-            } else
+            }
+            else
             {
               logger.error("\nCouldn't register module recipe: " + auxRecipe.getName() + "\n");
             }
@@ -420,20 +439,15 @@ public class OPCServersDiscoverySnippet extends Thread
       // --------------------------------------------------------------------------------------------------------------
       // create new agent
       return DACManager.daAgentCreation(da);
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       logger.error("Errors in workStationRegistration - " + ex.getMessage());
     }
     return null;
   }
 
-  private boolean isCloudRunning()
-  {
-
-    return true;
-  }
-
-  public static NodeId browseInstaceHierarchyNode(String indent, OpcUaClient client, NodeId nodeToBrowse)
+  public static NodeId browseInstanceHierarchyNode(String indent, OpcUaClient client, NodeId nodeToBrowse)
   {
     try
     {
@@ -443,7 +457,7 @@ public class OPCServersDiscoverySnippet extends Thread
 
       while (count < max_lvl_search)
       {
-        NodeId inst_hierarchy_node = getInst(nodes);
+        NodeId inst_hierarchy_node = getInstanceHierarchy(nodes);
         if (inst_hierarchy_node != null)
         {
           return inst_hierarchy_node;
@@ -458,13 +472,14 @@ public class OPCServersDiscoverySnippet extends Thread
         count++;
       }
       return null;
-    } catch (InterruptedException | ExecutionException ex)
+    }
+    catch (InterruptedException | ExecutionException ex)
     {
       return null;
     }
   }
 
-  private static NodeId getInst(List<Node> nodes) throws InterruptedException, ExecutionException
+  private static NodeId getInstanceHierarchy(List<Node> nodes) throws InterruptedException, ExecutionException
   {
     for (int i = 0; i < nodes.size(); i++)
     {
@@ -488,78 +503,85 @@ public class OPCServersDiscoverySnippet extends Thread
       MSBClientSubscription msbClient = opc.getClient();
       if (msbClient.startConnection(da_url))
       {
-      OpcUaClient client = msbClient.getClientObject();
+        OpcUaClient client = msbClient.getClientObject();
 
-      logger.info("\n***** Starting namespace browsing ***** \n");
+        logger.info("[NSP] Starting namespace browsing");
 
-      Element node = new Element("DeviceAdapter");
-      Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-      ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
+        Element node = new Element("DeviceAdapter");
+        Set<String> ignore = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        ignore.addAll(Arrays.asList(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.ignore").split(",")));
 
-      logger.info("Browse instance Hierarchy started");
+        logger.info("[NSP] Browse instance Hierarchy started");
 
-      NodeId InstaceHierarchyNode = browseInstaceHierarchyNode("", client, new NodeId(0, 84));
-      if (InstaceHierarchyNode != null)
-      {
-        logger.info("Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
-        node.addContent(msbClient.browseNode(client,
-                InstaceHierarchyNode,
-                Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
-                ignore));
-      }
-
-      Element nSkills = new Element("Skills");
-      nSkills.addContent(msbClient.browseNode(client,
+        NodeId InstaceHierarchyNode = browseInstanceHierarchyNode("", client, new NodeId(0, 84));
+        if (InstaceHierarchyNode != null)
+        {
+          logger.info("[NSP] Browse instance Hierarchy ended with: " + InstaceHierarchyNode.getIdentifier().toString());
+          
+          node.addContent(msbClient.browseNode(client,
+              InstaceHierarchyNode,
+              Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level")),
+              ignore));
+          
+          logger.debug("[NSP] starting skill browse");
+          
+          Element nSkills = new Element("Skills");
+          nSkills.addContent(msbClient.browseNode(client,
               new NodeId(2, ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.namespace.skills")),
               Integer.valueOf(ConfigurationLoader.getMandatoryProperty("openmos.msb.opcua.parser.level.skills")),
               ignore));
 
-      // print to file the XML structure extracted from the browsing process
-      
-      XMLOutputter xmlOutput = new XMLOutputter();
-      xmlOutput.setFormat(Format.getPrettyFormat());
-      
-      xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
-      xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
-      
-      logger.info("Starting DA Parser **********************");
+          // print to file the XML structure extracted from the browsing process
+          XMLOutputter xmlOutput = new XMLOutputter();
+          xmlOutput.setFormat(Format.getPrettyFormat());
+          xmlOutput.output(node, new FileWriter(XML_PATH + "\\main_" + da.getSubSystem().getName() + ".xml", false));
+          xmlOutput.output(nSkills, new FileWriter(XML_PATH + "\\skills_" + da.getSubSystem().getName() + ".xml", false));
 
-      boolean ok = da.parseDNToObjects(client, node, nSkills, true, false);
+          logger.info("[NSP] Starting DA Parser **********************");
 
-      logger.info("***** End namespace browsing ***** \n\n");
+          boolean ok = da.parseDNToObjects(client, node, nSkills, true, false);
 
-      if (ok)
-      {
-        DatabaseInteraction.write_stuff.acquire();
-        workstationRegistration(da);
-        DatabaseInteraction.write_stuff.release();
-        
-        MSB_gui.updateTableAdaptersSemaphore(String.valueOf(
+          logger.info("[NSP] End namespace browsing ********************");
+
+          if (ok)
+          {
+            DatabaseInteraction.write_stuff.acquire();
+            workstationRegistration(da);
+            DatabaseInteraction.write_stuff.release();
+
+            MSB_gui.updateTableAdaptersSemaphore(String.valueOf(
                 PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()),
                 da.getSubSystem().getName());
-        
-        
-      } else
-      {
-        System.out.println("parseDNToObjects FAILED!");
-      }
 
-      PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
-      Long time = namespaceParsingTimer.getTime();
-      perfMeasure.getNameSpaceParsingTimers().add(time);
-      logger.info("Namespace Parsing took " + time.toString() + "ms to be executed");
-      namespaceParsingTimer.stop();
+          }
+          else
+          {
+            logger.error("[NSP] parseDNToObjects FAILED!");
+          }
+        }
+        else
+        {
+          logger.error("[NSP] Could not find Instance Hierarchy node!");
+        }
 
-      if (client == null)
+        PerformanceMasurement perfMeasure = PerformanceMasurement.getInstance();
+        Long time = namespaceParsingTimer.getTime();
+        perfMeasure.getNameSpaceParsingTimers().add(time);
+        logger.info("[NSP] Namespace Parsing took " + time.toString() + "ms to be executed");
+        namespaceParsingTimer.stop();
+
+        if (client == null)
+        {
+          logger.info("[NSP] Client = null?");
+        }
+      }
+      else
       {
-        logger.info("Client = null?");
+        logger.error("[NSP] Error before parsing!");
+        return false;
       }
-      }
-      else{
-          logger.error("Error before parsing!");
-          return false;
-      }
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       java.util.logging.Logger.getLogger(OPCServersDiscoverySnippet.class.getName()).log(Level.SEVERE, null, ex);
       return false;
