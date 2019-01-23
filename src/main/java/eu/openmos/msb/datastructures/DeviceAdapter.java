@@ -270,7 +270,7 @@ public abstract class DeviceAdapter
       subSystem.setChangeRecipeObjectID(da_objectID);
       subSystem.setChangeRecipeMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "changeSkillRecipe"));
       subSystem.setUpdateExectutionTableObjectID(da_objectID);
-      subSystem.setUpdateExectutionTableMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "updateExecutionTable"));
+      subSystem.setUpdateExectutionTableMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "changeExecutionTable"));
       subSystem.setRemoveRecipeObjectID(da_objectID);
       subSystem.setRemoveRecipeMethodID(ReadMethodIDFromDeviceAdapter(deviceDescriptionDoc, "removeSkillRecipe"));
 

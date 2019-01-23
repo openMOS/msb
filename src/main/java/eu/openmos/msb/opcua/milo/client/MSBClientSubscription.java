@@ -355,6 +355,49 @@ public class MSBClientSubscription implements IClient
     return false;
   }
 
+  public boolean InvokeUpdate(OpcUaClient client, NodeId objectId, NodeId methodId, String class_as_string, Boolean do_delete)
+  {
+    PerformanceMasurement perfMeasurement = PerformanceMasurement.getInstance();
+    recipeUpdateWatch.reset();
+    recipeUpdateWatch.start();
+
+    CallMethodRequest request = new CallMethodRequest(
+            objectId, methodId, new Variant[]
+            {
+              new Variant(class_as_string),
+                new Variant(do_delete)
+            });
+
+    try
+    {
+      StatusCode res = client.call(request).get().getStatusCode();
+
+      if (res.isGood())
+      {
+        perfMeasurement.getRecipeUpdateMethodTillResultTimers().add(recipeUpdateWatch.getTime());
+        //recipeExecutionWatch.stop();
+        return true;
+      } else if (res.isBad())
+      {
+        perfMeasurement.getRecipeUpdateMethodTillResultTimers().add(recipeUpdateWatch.getTime());
+        //recipeExecutionWatch.stop();
+        return false;
+      } else
+      {
+        perfMeasurement.getRecipeUpdateMethodTillResultTimers().add(recipeUpdateWatch.getTime());
+        //recipeExecutionWatch.stop();
+        return false;
+      }
+    } catch (InterruptedException | ExecutionException ex)
+    {
+      perfMeasurement.getRecipeUpdateMethodTillResultTimers().add(recipeUpdateWatch.getTime());
+      recipeUpdateWatch.stop();
+      java.util.logging.Logger.getLogger(MSBClientSubscription.class.getName()).log(Level.SEVERE, null, ex);
+
+    }
+    return false;
+  }
+
   public CompletableFuture<String> InvokeDeviceMARTELO(OpcUaClient client, NodeId objectId, NodeId methodId, String productId , String daid, String repid)
   {
 

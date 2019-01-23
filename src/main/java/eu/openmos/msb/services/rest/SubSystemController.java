@@ -237,9 +237,9 @@ public class SubSystemController extends Base
                 NodeId update_object_id = Functions.convertStringToNodeId(auxModule.getChangeRecipeObjectID());
                 NodeId update_method_id = Functions.convertStringToNodeId(auxModule.getChangeRecipeMethodID());
 
-                ret = client.getClient().InvokeUpdate(opcua_client, update_object_id, update_method_id, string_recipe);
+                ret = client.getClient().InvokeUpdate(opcua_client, update_object_id, update_method_id, string_recipe, false);
 
-                logger.info("Sending new temp recipe to DA: " + da.getSubSystem().getName() + " *** result: " + ret);
+                logger.info("Sending new recipe to DA: " + da.getSubSystem().getName() + " *** result: " + ret);
 
                 return ret;
               }
@@ -269,7 +269,7 @@ public class SubSystemController extends Base
               NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
               NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
 
-              ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+              ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe, false);
 
               logger.info("Sending new recipe to DA: " + da.getSubSystem().getName() + "*** result: " + ret);
 

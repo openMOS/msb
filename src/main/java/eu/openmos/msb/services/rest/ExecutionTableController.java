@@ -7,12 +7,15 @@ package eu.openmos.msb.services.rest;
 
 import eu.openmos.model.ExecutionTable;
 import eu.openmos.model.ExecutionTableRow;
+import eu.openmos.model.ExecutionTable_DA;
 import eu.openmos.model.SubSystem;
 import eu.openmos.msb.datastructures.DACManager;
 import eu.openmos.msb.datastructures.DeviceAdapter;
+import eu.openmos.msb.datastructures.DeviceAdapterOPC;
 import eu.openmos.msb.datastructures.MSBConstants;
 import eu.openmos.msb.datastructures.MSBVar;
 import eu.openmos.msb.services.rest.data.ExecutionTableRowHelper;
+import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.List;
@@ -26,6 +29,8 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
  *
@@ -39,7 +44,8 @@ public class ExecutionTableController
   private final Logger logger = Logger.getLogger(ExecutionTableController.class.getName());
 
   /**
-   * Returns the full execution table given its unique identifier. Fills the execution table view page (slide 8 of 34).
+   * Returns the full execution table given its unique identifier. Fills the
+   * execution table view page (slide 8 of 34).
    *
    * @param executionTableId
    * @return detail of execution table
@@ -67,7 +73,8 @@ public class ExecutionTableController
   }
 
   /**
-   * Updates the whole execution table. Matches with the execution table update pages (slide 9 to 12 of 34).
+   * Updates the whole execution table. Matches with the execution table update
+   * pages (slide 9 to 12 of 34).
    *
    * return updated execution table
    *
@@ -82,40 +89,47 @@ public class ExecutionTableController
   public ExecutionTable update(@PathParam("subSystemId") String subSystemId,
           ExecutionTable executionTable)
   {
-
     logger.debug("execution table update - Update ExecutionTable from SubSystem: " + subSystemId);
     logger.debug("execution table update - data received by the msb: " + executionTable);
 
-    if (MSBVar.getSystemStage().equals(MSBConstants.STAGE_RAMP_UP))
-    {
+    //if (MSBVar.getSystemStage().equals(MSBConstants.STAGE_RAMP_UP))
+    //{
       SubSystem subSystem = getSubSystemById(subSystemId);
       if (subSystem != null)
       {
-          //send execTable to DA -- Valerio fault DONT THINK SO!!!!
-        subSystem.setExecutionTable(executionTable);
-        logger.debug(subSystem != null ? "execution update - ExecutionTable successfully updated"
-                : "execution table update - can not find subSystem with Id: " + subSystemId);
+        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystemId);
+        String et_da_string = Functions.ClassToString(ExecutionTable_DA.createExecutionTable_DA(executionTable));
 
+        DeviceAdapterOPC client = (DeviceAdapterOPC) da;
+        OpcUaClient opcua_client = client.getClient().getClientObject();
+        NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableObjectID());
+        NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableMethodID());
+
+        boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, et_da_string, false);
+        logger.debug("EXECUTION TABLE UPDATE RESULT: " + ret);
         //TODO send it to DA
-        return subSystem != null ? subSystem.getExecutionTable() : executionTable;
+        return executionTable;
       } else
       {
         return null;
       }
-    } else
+    /*} else
     {
       logger.debug("The system is not at Ramp Up Stage!");
       return null;
     }
+      */
   }
 
   /**
-   * Insert the given row into the execution table. Matches with the execution table update pages (slide 9 to 12 of 34).
+   * Insert the given row into the execution table. Matches with the execution
+   * table update pages (slide 9 to 12 of 34).
    *
    * return updated execution table
    *
    * @param subSystemId unique identifier of the execution table to update
-   * @param rowToInsert the execution table row to insert in which position in which execution table
+   * @param rowToInsert the execution table row to insert in which position in
+   * which execution table
    * @return executiontable updated object, or null if not existing
    */
   @POST
@@ -128,7 +142,7 @@ public class ExecutionTableController
 
     logger.debug("execution table insert - Insert new row in ExecutionTable from SubSystem: " + subSystemId);
     logger.debug("execution table insert - data received by the msb: " + rowToInsert);
-    
+
     SubSystem subSystem = getSubSystemById(subSystemId);
     if (subSystem != null)
     {
@@ -234,7 +248,8 @@ public class ExecutionTableController
    *
    * param uniqueId unique id of the execution table
    *
-   * @param executionTableRowId unique id of the execution table row to be deleted
+   * @param executionTableRowId unique id of the execution table row to be
+   * deleted
    * @return updated executiontable, or null if not existing
    */
   @DELETE
@@ -296,7 +311,7 @@ public class ExecutionTableController
       if (deviceAdapterbyName.getExecutionTable().getUniqueId().equals(executionTableId))
       {
         List<ExecutionTableRow> rows = deviceAdapterbyName.getExecutionTable().getRows();
-        for (ExecutionTableRow row: rows)
+        for (ExecutionTableRow row : rows)
         {
           if (row.getUniqueId().equals(executionTableRowId))
           {

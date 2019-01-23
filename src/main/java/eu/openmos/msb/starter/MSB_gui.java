@@ -1975,6 +1975,10 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
       DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
       ExecutionTable et = da.getExecutionTable();
+      
+      et.getRows().get(0).setNextRecipeId("Kirill is the best");
+      
+      
       String et_da_string = Functions.ClassToString(ExecutionTable_DA.createExecutionTable_DA(et));
 
       System.out.println("###et start###");
@@ -1987,7 +1991,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableObjectID());
       NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableMethodID());
 
-      boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, et_da_string);
+      boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, et_da_string, false);
 
       logger.debug("EXECUTION TABLE UPDATE RESULT: " + ret);
     }

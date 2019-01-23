@@ -122,7 +122,7 @@ public class RecipeController extends Base
   @Path(value = "/{recipeId}")
   public Recipe update(@PathParam("recipeId") String recipeId, Recipe recipe)
   {
-    logger.debug("To UPDATE ID: " + recipeId);
+    logger.debug("Recipe to UPDATE: " + recipeId);
 
     //send the updated recipe to DA
     List<String> deviceAdaptersID = DACManager.getInstance().getDeviceAdapters_AML_IDs();
@@ -148,7 +148,7 @@ public class RecipeController extends Base
             NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeObjectID());
             NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getChangeRecipeMethodID());
 
-            ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+            ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe, false);
 
             found = true;
           }
@@ -172,7 +172,7 @@ public class RecipeController extends Base
                 NodeId object_id = Functions.convertStringToNodeId(module.getChangeRecipeObjectID());
                 NodeId method_id = Functions.convertStringToNodeId(module.getChangeRecipeMethodID());
 
-                ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe);
+                ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_recipe, false);
               }
             }
           }
