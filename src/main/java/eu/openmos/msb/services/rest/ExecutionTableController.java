@@ -94,31 +94,31 @@ public class ExecutionTableController
 
     //if (MSBVar.getSystemStage().equals(MSBConstants.STAGE_RAMP_UP))
     //{
-      SubSystem subSystem = getSubSystemById(subSystemId);
-      if (subSystem != null)
-      {
-        DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystemId);
-        String et_da_string = Functions.ClassToString(ExecutionTable_DA.createExecutionTable_DA(executionTable));
+    SubSystem subSystem = getSubSystemById(subSystemId);
+    if (subSystem != null)
+    {
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystemId);
+      String et_da_string = Functions.ClassToString(ExecutionTable_DA.createExecutionTable_DA(executionTable));
 
-        DeviceAdapterOPC client = (DeviceAdapterOPC) da;
-        OpcUaClient opcua_client = client.getClient().getClientObject();
-        NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableObjectID());
-        NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableMethodID());
+      DeviceAdapterOPC client = (DeviceAdapterOPC) da;
+      OpcUaClient opcua_client = client.getClient().getClientObject();
+      NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableObjectID());
+      NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableMethodID());
 
-        boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, et_da_string, false);
-        logger.debug("EXECUTION TABLE UPDATE RESULT: " + ret);
-        //TODO send it to DA
-        return executionTable;
-      } else
-      {
-        return null;
-      }
+      boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, et_da_string, false);
+      logger.debug("EXECUTION TABLE UPDATE RESULT: " + ret);
+      //TODO send it to DA
+      return executionTable;
+    } else
+    {
+      return null;
+    }
     /*} else
     {
       logger.debug("The system is not at Ramp Up Stage!");
       return null;
     }
-      */
+     */
   }
 
   /**
@@ -139,27 +139,32 @@ public class ExecutionTableController
   public ExecutionTable insertRow(@PathParam("subSystemId") String subSystemId,
           ExecutionTableRowHelper rowToInsert)
   {
-
     logger.debug("execution table insert - Insert new row in ExecutionTable from SubSystem: " + subSystemId);
     logger.debug("execution table insert - data received by the msb: " + rowToInsert);
 
     SubSystem subSystem = getSubSystemById(subSystemId);
     if (subSystem != null)
     {
-      if (subSystem.getExecutionTable().getRows() != null
-              && subSystem.getExecutionTable().getRows().isEmpty()
+      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(subSystemId);
+      ExecutionTable et = da.getSubSystem().getExecutionTable();
+      if (et.getRows() != null && et.getRows().isEmpty()
               && rowToInsert.getRowPosition() > 0)
       {
-
-        logger.debug("execution table insert - corretting new row position, setting to 0");
+        //logger.debug("execution table insert - corretting new row position, setting to 0");
         rowToInsert.setRowPosition(0);
       }
+      //logger.debug("execution table insert - new row position: " + rowToInsert.getRowPosition());
 
-      logger.debug("execution table insert - new row position: " + rowToInsert.getRowPosition());
+      et.getRows().add(rowToInsert.getRowPosition(), rowToInsert.getRow());
+      String et_da_string = Functions.ClassToString(ExecutionTable_DA.createExecutionTable_DA(et));
 
-      subSystem.getExecutionTable().getRows()
-              .add(rowToInsert.getRowPosition(), rowToInsert.getRow());
+      DeviceAdapterOPC client = (DeviceAdapterOPC) da;
+      OpcUaClient opcua_client = client.getClient().getClientObject();
+      NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableObjectID());
+      NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableMethodID());
 
+      boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, et_da_string, false);
+      logger.debug("EXECUTION TABLE NEW ROW RESULT: " + ret);
       //TODO send the whole table to DA -> Lboro valentine's day discussions
     }
     logger.debug(subSystem != null
@@ -172,10 +177,8 @@ public class ExecutionTableController
   /**
    * Returns list of rows of the given execution table.
    *
+   * @param executionTableId
    * @return list of execution table rows
-   *
-   * @param uniqueId the unique id of the execution table
-   * @return list of executiontable rows object, or null if not existing
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -204,7 +207,6 @@ public class ExecutionTableController
    * @param executionTableId
    * @param executionTableRowId
    * @return one execution table row
-   * @return selected executiontable row object, or null if not existing
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -248,6 +250,7 @@ public class ExecutionTableController
    *
    * param uniqueId unique id of the execution table
    *
+   * @param subSystemId
    * @param executionTableRowId unique id of the execution table row to be
    * deleted
    * @return updated executiontable, or null if not existing
@@ -289,7 +292,6 @@ public class ExecutionTableController
    * @param rowToUpdate
    * @param executionTableRowId
    * @return updated execution table
-   * @return updated executiontable, or null if not existing
    */
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
