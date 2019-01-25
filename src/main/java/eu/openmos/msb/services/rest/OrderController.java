@@ -41,7 +41,8 @@ public class OrderController
   private final Logger logger = Logger.getLogger(OrderController.class.getName());
   private final StopWatch OrderWatch = new StopWatch();
   private static final String CLOUD_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-  private static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
+//  private static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
+  private static final Boolean USING_CLOUD = true;
     
   /**
    * Returns the list of orders. There's no slide requesting this method, it's only for testing purpose.

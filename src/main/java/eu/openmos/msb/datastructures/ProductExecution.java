@@ -257,6 +257,9 @@ public class ProductExecution implements Runnable
               logger.debug("Recipe is valid!");
               return true;
             }
+            else{
+              logger.debug("Next recipe is not valid");
+            }
           }
           /*
                     else{
@@ -273,7 +276,7 @@ public class ProductExecution implements Runnable
       }
       else
       {
-        logger.debug("Recipe is not valid!2");
+        logger.debug("There is no DA for the recipe: " + recipeID);
         return false;
       }
     }
@@ -322,7 +325,7 @@ public class ProductExecution implements Runnable
               {
                 String state = Functions.readOPCNodeToString(daOPC.getClient().getClientObject(), statePath);
                 da_next.getSubSystem().setState(state);
-                System.out.println("daState for NEXT: " + state);
+                logger.debug("daState for NEXT: " + state);
                 //if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY)) 
                 {
                   return true;
@@ -340,6 +343,7 @@ public class ProductExecution implements Runnable
       //no prodInst found in execTable, search for productType now
       prodID = prodInst.getProductId();
     }
+    logger.debug("The recipe or product were not found in the execTable!");
     return false;
   }
 

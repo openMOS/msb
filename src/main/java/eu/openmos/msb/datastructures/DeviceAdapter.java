@@ -1796,6 +1796,7 @@ public abstract class DeviceAdapter
     }
     catch (Exception ex)
     {
+      logger.error("Error getting da state: " + ex.getMessage());
       return results;
     }
     //childNodeList = nodeList.item(0).getChildNodes();

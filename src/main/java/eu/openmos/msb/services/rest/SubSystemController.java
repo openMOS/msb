@@ -41,7 +41,8 @@ public class SubSystemController extends Base
   private final Logger logger = Logger.getLogger(SubSystemController.class.getName());
   private final StopWatch HMIsubsystemUpdateWatch = new StopWatch();
   private static final String CLOUD_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.agent.cloud.cloudinterface.ws.endpoint");
-  private static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
+//  private static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
+  private static final Boolean USING_CLOUD = true;
 
   /**
    * Returns the list of workstations and transports, e.g. resource and transport agents. Fills the system overview page (slide 5 of 34)

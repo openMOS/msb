@@ -55,7 +55,8 @@ public class MSBConstants
   public static final String DATABASE_DRIVER_CLASS = ConfigurationLoader.getMandatoryProperty("openmos.msb.database.driver.class");
   public static final String LDS_ENDPOINT = ConfigurationLoader.getMandatoryProperty("openmos.msb.discovery.service");
 
-  public static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
+//  public static final Boolean USING_CLOUD = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.cloud"));
+  public static final Boolean USING_CLOUD = true;
   public static final Boolean MSB_OPTIMIZER = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.use.optimizer"));
   public static final Boolean MSB_MODE_PASSIVE = Boolean.parseBoolean(ConfigurationLoader.getMandatoryProperty("openmos.msb.passive.mode"));
 
