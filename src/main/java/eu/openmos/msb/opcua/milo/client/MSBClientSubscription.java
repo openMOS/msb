@@ -567,7 +567,7 @@ public class MSBClientSubscription implements IClient
       );
 
       BrowseResult browseResult = client.browse(browse).get();
-      ;
+      
       List<ReferenceDescription> references = toList(browseResult.getReferences());
 
       for (ReferenceDescription rd : references)
