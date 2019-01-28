@@ -19,6 +19,7 @@ import eu.openmos.msb.starter.MSB_gui;
 import eu.openmos.msb.utilities.Functions;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +39,10 @@ public class ProductExecution implements Runnable
   static int HighOrderIndex = -1;
   StopWatch firstRecipeCallTime = new StopWatch();
   boolean notAgain = false;
+  public static HashMap<String, String> exec_MARTELO = new HashMap<>();
+  public static HashMap<String, Integer> exec_MARTELO_INT = new HashMap<>();
+  public static Boolean use_exec_MARTELO = true;
+  String next_da_id = "";
 
   @Override
   public void run()
@@ -155,9 +160,17 @@ public class ProductExecution implements Runnable
                       }
                       if (checkRecipeAvailable(recipe_to_check, auxProdInstance, auxSR)) //check if the recipe is valid and if the DA and nextDA are at ready state
                       {
+                        String da_id = DatabaseInteraction.getInstance().getDA_AML_IDbyRecipeID(recipe_to_check);
+                        
+                        if (use_exec_MARTELO && exec_MARTELO.get(next_da_id) != null && 
+                                !exec_MARTELO.get(next_da_id).equals(auxProdInstance.getProductId()))
+                          continue;
                         if (executeRecipe(recipe_to_check, auxProdInstance, auxSR)) //if returns false, check another alternative recipe for the same SR
                         {
                           logger.info("The execution of Recipe: " + recipe_to_check + " Returned true");
+                          
+                          if (use_exec_MARTELO)
+                            exec_MARTELO.put(next_da_id, auxProdInstance.getProductId());
                           if (ProdManager.getProductsDoing().get(auxProdInstance.getUniqueId()) == null)
                           {
                             //the first recipe of the product is done, put it into "doing"
@@ -328,6 +341,7 @@ public class ProductExecution implements Runnable
                 logger.debug("daState for NEXT: " + state);
                 //if (da_next.getSubSystem().getState().equals(MSBConstants.ADAPTER_STATE_READY)) 
                 {
+                next_da_id = da_next.getSubSystem().getUniqueId();
                   return true;
                 }
               }

@@ -718,6 +718,10 @@ public class ChangeState
         Long prodTime = new Date().getTime() - prodInst.getStartedProductionTime().getTime();
         PerformanceMasurement.getInstance().getProdInstanceTime().add(prodTime);
         PECManager.getInstance().getProduct_sr_tracking().remove(productInst_id);
+        
+        if (ProductExecution.use_exec_MARTELO && PECManager.getInstance().getExecutionMap().get(da_test.getSubSystem().getUniqueId()).availablePermits() == 2)
+          ProductExecution.exec_MARTELO.remove(da_test.getSubSystem().getUniqueId());
+        
         if (MSBConstants.USING_CLOUD)
         {
           try
