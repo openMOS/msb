@@ -254,7 +254,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     btn_updatestatus = new javax.swing.JButton();
     textToSend = new javax.swing.JTextField();
     jLabel2 = new javax.swing.JLabel();
-    jButton2 = new javax.swing.JButton();
     p_dds = new javax.swing.JPanel();
     l_ddsDomain = new javax.swing.JLabel();
     b_startMSBDDS = new javax.swing.JButton();
@@ -628,15 +627,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
 
     jLabel2.setText("OPC-UA Test Bed");
 
-    jButton2.setText("jButton2");
-    jButton2.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        jButton2ActionPerformed(evt);
-      }
-    });
-
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
@@ -685,9 +675,7 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
               .addComponent(msbServerAddress)
               .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(64, 64, 64)
-            .addComponent(jButton2)))
+            .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap(32, Short.MAX_VALUE))
     );
 
@@ -698,63 +686,57 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(msbServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGap(18, 18, 18)
-            .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(ldsSserverAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-              .addComponent(LDSRegisterserver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
-            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel6)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(btn_start_discovery, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(5, 5, 5)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(ComboMSB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(comboServers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(6, 6, 6)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(btn_DeviceRegistration)
-              .addComponent(btn_SendURL))
-            .addGap(6, 6, 6)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(btn_RecipeExecutionDone)
-              .addComponent(btn_RequestProduct))
-            .addGap(6, 6, 6)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(btn_ChangedState)
-              .addComponent(btn_sendRecipe))
-            .addGap(6, 6, 6)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(btn_sendrecipe2)
-              .addComponent(btn_invoqueMethod))
-            .addGap(6, 6, 6)
-            .addComponent(btn_updatestatus)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(textToSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(18, 18, 18))
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addGap(23, 23, 23)
-            .addComponent(jButton2)
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(msbServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(OnOffServerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(StartMSBServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addGap(18, 18, 18)
+        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(ldsSserverAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(LDSRegisterserver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(OnOffRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel6)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(OnOffLDS, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(btn_start_discovery, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(5, 5, 5)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(ComboMSB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(comboServers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(6, 6, 6)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(btn_DeviceRegistration)
+          .addComponent(btn_SendURL))
+        .addGap(6, 6, 6)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(btn_RecipeExecutionDone)
+          .addComponent(btn_RequestProduct))
+        .addGap(6, 6, 6)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(btn_ChangedState)
+          .addComponent(btn_sendRecipe))
+        .addGap(6, 6, 6)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(btn_sendrecipe2)
+          .addComponent(btn_invoqueMethod))
+        .addGap(6, 6, 6)
+        .addComponent(btn_updatestatus)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(textToSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(18, 18, 18))
     );
 
     jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {LDSRegisterserver, StartMSBServer, btn_start_discovery});
@@ -1967,79 +1949,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
     //prodExecMan.ge
   }//GEN-LAST:event_btnClearSubmittedOrdersActionPerformed
 
-  private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
-  {                                             
-//GEN-HEADEREND:event_jButton2ActionPerformed
-    try
-    {
-      List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
-      DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
-      ExecutionTable et = da.getExecutionTable();
-      
-      et.getRows().get(0).setNextRecipeId("Kirill is the best");
-      
-      
-      String et_da_string = Functions.ClassToString(ExecutionTable_DA.createExecutionTable_DA(et));
-
-      System.out.println("###et start###");
-      System.out.println(et_da_string);
-      System.out.println("###et end###");
-
-      DeviceAdapterOPC client = (DeviceAdapterOPC) da;
-      OpcUaClient opcua_client = client.getClient().getClientObject();
-
-      NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableObjectID());
-      NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getUpdateExectutionTableMethodID());
-
-      boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, et_da_string, false);
-
-      logger.debug("EXECUTION TABLE UPDATE RESULT: " + ret);
-    }
-    catch (Exception ex)
-    {
-
-    }
-    /*
-    List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
-
-    DeviceAdapter da = DACManager.getInstance().getDeviceAdapterbyAML_ID(da_ids.get(0));
-    Recipe weighingHRecipe = da.getSubSystem().getInternalModules().get(5).getRecipes().get(0);
-    Recipe productTubRecipe = da.getSubSystem().getRecipes().get(0);
-    //recipe.setName("WOWOWOOW");
-    weighingHRecipe.setUniqueId(UUID.randomUUID().toString());
-    productTubRecipe.setUniqueId(UUID.randomUUID().toString());
-    weighingHRecipe.setName(weighingHRecipe.getName() + "KirillDemo");
-
-    
-    for (ParameterSetting ps :  weighingHRecipe.getParameterSettings())
-    {
-      if (ps.getName().toLowerCase().contains("cycles"))
-      {
-        ps.setValue("555");
-      }
-    }
-    
-    String string_wh_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(weighingHRecipe));
-    //String string_pt_recipe = Functions.ClassToString(Recipe_DA.createRecipe_DA(productTubRecipe));
-    
-    System.out.println("###recipies start###");
-    System.out.println(string_wh_recipe);
-    System.out.println();
-    //System.out.println(string_pt_recipe);
-    System.out.println("###recipies end###");
-
-    DeviceAdapterOPC client = (DeviceAdapterOPC) da;
-    OpcUaClient opcua_client = client.getClient().getClientObject();
-
-    NodeId object_id = Functions.convertStringToNodeId(da.getSubSystem().getInternalModules().get(5).getChangeRecipeObjectID());
-    NodeId method_id = Functions.convertStringToNodeId(da.getSubSystem().getInternalModules().get(5).getChangeRecipeMethodID());
-
-    boolean ret = client.getClient().InvokeUpdate(opcua_client, object_id, method_id, string_wh_recipe);
-  
-    logger.debug("RECIPE UPDATE RESULT: " + ret);
-     */
-  }//GEN-LAST:event_jButton2ActionPerformed
-
   /*
    List<String> da_ids = DACManager.getInstance().getDeviceAdapters_AML_IDs();
 
@@ -2809,7 +2718,6 @@ public class MSB_gui extends javax.swing.JFrame implements Observer
   private static javax.swing.JLabel executedOrdersLabel;
   private javax.swing.JButton exportTimers;
   private javax.swing.JButton jButton1;
-  private javax.swing.JButton jButton2;
   private javax.swing.JComboBox<String> jComboBox1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
