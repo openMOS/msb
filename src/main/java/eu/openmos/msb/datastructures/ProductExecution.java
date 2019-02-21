@@ -624,7 +624,7 @@ public class ProductExecution implements Runnable
             PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).release();
             MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
             logger.info("[SEMAPHORE][PS] RELEASED for " + da.getSubSystem().getName());
-            if (da_next != null)
+            if (da_next != null && !da_next.getSubSystem().getUniqueId().equals(da.getSubSystem().getUniqueId())) 
             {
               PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).release();
               MSB_gui.updateTableAdaptersSemaphore(String.valueOf(PECManager.getInstance().getExecutionMap().get(da_next.getSubSystem().getUniqueId()).availablePermits()), da.getSubSystem().getName());
