@@ -14,7 +14,7 @@ Plug-and-produce is an information intensive process that requires from both the
 
 ## Current status
 
-WIP
+Project finished
 
 ## License
 
